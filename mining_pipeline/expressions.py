@@ -24,11 +24,13 @@ import hashlib
 import random
 from typing import List, Tuple
 
-# Building blocks - intentionally small to keep expression space tractable.
-# Only WQ Brain native PV fields here. `dollar_volume` is NOT a WQ field
-# (use multiply(close, volume) instead).
+# Building blocks - only WQ Brain pv fields actually exposed on this account
+# (verified via constants/data_fields_union_USA.json). `dollar_volume` is
+# NOT a WQ field (use multiply(close, volume) instead). The advN family on
+# WQ Brain for this account is just `adv20`; adv5/adv60/adv120 are not
+# exposed.
 FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
-          "cap", "adv5", "adv20", "adv60", "adv120")
+          "cap", "sharesout", "adv20")
 
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
                "ts_std_dev", "ts_returns", "ts_decay_linear")
