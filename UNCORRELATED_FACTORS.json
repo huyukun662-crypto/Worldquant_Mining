@@ -1,0 +1,57 @@
+{
+  "config": {
+    "k": 4,
+    "n_candidates": 800,
+    "seeds": [
+      7,
+      19,
+      23,
+      31
+    ],
+    "n_trials": 25,
+    "max_depth": 3,
+    "corr_threshold_requested": 0.5,
+    "corr_threshold_used": 0.8,
+    "sharpe_floor": 1.25,
+    "turnover_ceiling": 0.25,
+    "is_window": [
+      "2019-01-01",
+      "2023-12-31"
+    ],
+    "os_window": [
+      "2024-01-01",
+      "2026-05-08"
+    ],
+    "universe_size": 251,
+    "elapsed_seconds": 640.7
+  },
+  "stats": {
+    "generated_per_seed": 800,
+    "n_seeds": 4,
+    "pool_after_oos_gate": 3,
+    "picked": 1
+  },
+  "factors": [
+    {
+      "expression": "scale(ts_mean(ts_mean(ts_std_dev(volume, 3), 3), 40))",
+      "optimized": "scale(ts_mean(ts_mean(ts_std_dev(volume, 10), 45), 34))",
+      "params": {
+        "0": 10,
+        "1": 45,
+        "2": 34
+      },
+      "skeleton": "scale(ts_mean(ts_mean(ts_std_dev(X,D),D),D))",
+      "is_sharpe": 1.3335811461720175,
+      "is_turnover": 0.004230573478567996,
+      "is_annret": 0.14019552040895097,
+      "os_sharpe": 1.7533501000843543,
+      "os_turnover": 0.004302789382121449,
+      "os_annret": 0.1707689631924804
+    }
+  ],
+  "abs_pnl_corr_matrix": [
+    [
+      1.0
+    ]
+  ]
+}
