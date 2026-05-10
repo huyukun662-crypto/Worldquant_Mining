@@ -98,11 +98,21 @@ The pipeline takes ~2 minutes on a 251-ticker × 1848-day panel.
 - **Upstream data field fetcher caps**: the original
   `vendor/worldquant-miner/data_fetcher/data_field_fetcher.py` had stacked
   limits (5 categories, 20 datasets/cat, 10 datasets total, 5 pages,
-  50 fields/page → ~2.5K fields/region max). These have been relaxed to:
-  15 categories (added pv, sentiment, socialmedia, option, earnings,
-  macro, esg, shortinterest, insider, institutional), 200 datasets/cat,
-  unlimited datasets total, 200 pages, 100 fields/page. See the
-  `# Limits below have been relaxed from the upstream defaults` comment.
+  50 fields/page → ~2.5K fields/region max). These have been:
+  - Categories expanded from 5 → 15 (added pv, sentiment, socialmedia,
+    option, earnings, macro, esg, shortinterest, insider, institutional).
+  - `limit` per /data-sets call: 20 → 200.
+  - `max_datasets` cap: 10 → unlimited.
+  - Pagination switched from `page`-based with `max_pages=5` to
+    **offset-based** with `MAX_FIELDS_PER_DATASET=50_000` and termination
+    when the API's `count` is reached. This was necessary because the
+    largest category (Model = 3,296 fields) cannot be captured under any
+    `page` cap if the API does not interpret `page` correctly.
+  - Page size: 50 → 100.
+  Run `python -m worldquant_mining.verify_completeness <cache.json>` to
+  diff a fetched cache against the documented per-category totals in
+  `constants/expected_field_counts_USA.json`. The upstream snapshot
+  scores 34% (2,663 / 7,831) — the relaxed fetcher should hit ~100%.
 
 - **Cache**: `cache/ohlcv.pkl` (~ 60 MB). Delete to force a re-download
   if the universe changes. yfinance returns a `pd.MultiIndex` columns

@@ -249,13 +249,19 @@ class DataFieldFetcher:
 
             logger.info(f"[{region}] Fetching fields from {max_datasets} datasets...")
 
+            # Pagination: offset-based with `count` from response header.
+            # The WQ Brain `/data-fields` endpoint accepts `limit` + `offset`;
+            # the `page` parameter the upstream used was unreliable for very
+            # large datasets (e.g. Model = 3,296 fields). Worst-case bound
+            # below covers a single dataset of 50,000 fields, far above the
+            # current largest category total (Model 3,296 across 3 datasets).
+            PAGE_SIZE = 100
+            MAX_FIELDS_PER_DATASET = 50_000
             for idx, dataset in enumerate(dataset_ids[:max_datasets], 1):
                 logger.info(f"[{region}] [{idx}/{max_datasets}] Processing dataset: {dataset}")
                 dataset_fields = []
-                page = 1
-                max_pages = 200  # was 5 - WQ Brain rarely needs >40 pages even at 50/pg
-
-                while page <= max_pages:
+                offset = 0
+                while offset < MAX_FIELDS_PER_DATASET:
                     try:
                         params = {
                             'dataset.id': dataset,
@@ -263,30 +269,36 @@ class DataFieldFetcher:
                             'instrumentType': 'EQUITY',
                             'region': region,
                             'universe': universe,
-                            'limit': 100,  # was 50 - max API page size
-                            'page': page
+                            'limit': PAGE_SIZE,
+                            'offset': offset,
                         }
-                        
-                        logger.debug(f"[{region}] Fetching {dataset} page {page} with params: {params}")
+
                         response = self.session.get('https://api.worldquantbrain.com/data-fields', params=params)
-                        logger.debug(f"[{region}] {dataset} page {page} response status: {response.status_code}")
-                        
-                        if response.status_code == 200:
-                            data = response.json()
-                            fields = data.get('results', [])
-                            if not fields:  # No more fields on this page
-                                logger.debug(f"[{region}] No more fields in {dataset} page {page}, stopping")
-                                break
-                            dataset_fields.extend(fields)
-                            logger.info(f"[{region}] ✓ Found {len(fields)} fields in {dataset} page {page} (total from dataset: {len(dataset_fields)})")
-                            page += 1
-                        else:
-                            logger.warning(f"[{region}] ✗ Failed to get fields from {dataset} page {page}: {response.status_code} - {response.text[:200]}")
+                        if response.status_code != 200:
+                            logger.warning(f"[{region}] ✗ {dataset} offset={offset}: HTTP {response.status_code} - {response.text[:200]}")
                             break
+
+                        data = response.json()
+                        fields = data.get('results', [])
+                        total = data.get('count')  # API typically returns total count
+                        if not fields:
+                            logger.debug(f"[{region}] {dataset} offset={offset}: empty page, stopping")
+                            break
+                        dataset_fields.extend(fields)
+                        logger.info(f"[{region}] ✓ {dataset} offset={offset}: +{len(fields)} fields "
+                                    f"(running total {len(dataset_fields)}"
+                                    + (f"/{total}" if total else "") + ")")
+                        # If the API returned a total count, stop when we reach it
+                        if total is not None and len(dataset_fields) >= total:
+                            break
+                        # If the page is short, no more results
+                        if len(fields) < PAGE_SIZE:
+                            break
+                        offset += PAGE_SIZE
                     except Exception as e:
-                        logger.error(f"[{region}] ✗ Error fetching {dataset} page {page}: {e}", exc_info=True)
+                        logger.error(f"[{region}] ✗ Error fetching {dataset} offset={offset}: {e}", exc_info=True)
                         break
-                
+
                 all_fields.extend(dataset_fields)
                 logger.info(f"[{region}] ✓ Total fields from {dataset}: {len(dataset_fields)}")
             
