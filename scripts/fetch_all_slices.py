@@ -58,11 +58,14 @@ def main():
 
     cache_dir = REPO / "constants"
     cache_dir.mkdir(exist_ok=True)
-    fetcher = df_mod.DataFieldFetcher(session=cm.session, cache_dir=str(cache_dir))
 
     union: dict[tuple, dict] = {}
     for region, universe, delay in SLICES:
         log.info(f"=== fetching {region} {universe} delay={delay} ===")
+        # Fresh fetcher per slice -- the upstream's in-memory cache is keyed
+        # by `region` only, so reusing one instance silently returns the
+        # first slice's data for every subsequent call.
+        fetcher = df_mod.DataFieldFetcher(session=cm.session, cache_dir=str(cache_dir))
         try:
             fields = fetcher.fetch_data_fields(
                 region=region, delay=delay, universe=universe, force_refresh=True,

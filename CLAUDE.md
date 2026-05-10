@@ -95,6 +95,33 @@ The pipeline takes ~2 minutes on a 251-ticker × 1848-day panel.
 - **`worldquant_mining/factor_templates.py` is for reference only**.
   Do not import it from `mining_pipeline/`.
 
+## Authenticated WQ Brain scrape workflow
+
+Credentials live ONLY in repo-root `credential.txt` (gitignored, chmod
+600). Format is JSON list `["username", "password"]` or two newline-
+separated lines. Never commit. The current credential is for
+`2445560398@qq.com`; rotate via the WQ web UI if exposed.
+
+Scripts:
+- `scripts/fetch_data_fields.py REGION UNIVERSE DELAY` — single
+  authenticated slice fetch + completeness verifier.
+- `scripts/fetch_all_slices.py` — sweep all `(universe, delay)` pairs
+  defined in `vendor/worldquant-miner/core/region_config.py` and union.
+  Defaults to USA × 5 universes × delay {0, 1} = 10 slices.
+
+The screenshot's per-category totals (analyst=1374 etc.) are unions
+across **all** `(delay, universe)` slices. A single slice — e.g. (USA,
+TOP3000, delay=1) — caps below those totals because the API exposes
+different field subsets per slice (analyst4 reports `count=653` at
+delay=1 vs `count=90` at delay=0). Use the union cache
+`constants/data_fields_union_USA.json` to compare against the screenshot.
+
+**Critical fetcher pitfall (FIXED in `scripts/fetch_all_slices.py`)**:
+the upstream `DataFieldFetcher` has an in-memory cache keyed by `region`
+alone. Reusing one fetcher instance silently returns the FIRST slice's
+data on every subsequent call, regardless of delay/universe. Always
+instantiate a fresh `DataFieldFetcher(...)` per slice.
+
 - **Upstream data field fetcher caps**: the original
   `vendor/worldquant-miner/data_fetcher/data_field_fetcher.py` had stacked
   limits (5 categories, 20 datasets/cat, 10 datasets total, 5 pages,
@@ -108,11 +135,16 @@ The pipeline takes ~2 minutes on a 251-ticker × 1848-day panel.
     when the API's `count` is reached. This was necessary because the
     largest category (Model = 3,296 fields) cannot be captured under any
     `page` cap if the API does not interpret `page` correctly.
-  - Page size: 50 → 100.
+  - Page size: 50 (API max — 100 returns HTTP 400
+    "pagination limit too high").
+  - HTTP 429 backoff: 0.6s throttle between every request, exponential
+    backoff (30s → 300s) honoring the API's `Retry-After` header,
+    up to 5 retries per call.
   Run `python -m worldquant_mining.verify_completeness <cache.json>` to
   diff a fetched cache against the documented per-category totals in
   `constants/expected_field_counts_USA.json`. The upstream snapshot
-  scores 34% (2,663 / 7,831) — the relaxed fetcher should hit ~100%.
+  scored 34% (2,663 / 7,831). A union-of-all-slices fetch should
+  approach 100%.
 
 - **Cache**: `cache/ohlcv.pkl` (~ 60 MB). Delete to force a re-download
   if the universe changes. yfinance returns a `pd.MultiIndex` columns
