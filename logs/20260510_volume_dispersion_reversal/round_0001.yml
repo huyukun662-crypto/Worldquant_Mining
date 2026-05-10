@@ -1,0 +1,47 @@
+# Stage 4 / Stage 5 round artifact (Operator + Evaluator)
+# This file is updated when scripts/run_factor_zoo_session.py completes.
+
+session_id: 20260510_volume_dispersion_reversal
+round: 1
+mechanism: volume_dispersion_reversal
+
+stage_4_operator:
+  harness:
+    panel: yfinance proxy
+    universe: 251 USA large/midcap (S&P 500 + selected mid-caps)
+    is_window: 2019-01-01 -> 2023-12-31
+    os_window: 2024-01-01 -> 2026-05-08
+    backtest: cross-sectional rank-demean L1-normalized L/S, 1-bar lag
+  optuna_trials_per_expr: 60
+  audits:
+    g1_importable: true       # all 8 expressions parse and evaluate
+    g2_runs_e2e: true         # all 8 produce a (T, N) signal
+    g3_non_degenerate: true   # all 8 have TO > 0 on IS
+    a2_future_perturbation: passed   # past factor values bit-identical when future bars randomized
+    a3_target_mask_provenance: passed # no .where(mask) derived from ret.shift(-k)
+    a4_delay_consistency: passed     # backtest lag = 1 bar = WQ delay=1
+  results_file: backtest_results_batch_0001.json
+
+stage_5_evaluator:
+  selection_mode: see backtest_results_batch_0001.json `selection_mode` key
+  selection_logic: |
+    - First, apply strict gates: IS_SH > 1.25 AND IS_TO < 0.25 AND OS_SH >= IS_SH.
+    - If strict pool >= 4, pick top 4 by IS_SH (tie-break by lower TO).
+    - Otherwise, fall back to a robust pool (TO < 0.25 AND OS_SH > 0)
+      ranked by composite = IS_SH + 0.7*OS_SH + 0.3*consistency.
+      Composite emphasizes OS robustness because the 251-name local
+      proxy is well-known to under-/over-state Sharpe vs WQ Brain
+      (CLAUDE.md, "Backtest authority" section).
+  decision: see final_summary.md
+  next_action: submit selected to WQ Brain via scripts/submit_alpha.py
+
+handoff_back_to_user:
+  artifacts:
+    - logs/20260510_volume_dispersion_reversal/research_brief.md
+    - logs/20260510_volume_dispersion_reversal/session_metadata.yml
+    - logs/20260510_volume_dispersion_reversal/expressions_batch_0001.md
+    - logs/20260510_volume_dispersion_reversal/backtest_results_batch_0001.json
+    - logs/20260510_volume_dispersion_reversal/submission_payload.json
+    - logs/20260510_volume_dispersion_reversal/alpha_ranking.md
+    - logs/20260510_volume_dispersion_reversal/final_summary.md
+    - logs/20260510_volume_dispersion_reversal/round_0001.yml
