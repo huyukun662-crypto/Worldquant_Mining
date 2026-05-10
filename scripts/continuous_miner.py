@@ -21,6 +21,7 @@ import argparse
 import json
 import logging
 import math
+import multiprocessing as mp
 import re
 import time
 from dataclasses import dataclass, asdict, field
@@ -220,6 +221,28 @@ def search_candidate(panel, evaluator, expr, n_trials, seed) -> CandidateResult:
     )
 
 
+# --- Worker for multiprocessing ---
+_WORKER_PANEL = None
+_WORKER_EVAL = None
+
+
+def _worker_init():
+    global _WORKER_PANEL, _WORKER_EVAL
+    _WORKER_PANEL = load(use_cache=True)
+    _WORKER_EVAL = Evaluator(_WORKER_PANEL)
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+
+
+def _worker_run(args):
+    expr, n_trials, seed = args
+    try:
+        return search_candidate(_WORKER_PANEL, _WORKER_EVAL, expr, n_trials, seed)
+    except Exception as exc:
+        return CandidateResult(expr, expr, structural_signature(expr), {},
+                               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0,
+                               survivor=False, error=f"worker:{exc}"[:200])
+
+
 def candidate_stream(seed: int):
     """Yield candidate base-expressions: templates first, then unbounded random."""
     # Pass 1: curated mechanism templates (each with default windows)
@@ -237,9 +260,11 @@ def candidate_stream(seed: int):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--target", type=int, default=4)
-    ap.add_argument("--trials", type=int, default=40)
-    ap.add_argument("--max-candidates", type=int, default=400)
+    ap.add_argument("--trials", type=int, default=20)
+    ap.add_argument("--max-candidates", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=20260510)
+    ap.add_argument("--workers", type=int, default=4,
+                     help="Parallel workers (1 disables multiprocessing)")
     args = ap.parse_args()
 
     log.info("Loading panel")
@@ -254,64 +279,112 @@ def main():
     all_results: list[CandidateResult] = []
     distinct_survivors: dict[str, CandidateResult] = {}  # sig -> best result
     seen_sigs: set[str] = set()
-    t0 = time.time()
     n_processed = 0
 
-    for source, expr in candidate_stream(args.seed):
-        if n_processed >= args.max_candidates:
-            log.info(f"Reached max-candidates {args.max_candidates}; stopping")
-            break
-        if len(distinct_survivors) >= args.target:
-            log.info(f"Reached target of {args.target} structurally distinct survivors")
-            break
+    # Resume support
+    if out_path.exists():
+        try:
+            with open(out_path) as f:
+                prior = json.load(f)
+            for r in prior.get("all_results", []):
+                all_results.append(CandidateResult(**r))
+                seen_sigs.add(r["structural_sig"])
+            for r in prior.get("survivors", []):
+                if r["structural_sig"] not in distinct_survivors:
+                    distinct_survivors[r["structural_sig"]] = CandidateResult(**r)
+            n_processed = prior.get("n_processed", len(all_results))
+            log.info(f"resumed: prior={n_processed} candidates, "
+                     f"{len(distinct_survivors)} survivors, {len(seen_sigs)} sigs")
+        except Exception as exc:
+            log.warning(f"resume failed: {exc}; starting fresh")
+            all_results = []
+            distinct_survivors = {}
+            seen_sigs = set()
+            n_processed = 0
+    t0 = time.time()
 
-        # Pre-canonicalize to skip duplicate structures
-        pre_sig = structural_signature(expr)
-        if pre_sig in seen_sigs:
-            continue
-        seen_sigs.add(pre_sig)
+    def persist():
+        with open(out_path, "w") as f:
+            json.dump({
+                "n_processed": n_processed,
+                "elapsed_s": time.time() - t0,
+                "n_distinct_survivors": len(distinct_survivors),
+                "target": args.target,
+                "survivors": [asdict(v) for v in distinct_survivors.values()],
+                "all_results": [asdict(rr) for rr in all_results],
+            }, f, indent=2)
+        with open(state_path, "w") as f:
+            json.dump({"n_processed": n_processed,
+                        "n_distinct_survivors": len(distinct_survivors)}, f)
 
+    def handle_result(r: CandidateResult):
+        nonlocal n_processed
         n_processed += 1
         elapsed = time.time() - t0
         rate = n_processed / max(elapsed, 1)
-        log.info(f"=== [{n_processed}] {source} sig#={len(seen_sigs)} "
-                 f"survivors={len(distinct_survivors)}/{args.target} "
-                 f"elapsed={elapsed:.0f}s rate={rate:.2f}/s | {expr[:90]}")
-
-        try:
-            r = search_candidate(panel, evaluator, expr, args.trials,
-                                  args.seed + n_processed)
-        except Exception as exc:
-            log.warning(f"   error: {exc}")
-            continue
-
         all_results.append(r)
         if r.survivor:
             sig = r.structural_sig
-            # Keep the best version per structural signature
             if sig not in distinct_survivors or r.is_sharpe > distinct_survivors[sig].is_sharpe:
+                is_new = sig not in distinct_survivors
                 distinct_survivors[sig] = r
-                log.info(f"   *** SURVIVOR #{len(distinct_survivors)} "
+                marker = "NEW" if is_new else "BETTER"
+                log.info(f"*** SURVIVOR {marker} #{len(distinct_survivors)} "
                          f"IS_SH={r.is_sharpe:+.3f} IS_TO={r.is_turnover:.3f} "
-                         f"OS_SH={r.os_sharpe:+.3f} expr={r.optimized_expr}")
-        else:
-            log.info(f"   IS_SH={r.is_sharpe:+.3f} IS_TO={r.is_turnover:.3f} "
-                     f"OS_SH={r.os_sharpe:+.3f} (not survivor)")
+                         f"OS_SH={r.os_sharpe:+.3f} | {r.optimized_expr[:90]}")
+                persist()
+        if n_processed % 10 == 0:
+            log.info(f"[{n_processed}] elapsed={elapsed:.0f}s rate={rate:.2f}/s "
+                     f"survivors={len(distinct_survivors)}/{args.target}")
+            persist()
 
-        # Persist progress every candidate
-        if n_processed % 5 == 0 or r.survivor:
-            with open(out_path, "w") as f:
-                json.dump({
-                    "n_processed": n_processed,
-                    "elapsed_s": elapsed,
-                    "n_distinct_survivors": len(distinct_survivors),
-                    "target": args.target,
-                    "survivors": [asdict(v) for v in distinct_survivors.values()],
-                    "all_results": [asdict(r) for r in all_results],
-                }, f, indent=2)
-            with open(state_path, "w") as f:
-                json.dump({"n_processed": n_processed,
-                            "n_distinct_survivors": len(distinct_survivors)}, f)
+    # Build candidate batch in advance, deduplicated
+    def fresh_candidates(n: int):
+        out = []
+        for source, expr in candidate_stream(args.seed):
+            sig = structural_signature(expr)
+            if sig in seen_sigs:
+                continue
+            seen_sigs.add(sig)
+            out.append((expr, args.trials, args.seed + n_processed + len(out) + 1))
+            if len(out) >= n:
+                break
+        return out
+
+    if args.workers <= 1:
+        for source, expr in candidate_stream(args.seed):
+            if n_processed >= args.max_candidates:
+                log.info(f"Reached max-candidates {args.max_candidates}")
+                break
+            if len(distinct_survivors) >= args.target:
+                log.info(f"Reached target of {args.target} structurally distinct survivors")
+                break
+            sig = structural_signature(expr)
+            if sig in seen_sigs:
+                continue
+            seen_sigs.add(sig)
+            r = search_candidate(panel, evaluator, expr, args.trials,
+                                  args.seed + n_processed + 1)
+            handle_result(r)
+    else:
+        log.info(f"Parallel mining with {args.workers} workers")
+        ctx = mp.get_context("spawn")
+        with ctx.Pool(args.workers, initializer=_worker_init) as pool:
+            while (n_processed < args.max_candidates
+                    and len(distinct_survivors) < args.target):
+                batch_size = min(args.workers * 4,
+                                  args.max_candidates - n_processed)
+                batch = fresh_candidates(batch_size)
+                if not batch:
+                    log.info("Candidate stream exhausted")
+                    break
+                for r in pool.imap_unordered(_worker_run, batch):
+                    handle_result(r)
+                    if len(distinct_survivors) >= args.target:
+                        break
+                if len(distinct_survivors) >= args.target:
+                    log.info(f"Reached target of {args.target} structurally distinct survivors")
+                    break
 
     # Final write
     survivors_list = list(distinct_survivors.values())
