@@ -49,7 +49,55 @@ session doesn't have to rediscover them.
    If you find yourself importing from `worldquant_mining.factor_templates`
    inside `mining_pipeline/`, stop — that's a spec violation.
 
-## Pipeline invariants
+## Backtest authority: WorldQuant Brain `/simulations` is canonical
+
+**All Sharpe / turnover / fitness / IR / drawdown numbers we report MUST
+come from WorldQuant Brain's `/simulations` endpoint, not from the
+local yfinance backtest.** The local backtest in
+`mining_pipeline/backtest.py` is a **fast triage proxy** — useful for
+weeding out obvious junk before paying the WQ simulation cost — but its
+numbers DO NOT generalize.
+
+### Evidence
+
+The 2 factors that passed our local gates (`IS_SH > 1.25 ∧ TO < 0.25 ∧
+OS_SH ≥ IS_SH`) were submitted to WQ Brain (alpha_ids `0meJlEK1`,
+`wpnrmoQ1`). Side-by-side:
+
+|                                                       | local IS | local OS | **WQ Brain SH** | WQ TO | WQ FIT |
+|-------------------------------------------------------|---------:|---------:|----------------:|------:|-------:|
+| `zscore(ts_decay_linear(ts_mean(ts_std_dev(volume,11),44),23))` | 1.32     | 1.78     | **-0.150**      | 0.026 | -0.07  |
+| `scale(ts_mean(ts_decay_linear(divide(adv20,low),15),20))`      | 1.30     | 1.80     | **0.010**       | 0.033 |  0.00  |
+
+Both are noise on WQ Brain. Three structural reasons:
+
+1. Universe — local 251 yfinance large/midcap vs WQ TOP3000 (3,000 names).
+2. Backtest mechanics — local equal-weight L/S with L1 = 1; WQ runs
+   `INDUSTRY` neutralized with `truncation=0.08` and `pasteurization=ON`.
+3. Field semantics — local `adv20 = ts_mean(close*volume, 20)` (dollar
+   volume); WQ `adv20 = ts_mean(volume, 20)` (share volume).
+
+### Workflow
+
+The mining loop must end with WQ Brain validation:
+
+```
+generate(N candidates)
+  -> local backtest pre-screen  (cheap, throws out garbage)
+  -> submit_alpha.py            (submits to /simulations, polls,
+                                 fetches /alphas/{id})
+  -> rank by WQ-returned SH (NOT local SH)
+  -> apply user filter (WQ_SH > 1.25, WQ_TO < 0.25)
+```
+
+The "WQ-as-evaluator" loop lives in `mining_pipeline/wq_pipeline.py`
+(uses `scripts/submit_alpha.py` machinery).
+
+Throughput ceiling: ~1 simulation / 86-157s per submission. The user
+account allows ~2-3 concurrent submissions. Plan for ~30-60 simulations
+per hour; budget candidates accordingly.
+
+## Local-proxy pipeline invariants (for the triage stage only)
 
 - **IS window**: 2019-01-01 → 2023-12-31 (set in `mining_pipeline/data.py`)
 - **OS window**: 2024-01-01 → today (set in `mining_pipeline/data.py`)
@@ -58,11 +106,13 @@ session doesn't have to rediscover them.
 - **HP search**: Bayes (optuna TPE) by default; grid available; only
   optimizes integer literals in expressions, IS Sharpe is the objective,
   hard constraint `turnover < 0.25` enforced via large negative penalty.
-- **Final filter**: `OS_Sharpe >= IS_Sharpe`. This is strict — most
-  candidates fail. With `n_candidates=400, seed=19, trials=20` on the
-  251-ticker S&P/midcap universe, ~2 factors typically survive.
+- **Final filter (local)**: `OS_Sharpe >= IS_Sharpe`. With
+  `n_candidates=400, seed=19, trials=20` on the 251-ticker panel, ~2
+  factors survive.
 
-When tuning, change parameters at the call site, not these invariants.
+These thresholds are **placeholders for the local proxy** so the WQ
+queue isn't flooded with obvious noise. The authoritative thresholds
+are applied AFTER the WQ-Brain submission.
 
 ## Running
 
@@ -70,14 +120,21 @@ When tuning, change parameters at the call site, not these invariants.
 # regenerate gap report between upstream and canonical
 python -m worldquant_mining.compare
 
-# run the mining pipeline (uses cache/ohlcv.pkl if present)
+# fast triage on yfinance proxy (do NOT trust the SH numbers)
 python -m mining_pipeline.pipeline --n 400 --backend bayes --trials 20 --seed 19
+
+# canonical mining: generate locally, submit to WQ, rank by WQ SH
+python -m mining_pipeline.wq_pipeline --n 30
+
+# submit a specific MINING_REPORT.json's factors to WQ Brain
+python scripts/submit_alpha.py MINING_REPORT.json
 
 # tests
 python -m pytest tests/ -q
 ```
 
-The pipeline takes ~2 minutes on a 251-ticker × 1848-day panel.
+The local triage takes ~2 minutes on a 251-ticker × 1848-day panel.
+Each WQ Brain submission takes 86-180s; budget accordingly.
 
 ## Known pitfalls
 
