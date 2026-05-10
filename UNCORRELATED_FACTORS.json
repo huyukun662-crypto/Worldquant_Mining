@@ -14,6 +14,8 @@
     "corr_threshold_used": 0.8,
     "sharpe_floor": 1.25,
     "turnover_ceiling": 0.25,
+    "oos_min_ratio": 0.5,
+    "oos_min_sharpe": 0.5,
     "is_window": [
       "2019-01-01",
       "2023-12-31"
@@ -23,34 +25,53 @@
       "2026-05-08"
     ],
     "universe_size": 251,
-    "elapsed_seconds": 640.7
+    "elapsed_seconds": 634.4
   },
   "stats": {
     "generated_per_seed": 800,
     "n_seeds": 4,
-    "pool_after_oos_gate": 3,
-    "picked": 1
+    "pool_after_oos_gate": 5,
+    "picked": 2
   },
   "factors": [
     {
-      "expression": "scale(ts_mean(ts_mean(ts_std_dev(volume, 3), 3), 40))",
-      "optimized": "scale(ts_mean(ts_mean(ts_std_dev(volume, 10), 45), 34))",
+      "expression": "normalize(ts_mean(multiply(divide(volume, open), ts_corr(open, high, 40)), 20))",
+      "optimized": "normalize(ts_mean(multiply(divide(volume, open), ts_corr(open, high, 42)), 45))",
       "params": {
-        "0": 10,
-        "1": 45,
-        "2": 34
+        "0": 42,
+        "1": 45
       },
-      "skeleton": "scale(ts_mean(ts_mean(ts_std_dev(X,D),D),D))",
-      "is_sharpe": 1.3335811461720175,
-      "is_turnover": 0.004230573478567996,
-      "is_annret": 0.14019552040895097,
-      "os_sharpe": 1.7533501000843543,
-      "os_turnover": 0.004302789382121449,
-      "os_annret": 0.1707689631924804
+      "skeleton": "normalize(ts_mean(multiply(divide(X,X),ts_corr(X,X,D)),D))",
+      "is_sharpe": 1.576380732062148,
+      "is_turnover": 0.0033220392425588785,
+      "is_annret": 0.18587576016804652,
+      "os_sharpe": 1.3070350432555735,
+      "os_turnover": 0.003953552348544461,
+      "os_annret": 0.11114907580998697
+    },
+    {
+      "expression": "scale(ts_mean(ts_decay_linear(multiply(volume, volume), 10), 20))",
+      "optimized": "scale(ts_mean(ts_decay_linear(multiply(volume, volume), 18), 19))",
+      "params": {
+        "0": 18,
+        "1": 19
+      },
+      "skeleton": "scale(ts_mean(ts_decay_linear(multiply(X,X),D),D))",
+      "is_sharpe": 1.2976808387042456,
+      "is_turnover": 0.004959309632321305,
+      "is_annret": 0.23243250966637377,
+      "os_sharpe": 1.8046189520420912,
+      "os_turnover": 0.006005093665364883,
+      "os_annret": 0.3301168379191233
     }
   ],
   "abs_pnl_corr_matrix": [
     [
+      1.0,
+      0.7955
+    ],
+    [
+      0.7955,
       1.0
     ]
   ]

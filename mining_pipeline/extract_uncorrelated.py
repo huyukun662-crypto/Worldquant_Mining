@@ -170,7 +170,8 @@ def _build_pool(panel, evaluator: Evaluator,
     logger.info(f"  -> {len(pre)}/{len(candidates)} passed initial screen")
 
     logger.info(f"Stage 4: Bayes-optimize windows ({n_trials} trials each), "
-                "then OS check (OS_SH >= IS_SH)...")
+                f"then OS gate (OS_SH >= {oos_min_ratio:.2f}*IS_SH "
+                f"AND OS_SH >= {oos_min_sharpe:.2f})...")
     survivors: List[Survivor] = []
     for expr in pre:
         sr = search_bayes(panel, evaluator, expr, is_mask,
@@ -207,7 +208,7 @@ def _build_pool(panel, evaluator: Evaluator,
             os_annret=bt_os.annual_return,
         )
         survivors.append(Survivor(factor=f, pnl=_pnl(sig, panel.returns)))
-    logger.info(f"  -> {len(survivors)} factors survived OS_SH >= IS_SH gate")
+    logger.info(f"  -> {len(survivors)} factors survived OS gate")
     survivors.sort(key=lambda s: s.factor.is_sharpe, reverse=True)
     return survivors
 
@@ -378,6 +379,11 @@ if __name__ == "__main__":
     ap.add_argument("--corr-threshold", type=float, default=0.5,
                     help="strict |corr| ceiling; relaxed automatically if "
                          "we can't fill k slots")
+    ap.add_argument("--sharpe-floor", type=float, default=SHARPE_FLOOR,
+                    help="initial-screen IS Sharpe floor. CLAUDE.md notes "
+                         "local Sharpe numbers don't generalize to WQ Brain; "
+                         "lowering this widens the diversity pool.")
+    ap.add_argument("--turnover-ceiling", type=float, default=TURNOVER_CEILING)
     ap.add_argument("--oos-min-ratio", type=float, default=0.5,
                     help="OS_Sharpe must exceed this multiple of IS_Sharpe. "
                          "1.0 reproduces the strict OS>=IS gate; 0.5 is a "
@@ -392,6 +398,8 @@ if __name__ == "__main__":
     run(k=args.k, n_candidates=args.n, seeds=seeds,
         n_trials=args.trials, max_depth=args.max_depth,
         corr_threshold=args.corr_threshold,
+        sharpe_floor=args.sharpe_floor,
+        turnover_ceiling=args.turnover_ceiling,
         oos_min_ratio=args.oos_min_ratio,
         oos_min_sharpe=args.oos_min_sharpe,
         report_path=args.report)
