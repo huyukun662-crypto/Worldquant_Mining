@@ -1,0 +1,116 @@
+{
+  "config": {
+    "source": "/tmp/qml_runs.md",
+    "top": 10,
+    "rank_by": "icir",
+    "translator_notes": "Med->ts_mean (no WQ ts_median); Mad expanded; DownResample wrapper dropped (daily evaluation).",
+    "skipped_ops": [
+      "DownStd",
+      "Kurt",
+      "Partial",
+      "PartialRatio",
+      "Peak",
+      "Resi",
+      "Rsquare",
+      "Skew",
+      "Slope",
+      "UpStd"
+    ],
+    "skipped_fields": [
+      "num_trades",
+      "s_dq_freeturnover"
+    ]
+  },
+  "factors": [
+    {
+      "expression": "DownResample(Corr(Ref($high,1),$volume,237),240,236)",
+      "optimized": "reverse(ts_corr(ts_delay(high,1),volume,237))",
+      "wq_expr_raw": "ts_corr(ts_delay(high,1),volume,237)",
+      "skeleton": "reverse(ts_corr(ts_delay(X,D),X,D))",
+      "ic_mean": -0.05435,
+      "icir": 5.00343,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Corr($high,$volume,240),240,'last')",
+      "optimized": "reverse(ts_corr(high,volume,240))",
+      "wq_expr_raw": "ts_corr(high,volume,240)",
+      "skeleton": "reverse(ts_corr(X,X,D))",
+      "ic_mean": -0.04752,
+      "icir": -4.49173,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Corr($high,Ref($volume,1),237),240,236)",
+      "optimized": "reverse(ts_corr(high,ts_delay(volume,1),237))",
+      "wq_expr_raw": "ts_corr(high,ts_delay(volume,1),237)",
+      "skeleton": "reverse(ts_corr(X,ts_delay(X,D),D))",
+      "ic_mean": -0.04741,
+      "icir": 4.43734,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Min($close/Ref($close,2)-1,240),240,\"last\")",
+      "optimized": "ts_min(close/ts_delay(close,2)-1,240)",
+      "wq_expr_raw": "ts_min(close/ts_delay(close,2)-1,240)",
+      "skeleton": "ts_min(bSub(bDiv(X,ts_delay(X,D)),D),D)",
+      "ic_mean": 0.07388,
+      "icir": 4.16144,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Std($close/Ref($close,5)-1,240),240,'last')",
+      "optimized": "reverse(ts_std_dev(close/ts_delay(close,5)-1,240))",
+      "wq_expr_raw": "ts_std_dev(close/ts_delay(close,5)-1,240)",
+      "skeleton": "reverse(ts_std_dev(bSub(bDiv(X,ts_delay(X,D)),D),D))",
+      "ic_mean": -0.08001,
+      "icir": 4.0539,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Max($close/Ref($close,4)-1,240),240,\"last\")",
+      "optimized": "reverse(ts_max(close/ts_delay(close,4)-1,240))",
+      "wq_expr_raw": "ts_max(close/ts_delay(close,4)-1,240)",
+      "skeleton": "reverse(ts_max(bSub(bDiv(X,ts_delay(X,D)),D),D))",
+      "ic_mean": -0.06735,
+      "icir": -3.85044,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Max($high,20)/Min($low,20)-1,240,239)",
+      "optimized": "reverse(ts_max(high,20)/ts_min(low,20)-1)",
+      "wq_expr_raw": "ts_max(high,20)/ts_min(low,20)-1",
+      "skeleton": "reverse(bSub(bDiv(ts_max(X,D),ts_min(X,D)),D))",
+      "ic_mean": -0.05248,
+      "icir": 3.5759,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(Corr(Ref($total_turnover/($volume+1e-12),2),$volume,237),240,236)",
+      "optimized": "ts_corr(ts_delay(vwap,2),volume,237)",
+      "wq_expr_raw": "ts_corr(ts_delay(vwap,2),volume,237)",
+      "skeleton": "ts_corr(ts_delay(X,D),X,D)",
+      "ic_mean": 0.04063,
+      "icir": 3.35303,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(IdxMin($total_turnover/($volume+1e-12),240),240,\"last\")",
+      "optimized": "reverse(ts_arg_min(vwap,240))",
+      "wq_expr_raw": "ts_arg_min(vwap,240)",
+      "skeleton": "reverse(ts_arg_min(X,D))",
+      "ic_mean": -0.05417,
+      "icir": 3.31247,
+      "params": {}
+    },
+    {
+      "expression": "DownResample(($close-Min($total_turnover/($volume+1e-12),240))/(239-IdxMin($total_turnover/($volume+1e-12),240)),240,\"last\")",
+      "optimized": "reverse((close-ts_min(vwap,240))/(239-ts_arg_min(vwap,240)))",
+      "wq_expr_raw": "(close-ts_min(vwap,240))/(239-ts_arg_min(vwap,240))",
+      "skeleton": "reverse(bDiv(bSub(X,ts_min(X,D)),bSub(D,ts_arg_min(X,D))))",
+      "ic_mean": -0.05433,
+      "icir": 3.22787,
+      "params": {}
+    }
+  ]
+}
