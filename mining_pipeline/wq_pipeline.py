@@ -64,6 +64,7 @@ FIXED_SETTINGS = {
     "nanHandling":    "OFF",
     "visualization":  False,
     "maxTrade":       "OFF",
+    "maxPosition":    "OFF",
     "testPeriod":     "P0Y0M",
 }
 
@@ -171,10 +172,15 @@ def submit(session, expression: str, settings: dict,
                     settings=full_settings, error="poll-timeout")
 
 
-def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
-    """Run optuna trials over (expression-windows, sim-settings) for one
-    base expression. Returns ALL trial results (not just the best)."""
-    positions = integer_positions(expression)
+def search_one(session, expression: str, n_trials: int, seed: int,
+                freeze_windows: bool = False) -> list[WQResult]:
+    """Run optuna trials over (sim-settings) and optionally
+    expression-windows for one base expression. Returns ALL trial
+    results (not just the best). When `freeze_windows=True` the
+    expression is submitted as-is and only the simulation settings
+    are tuned -- useful when feeding in a list of already-optimized
+    factors (e.g. survivors of `extract_uncorrelated.py`)."""
+    positions = [] if freeze_windows else integer_positions(expression)
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     sampler = optuna.samplers.TPESampler(seed=seed)
     study = optuna.create_study(direction="maximize", sampler=sampler)
@@ -183,7 +189,7 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
     def objective(trial: optuna.trial.Trial) -> float:
         # Setting choices
         settings = {k: trial.suggest_categorical(k, v) for k, v in SETTING_SPACE.items()}
-        # Expression windows
+        # Expression windows (skipped when freeze_windows=True)
         windows = {p: trial.suggest_int(f"w{p}", 3, 60) for p in positions}
         final = parameterize(expression, windows) if windows else expression
         log.info(f"   trial: settings={settings} windows={windows}")
@@ -203,10 +209,33 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
     return trials_log
 
 
+def _load_exprs_from_report(path: Path) -> list[str]:
+    """Read `factors[*].optimized` (preferred) or `factors[*].expression`
+    out of a report JSON written by extract_uncorrelated.py / pipeline.py."""
+    data = json.loads(path.read_text())
+    factors = data.get("factors") or []
+    out = []
+    for f in factors:
+        e = f.get("optimized") or f.get("expression")
+        if e:
+            out.append(e)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-exprs", type=int, default=5,
-                     help="Number of base expressions to mine")
+                     help="Number of base expressions to mine (ignored when "
+                          "--from-report is set)")
+    ap.add_argument("--from-report", type=str, default="",
+                     help="Path to a report JSON (e.g. UNCORRELATED_FACTORS.json). "
+                          "When set, expressions are loaded from "
+                          "factors[*].optimized instead of being generated.")
+    ap.add_argument("--freeze-windows", action="store_true",
+                     help="Skip the integer-literal window search; only the "
+                          "simulation settings are tuned. Recommended when "
+                          "--from-report is set so already-optimized lookbacks "
+                          "are preserved.")
     ap.add_argument("--trials", type=int, default=8,
                      help="Optuna trials per expression (each is one WQ simulation)")
     ap.add_argument("--seed", type=int, default=37)
@@ -220,8 +249,13 @@ def main():
         log.error("authentication failed"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
 
-    log.info(f"generating {args.n_exprs} expressions (no Alpha101 / classical reuse)")
-    exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
+    if args.from_report:
+        report_path = Path(args.from_report)
+        exprs = _load_exprs_from_report(report_path)
+        log.info(f"loaded {len(exprs)} expressions from {report_path}")
+    else:
+        log.info(f"generating {args.n_exprs} expressions (no Alpha101 / classical reuse)")
+        exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
     for e in exprs: log.info(f"   {e}")
 
     total_trials = args.n_exprs * args.trials
@@ -231,7 +265,8 @@ def main():
     all_results: list[WQResult] = []
     for i, expr in enumerate(exprs, 1):
         log.info(f"=== [{i}/{len(exprs)}] expression: {expr}")
-        res_list = search_one(cm.session, expr, args.trials, args.seed + i)
+        res_list = search_one(cm.session, expr, args.trials, args.seed + i,
+                               freeze_windows=args.freeze_windows)
         all_results.extend(res_list)
         # Save partial after each expression so a crash mid-run preserves data
         with open(args.out, "w") as f:
