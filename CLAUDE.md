@@ -58,6 +58,40 @@ local yfinance backtest.** The local backtest in
 weeding out obvious junk before paying the WQ simulation cost — but its
 numbers DO NOT generalize.
 
+### Authoritative thresholds (apply to WQ-platform numbers, not local)
+
+A candidate is reported as a "survivor" iff **all** of these hold on
+the values returned by `/alphas/{id}` (the WQ Brain platform's own
+backtest):
+
+```
+WQ_IS_Sharpe   > 1.25
+WQ_IS_Turnover < 0.25
+WQ_OS_Sharpe   >= WQ_IS_Sharpe   # (when OS metrics populated)
+```
+
+WQ's IS window is fixed at `2019-01-01 → settings.endDate (2023-12-31)`
+on this account tier — exactly the user's IS spec. The OS field is
+populated asynchronously by WQ; until it is, we report WQ_IS only.
+The WQ platform's own `is.checks` block flags `LOW_SHARPE` at the
+same 1.25 limit, so a candidate that passes our filter also passes
+WQ's stock LOW_SHARPE check.
+
+### Reporting
+
+Files with WQ-platform results (these are the only authoritative
+numbers — local backtest numbers in `MINING_REPORT.json` are advisory
+proxies only):
+
+- `WQ_SUBMISSION_RESULTS.json` — direct submissions of factors
+  surfaced by the local pipeline. Schema: `[{ok, alpha_id, expression,
+  alpha:{is:{sharpe,turnover,fitness,returns,drawdown,checks,...}}}]`.
+- `WQ_MINING_REPORT.json` — output of `mining_pipeline/wq_pipeline.py`
+  with WQ-as-evaluator. Schema: `[{ok, sharpe, turnover, fitness,
+  returns, drawdown, checks_passed, checks_total, alpha_id, expression,
+  optimized, settings:{universe, delay, decay, truncation,
+  neutralization, pasteurization, ...}}]`.
+
 ### Evidence
 
 The 2 factors that passed our local gates (`IS_SH > 1.25 ∧ TO < 0.25 ∧
@@ -83,19 +117,32 @@ The mining loop must end with WQ Brain validation:
 
 ```
 generate(N candidates)
-  -> local backtest pre-screen  (cheap, throws out garbage)
-  -> submit_alpha.py            (submits to /simulations, polls,
-                                 fetches /alphas/{id})
-  -> rank by WQ-returned SH (NOT local SH)
-  -> apply user filter (WQ_SH > 1.25, WQ_TO < 0.25)
+  -> local backtest pre-screen   (cheap, throws out garbage)
+  -> mining_pipeline.wq_pipeline (submits to /simulations, polls,
+                                  fetches /alphas/{id})
+  -> rank by WQ-returned IS Sharpe (NOT local Sharpe)
+  -> filter: WQ_IS_SH > 1.25, WQ_IS_TO < 0.25, WQ_OS_SH >= WQ_IS_SH
+  -> survivors -> WQ_MINING_REPORT.json
 ```
 
-The "WQ-as-evaluator" loop lives in `mining_pipeline/wq_pipeline.py`
-(uses `scripts/submit_alpha.py` machinery).
+Per the user spec: **expression templates must NOT be reused** (no
+Alpha101, no classical-factor library), but the simulation settings
+`delay`, `decay`, `truncation`, `universe`, `neutralization`,
+`pasteurization` ARE part of the search space and `wq_pipeline.py`
+runs Optuna over the joint (expression-windows, settings) space.
 
-Throughput ceiling: ~1 simulation / 86-157s per submission. The user
+Throughput ceiling: ~1 simulation / 86-180s per submission. The user
 account allows ~2-3 concurrent submissions. Plan for ~30-60 simulations
 per hour; budget candidates accordingly.
+
+### Account tier limits observed on `2445560398@qq.com`
+
+- `delay=0` not available for simulation (HTTP 400 "Delay 0 is not
+  available"). `wq_pipeline.SETTING_SPACE['delay'] = [1]` reflects this.
+- `ILLIQUID_MINVOL1M` universe returns 0 fields on `/data-fields`.
+- USA `/data-fields` ceiling: 6,038 distinct field IDs across all
+  documented universes × delays (vs the 7,831 the WQ UI advertises;
+  the gap lives behind a higher account tier, not a fetch bug).
 
 ## Local-proxy pipeline invariants (for the triage stage only)
 
