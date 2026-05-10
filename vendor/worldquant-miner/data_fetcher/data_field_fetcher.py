@@ -6,11 +6,39 @@ Fetches and caches data fields from WorldQuant Brain API
 import logging
 import json
 import os
+import time
 import requests
 from typing import List, Dict, Optional
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def _rate_limited_get(session: requests.Session, url: str, params: dict,
+                       throttle_s: float = 0.6,
+                       max_retries: int = 5,
+                       backoff_429_s: float = 30.0) -> requests.Response:
+    """GET with throttling and HTTP 429 backoff.
+
+    Sleeps `throttle_s` between every request, and on 429 backs off
+    exponentially up to `max_retries` times before re-raising.
+    """
+    delay = backoff_429_s
+    for attempt in range(max_retries + 1):
+        time.sleep(throttle_s)
+        resp = session.get(url, params=params, timeout=30)
+        if resp.status_code != 429:
+            return resp
+        if attempt == max_retries:
+            return resp  # let caller see final 429
+        # Honor Retry-After if provided
+        ra = resp.headers.get("Retry-After")
+        wait = float(ra) if ra and ra.replace(".", "").isdigit() else delay
+        logger.warning(f"  [rate-limit] HTTP 429; sleeping {wait:.0f}s "
+                       f"(attempt {attempt + 1}/{max_retries})")
+        time.sleep(wait)
+        delay = min(delay * 2, 300.0)
+    return resp
 
 
 class DataFieldFetcher:
@@ -212,12 +240,14 @@ class DataFieldFetcher:
                     'instrumentType': 'EQUITY',
                     'region': region,
                     'universe': universe,
-                    'limit': 200  # was 20 - capture ALL datasets per category
+                    'limit': 20  # API max for /data-sets
                 }
                 
                 logger.info(f"[{region}] Getting {category} datasets...")
                 try:
-                    response = self.session.get('https://api.worldquantbrain.com/data-sets', params=datasets_params)
+                    response = _rate_limited_get(self.session,
+                        'https://api.worldquantbrain.com/data-sets',
+                        params=datasets_params)
                     logger.debug(f"[{region}] {category} datasets response status: {response.status_code}")
                     
                     if response.status_code == 200:
@@ -255,7 +285,7 @@ class DataFieldFetcher:
             # large datasets (e.g. Model = 3,296 fields). Worst-case bound
             # below covers a single dataset of 50,000 fields, far above the
             # current largest category total (Model 3,296 across 3 datasets).
-            PAGE_SIZE = 100
+            PAGE_SIZE = 50  # API max for /data-fields
             MAX_FIELDS_PER_DATASET = 50_000
             for idx, dataset in enumerate(dataset_ids[:max_datasets], 1):
                 logger.info(f"[{region}] [{idx}/{max_datasets}] Processing dataset: {dataset}")
@@ -273,7 +303,9 @@ class DataFieldFetcher:
                             'offset': offset,
                         }
 
-                        response = self.session.get('https://api.worldquantbrain.com/data-fields', params=params)
+                        response = _rate_limited_get(self.session,
+                            'https://api.worldquantbrain.com/data-fields',
+                            params=params)
                         if response.status_code != 200:
                             logger.warning(f"[{region}] ✗ {dataset} offset={offset}: HTTP {response.status_code} - {response.text[:200]}")
                             break

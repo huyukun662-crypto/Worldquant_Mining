@@ -4,6 +4,17 @@ Compares the per-category field counts in
 `constants/data_fields_cache_USA_1_TOP3000.json` (or the upstream snapshot
 we imported) to the expected counts in `expected_field_counts_USA.json`.
 
+NOTE on completeness semantics
+------------------------------
+The screenshot's category totals (e.g. analyst=1374) are cumulative across
+ALL `(delay, universe)` combinations exposed for that category. A single
+slice — e.g. `(USA, TOP3000, delay=1)` — caps out below those totals
+because the API exposes different field subsets per delay/universe.
+
+Run the **union** fetch (`scripts/fetch_all_slices.py`) and pass that JSON
+to this verifier (or use it on individual slice caches and accept that
+you'll see < 100% per category — that's the API's truth, not a bug).
+
 Usage:
     python -m worldquant_mining.verify_completeness [path-to-cache.json]
 """
