@@ -245,8 +245,17 @@ def main():
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
-    if not cm.authenticate(auto_load=True, auto_prompt=False):
-        log.error("authentication failed"); return 2
+    # Sandbox env regenerates TLS certs with NotBefore = current second;
+    # retry to absorb the race that fires "certificate is not yet valid".
+    auth_ok = False
+    for attempt in range(6):
+        if cm.authenticate(auto_load=True, auto_prompt=False):
+            auth_ok = True
+            break
+        log.warning(f"auth attempt {attempt+1} failed; sleeping {2 * (attempt+1)}s")
+        time.sleep(2 * (attempt + 1))
+    if not auth_ok:
+        log.error("authentication failed after retries"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
 
     if args.from_report:
