@@ -43,6 +43,7 @@ DEFAULT_SETTINGS = {
     "language": "FASTEXPR",
     "visualization": False,
     "maxTrade": "OFF",
+    "maxPosition": "OFF",
     "testPeriod": "P0Y0M",
 }
 
