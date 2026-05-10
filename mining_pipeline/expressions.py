@@ -32,8 +32,11 @@ from typing import List, Tuple
 FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
           "cap", "sharesout", "adv20")
 
+# `ts_returns` is in the canonical WQ doc set but rejected as
+# "inaccessible operator" on the 2445560398@qq.com account tier.
+# Removed alongside `s_log_1p` (see ELEMWISE_UNARY).
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
-               "ts_std_dev", "ts_returns", "ts_decay_linear")
+               "ts_std_dev", "ts_decay_linear")
 TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
 
 CS_OPS = ("rank", "zscore", "scale", "normalize")  # wrappers
