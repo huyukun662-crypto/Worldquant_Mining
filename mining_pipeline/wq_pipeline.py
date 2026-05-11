@@ -63,7 +63,7 @@ FIXED_SETTINGS = {
     "instrumentType": "EQUITY",
     "region":         "USA",
     "language":       "FASTEXPR",
-    "unitHandling":   "VERIFY",
+    "unitHandling":   "VERIFY",  # account allows only VERIFY
     "visualization":  False,
     "maxTrade":       "OFF",
 }
@@ -190,6 +190,7 @@ def _add_blacklist(field: str) -> None:
 
 import re
 _INVALID_FIELD_RE = re.compile(r"Invalid data field (\S+?)\.")
+_UNIT_MISMATCH_RE = re.compile(r"Incompatible unit")
 
 
 def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
@@ -224,6 +225,12 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
                 _add_blacklist(m.group(1))
                 log.info(f"      blacklisting field '{m.group(1)}'; "
                          f"aborting remaining trials for this expression")
+                study.stop()
+            elif _UNIT_MISMATCH_RE.search(res.error):
+                # Unit mismatch is a property of the expression itself, not
+                # the settings. No trial can rescue it; abort and move on.
+                log.info(f"      expression has incompatible units; "
+                         f"aborting remaining trials")
                 study.stop()
             return -10.0
         penalty = 0.0
