@@ -70,6 +70,7 @@ FIXED_SETTINGS = {
 # User filter: WQ Brain's official thresholds
 SHARPE_FLOOR = 1.25
 TURNOVER_CEILING = 0.25
+FITNESS_FLOOR = 1.0
 
 
 def _load(p: Path, name: str):
@@ -239,14 +240,15 @@ def main():
 
     # Filter and rank
     survivors = [r for r in all_results if r.ok and r.sharpe > SHARPE_FLOOR
-                  and r.turnover < TURNOVER_CEILING]
+                  and r.turnover < TURNOVER_CEILING
+                  and r.fitness > FITNESS_FLOOR]
     survivors.sort(key=lambda r: r.sharpe, reverse=True)
 
     print()
     print("=" * 110)
     print(f"All trials: {sum(1 for r in all_results if r.ok)}/{len(all_results)} OK")
-    print(f"Survivors  (WQ_SH > {SHARPE_FLOOR} AND TO < {TURNOVER_CEILING}): "
-          f"{len(survivors)}")
+    print(f"Survivors  (WQ_SH > {SHARPE_FLOOR} AND TO < {TURNOVER_CEILING} "
+          f"AND FIT > {FITNESS_FLOOR}): {len(survivors)}")
     print()
     print(f"{'WQ_SH':>7}{'TO':>7}{'FIT':>7}{'checks':>9}  alpha_id   universe   delay  neut  expression")
     for r in survivors[:25]:
