@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND72_ALPHAS: list[str] = [
+    # Round 72 — multiplicative combinations. R71 parametric tweaks failed;
+    # the next move is to use low-TO PV signals (H, C) as magnitude OR
+    # direction, multiplied with an independent booster (long-term reversal
+    # direction, range, abs(returns), vwap-volume corr). Target middle of
+    # the frontier: SH 0.8-1.0 with TO < 0.20.
+    # All TOP200, decay 60, subindustry-neutralized.
+
+    # 1. H magnitude weighted by long-term return direction (reversion bias)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_mean(returns, 252), 60), subindustry)",
+
+    # 2. PV correlation × reversal direction (use C as low-TO direction, ts_zscore as magnitude)
+    "group_neutralize(ts_decay_linear(-ts_corr(close, volume, 60) * ts_zscore(close, 252), 60), subindustry)",
+
+    # 3. VWAP-volume correlation (smoother than close)
+    "group_neutralize(ts_decay_linear(-ts_corr(vwap, volume, 60), 60), subindustry)",
+
+    # 4. Vol-shock × abs(returns) — only count big-volume + big-return days
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * abs(returns), 60), subindustry)",
+
+    # 5. PV correlation using adv20 (longer-term volume proxy)
+    "group_neutralize(ts_decay_linear(-ts_corr(close, adv20, 60), 60), subindustry)",
+
+    # 6. C as direction × zscore-of-close as magnitude
+    "group_neutralize(ts_decay_linear(sign(-ts_corr(close, volume, 60)) * abs(ts_zscore(close, 252)), 60), subindustry)",
+
+    # 7. Range-volume correlation (high - low captures intraday range, may PV-link differently)
+    "group_neutralize(ts_decay_linear(-ts_corr(high - low, volume, 60), 60), subindustry)",
+
+    # 8. Vol-shock × short price move (5d)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_delta(close, 5) / ts_delay(close, 5), 60), subindustry)",
+]
+
+
 ROUND71_ALPHAS: list[str] = [
     # Round 71 — deepen the two R70 winners (H and C families).
     # H = -(volume/ts_mean(volume,60)-1)*returns  was SH 0.59 / TO 0.118.
@@ -2314,7 +2348,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2329,6 +2363,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round72": ROUND72_ALPHAS,
         "round71": ROUND71_ALPHAS,
         "round70": ROUND70_ALPHAS,
         "round69": ROUND69_ALPHAS,
