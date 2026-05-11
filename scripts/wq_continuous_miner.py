@@ -51,19 +51,21 @@ IS_TO_CEIL = 0.25
 # Unit-clean mechanism templates. Every output is unitless / scalar-rank
 # so cross-sectional ops can wrap them safely. Each `_` is a tunable
 # integer-literal slot.
+# NOTE: `ts_returns` is restricted on this account tier; use `ts_mean(returns,_)`
+# or `ts_delta(close,_)/ts_delay(close,_)` instead.
 TEMPLATES = [
     # Volume dispersion (all unit-clean: std/mean of same field cancels)
     "rank(ts_decay_linear(divide(ts_std_dev(volume,_),ts_mean(volume,_)),_))",
     "rank(reverse(divide(ts_std_dev(volume,_),ts_mean(volume,_))))",
     "rank(divide(ts_std_dev(volume,_),ts_mean(volume,_)))",
     "rank(divide(ts_std_dev(close,_),ts_mean(close,_)))",
-    # Volume CV × return reversal (unitless × unitless)
-    "rank(ts_decay_linear(multiply(divide(ts_std_dev(volume,_),ts_mean(volume,_)),reverse(ts_returns(close,_))),_))",
-    "rank(reverse(multiply(divide(ts_std_dev(volume,_),ts_mean(volume,_)),ts_returns(close,_))))",
+    # Volume CV × momentum reversal (using ts_mean(returns,_) for d-day return)
+    "rank(ts_decay_linear(multiply(divide(ts_std_dev(volume,_),ts_mean(volume,_)),reverse(ts_mean(returns,_))),_))",
+    "rank(reverse(multiply(divide(ts_std_dev(volume,_),ts_mean(volume,_)),ts_mean(returns,_))))",
     # Joint z-scores (both unitless)
     "rank(reverse(multiply(ts_zscore(volume,_),ts_zscore(close,_))))",
     "rank(multiply(ts_zscore(volume,_),ts_zscore(close,_)))",
-    "rank(ts_decay_linear(reverse(multiply(ts_zscore(volume,_),ts_returns(close,_))),_))",
+    "rank(ts_decay_linear(reverse(multiply(ts_zscore(volume,_),ts_mean(returns,_))),_))",
     # Price-volume correlation (correlation is unitless)
     "rank(reverse(ts_corr(close,volume,_)))",
     "rank(ts_corr(close,volume,_))",
@@ -72,8 +74,8 @@ TEMPLATES = [
     "rank(reverse(ts_corr(returns,volume,_)))",
     "rank(ts_corr(returns,volume,_))",
     # Idio-vol / mean-reversion (vol of returns is unitless)
-    "rank(reverse(multiply(ts_std_dev(returns,_),ts_returns(close,_))))",
-    "rank(multiply(ts_std_dev(returns,_),ts_returns(close,_)))",
+    "rank(reverse(multiply(ts_std_dev(returns,_),ts_mean(returns,_))))",
+    "rank(multiply(ts_std_dev(returns,_),ts_mean(returns,_)))",
     "rank(ts_decay_linear(reverse(ts_std_dev(returns,_)),_))",
     "rank(reverse(ts_std_dev(returns,_)))",
     # Z-score / Bollinger style (z-score of price is unitless)
@@ -99,12 +101,15 @@ TEMPLATES = [
     # adv20-relative: volume / adv20 — both share-units → ratio unitless
     "rank(reverse(divide(volume,adv20)))",
     "rank(divide(volume,adv20))",
-    "rank(reverse(multiply(divide(volume,adv20),ts_returns(close,_))))",
-    # Long-window smoothed signals
-    "rank(ts_decay_linear(reverse(ts_returns(close,_)),_))",
-    "rank(ts_decay_linear(ts_returns(close,_),_))",
+    "rank(reverse(multiply(divide(volume,adv20),ts_mean(returns,_))))",
+    # Long-window smoothed momentum/reversal (use ts_mean of returns or ts_delta)
+    "rank(ts_decay_linear(reverse(ts_mean(returns,_)),_))",
+    "rank(ts_decay_linear(ts_mean(returns,_),_))",
     "rank(ts_decay_linear(reverse(ts_delta(close,_)),_))",
     "rank(ts_decay_linear(divide(close,ts_mean(close,_)),_))",
+    # ts_delta-based extras (safe alternative to ts_returns)
+    "rank(reverse(divide(ts_delta(close,_),ts_delay(close,_))))",
+    "rank(divide(ts_delta(close,_),ts_delay(close,_)))",
 ]
 
 SETTING_VARIANTS = [
