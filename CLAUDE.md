@@ -150,6 +150,36 @@ instantiate a fresh `DataFieldFetcher(...)` per slice.
   if the universe changes. yfinance returns a `pd.MultiIndex` columns
   frame; we deliberately persist that shape and re-index on load.
 
+## Platform submission: concentration check pitfall
+
+When submitting a factor that combines **sparse data fields** (e.g.
+`implied_volatility_mean_90` covers ~69% on TOP200, `return_assets`
+~50%), the WQ platform may reject with:
+
+  > Weight is too strongly concentrated or too few instruments are
+  > assigned weight.
+
+This is **structural**, not magnitude-based. After `rank()` × intersect
+× `group_neutralize(industry)`, each industry only has a handful of
+non-NaN names → weights concentrate even after winsorize / scale /
+signed_power / small adv20 tiebreaker. None of those compression tricks
+help because they don't change *which* stocks get a non-zero weight.
+
+R61 confirmed: winsorize/scale are no-ops on rank signals.
+R62 confirmed: signed_power(0.3) and 10% adv20 tiebreaker still fail
+platform check even though they pass internal Sharpe/turnover.
+
+Things to try (in order):
+1. **`densify(.)` wrap** — WQ's canonical "spread the support" operator.
+2. **`quantile(., driver="uniform")`** — forces uniform output dist.
+3. **Expand universe** to TOP500/TOP1000 — sparse fields cover more
+   names absolutely, so concentration check is easier to pass.
+4. **Pivot to PV-only factor** — `close/volume/returns/adv20/high/low`
+   give 100% coverage by construction. Always passes concentration.
+
+If `densify`/`quantile` are not platform-supported operators, only
+options 3 and 4 remain.
+
 ## Branch / git conventions
 
 - Designated dev branch: `claude/complete-search-clone-factors-OrBed`.
