@@ -60,6 +60,39 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND60_ALPHAS: list[str] = [
+    # Round 60 — VERIFY/RE-BACKTEST on TOP3000. The user reports F2-F8 from
+    # TOP200 screening all failed on the actual platform. Likely the
+    # competition universe is TOP3000 (or other), not TOP200. Re-run the
+    # full survivor list on TOP3000 to see real platform performance,
+    # then decide what to do.
+
+    # F2: IV-90 + ROA Δ 180d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+
+    # F1: IV-90 + ROA Δ 120d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 120)), 60), industry)",
+
+    # F5: IV-270 + ROA Δ 180d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_270, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+
+    # F6: Put-IV-30 + ROA Δ 180d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_put_30, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+
+    # F8: Call-IV-30 + ROA Δ 180d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_call_30, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+
+    # F4: 3-way IV + sentiment + ROA.
+    "group_neutralize(ts_decay_linear(0.4 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.2 * -rank(ts_delta(scl12_sentiment, 5)) + 0.4 * rank(ts_delta(return_assets, 120)), 60), industry)",
+
+    # F3: IV-180 + ROA Δ 120d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_180, 10)) + 0.5 * rank(ts_delta(return_assets, 120)), 60), industry)",
+
+    # F7: IV-10 + ROA Δ 180d.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_10, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+]
+
+
 ROUND59_ALPHAS: list[str] = [
     # Round 59 — F1-F4 all use implied_volatility_mean_30/90/180. Try
     # different IV TYPES (call/put/skew) and different IV horizons (10/20/270)
@@ -1910,7 +1943,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1925,6 +1958,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round60": ROUND60_ALPHAS,
         "round59": ROUND59_ALPHAS,
         "round58": ROUND58_ALPHAS,
         "round57": ROUND57_ALPHAS,
