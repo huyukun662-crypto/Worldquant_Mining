@@ -60,6 +60,38 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND51_ALPHAS: list[str] = [
+    # Round 51 — R50 surfaced ROA delta 90d at Sharpe +0.83 / turn 0.036 /
+    # fit 0.43 (low turn, plenty of headroom for cascade-decay or combo).
+    # Tune the ROA-momentum direction.
+
+    # 1. ROA delta 60d (faster).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_assets, 60)), 60), industry)",
+
+    # 2. ROA delta 120d (slower).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_assets, 120)), 60), industry)",
+
+    # 3. ROE delta 90d (sibling factor).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_equity, 90)), 60), industry)",
+
+    # 4. ROA delta + ROE delta combo (50/50).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(return_assets, 90)) + 0.5 * rank(ts_delta(return_equity, 90)), 60), industry)",
+
+    # 5. ROA delta with SUBINDUSTRY neutralization.
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_assets, 90)), 60), subindustry)",
+
+    # 6. ROA delta with cascade-decay (boost — same trick that broke price-accel).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(rank(ts_delta(return_assets, 90)), 60), 60), industry)",
+
+    # 7. ROA delta with heavier single decay 250.
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_assets, 90)), 250), industry)",
+
+    # 8. ROA acceleration (2nd-derivative of ROA, structurally different from
+    #    blocked price-accel since the underlying field is a quality ratio).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(ts_delta(return_assets, 30), 30)), 60), industry)",
+]
+
+
 ROUND50_ALPHAS: list[str] = [
     # Round 50 — found canonical profitability/quality fields:
     # return_assets (ROA), return_equity (ROE), capex, retained_earnings,
@@ -1628,7 +1660,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1643,6 +1675,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round51": ROUND51_ALPHAS,
         "round50": ROUND50_ALPHAS,
         "round49": ROUND49_ALPHAS,
         "round48": ROUND48_ALPHAS,
