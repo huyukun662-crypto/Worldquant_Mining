@@ -32,16 +32,40 @@ from typing import List, Tuple
 # `scripts/build_field_pool.py`). Falls back to PV-only if the file is
 # missing.
 _POOL_PATH = Path(__file__).resolve().parent.parent / "constants" / "field_pool_USA_TOP3000.json"
+_BLACKLIST_PATH = Path(__file__).resolve().parent.parent / "constants" / "field_blacklist.json"
 _PV_BASELINE = ("close", "open", "high", "low", "volume", "vwap", "returns",
                 "cap", "sharesout", "adv20")
-if _POOL_PATH.exists():
-    _POOL: dict[str, list[str]] = json.loads(_POOL_PATH.read_text())
-    FIELDS: tuple[str, ...] = tuple(f for cat in _POOL.values() for f in cat)
-    CATEGORIES: tuple[str, ...] = tuple(_POOL.keys())
-else:
-    _POOL = {"pv": list(_PV_BASELINE)}
-    FIELDS = _PV_BASELINE
-    CATEGORIES = ("pv",)
+
+
+def _load_blacklist() -> set[str]:
+    if _BLACKLIST_PATH.exists():
+        return set(json.loads(_BLACKLIST_PATH.read_text()))
+    return set()
+
+
+def _build_pool() -> tuple[dict[str, list[str]], tuple[str, ...], tuple[str, ...]]:
+    """Load the curated pool and filter out blacklisted fields. Categories
+    that go empty are dropped."""
+    if _POOL_PATH.exists():
+        raw: dict[str, list[str]] = json.loads(_POOL_PATH.read_text())
+    else:
+        raw = {"pv": list(_PV_BASELINE)}
+    bl = _load_blacklist()
+    pool = {c: [f for f in fs if f not in bl] for c, fs in raw.items()}
+    pool = {c: fs for c, fs in pool.items() if fs}
+    fields = tuple(f for cat in pool.values() for f in cat)
+    cats = tuple(pool.keys())
+    return pool, fields, cats
+
+
+_POOL, FIELDS, CATEGORIES = _build_pool()
+
+
+def reload_pool() -> tuple[int, int]:
+    """Re-read pool + blacklist from disk. Returns (n_fields, n_categories)."""
+    global _POOL, FIELDS, CATEGORIES
+    _POOL, FIELDS, CATEGORIES = _build_pool()
+    return len(FIELDS), len(CATEGORIES)
 
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
                "ts_std_dev", "ts_returns", "ts_decay_linear")

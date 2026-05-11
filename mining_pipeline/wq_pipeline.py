@@ -34,7 +34,7 @@ from typing import Any
 
 import optuna
 
-from .expressions import generate, integer_positions, parameterize
+from .expressions import generate, integer_positions, parameterize, reload_pool
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
@@ -173,19 +173,43 @@ def submit(session, expression: str, settings: dict,
                     settings=full_settings, error="poll-timeout")
 
 
+BLACKLIST_PATH = REPO / "constants" / "field_blacklist.json"
+
+
+def _load_blacklist() -> set[str]:
+    if BLACKLIST_PATH.exists():
+        return set(json.loads(BLACKLIST_PATH.read_text()))
+    return set()
+
+
+def _add_blacklist(field: str) -> None:
+    bl = _load_blacklist()
+    bl.add(field)
+    BLACKLIST_PATH.write_text(json.dumps(sorted(bl), indent=2))
+
+
+import re
+_INVALID_FIELD_RE = re.compile(r"Invalid data field (\S+?)\.")
+
+
 def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
     """Run optuna trials over (expression-windows, sim-settings) for one
-    base expression. Returns ALL trial results (not just the best)."""
+    base expression. Returns ALL trial results (not just the best).
+
+    Early-stops the Optuna study if the expression references a field WQ
+    rejects as "Invalid data field" — no setting change can fix that, so
+    the remaining trials would be pure waste. The bad field is added to
+    a persistent blacklist that the generator excludes in future batches.
+    """
     positions = integer_positions(expression)
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     sampler = optuna.samplers.TPESampler(seed=seed)
     study = optuna.create_study(direction="maximize", sampler=sampler)
     trials_log: list[WQResult] = []
+    bad_field = {"name": None}
 
     def objective(trial: optuna.trial.Trial) -> float:
-        # Setting choices
         settings = {k: trial.suggest_categorical(k, v) for k, v in SETTING_SPACE.items()}
-        # Expression windows
         windows = {p: trial.suggest_int(f"w{p}", 3, 60) for p in positions}
         final = parameterize(expression, windows) if windows else expression
         log.info(f"   trial: settings={settings} windows={windows}")
@@ -194,8 +218,14 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
         trials_log.append(res)
         if not res.ok:
             log.info(f"      [{res.error[:80]}]")
+            m = _INVALID_FIELD_RE.search(res.error)
+            if m:
+                bad_field["name"] = m.group(1)
+                _add_blacklist(m.group(1))
+                log.info(f"      blacklisting field '{m.group(1)}'; "
+                         f"aborting remaining trials for this expression")
+                study.stop()
             return -10.0
-        # Penalty if turnover violates user cap, or fitness < floor
         penalty = 0.0
         if res.turnover >= TURNOVER_CEILING:
             penalty += 5.0
@@ -289,9 +319,12 @@ def main():
 
     for batch_idx in range(1, args.batches + 1):
         batch_seed = args.seed + batch_idx * 1000
+        # Reload pool minus newly-blacklisted fields from prior batches
+        n_fields, n_cats = reload_pool()
         log.info("")
         log.info(f"############## BATCH {batch_idx}/{args.batches} "
-                 f"(seed={batch_seed}) ##############")
+                 f"(seed={batch_seed}, pool={n_fields} fields / "
+                 f"{n_cats} categories) ##############")
         round_exprs: list[str] = []
         attempt = 0
         while len(round_exprs) < args.n_exprs and attempt < 50:
