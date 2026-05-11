@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND27_ALPHAS: list[str] = [
+    # Round 27 — 5 (+1) candidates with structure AND logic distinct from
+    # ALL prior winners.
+    # Prior winners:
+    #   R1-R20: returns mean-reversion (ts_rank/ts_zscore of returns +
+    #           ts_decay_linear + subindustry/sector/industry neut)
+    #   R22-R26: IV-skew (put_30 - call_30) inverse + smoothing + neut
+    # Round 27 explores DIFFERENT signals: long-term momentum, skewness
+    # premium, range vol premium, intraday gap, VWAP reversion, overnight gap.
+
+    # 1. LONG-TERM MOMENTUM — long winners over 252d. NOT reversal.
+    #    No outer smoothing or neutralization (rely on sim-level industry).
+    "rank(ts_sum(returns, 252))",
+
+    # 2. SKEWNESS PREMIUM — long high-skew stocks (lottery effect).
+    "group_neutralize(ts_decay_linear(rank(ts_skewness(returns, 60)), 60), industry)",
+
+    # 3. RANGE VOL PREMIUM — 60d high-low range, ts_mean smoother.
+    #    Different smoother (ts_mean) than R1-R26 (ts_decay_linear).
+    "group_neutralize(ts_mean(rank(ts_max(high, 60) - ts_min(low, 60)), 60), industry)",
+
+    # 4. INTRADAY-GAP MOMENTUM — 21d sum of close-open gap.
+    "group_neutralize(-ts_decay_linear(rank(ts_sum(close - open, 21)), 60), industry)",
+
+    # 5. VWAP REVERSION — temporal rank (ts_rank) of close-vwap. Different
+    #    operator (ts_rank temporal) than R1-R20 (rank cross-sectional).
+    "group_neutralize(ts_decay_linear(-ts_rank(close - vwap, 252), 60), industry)",
+
+    # 6. OVERNIGHT GAP REVERSAL — open vs prior close. Subindustry neut,
+    #    decay 90 (different settings).
+    "group_neutralize(ts_decay_linear(-rank(open - ts_delay(close, 1)), 90), subindustry)",
+]
+
+
 ROUND26_ALPHAS: list[str] = [
     # Round 26 — 4 PASS so far this user-request (all IV-skew variants).
     # Try for category diversity in the 5th factor.
@@ -915,7 +949,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -930,6 +964,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round27": ROUND27_ALPHAS,
         "round26": ROUND26_ALPHAS,
         "round25": ROUND25_ALPHAS,
         "round24": ROUND24_ALPHAS,
