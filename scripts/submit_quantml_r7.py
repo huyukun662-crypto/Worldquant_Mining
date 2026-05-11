@@ -1,21 +1,18 @@
-"""QuantML round 7: more channels for the asymmetric-variance shape.
+"""QuantML round 7 (redesigned): 5 structurally ORTHOGONAL factors.
 
-The shape `ts_std_dev(x * less, N) - ts_std_dev(x * greater, N)` on
-100d wins on two channels so far:
+The earlier R7 design re-used the asym-variance shape across 5
+channels -- structurally identical, high cross-correlation. This
+redesign uses 5 different OPERATOR FAMILIES, each capturing a
+qualitatively different effect:
 
-    OA24      x = low/delay(close,1)-1, high/delay(close,1)-1   SH=1.47
-    R6_01     x = (close-open)/open                              SH=1.51
+  R7_01  auto-correlation       linear association of consecutive returns
+  R7_02  coefficient of var.    ratio of moments (std/mean)
+  R7_03  sign-streak persistence sign-indicator mean (count-based)
+  R7_04  long-term rank reversal ordinal time-rank
+  R7_05  volume shock           ts_rank(volume) short vs long
 
-Round 7 introduces five new channels for the same shape:
-
-  R7_01  overnight gap                  (open/delay(close,1) - 1)
-  R7_02  upper shadow conditioned on    (high - close)/close
-         day sign (close <> open)
-  R7_03  lower shadow conditioned on    (close - low)/close
-         day sign
-  R7_04  close vs vwap (intraday tilt)  (close - vwap)/vwap
-  R7_05  high/low vs same-day open      (variant of OA24 with
-                                          open-anchor not close)
+Each one should be uncorrelated with R6_01/OA24 (variance-asymmetry
+of price) and with each other.
 """
 
 from __future__ import annotations
@@ -29,19 +26,15 @@ from wq_runner import run_round  # noqa: E402
 FACTORS: list[dict] = [
     {
         "id": "QM_R7_01",
-        "category": "overnight-gap-asym",
+        "category": "auto-correlation",
         "idea": (
-            "Overnight-gap asymmetric variance 100d. Long names whose "
-            "down-gaps are more variable than up-gaps -- earns the "
-            "overnight risk premium that close-to-close returns miss."
+            "60-day auto-correlation of daily returns. Positive = "
+            "momentum-like persistence; negative = reversal. Sign: "
+            "short positive (momentum already priced) -- low-vol "
+            "anomaly cousin via return persistence."
         ),
-        "original": "Std(Gap * (Gap<0), 100) - Std(Gap * (Gap>0), 100)",
-        "expression": (
-            "ts_std_dev((open / ts_delay(close, 1) - 1) "
-            "* less(open - ts_delay(close, 1), 0), 100) "
-            "- ts_std_dev((open / ts_delay(close, 1) - 1) "
-            "* greater(open - ts_delay(close, 1), 0), 100)"
-        ),
+        "original": "Corr(Ret, Delay(Ret,1), 60)",
+        "expression": "-1 * ts_corr(returns, ts_delay(returns, 1), 60)",
         "settings_override": {
             "decay": 4,
             "neutralization": "INDUSTRY",
@@ -50,20 +43,14 @@ FACTORS: list[dict] = [
     },
     {
         "id": "QM_R7_02",
-        "category": "upper-shadow-asym",
+        "category": "coef-of-variation",
         "idea": (
-            "Upper-shadow variance 100d split by day sign: on down "
-            "days minus on up days. Persistent upper-shadow variance "
-            "on down days = aborted rallies into the close = tail-"
-            "risk premium signal; long it."
+            "60-day coefficient of variation = std(close)/mean(close). "
+            "Relative dispersion ignoring level. High CV = unstable "
+            "names. Sign: negative (low-vol anomaly)."
         ),
-        "original": "Std(UpShadow*(C<O), 100) - Std(UpShadow*(C>O), 100)",
-        "expression": (
-            "ts_std_dev((high - close) / close "
-            "* less(close - open, 0), 100) "
-            "- ts_std_dev((high - close) / close "
-            "* greater(close - open, 0), 100)"
-        ),
+        "original": "Std(Close,60) / Mean(Close,60)",
+        "expression": "-1 * ts_std_dev(close, 60) / ts_mean(close, 60)",
         "settings_override": {
             "decay": 4,
             "neutralization": "INDUSTRY",
@@ -72,64 +59,49 @@ FACTORS: list[dict] = [
     },
     {
         "id": "QM_R7_03",
-        "category": "lower-shadow-asym",
+        "category": "sign-streak",
         "idea": (
-            "Lower-shadow variance 100d split by day sign: on down "
-            "days minus on up days. Captures buying-into-weakness "
-            "behaviour."
+            "60-day mean of sign(returns). Counts the net direction "
+            "balance. Persistent up-day count = trend-followers' "
+            "playground; short it (mean-reversion at this horizon)."
         ),
-        "original": "Std(LoShadow*(C<O), 100) - Std(LoShadow*(C>O), 100)",
-        "expression": (
-            "ts_std_dev((close - low) / close "
-            "* less(close - open, 0), 100) "
-            "- ts_std_dev((close - low) / close "
-            "* greater(close - open, 0), 100)"
-        ),
+        "original": "Mean(Sign(Ret), 60)",
+        "expression": "-1 * ts_mean(sign(returns), 60)",
         "settings_override": {
-            "decay": 4,
+            "decay": 8,
             "neutralization": "INDUSTRY",
             "truncation": 0.08,
         },
     },
     {
         "id": "QM_R7_04",
-        "category": "close-vwap-asym",
+        "category": "rank-reversal",
         "idea": (
-            "Close-vs-vwap asymmetric variance 100d. Splits by sign "
-            "of (close - vwap): days closing below vwap (institutional "
-            "selling pressure) vs above. Long names whose below-vwap "
-            "moves are more variable."
+            "Cross-sectional position within a 252-day window via "
+            "ts_rank(close, 252). Long names at the BOTTOM of their "
+            "annual range (rank low) -- annual mean-reversion."
         ),
-        "original": "Std((C-Vwap)/Vwap * (C<Vwap), 100) - Std(... (C>Vwap))",
-        "expression": (
-            "ts_std_dev((close - vwap) / vwap "
-            "* less(close - vwap, 0), 100) "
-            "- ts_std_dev((close - vwap) / vwap "
-            "* greater(close - vwap, 0), 100)"
-        ),
+        "original": "-1 * TsRank(Close, 252)",
+        "expression": "-1 * ts_rank(close, 252)",
         "settings_override": {
-            "decay": 4,
+            "decay": 8,
             "neutralization": "INDUSTRY",
             "truncation": 0.08,
         },
     },
     {
         "id": "QM_R7_05",
-        "category": "hl-vs-open-asym",
+        "category": "volume-shock",
         "idea": (
-            "Like OA24 but anchored on same-day OPEN instead of "
-            "previous-day close. Std of (low/open - 1) minus std of "
-            "(high/open - 1) over 100d -- separates the day's "
-            "drawdown variance from rally variance, with no overnight-"
-            "gap component."
+            "Short-window minus long-window time-rank of volume: "
+            "ts_rank(volume, 5) - ts_rank(volume, 60). Spikes "
+            "above the slow baseline. Long the spike (information "
+            "flow precedes price)."
         ),
-        "original": "Std(L/O - 1, 100) - Std(H/O - 1, 100)",
-        "expression": (
-            "ts_std_dev(low / open - 1, 100) "
-            "- ts_std_dev(high / open - 1, 100)"
-        ),
+        "original": "TsRank(Vol, 5) - TsRank(Vol, 60)",
+        "expression": "ts_rank(volume, 5) - ts_rank(volume, 60)",
         "settings_override": {
-            "decay": 0,
+            "decay": 4,
             "neutralization": "INDUSTRY",
             "truncation": 0.08,
         },
