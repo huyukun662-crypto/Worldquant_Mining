@@ -1,0 +1,15 @@
+{
+  "mechanism": "leadlag_corr_setting_sweep",
+  "rationale": "Batch 0001 capped at +0.86 on lead-lag price-volume corr. Try different (universe, decay, neutralization) settings around the seed expression to see if a setting tweak pushes us past 1.25.",
+  "settings_per_expression": true,
+  "expressions": [
+    {"expr": "reverse(ts_corr(ts_delay(high, 1), volume, 237))", "settings": {"universe": "TOP200", "neutralization": "NONE", "decay": 0, "truncation": 0.05, "pasteurization": "OFF"}},
+    {"expr": "reverse(ts_corr(ts_delay(high, 1), volume, 237))", "settings": {"universe": "TOP200", "neutralization": "INDUSTRY", "decay": 4, "truncation": 0.08, "pasteurization": "ON"}},
+    {"expr": "reverse(ts_corr(ts_delay(high, 1), volume, 237))", "settings": {"universe": "TOP500", "neutralization": "SUBINDUSTRY", "decay": 16, "truncation": 0.05, "pasteurization": "OFF"}},
+    {"expr": "reverse(ts_corr(ts_delay(high, 1), volume, 237))", "settings": {"universe": "TOP1000", "neutralization": "NONE", "decay": 8, "truncation": 0.05, "pasteurization": "OFF"}},
+    {"expr": "reverse(ts_corr(ts_delay(close, 1), volume, 237))", "settings": {"universe": "TOP200", "neutralization": "NONE", "decay": 4, "truncation": 0.08, "pasteurization": "OFF"}},
+    {"expr": "reverse(ts_corr(ts_delay(vwap, 1), volume, 237))", "settings": {"universe": "TOP200", "neutralization": "NONE", "decay": 4, "truncation": 0.08, "pasteurization": "OFF"}},
+    {"expr": "reverse(ts_corr(ts_delay(high, 1), ts_delay(volume, 1), 237))", "settings": {"universe": "TOP200", "neutralization": "NONE", "decay": 4, "truncation": 0.08, "pasteurization": "OFF"}},
+    {"expr": "reverse(ts_zscore(ts_corr(ts_delay(high, 1), volume, 237), 60))", "settings": {"universe": "TOP500", "neutralization": "NONE", "decay": 4, "truncation": 0.08, "pasteurization": "OFF"}}
+  ]
+}

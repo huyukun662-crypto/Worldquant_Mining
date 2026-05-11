@@ -1,0 +1,31 @@
+{
+  "mechanism": "peak_drawup_drawdown",
+  "rationale": "QML ICIR=-3.85 on Max(close/Ref(close,4)-1, 240) and +4.16 on Min(close/Ref(close,2)-1, 240). Captures the asymmetry of extreme single-day moves at annual scale. Reverse signed to give a one-sided long edge.",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "universe": "TOP500",
+    "delay": 1,
+    "decay": 4,
+    "truncation": 0.08,
+    "neutralization": "NONE",
+    "pasteurization": "OFF",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "visualization": false,
+    "testPeriod": "P0Y0M"
+  },
+  "expressions": [
+    "ts_min(subtract(divide(close, ts_delay(close, 2)), 1), 240)",
+    "reverse(ts_max(subtract(divide(close, ts_delay(close, 4)), 1), 240))",
+    "reverse(ts_max(subtract(divide(close, ts_delay(close, 1)), 1), 240))",
+    "reverse(ts_max(subtract(divide(high, ts_delay(low, 1)), 1), 240))",
+    "ts_min(subtract(divide(close, ts_delay(close, 5)), 1), 240)",
+    "reverse(subtract(divide(ts_max(high, 20), ts_min(low, 20)), 1))",
+    "reverse(subtract(divide(ts_max(close, 240), ts_min(close, 240)), 1))",
+    "ts_arg_min(close, 240)"
+  ]
+}
