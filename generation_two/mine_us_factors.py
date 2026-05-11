@@ -60,6 +60,37 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND55_ALPHAS: list[str] = [
+    # Round 55 — R53 50/50 combo on TOP500 hit Sharpe 1.09/turn 0.112/fit 0.82.
+    # R54 tweaks didn't improve. Try smaller universe TOP200 + replace
+    # ROA with ROE + different IV horizons.
+
+    # 1. Original 50/50 combo (will be run against TOP200).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 2. Replace ROA delta with ROE delta.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_equity, 90)), 60), industry)",
+
+    # 3. IV-60 momentum (mid-horizon) + ROA Δ.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_60, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 4. IV-90 momentum + ROA Δ.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 5. ts_zscore wrap on combo (normalize composite signal).
+    "group_neutralize(ts_decay_linear(ts_zscore(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), 60), industry)",
+
+    # 6. Decay 90 (between 60 and 120) — different from R54's 60/cascade.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 90), industry)",
+
+    # 7. Decay 30 (sharper).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 30), industry)",
+
+    # 8. Different IV window 5d (faster IV momentum).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 5)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), industry)",
+]
+
+
 ROUND54_ALPHAS: list[str] = [
     # Round 54 — R53 TOP500 finding: IV momentum + ROA delta 50/50 combo
     # gives Sharpe 1.09 / turn 0.112 / fit 0.82. Turn ✓, Sharpe and fit
@@ -1754,7 +1785,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1769,6 +1800,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round55": ROUND55_ALPHAS,
         "round54": ROUND54_ALPHAS,
         "round53": ROUND53_ALPHAS,
         "round52": ROUND52_ALPHAS,
