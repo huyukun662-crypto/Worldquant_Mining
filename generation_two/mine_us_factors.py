@@ -60,6 +60,33 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND29_ALPHAS: list[str] = [
+    # Round 29 — variants of 2 close-to-passing R27/R28 architectures.
+    # R27#5 VWAP-rev: Sharpe 1.50 / turn 0.224 / fit 0.98 (fit just below 1.0)
+    # R28#5 BAB flipped: Sharpe -1.36 / fit -1.64 → flipped = +1.36 / +1.64 PASS
+    # Both use FULL-coverage signals (returns, close, vwap) → meet weight
+    # concentration cap. Variations on decay, neut group, lookback.
+
+    # 1. HIGH-BETA LONG — R28#5 BAB with sign flipped. NEW logic.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns, 1), 60)), 60), industry)",
+
+    # 2. HIGH-BETA LONG with subindustry neut (different group).
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns, 1), 60)), 60), subindustry)",
+
+    # 3. HIGH-BETA LONG with decay 120.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns, 1), 60)), 120), industry)",
+
+    # 4. VWAP-REV with decay 90 (R27#5 was decay 60).
+    "group_neutralize(ts_decay_linear(-ts_rank(close - vwap, 252), 90), industry)",
+
+    # 5. VWAP-REV with subindustry neut.
+    "group_neutralize(ts_decay_linear(-ts_rank(close - vwap, 252), 60), subindustry)",
+
+    # 6. VWAP-REV with decay 120.
+    "group_neutralize(ts_decay_linear(-ts_rank(close - vwap, 252), 120), industry)",
+]
+
+
 ROUND28_ALPHAS: list[str] = [
     # Round 28 — distinct from R1-R26 winners AND satisfies new constraints:
     #   weight_concentration <= 10%, sub_universe_sharpe >= 0.79.
@@ -976,7 +1003,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -991,6 +1018,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round29": ROUND29_ALPHAS,
         "round28": ROUND28_ALPHAS,
         "round27": ROUND27_ALPHAS,
         "round26": ROUND26_ALPHAS,
