@@ -60,6 +60,22 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND16_ALPHAS: list[str] = [
+    # Round 16 — re-screen the best non-template candidates from Rounds
+    # 13-15 on a DIFFERENT universe (USA TOP1000 or TOP500). The TOP3000
+    # ceiling for non-template architectures was Sharpe ~1.02 / fitness
+    # ~0.79. Liquidity-tier filtering may admit different signal shapes.
+
+    # Top non-template performers from R13-R15:
+    "group_neutralize(ts_decay_linear(-rank(ts_zscore(ts_sum(returns, 21), 60)), 60), subindustry)",      # R15#3
+    "group_neutralize(ts_decay_linear(if_else(volume > 2 * ts_mean(volume, 21), -ts_rank(returns, 252), 0), 60), subindustry)",  # R15#5
+    "group_neutralize(ts_decay_linear(if_else(ts_std_dev(returns, 21) > ts_std_dev(returns, 252), -ts_zscore(returns, 252), 0), 60), subindustry)",  # R15#1
+    "group_neutralize(ts_decay_linear(if_else(ts_std_dev(returns, 21) > ts_std_dev(returns, 252), -ts_rank(returns, 252), 0), 60), subindustry)",  # R13#6
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(returns, 5) + ts_sum(returns, 21) + ts_sum(returns, 63)), 60), subindustry)",  # R14#5
+    "group_neutralize(ts_decay_linear(-ts_delta(ts_rank(returns, 252), 5), 60), subindustry)",            # R13#1
+]
+
+
 ROUND15_ALPHAS: list[str] = [
     # Round 15 — Rounds 13/14 produced 0 survivors. New attempts focus on
     # gating/conditional architectures that use existing winning *inner*
@@ -531,9 +547,10 @@ class ScreenRecord:
         )
 
 
-def _settings() -> SimulationSettings:
+def _settings(universe: str = "TOP3000") -> SimulationSettings:
     return SimulationSettings(
         region="USA",
+        universe=universe,
         neutralization="INDUSTRY",
         truncation=0.08,
         startDate=IS_START,
@@ -563,6 +580,7 @@ def screen_candidates(
     submit_retry_delay: float = 4.0,
     submit_retry_max: int = 30,
     timeout_per_sim: int = 600,
+    universe: str = "TOP3000",
 ) -> list[ScreenRecord]:
     """Submit candidates while keeping `slots` simulations in flight.
 
@@ -580,12 +598,12 @@ def screen_candidates(
         "USA": type(
             "RegionConfig",
             (),
-            {"region": "USA", "universe": "TOP3000", "delay": 1},
+            {"region": "USA", "universe": universe, "delay": 1},
         )()
     }
     tester = SimulatorTester(session=sess, region_configs=region_configs)
 
-    settings = _settings()
+    settings = _settings(universe=universe)
 
     in_flight: dict[Future, str] = {}
     results: list[ScreenRecord] = []
@@ -654,18 +672,22 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
                    help="Cap on candidates (0 = all)")
     p.add_argument("--out", default="screening_survivors.json",
                    help="Where to write the survivors")
+    p.add_argument("--universe", default="TOP3000",
+                   choices=["TOP3000", "TOP2000", "TOP1000", "TOP500", "TOP200"],
+                   help="USA universe to screen against")
     args = p.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round16": ROUND16_ALPHAS,
         "round15": ROUND15_ALPHAS,
         "round14": ROUND14_ALPHAS,
         "round13": ROUND13_ALPHAS,
@@ -682,10 +704,10 @@ def main() -> int:
         "novel": NOVEL_ALPHAS,
     }[args.pool]
     candidates = pool if args.limit <= 0 else pool[: args.limit]
-    logging.info("Screening %d novel candidates against IS %s..%s with slots=%d",
-                 len(candidates), IS_START, IS_END, args.slots)
+    logging.info("Screening %d novel candidates against IS %s..%s universe=USA/%s slots=%d",
+                 len(candidates), IS_START, IS_END, args.universe, args.slots)
 
-    records = screen_candidates(candidates, slots=args.slots)
+    records = screen_candidates(candidates, slots=args.slots, universe=args.universe)
 
     survivors = [r for r in records if r.passes()]
     survivors.sort(key=lambda r: r.sharpe, reverse=True)

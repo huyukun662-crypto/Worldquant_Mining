@@ -210,13 +210,28 @@ class CredentialManager:
             from requests.auth import HTTPBasicAuth
             auth = HTTPBasicAuth(self.credentials.username, self.credentials.password)
             
-            # Attempt authentication
+            # Attempt authentication. Retry on transient SSL / network
+            # failures (we have observed intermittent "certificate is not
+            # yet valid" from WQ Brain's edge — likely cert rotation racing).
             logger.info(f"Validating credentials for: {self.credentials.username}")
-            response = test_session.post(
-                'https://api.worldquantbrain.com/authentication',
-                auth=auth,
-                timeout=10
-            )
+            response = None
+            last_err = None
+            import time as _t
+            for attempt in range(5):
+                try:
+                    response = test_session.post(
+                        'https://api.worldquantbrain.com/authentication',
+                        auth=auth,
+                        timeout=10
+                    )
+                    break
+                except requests.exceptions.RequestException as e:
+                    last_err = e
+                    delay = 2 ** attempt  # 1, 2, 4, 8, 16
+                    logger.warning(f"Auth attempt {attempt+1} failed ({e.__class__.__name__}); retrying in {delay}s")
+                    _t.sleep(delay)
+            if response is None:
+                raise last_err if last_err else RuntimeError("Authentication network error")
             
             if response.status_code == 201:
                 logger.info("✅ Credentials validated successfully")
