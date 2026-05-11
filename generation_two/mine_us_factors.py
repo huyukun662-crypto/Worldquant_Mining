@@ -48,6 +48,7 @@ IS_START = "2019-01-01"
 IS_END = "2023-12-31"
 MIN_SHARPE = 1.25
 MAX_TURNOVER = 0.25
+MIN_FITNESS = 1.0
 
 
 # ---------------------------------------------------------------------------
@@ -59,6 +60,39 @@ MAX_TURNOVER = 0.25
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND15_ALPHAS: list[str] = [
+    # Round 15 — Rounds 13/14 produced 0 survivors. New attempts focus on
+    # gating/conditional architectures that use existing winning *inner*
+    # signals but novel *outer* selection logic, plus parameter sweeps.
+
+    # 1. Vol-ratio regime gating × zscore inner (improves R13#6 which had
+    #    rank inner Sharpe 0.76).
+    "group_neutralize(ts_decay_linear(if_else(ts_std_dev(returns, 21) > ts_std_dev(returns, 252), -ts_zscore(returns, 252), 0), 60), subindustry)",
+
+    # 2. Reversal-acceleration moderate (bridges R13#1 decay=60 Sharpe 1.77 turn 0.64
+    #    ↔ R14#1 decay=200 Sharpe 0.59). Decay=100 + delta=10.
+    "group_neutralize(ts_decay_linear(-ts_delta(ts_rank(returns, 252), 10), 100), subindustry)",
+
+    # 3. Cross-sectional rank of TS zscore of cumulative-returns —
+    #    two-stage normalization (ts_zscore inside, then rank).
+    "group_neutralize(ts_decay_linear(-rank(ts_zscore(ts_sum(returns, 21), 60)), 60), subindustry)",
+
+    # 4. Negative-skew regime gating × reversal. Simpler than R13#5
+    #    (no else-branch flip — sim-fail was likely the dual-active else).
+    "group_neutralize(ts_decay_linear(if_else(ts_skewness(returns, 60) < 0, -ts_rank(returns, 252), 0), 60), subindustry)",
+
+    # 5. Volume-shock-gated reversal — trade reversal ONLY on
+    #    high-volume days (volume > 2× 21d mean). Different from
+    #    volume_shock template (which uses rank(ts_zscore(volume))).
+    "group_neutralize(ts_decay_linear(if_else(volume > 2 * ts_mean(volume, 21), -ts_rank(returns, 252), 0), 60), subindustry)",
+
+    # 6. Inverse-vol-weighted reversal — divide the reversal signal by
+    #    realized vol. Differs from Classical mom_12_1_volscaled (which
+    #    vol-scales price momentum) — here it's the rank reversal.
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 252) / (ts_std_dev(returns, 21) + 0.01), 60), subindustry)",
+]
+
+
 ROUND14_ALPHAS: list[str] = [
     # Round 14 — Round 13 gave 0 survivors. Fixes + new architectures
     # structurally distinct from Alpha-101 / Classical templates AND
@@ -493,6 +527,7 @@ class ScreenRecord:
             and self.sharpe == self.sharpe  # not NaN
             and self.sharpe > MIN_SHARPE
             and self.turnover < MAX_TURNOVER
+            and self.fitness > MIN_FITNESS
         )
 
 
@@ -619,7 +654,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -631,6 +666,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round15": ROUND15_ALPHAS,
         "round14": ROUND14_ALPHAS,
         "round13": ROUND13_ALPHAS,
         "round11": ROUND11_ALPHAS,
@@ -663,7 +699,7 @@ def main() -> int:
     print(f"submit-fail : {sum(1 for r in records if r.error == 'submit-retry-exhausted')}")
     print(f"sim-fail    : {sum(1 for r in records if not r.success and r.error != 'submit-retry-exhausted')}")
     print(f"below-gate  : {sum(1 for r in records if r.success and not r.passes())}")
-    print(f"survivors   : {len(survivors)}  (Sharpe>{MIN_SHARPE} AND turnover<{MAX_TURNOVER})")
+    print(f"survivors   : {len(survivors)}  (Sharpe>{MIN_SHARPE} AND turnover<{MAX_TURNOVER} AND fitness>{MIN_FITNESS})")
     if survivors:
         print("\nTop survivors:")
         for r in survivors[:10]:
