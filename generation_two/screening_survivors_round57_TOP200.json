@@ -1,0 +1,29 @@
+[
+  {
+    "expr": "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+    "success": true,
+    "sharpe": 1.53,
+    "fitness": 1.72,
+    "turnover": 0.1068,
+    "returns": 0.1583,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_180, 10)) + 0.5 * rank(ts_delta(return_assets, 120)), 60), industry)",
+    "success": true,
+    "sharpe": 1.42,
+    "fitness": 1.5,
+    "turnover": 0.1082,
+    "returns": 0.1395,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(ts_decay_linear(0.4 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.2 * -rank(ts_delta(scl12_sentiment, 5)) + 0.4 * rank(ts_delta(return_assets, 120)), 60), industry)",
+    "success": true,
+    "sharpe": 1.38,
+    "fitness": 1.43,
+    "turnover": 0.129,
+    "returns": 0.1379,
+    "error": ""
+  }
+]

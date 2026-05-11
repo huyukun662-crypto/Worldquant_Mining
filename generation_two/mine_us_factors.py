@@ -60,6 +60,37 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND58_ALPHAS: list[str] = [
+    # Round 58 — F1-F4 all use IV momentum + fundamental. For structural
+    # diversity, hunt 5th survivor in NON-IV combos: pure quality, value,
+    # sentiment, or earnings momentum.
+
+    # 1. ROA Δ 180d + CFPS yield (quality + value, no IV).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(return_assets, 180)) + 0.5 * rank(anl4_af_cfps_value / close), 60), industry)",
+
+    # 2. ROA Δ 120d + sentiment Δ (quality + sentiment, no IV).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(return_assets, 120)) + 0.5 * -rank(ts_delta(scl12_sentiment, 5)), 60), industry)",
+
+    # 3. 3-way: ROA Δ + CFPS + sentiment Δ (no IV).
+    "group_neutralize(ts_decay_linear(0.4 * rank(ts_delta(return_assets, 120)) + 0.3 * rank(anl4_af_cfps_value / close) + 0.3 * -rank(ts_delta(scl12_sentiment, 5)), 60), industry)",
+
+    # 4. ROE Δ 180d standalone (try longer window).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_equity, 180)), 60), industry)",
+
+    # 5. ROE Δ 180d + CFPS yield.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(return_equity, 180)) + 0.5 * rank(anl4_af_cfps_value / close), 60), industry)",
+
+    # 6. Earnings momentum (anl4_adjusted_netincome_ft 180d) + CFPS.
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(anl4_adjusted_netincome_ft, 180) / cap) + 0.5 * rank(anl4_af_cfps_value / close), 60), industry)",
+
+    # 7. ROA Δ + ROE Δ (pure quality combo).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(return_assets, 180)) + 0.5 * rank(ts_delta(return_equity, 180)), 60), industry)",
+
+    # 8. ROA Δ 240d (very long window, alone).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_assets, 240)), 60), industry)",
+]
+
+
 ROUND57_ALPHAS: list[str] = [
     # Round 57 — R56 found 1st fresh survivor: IV-90 + ROA Δ 120d on
     # TOP200, Sharpe 1.46 / turn 0.107 / fit 1.57. Hunt structurally
@@ -1847,7 +1878,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1862,6 +1893,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round58": ROUND58_ALPHAS,
         "round57": ROUND57_ALPHAS,
         "round56": ROUND56_ALPHAS,
         "round55": ROUND55_ALPHAS,
