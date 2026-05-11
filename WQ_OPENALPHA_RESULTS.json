@@ -558,39 +558,13 @@
     "id": "OA04",
     "name": "corr_lowret_ret_3",
     "original": "ts_correlation(ts_ret(low,1),ret1,3)",
-    "expression": "ts_corr(ts_returns(low, 1), returns, 3)",
-    "ok": false,
-    "stage": "simulation",
-    "status": "ERROR",
-    "message": "Attempted to use inaccessible or unknown operator \"ts_returns\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
-    "data": {
-      "id": "1DExAxecb4mNaDoKgjpjx9f",
+    "expression": "ts_corr(low / ts_delay(low, 1) - 1, returns, 3)",
+    "ok": true,
+    "alpha_id": "e7nkqM9g",
+    "alpha": {
+      "id": "e7nkqM9g",
       "type": "REGULAR",
-      "status": "ERROR",
-      "message": "Attempted to use inaccessible or unknown operator \"ts_returns\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
-      "location": {
-        "line": 1,
-        "start": 8,
-        "end": 26,
-        "property": "regular"
-      },
-      "links": {
-        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
-      }
-    }
-  },
-  {
-    "id": "OA05",
-    "name": "ols_residual_openClose_volume_10",
-    "original": "ts_ols(open/ts_delay(close,1),ts_delay(volume,1),10)[2]",
-    "expression": "ts_regression(open/ts_delay(close, 1), ts_delay(volume, 1), 10, rettype=0)",
-    "ok": false,
-    "stage": "simulation",
-    "status": "WARNING",
-    "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[TSPrice:1,TSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
-    "data": {
-      "id": "uGKem9EO4F4cF0v8SrPvO3",
-      "type": "REGULAR",
+      "author": "YW92315",
       "settings": {
         "instrumentType": "EQUITY",
         "region": "USA",
@@ -605,23 +579,346 @@
         "maxTrade": "OFF",
         "maxPosition": "OFF",
         "language": "FASTEXPR",
-        "visualization": false
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
       },
-      "regular": "ts_regression(open/ts_delay(close, 1), ts_delay(volume, 1), 10, rettype=0)",
-      "status": "WARNING",
-      "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[TSPrice:1,TSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
-      "location": {
-        "line": 1,
-        "start": 0,
-        "end": 74,
-        "type": "UNITS",
-        "property": "regular"
+      "regular": {
+        "code": "ts_corr(low / ts_delay(low, 1) - 1, returns, 3)",
+        "description": null,
+        "operatorCount": 4
       },
-      "links": {
-        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      "dateCreated": "2026-05-11T07:13:44-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T07:13:45-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 2188957,
+        "bookSize": 20000000,
+        "longCount": 1994,
+        "shortCount": 1141,
+        "turnover": 0.9403,
+        "returns": 0.0442,
+        "drawdown": 0.0802,
+        "margin": 9.4e-05,
+        "sharpe": 0.9,
+        "fitness": 0.2,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": 0.9
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": 0.2
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.9403
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "FAIL",
+            "limit": 0.7,
+            "value": 0.9403
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": 0.39,
+            "value": 0.34
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
       },
-      "alpha": "xAeO8Qnb"
-    }
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": 0.9,
+    "turnover": 0.9403,
+    "fitness": 0.2,
+    "returns": 0.0442,
+    "drawdown": 0.0802,
+    "margin": 9.4e-05,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.9
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.2
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.9403
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 0.9403
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.39,
+        "value": 0.34
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "OA05",
+    "name": "ols_residual_openClose_volume_10",
+    "original": "ts_ols(open/ts_delay(close,1),ts_delay(volume,1),10)[2]",
+    "expression": "ts_regression(open / ts_delay(close, 1), rank(ts_delay(volume, 1)), 10, rettype=0)",
+    "ok": true,
+    "alpha_id": "O0nQbvjg",
+    "alpha": {
+      "id": "O0nQbvjg",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_regression(open / ts_delay(close, 1), rank(ts_delay(volume, 1)), 10, rettype=0)",
+        "description": null,
+        "operatorCount": 5
+      },
+      "dateCreated": "2026-05-11T07:15:28-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T07:15:28-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": -2938787,
+        "bookSize": 20000000,
+        "longCount": 1556,
+        "shortCount": 1577,
+        "turnover": 1.379,
+        "returns": -0.0594,
+        "drawdown": 0.4922,
+        "margin": -8.6e-05,
+        "sharpe": -0.44,
+        "fitness": -0.09,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": -0.44
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": -0.09
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 1.379
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "FAIL",
+            "limit": 0.7,
+            "value": 1.379
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": -0.19,
+            "value": 0.02
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": -0.44,
+    "turnover": 1.379,
+    "fitness": -0.09,
+    "returns": -0.0594,
+    "drawdown": 0.4922,
+    "margin": -8.6e-05,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.44
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.09
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 1.379
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 1.379
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": -0.19,
+        "value": 0.02
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "OA06",
@@ -2463,13 +2760,13 @@
     "id": "OA16",
     "name": "neg_ols_beta_ret_volume_10",
     "original": "-ts_ols(ret1,volume,10)[0]",
-    "expression": "-1 * ts_regression(returns, volume, 10, rettype=2)",
+    "expression": "-1 * ts_regression(returns, rank(volume), 10, rettype=2)",
     "ok": false,
     "stage": "simulation",
     "status": "WARNING",
-    "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "1q2Ctaglg4Y2aUJ1553442h9",
+      "id": "2Usaug38y52f9OnKywIldse",
       "type": "REGULAR",
       "settings": {
         "instrumentType": "EQUITY",
@@ -2487,20 +2784,20 @@
         "language": "FASTEXPR",
         "visualization": false
       },
-      "regular": "-1 * ts_regression(returns, volume, 10, rettype=2)",
+      "regular": "-1 * ts_regression(returns, rank(volume), 10, rettype=2)",
       "status": "WARNING",
-      "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
         "start": 0,
-        "end": 50,
+        "end": 56,
         "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
       },
-      "alpha": "vR5w0Pqd"
+      "alpha": "d5nkERvK"
     }
   },
   {
@@ -3251,75 +3548,132 @@
     "id": "OA21",
     "name": "neg_skew_close_20",
     "original": "-ts_skewness(close,20)",
-    "expression": "-1 * ts_skewness(close, 20)",
+    "expression": "-1 * ts_mean(power(close - ts_mean(close, 20), 3), 20) / power(ts_std_dev(close, 20), 3)",
     "ok": false,
     "stage": "simulation",
-    "status": "ERROR",
-    "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "3q7Dfh3fd4BXck2n18MCrq8",
+      "id": "BV9P0fuP4GS8Kbe7OnFoat",
       "type": "REGULAR",
-      "status": "ERROR",
-      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "-1 * ts_mean(power(close - ts_mean(close, 20), 3), 20) / power(ts_std_dev(close, 20), 3)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
-        "start": 5,
-        "end": 27,
+        "start": 0,
+        "end": 88,
+        "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
-      }
+      },
+      "alpha": "omn83kak"
     }
   },
   {
     "id": "OA22",
     "name": "skew_vwap_minus_close_10",
     "original": "ts_skewness(vwap-close,10)",
-    "expression": "ts_skewness(vwap - close, 10)",
+    "expression": "ts_mean(power((vwap - close) - ts_mean(vwap - close, 10), 3), 10) / power(ts_std_dev(vwap - close, 10), 3)",
     "ok": false,
     "stage": "simulation",
-    "status": "ERROR",
-    "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "2ViEd1f5n4xU9wi1bm9sT070",
+      "id": "3MSFpQ2vY4ov8Icjth8XYxC",
       "type": "REGULAR",
-      "status": "ERROR",
-      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "ts_mean(power((vwap - close) - ts_mean(vwap - close, 10), 3), 10) / power(ts_std_dev(vwap - close, 10), 3)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
         "start": 0,
-        "end": 29,
+        "end": 106,
+        "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
-      }
+      },
+      "alpha": "RRNjNWag"
     }
   },
   {
     "id": "OA23",
     "name": "kurt_delta_close_20",
     "original": "ts_kurtosis(ts_delta(close,1),20)",
-    "expression": "ts_kurtosis(ts_delta(close, 1), 20)",
+    "expression": "ts_mean(power(ts_delta(close, 1) - ts_mean(ts_delta(close, 1), 20), 4), 20) / power(ts_std_dev(ts_delta(close, 1), 20), 4) - 3",
     "ok": false,
     "stage": "simulation",
-    "status": "ERROR",
-    "message": "Attempted to use inaccessible or unknown operator \"ts_kurtosis\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[TSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "111A2dam44PUaxSnhw0DNOa",
+      "id": "428Uwc6Eq4wR9fMgWXzlKhk",
       "type": "REGULAR",
-      "status": "ERROR",
-      "message": "Attempted to use inaccessible or unknown operator \"ts_kurtosis\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "ts_mean(power(ts_delta(close, 1) - ts_mean(ts_delta(close, 1), 20), 4), 20) / power(ts_std_dev(ts_delta(close, 1), 20), 4) - 3",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[TSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
         "start": 0,
-        "end": 35,
+        "end": 126,
+        "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
-      }
+      },
+      "alpha": "YPNLNpG6"
     }
   },
   {
@@ -4070,13 +4424,13 @@
     "id": "OA28",
     "name": "neg_regression_marketRet_amount_30",
     "original": "-ts_regression(csi_500_ret1,amount,30,0)",
-    "expression": "-1 * ts_regression(group_mean(returns, 1, market), vwap * volume, 30, rettype=0)",
+    "expression": "-1 * ts_regression(group_mean(returns, 1, market), rank(vwap * volume), 30, rettype=0)",
     "ok": false,
     "stage": "simulation",
     "status": "WARNING",
-    "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:2,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "1vWq29bSj4Kd9jgPsKFdNNw",
+      "id": "1KVnz6b7N4FIbhm12VXS1Mtm",
       "type": "REGULAR",
       "settings": {
         "instrumentType": "EQUITY",
@@ -4094,20 +4448,20 @@
         "language": "FASTEXPR",
         "visualization": false
       },
-      "regular": "-1 * ts_regression(group_mean(returns, 1, market), vwap * volume, 30, rettype=0)",
+      "regular": "-1 * ts_regression(group_mean(returns, 1, market), rank(vwap * volume), 30, rettype=0)",
       "status": "WARNING",
-      "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:2,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
         "start": 0,
-        "end": 80,
+        "end": 86,
         "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
       },
-      "alpha": "78x7QlK2"
+      "alpha": "A1njnEog"
     }
   },
   {
@@ -4852,50 +5206,88 @@
     "id": "OA34",
     "name": "ols_beta_skewRet_ret_5",
     "original": "ts_ols(ts_skewness(ret1,5),ret1,5)[0]",
-    "expression": "ts_regression(ts_skewness(returns, 5), returns, 5, rettype=2)",
+    "expression": "ts_regression(ts_mean(power(returns - ts_mean(returns, 5), 3), 5) / power(ts_std_dev(returns, 5), 3), returns, 5, rettype=2)",
     "ok": false,
     "stage": "simulation",
-    "status": "ERROR",
-    "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\"; Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "2uI1Sx4OZ54y8AlL8YMpYjk",
+      "id": "1Gvur427M5bRc09C5VGw42b",
       "type": "REGULAR",
-      "status": "ERROR",
-      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "ts_regression(ts_mean(power(returns - ts_mean(returns, 5), 3), 5) / power(ts_std_dev(returns, 5), 3), returns, 5, rettype=2)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\"; Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
-        "start": 14,
-        "end": 37,
+        "start": 0,
+        "end": 124,
+        "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
-      }
+      },
+      "alpha": "xAeOR69w"
     }
   },
   {
     "id": "OA35",
     "name": "neg_regression_skewRet_ret_7",
     "original": "-ts_regression(ts_skewness(ret1,3),ret1,7,9)",
-    "expression": "-1 * ts_regression(ts_skewness(returns, 3), returns, 7, rettype=0)",
+    "expression": "-1 * ts_regression(ts_mean(power(returns - ts_mean(returns, 3), 3), 3) / power(ts_std_dev(returns, 3), 3), returns, 7, rettype=0)",
     "ok": false,
     "stage": "simulation",
-    "status": "ERROR",
-    "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\"; Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "mzxEv4yR4NK9E4X32vbqBQ",
+      "id": "xPbqs9NL5cEc2nZzLH8mPy",
       "type": "REGULAR",
-      "status": "ERROR",
-      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "-1 * ts_regression(ts_mean(power(returns - ts_mean(returns, 3), 3), 3) / power(ts_std_dev(returns, 3), 3), returns, 7, rettype=0)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\"; Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[CSPrice:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
       "location": {
         "line": 1,
-        "start": 19,
-        "end": 42,
+        "start": 0,
+        "end": 129,
+        "type": "UNITS",
         "property": "regular"
       },
       "links": {
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
-      }
+      },
+      "alpha": "gJmkxPAK"
     }
   }
 ]
