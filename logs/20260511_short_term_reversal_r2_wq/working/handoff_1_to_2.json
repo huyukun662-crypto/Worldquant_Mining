@@ -1,0 +1,36 @@
+{
+  "objective": "Pass WQ_SH>1.25, WQ_FIT>1.0, WQ_TO<0.25",
+  "mechanism_candidates": [
+    {
+      "name": "short_term_price_reversal",
+      "why": "Persistent US-equity anomaly; horizon matches turnover cap.",
+      "supporting_evidence": [
+        "Jegadeesh 1990",
+        "WQ TOP3000 INDUSTRY-neutralized reversal historically passes IS gates"
+      ],
+      "datasets": [
+        "returns",
+        "close",
+        "vwap",
+        "volume",
+        "adv20"
+      ],
+      "operators": [
+        "ts_mean",
+        "ts_decay_linear",
+        "ts_zscore",
+        "ts_rank",
+        "rank",
+        "reverse",
+        "divide",
+        "s_log_1p"
+      ],
+      "caveats": [
+        "raw 1-3d reversal exceeds TO 0.25 without decay",
+        "needs INDUSTRY neutralization to remove sector noise",
+        "WQ is.checks may reject on LOW_FITNESS even if SH ok"
+      ]
+    }
+  ],
+  "recommended_focus": "short_term_price_reversal"
+}

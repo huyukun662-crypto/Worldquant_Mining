@@ -1,0 +1,62 @@
+{
+  "batch_id": "batch_0001",
+  "selected_mechanism": "short_term_price_reversal",
+  "expressions": [
+    {
+      "idx": 1,
+      "id": "r2_volwt_decay20",
+      "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 20)))",
+      "rationale": "Round-1 seed with decay 10 -> 20. Direct TO refinement of the closest miss.",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 2,
+      "id": "r2_zscore10_decay16",
+      "code": "rank(reverse(ts_decay_linear(ts_zscore(returns, 10), 16)))",
+      "rationale": "Pure z-score reversal with decay-16 smoothing (R1 zscore10 had SH 1.97 / TO 0.69).",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 3,
+      "id": "r2_tsrank10_decay16",
+      "code": "rank(reverse(ts_decay_linear(ts_rank(returns, 10), 16)))",
+      "rationale": "Rank-based reversal with decay-16 smoothing (R1 tsrank10 had SH 1.95 / TO 0.69).",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 4,
+      "id": "r2_volwt_decay30",
+      "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 30)))",
+      "rationale": "Same composite as #1 but decay 30 - aggressive TO suppression at the cost of some SH.",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 5,
+      "id": "r2_vwap_decay20",
+      "code": "rank(reverse(ts_decay_linear(divide(subtract(close, vwap), vwap), 20)))",
+      "rationale": "Close-VWAP fade smoothed over 20d (R1 vwap with decay 5 was SH 1.20 / TO 0.33).",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 6,
+      "id": "r2_volnorm_decay16",
+      "code": "rank(reverse(ts_decay_linear(divide(ts_delta(close, 5), ts_std_dev(returns, 20)), 16)))",
+      "rationale": "Vol-normalized 5d price change, decay-16 (R1 volnorm 3d/decay-0 was SH 1.33 / TO 0.40).",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 7,
+      "id": "r2_zscore10_volwt_decay20",
+      "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 10), log(add(divide(volume, adv20), 1))), 20)))",
+      "rationale": "Seed but with longer 10d z-score horizon; captures more reversal mass.",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 8,
+      "id": "r2_volnorm_zscore_decay20",
+      "code": "rank(reverse(ts_decay_linear(ts_zscore(divide(ts_delta(close, 3), ts_std_dev(returns, 20)), 5), 20)))",
+      "rationale": "Vol-normalized 3d delta z-scored then decay-20 smoothed - double-normalization composite.",
+      "expected_turnover_direction": "lower"
+    }
+  ]
+}
