@@ -60,6 +60,37 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND53_ALPHAS: list[str] = [
+    # Round 53 — R52 on TOP1000 showed IV momentum's turnover dropped
+    # from 0.352 → 0.209 (now passes turnover gate), Sharpe stable at 0.73.
+    # Tune IV momentum further. Will run this against TOP500 universe.
+
+    # 1. IV momentum 5d (faster).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_mean_30, 5)), 60), industry)",
+
+    # 2. IV momentum 20d (slower).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_mean_30, 20)), 60), industry)",
+
+    # 3. IV60 momentum 10d (different IV horizon — mid-term).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_mean_60, 10)), 60), industry)",
+
+    # 4. Call-IV-30 momentum (different field, different econ).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_call_30, 10)), 60), industry)",
+
+    # 5. Put-IV-30 momentum (downside fear flow).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_put_30, 10)), 60), industry)",
+
+    # 6. IV momentum FLIPPED sign (in case the right direction is short).
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(implied_volatility_mean_30, 10)), 60), industry)",
+
+    # 7. IV momentum + ROA delta combo (uncorrelated alpha streams).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 8. IV momentum with subindustry neut.
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_mean_30, 10)), 60), subindustry)",
+]
+
+
 ROUND52_ALPHAS: list[str] = [
     # Round 52 — switch universe to USA TOP1000. The strongest raw signals
     # from prior rounds on TOP3000 hit a ~0.89 ceiling. TOP1000 has less
@@ -1692,7 +1723,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1707,6 +1738,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round53": ROUND53_ALPHAS,
         "round52": ROUND52_ALPHAS,
         "round51": ROUND51_ALPHAS,
         "round50": ROUND50_ALPHAS,
