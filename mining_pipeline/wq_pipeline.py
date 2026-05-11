@@ -209,14 +209,25 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
     return trials_log
 
 
+def _survivors(results: list[WQResult]) -> list[WQResult]:
+    s = [r for r in results if r.ok and r.sharpe > SHARPE_FLOOR
+         and r.turnover < TURNOVER_CEILING and r.fitness > FITNESS_FLOOR]
+    s.sort(key=lambda r: r.sharpe, reverse=True)
+    return s
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-exprs", type=int, default=5,
-                     help="Number of base expressions to mine")
-    ap.add_argument("--trials", type=int, default=8,
+                     help="Expressions per round (mined fresh each round)")
+    ap.add_argument("--trials", type=int, default=6,
                      help="Optuna trials per expression (each is one WQ simulation)")
     ap.add_argument("--seed", type=int, default=37)
     ap.add_argument("--max-depth", type=int, default=3)
+    ap.add_argument("--rounds", type=int, default=20,
+                     help="Maximum mining rounds (each round = n-exprs fresh expressions)")
+    ap.add_argument("--target-survivors", type=int, default=5,
+                     help="Stop when this many survivors meet the standard")
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
     args = ap.parse_args()
 
@@ -226,29 +237,56 @@ def main():
         log.error("authentication failed"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
 
-    log.info(f"generating {args.n_exprs} expressions (no Alpha101 / classical reuse)")
-    exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
-    for e in exprs: log.info(f"   {e}")
-
-    total_trials = args.n_exprs * args.trials
-    log.info(f"will run {total_trials} simulations on WQ Brain "
-             f"(~{total_trials * 100 / 60:.0f} min at ~100s/sim)")
+    sims_per_round = args.n_exprs * args.trials
+    log.info(f"iterating up to {args.rounds} rounds × {args.n_exprs} fresh "
+             f"expressions × {args.trials} trials = up to "
+             f"{args.rounds * sims_per_round} WQ simulations")
+    log.info(f"stop when survivors (SH>{SHARPE_FLOOR}, TO<{TURNOVER_CEILING}, "
+             f"FIT>{FITNESS_FLOOR}) >= {args.target_survivors}")
 
     all_results: list[WQResult] = []
-    for i, expr in enumerate(exprs, 1):
-        log.info(f"=== [{i}/{len(exprs)}] expression: {expr}")
-        res_list = search_one(cm.session, expr, args.trials, args.seed + i)
-        all_results.extend(res_list)
-        # Save partial after each expression so a crash mid-run preserves data
-        with open(args.out, "w") as f:
-            json.dump([asdict(r) for r in all_results], f, indent=2)
+    seen_exprs: set[str] = set()
 
-    # Filter and rank
-    survivors = [r for r in all_results if r.ok and r.sharpe > SHARPE_FLOOR
-                  and r.turnover < TURNOVER_CEILING
-                  and r.fitness > FITNESS_FLOOR]
-    survivors.sort(key=lambda r: r.sharpe, reverse=True)
+    for round_idx in range(1, args.rounds + 1):
+        round_seed = args.seed + round_idx * 1000
+        log.info("")
+        log.info(f"############## ROUND {round_idx}/{args.rounds} "
+                 f"(seed={round_seed}) ##############")
+        # Generate fresh expressions, skipping any seen in earlier rounds
+        round_exprs: list[str] = []
+        attempt = 0
+        while len(round_exprs) < args.n_exprs and attempt < 50:
+            attempt += 1
+            batch = generate(args.n_exprs * 2, seed=round_seed + attempt,
+                              max_depth=args.max_depth)
+            for e in batch:
+                if e in seen_exprs:
+                    continue
+                round_exprs.append(e); seen_exprs.add(e)
+                if len(round_exprs) >= args.n_exprs:
+                    break
+        log.info(f"round {round_idx}: {len(round_exprs)} fresh expressions")
+        for e in round_exprs:
+            log.info(f"   {e}")
 
+        for i, expr in enumerate(round_exprs, 1):
+            log.info(f"=== R{round_idx} [{i}/{len(round_exprs)}] expression: {expr}")
+            res_list = search_one(cm.session, expr, args.trials, round_seed + i)
+            all_results.extend(res_list)
+            with open(args.out, "w") as f:
+                json.dump([asdict(r) for r in all_results], f, indent=2)
+
+        survivors = _survivors(all_results)
+        log.info(f"round {round_idx}: cumulative survivors={len(survivors)} "
+                 f"(target={args.target_survivors})")
+        for r in survivors[:10]:
+            log.info(f"   SURVIVOR SH={r.sharpe:.3f} TO={r.turnover:.3f} "
+                     f"FIT={r.fitness:.3f} alpha_id={r.alpha_id} {r.optimized[:70]}")
+        if len(survivors) >= args.target_survivors:
+            log.info(f"target reached at round {round_idx}; stopping iteration")
+            break
+
+    survivors = _survivors(all_results)
     print()
     print("=" * 110)
     print(f"All trials: {sum(1 for r in all_results if r.ok)}/{len(all_results)} OK")
