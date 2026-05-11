@@ -60,6 +60,44 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND39_ALPHAS: list[str] = [
+    # Round 39 — R38 revealed 3 of 5 families had viable absolute Sharpe
+    # (0.46, 0.78, 0.89) but WRONG sign. Flip signs and sweep windows
+    # to push |Sharpe| over the 1.25 gate. Also fix Williams %R (sim-failed
+    # at 0/0/0 likely because the raw signal had no rank dispersion;
+    # wrap in rank() to force cross-sectional ranking).
+
+    # 1. Price-Volume contrarian: short stocks where return tracks volume
+    #    surges (high-conviction-up = overdone), long where return is
+    #    independent of volume. R38 raw: Sharpe -0.89 → flip to +0.89.
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_delta(volume, 1), 20)), 60), industry)",
+
+    # 2. Price-Volume contrarian, longer corr window.
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_delta(volume, 1), 40)), 60), industry)",
+
+    # 3. Dollar-volume reversal: short heavy net buy-flow names (R38: -0.78
+    #    → flip to +0.78).
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(returns * vwap * volume, 20)), 60), industry)",
+
+    # 4. Dollar-volume reversal, longer accumulation window.
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(returns * vwap * volume, 40)), 60), industry)",
+
+    # 5. Overnight-gap momentum (flip of R38#1: long gappers, not reversion).
+    "group_neutralize(ts_decay_linear(rank(ts_sum(open / ts_delay(close, 1) - 1, 10)), 60), industry)",
+
+    # 6. Overnight-gap momentum, 20d accumulation.
+    "group_neutralize(ts_decay_linear(rank(ts_sum(open / ts_delay(close, 1) - 1, 20)), 60), industry)",
+
+    # 7. Williams %R FIXED: wrapped in rank(), positive sign (long high
+    #    range-position = breakout momentum).
+    "group_neutralize(ts_decay_linear(rank((close - ts_min(low, 30)) / (ts_max(high, 30) - ts_min(low, 30))), 60), industry)",
+
+    # 8. Williams %R FIXED, negative sign (short range-top = mean-reversion),
+    #    with rank wrap.
+    "group_neutralize(ts_decay_linear(-rank((close - ts_min(low, 30)) / (ts_max(high, 30) - ts_min(low, 30))), 60), industry)",
+]
+
+
 ROUND38_ALPHAS: list[str] = [
     # Round 38 — CLEAN SLATE. R37 exposed the BAB family (R27-R36) as
     # numerical-noise signal: ts_mean(returns, 1) === returns, so the
@@ -1225,7 +1263,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1240,6 +1278,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round39": ROUND39_ALPHAS,
         "round38": ROUND38_ALPHAS,
         "round37": ROUND37_ALPHAS,
         "round36": ROUND36_ALPHAS,
