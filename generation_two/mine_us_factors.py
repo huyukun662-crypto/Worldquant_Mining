@@ -60,6 +60,22 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND20_ALPHAS: list[str] = [
+    # Round 20 — 3 small, high-confidence variants. Need 1 more PASS.
+    # Both extreme-decile (90/10) and quartile (75/25) barbells PASS — 80/20
+    # is in between and should also PASS. Adds 2 more for buffer.
+
+    # 1. F5 barbell 80/20 — between PASSing 75/25 (R18#4) and 90/10 (R18#5).
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.8, -1, if_else(ts_rank(returns, 252) < 0.2, 1, 0)), 60), subindustry)",
+
+    # 2. F4 additive with equal weights (0.5r + 0.5z).
+    "group_neutralize(ts_decay_linear(-0.5 * ts_rank(returns, 252) - 0.5 * ts_zscore(returns, 252), 60), subindustry)",
+
+    # 3. F1 with lookback 200 (between PASSing 144 and 252).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 200), 60), subindustry)",
+]
+
+
 ROUND19_ALPHAS: list[str] = [
     # Round 19 — retry R18 fails + 3 new variants. Need 2 more PASSes.
 
@@ -751,7 +767,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -766,6 +782,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round20": ROUND20_ALPHAS,
         "round19": ROUND19_ALPHAS,
         "round18": ROUND18_ALPHAS,
         "round17": ROUND17_ALPHAS,
