@@ -60,6 +60,33 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND22_ALPHAS: list[str] = [
+    # Round 22 — fix R21 fails + add diverse new candidates.
+    # R21 findings: IV skew & sentiment buzz are STRONG signals but
+    # anti-predictive (flip sign needed) AND need smoothing. Field names
+    # matter: anl4_eps_mean, implied_volatility_call_120,
+    # operating_income/sales (no smoothing) all sim-failed.
+    # Stick to proven-existing fields.
+
+    # 1. OPTION (R21#1 fixed) — IV skew, flipped + smoothed + neutralized.
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30 - implied_volatility_call_30), 60), industry)",
+
+    # 2. SENTIMENT (R21#3 fixed) — buzz × intraday, flipped + smoothed.
+    "group_neutralize(ts_decay_linear(-rank(ts_zscore(scl12_buzz, 60)) * sign(close - open), 60), industry)",
+
+    # 3. OPTION × VOLUME (cross-category interaction) — long stocks with
+    #    high call IV AND high volume (event-anticipation).
+    "group_neutralize(ts_decay_linear(rank(implied_volatility_call_30) * rank(volume), 60), industry)",
+
+    # 4. SENTIMENT acceleration — buzz 5d delta. Event-driven momentum.
+    "group_neutralize(ts_decay_linear(rank(ts_delta(scl12_buzz, 5)), 60), industry)",
+
+    # 5. MICROSTRUCTURE — VWAP-close gap as informed-flow indicator.
+    #    Long stocks where VWAP > close (institutional buying).
+    "group_neutralize(ts_decay_linear(rank((vwap - close) / (close + 0.01)), 60), industry)",
+]
+
+
 ROUND21_ALPHAS: list[str] = [
     # Round 21 — STRUCTURE + LOGIC both distinct from R1-R20.
     # All R1-R20 used `returns` as input + ts_decay_linear smoothing +
@@ -800,7 +827,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -815,6 +842,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round22": ROUND22_ALPHAS,
         "round21": ROUND21_ALPHAS,
         "round20": ROUND20_ALPHAS,
         "round19": ROUND19_ALPHAS,
