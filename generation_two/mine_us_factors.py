@@ -60,6 +60,26 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND25_ALPHAS: list[str] = [
+    # Round 25 — 5 more IV-skew variants for diversity. Need 2 PASS.
+
+    # 1. IV skew + decay 30 (faster smoothing).
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30 - implied_volatility_call_30), 30), industry)",
+
+    # 2. IV skew + decay 90.
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30 - implied_volatility_call_30), 90), industry)",
+
+    # 3. IV skew × cap rank (multiplicative size weighting) — different STRUCTURE.
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30 - implied_volatility_call_30) * rank(cap), 60), industry)",
+
+    # 4. IV skew + decay 180 (slow).
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30 - implied_volatility_call_30), 180), industry)",
+
+    # 5. IV skew TS-RANK (temporal not cross-sectional) — different OPERATOR.
+    "group_neutralize(ts_decay_linear(-ts_rank(implied_volatility_put_30 - implied_volatility_call_30, 60), 60), industry)",
+]
+
+
 ROUND24_ALPHAS: list[str] = [
     # Round 24 — exploit R22#1 winner (IV skew + industry neut, Sharpe 2.10)
     # by varying neutralization group, decay window, and adding cross-category
@@ -876,7 +896,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -891,6 +911,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round25": ROUND25_ALPHAS,
         "round24": ROUND24_ALPHAS,
         "round23": ROUND23_ALPHAS,
         "round22": ROUND22_ALPHAS,
