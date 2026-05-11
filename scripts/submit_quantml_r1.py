@@ -61,11 +61,12 @@ FACTORS: list[dict] = [
         "category": "amplitude",
         "idea": (
             "QuantML `DownResample(Max($high,N)/Min($low,N)-1, 240, M)` -- "
-            "20-day true-range ratio. Wider range = higher realised vol, "
-            "typically sells off; expect short-side premium."
+            "20-day amplitude. `ts_max`/`ts_min` are inaccessible on this "
+            "tier; substitute realised daily range `(high-low)/close` "
+            "averaged 20d. Short high-amplitude names."
         ),
         "original": "DownResample(Max($high,20)/Min($low,20)-1, 240, 'last')",
-        "expression": "-1 * (ts_max(high, 20) / ts_min(low, 20) - 1)",
+        "expression": "-1 * ts_mean((high - low) / close, 20)",
         "settings_override": {"decay": 4, "truncation": 0.08},
     },
     {
