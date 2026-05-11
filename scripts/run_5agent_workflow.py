@@ -191,6 +191,65 @@ EXPRESSION_SETS = {
             "expected_turnover_direction": "lower",
         },
     ],
+
+    # Round 4: pivot from reversal to medium-horizon residual momentum after
+    # Round 3 proved the reversal family's FIT is structurally capped at 0.98
+    # regardless of settings. Mechanism: stocks with strong industry-residual
+    # returns over 40-120d continue to outperform (classic anomaly; opposite
+    # sign of short-term reversal). Long horizon naturally gives lower TO and
+    # larger absolute returns per signal event, which should lift FIT above
+    # 1.0. INDUSTRY neutralization is the residualization step. All variants
+    # LONG the winners (no `reverse` wrap).
+    "medium_horizon_momentum": [
+        {
+            "idx": 1, "id": "mom_mean60",
+            "code": "rank(ts_mean(returns, 60))",
+            "rationale": "Pure 60d momentum baseline; long the residual winners.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 2, "id": "mom_decay60",
+            "code": "rank(ts_decay_linear(returns, 60))",
+            "rationale": "Linear-decay-smoothed 60d momentum; smoother weighting toward recent.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 3, "id": "mom_sharpe60",
+            "code": "rank(divide(ts_mean(returns, 60), ts_std_dev(returns, 60)))",
+            "rationale": "Risk-adjusted (Sharpe-like) 60d momentum - normalizes by realized vol.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 4, "id": "mom_mean40",
+            "code": "rank(ts_mean(returns, 40))",
+            "rationale": "Shorter 40d horizon; tests where the medium-term effect peaks.",
+            "expected_turnover_direction": "neutral",
+        },
+        {
+            "idx": 5, "id": "mom_pricez60",
+            "code": "rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60)))",
+            "rationale": "Price-level z-score over 60d - close-vs-60d-mean normalized by 60d std.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 6, "id": "mom_near120high",
+            "code": "rank(divide(close, ts_max(close, 120)))",
+            "rationale": "Close relative to 120d high (6-month near-high anomaly, George & Hwang).",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 7, "id": "mom_riskadj_decay",
+            "code": "rank(ts_decay_linear(divide(returns, ts_std_dev(returns, 20)), 60))",
+            "rationale": "Risk-adjusted daily returns smoothed over 60d with linear decay.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 8, "id": "mom_volwt40",
+            "code": "rank(multiply(ts_mean(returns, 40), log(add(ts_mean(divide(volume, adv20), 60), 1))))",
+            "rationale": "40d momentum weighted by long-term abnormal volume - momentum on actively-traded names.",
+            "expected_turnover_direction": "lower",
+        },
+    ],
 }
 
 
