@@ -1,0 +1,32 @@
+session_id: 20260511_medium_horizon_momentum_wq
+selected_mechanism: short_term_price_reversal
+causal_chain:
+  - extreme recent return -> overreaction / forced flow
+  - next 1-5 day mean reversion
+  - industry-neutralized residual captures stock-specific reversal
+time_horizon: 1-5 trading days
+market_regime: broad-market - works across regimes; strongest after high-vol shocks
+risk_premium_sources:
+  - liquidity provision premium
+  - behavioral overreaction
+constraints:
+  region: USA
+  universe: TOP3000
+  delay: 1
+  turnover_range:
+    - 0.0
+    - 0.25
+  sharpe_target: 1.25
+  fitness_target: 1.0
+  prod_corr_max: 0.7
+neutralization_candidates:
+  - INDUSTRY
+  - SUBINDUSTRY
+evaluation_targets:
+  primary: WQ IS Sharpe > 1.25
+  secondary:
+    - WQ IS Fitness > 1.0
+    - WQ IS Turnover < 0.25
+  failure_conditions:
+    - all 8 expressions yield SH < 0.5
+    - all 8 expressions exceed TO 0.5 (mechanism mis-specified)
