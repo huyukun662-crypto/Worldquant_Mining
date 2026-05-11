@@ -56,6 +56,7 @@ SETTING_SPACE = {
     "neutralization": ["NONE", "MARKET", "SECTOR", "INDUSTRY", "SUBINDUSTRY"],
     "pasteurization": ["ON", "OFF"],
     "nanHandling":    ["OFF", "ON"],
+    "testPeriod":     ["P0Y0M", "P1Y0M", "P2Y0M", "P3Y0M"],
 }
 
 FIXED_SETTINGS = {
@@ -65,7 +66,6 @@ FIXED_SETTINGS = {
     "unitHandling":   "VERIFY",
     "visualization":  False,
     "maxTrade":       "OFF",
-    "testPeriod":     "P0Y0M",
 }
 
 # User filter: WQ Brain's official thresholds
@@ -217,18 +217,51 @@ def _survivors(results: list[WQResult]) -> list[WQResult]:
     return s
 
 
+def _emit_milestone(round_idx: int, survivors: list[WQResult],
+                    milestones_dir: Path) -> None:
+    """Emit a Chinese-language milestone report for round_idx (which is the
+    1-indexed bucket of 5 survivors). Writes both stdout and a per-round
+    JSON file under MILESTONES/round_{n}.json so prior rounds are durable."""
+    milestones_dir.mkdir(exist_ok=True)
+    bucket = survivors[(round_idx - 1) * 5 : round_idx * 5]
+    out_path = milestones_dir / f"round_{round_idx:02d}.json"
+    out_path.write_text(json.dumps([asdict(r) for r in bucket], indent=2))
+
+    print()
+    print("=" * 110)
+    print(f"【第 {round_idx} 轮】产出 5 个符合标准的因子 "
+          f"(SH>{SHARPE_FLOOR} 且 TO<{TURNOVER_CEILING} 且 FIT>{FITNESS_FLOOR})")
+    print("=" * 110)
+    for i, r in enumerate(bucket, 1):
+        s = r.settings
+        print(f"\n  因子 {i}: alpha_id = {r.alpha_id}")
+        print(f"    表达式: {r.optimized}")
+        print(f"    WQ Brain 回测: Sharpe={r.sharpe:+.3f}  Turnover={r.turnover:.3f}  "
+              f"Fitness={r.fitness:+.3f}  Returns={r.returns:+.4f}  "
+              f"Drawdown={r.drawdown:.4f}")
+        print(f"    Checks: {r.checks_passed}/{r.checks_total} 通过")
+        print(f"    Settings: universe={s.get('universe')}  delay={s.get('delay')}  "
+              f"decay={s.get('decay')}  truncation={s.get('truncation')}")
+        print(f"              neutralization={s.get('neutralization')}  "
+              f"pasteurization={s.get('pasteurization')}  "
+              f"nanHandling={s.get('nanHandling')}  testPeriod={s.get('testPeriod')}")
+    print("=" * 110)
+    print(f"  本轮明细已写入: {out_path.relative_to(REPO)}")
+    print()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-exprs", type=int, default=5,
-                     help="Expressions per round (mined fresh each round)")
+                     help="Expressions per mining batch (mined fresh each batch)")
     ap.add_argument("--trials", type=int, default=6,
                      help="Optuna trials per expression (each is one WQ simulation)")
     ap.add_argument("--seed", type=int, default=37)
     ap.add_argument("--max-depth", type=int, default=3)
-    ap.add_argument("--rounds", type=int, default=20,
-                     help="Maximum mining rounds (each round = n-exprs fresh expressions)")
-    ap.add_argument("--target-survivors", type=int, default=5,
-                     help="Stop when this many survivors meet the standard")
+    ap.add_argument("--batches", type=int, default=40,
+                     help="Maximum mining batches before stopping unconditionally")
+    ap.add_argument("--target-rounds", type=int, default=4,
+                     help="Stop after producing this many milestone rounds (each = 5 survivors)")
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
     args = ap.parse_args()
 
@@ -238,69 +271,68 @@ def main():
         log.error("authentication failed"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
 
-    sims_per_round = args.n_exprs * args.trials
-    log.info(f"iterating up to {args.rounds} rounds × {args.n_exprs} fresh "
+    sims_per_batch = args.n_exprs * args.trials
+    log.info(f"iterating up to {args.batches} batches × {args.n_exprs} fresh "
              f"expressions × {args.trials} trials = up to "
-             f"{args.rounds * sims_per_round} WQ simulations")
-    log.info(f"stop when survivors (SH>{SHARPE_FLOOR}, TO<{TURNOVER_CEILING}, "
-             f"FIT>{FITNESS_FLOOR}) >= {args.target_survivors}")
+             f"{args.batches * sims_per_batch} WQ simulations")
+    log.info(f"each batch mines from a 150-field pool spanning analyst, "
+             f"fundamental, model, news, option, pv, sentiment, socialmedia")
+    log.info(f"survivor gate: SH>{SHARPE_FLOOR} AND TO<{TURNOVER_CEILING} "
+             f"AND FIT>{FITNESS_FLOOR}")
+    log.info(f"will emit a milestone (round-of-5) every 5 cumulative survivors; "
+             f"target {args.target_rounds} milestones")
 
+    milestones_dir = REPO / "MILESTONES"
     all_results: list[WQResult] = []
     seen_exprs: set[str] = set()
+    emitted_rounds = 0
 
-    for round_idx in range(1, args.rounds + 1):
-        round_seed = args.seed + round_idx * 1000
+    for batch_idx in range(1, args.batches + 1):
+        batch_seed = args.seed + batch_idx * 1000
         log.info("")
-        log.info(f"############## ROUND {round_idx}/{args.rounds} "
-                 f"(seed={round_seed}) ##############")
-        # Generate fresh expressions, skipping any seen in earlier rounds
+        log.info(f"############## BATCH {batch_idx}/{args.batches} "
+                 f"(seed={batch_seed}) ##############")
         round_exprs: list[str] = []
         attempt = 0
         while len(round_exprs) < args.n_exprs and attempt < 50:
             attempt += 1
-            batch = generate(args.n_exprs * 2, seed=round_seed + attempt,
-                              max_depth=args.max_depth)
-            for e in batch:
+            cand = generate(args.n_exprs * 2, seed=batch_seed + attempt,
+                            max_depth=args.max_depth)
+            for e in cand:
                 if e in seen_exprs:
                     continue
                 round_exprs.append(e); seen_exprs.add(e)
                 if len(round_exprs) >= args.n_exprs:
                     break
-        log.info(f"round {round_idx}: {len(round_exprs)} fresh expressions")
+        log.info(f"batch {batch_idx}: {len(round_exprs)} fresh expressions")
         for e in round_exprs:
             log.info(f"   {e}")
 
         for i, expr in enumerate(round_exprs, 1):
-            log.info(f"=== R{round_idx} [{i}/{len(round_exprs)}] expression: {expr}")
-            res_list = search_one(cm.session, expr, args.trials, round_seed + i)
+            log.info(f"=== B{batch_idx} [{i}/{len(round_exprs)}] expression: {expr}")
+            res_list = search_one(cm.session, expr, args.trials, batch_seed + i)
             all_results.extend(res_list)
             with open(args.out, "w") as f:
                 json.dump([asdict(r) for r in all_results], f, indent=2)
 
-        survivors = _survivors(all_results)
-        log.info(f"round {round_idx}: cumulative survivors={len(survivors)} "
-                 f"(target={args.target_survivors})")
-        for r in survivors[:10]:
-            log.info(f"   SURVIVOR SH={r.sharpe:.3f} TO={r.turnover:.3f} "
-                     f"FIT={r.fitness:.3f} alpha_id={r.alpha_id} {r.optimized[:70]}")
-        if len(survivors) >= args.target_survivors:
-            log.info(f"target reached at round {round_idx}; stopping iteration")
+            # Check for milestone after every expression
+            survivors = _survivors(all_results)
+            while len(survivors) >= (emitted_rounds + 1) * 5:
+                emitted_rounds += 1
+                _emit_milestone(emitted_rounds, survivors, milestones_dir)
+                log.info(f"### MILESTONE {emitted_rounds} REACHED "
+                         f"(cumulative survivors={len(survivors)}) ###")
+
+        if emitted_rounds >= args.target_rounds:
+            log.info(f"target of {args.target_rounds} milestones reached; stopping")
             break
 
     survivors = _survivors(all_results)
     print()
     print("=" * 110)
-    print(f"All trials: {sum(1 for r in all_results if r.ok)}/{len(all_results)} OK")
-    print(f"Survivors  (WQ_SH > {SHARPE_FLOOR} AND TO < {TURNOVER_CEILING} "
-          f"AND FIT > {FITNESS_FLOOR}): {len(survivors)}")
-    print()
-    print(f"{'WQ_SH':>7}{'TO':>7}{'FIT':>7}{'checks':>9}  alpha_id   universe   delay  neut  expression")
-    for r in survivors[:25]:
-        s = r.settings
-        print(f"{r.sharpe:7.3f}{r.turnover:7.3f}{r.fitness:7.3f}"
-              f" {r.checks_passed}/{r.checks_total:<5}  "
-              f"{r.alpha_id:<10} {s.get('universe'):<10} {s.get('delay')!s:<5} "
-              f"{s.get('neutralization'):<13} {r.optimized[:80]}")
+    print(f"挖矿结束:  共完成 {batch_idx} 批次, {sum(1 for r in all_results if r.ok)}"
+          f"/{len(all_results)} 次模拟成功, 累计 {len(survivors)} 个合格因子, "
+          f"产出 {emitted_rounds} 轮报告")
     print("=" * 110)
     log.info(f"wrote {args.out}")
     return 0

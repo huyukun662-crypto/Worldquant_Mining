@@ -21,16 +21,27 @@ search stage replaces those with optimized values.
 from __future__ import annotations
 
 import hashlib
+import json
 import random
+from pathlib import Path
 from typing import List, Tuple
 
-# Building blocks - only WQ Brain pv fields actually exposed on this account
-# (verified via constants/data_fields_union_USA.json). `dollar_volume` is
-# NOT a WQ field (use multiply(close, volume) instead). The advN family on
-# WQ Brain for this account is just `adv20`; adv5/adv60/adv120 are not
-# exposed.
-FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
-          "cap", "sharesout", "adv20")
+# Field pool — spans all 8 WQ data categories (analyst, fundamental,
+# model, news, option, pv, sentiment, socialmedia) per user spec. Loaded
+# from `constants/field_pool_USA_TOP3000.json` (built by
+# `scripts/build_field_pool.py`). Falls back to PV-only if the file is
+# missing.
+_POOL_PATH = Path(__file__).resolve().parent.parent / "constants" / "field_pool_USA_TOP3000.json"
+_PV_BASELINE = ("close", "open", "high", "low", "volume", "vwap", "returns",
+                "cap", "sharesout", "adv20")
+if _POOL_PATH.exists():
+    _POOL: dict[str, list[str]] = json.loads(_POOL_PATH.read_text())
+    FIELDS: tuple[str, ...] = tuple(f for cat in _POOL.values() for f in cat)
+    CATEGORIES: tuple[str, ...] = tuple(_POOL.keys())
+else:
+    _POOL = {"pv": list(_PV_BASELINE)}
+    FIELDS = _PV_BASELINE
+    CATEGORIES = ("pv",)
 
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
                "ts_std_dev", "ts_returns", "ts_decay_linear")
@@ -44,7 +55,11 @@ WINDOWS_DEFAULT = (3, 5, 10, 20, 40, 60)
 
 
 def _leaf(rng: random.Random) -> str:
-    return rng.choice(FIELDS)
+    # Sample category first, then field — this gives each category equal
+    # representation regardless of how many fields it contributes to the
+    # pool. Without this, model (30 fields) would dominate sentiment (10).
+    cat = rng.choice(CATEGORIES)
+    return rng.choice(_POOL[cat])
 
 
 def _ts_call(rng: random.Random, depth: int) -> str:
