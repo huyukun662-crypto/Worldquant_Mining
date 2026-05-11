@@ -564,7 +564,7 @@
     "status": "ERROR",
     "message": "Attempted to use inaccessible or unknown operator \"ts_returns\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "1DExAxecb4mNaDoKgjpjx9f",
+      "id": "2C1Xky9Gl4xO8GgVR2r932E",
       "type": "REGULAR",
       "status": "ERROR",
       "message": "Attempted to use inaccessible or unknown operator \"ts_returns\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
@@ -589,7 +589,7 @@
     "status": "WARNING",
     "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[]\", found \"Unit[TSPrice:1,TSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "uGKem9EO4F4cF0v8SrPvO3",
+      "id": "2Azjk87ti4t7a629LYKWnFe",
       "type": "REGULAR",
       "settings": {
         "instrumentType": "EQUITY",
@@ -2469,7 +2469,7 @@
     "status": "WARNING",
     "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "data": {
-      "id": "1q2Ctaglg4Y2aUJ1553442h9",
+      "id": "1tMDU63gc510aRF7LauHI72",
       "type": "REGULAR",
       "settings": {
         "instrumentType": "EQUITY",
@@ -3246,5 +3246,868 @@
         ]
       }
     ]
+  },
+  {
+    "id": "OA21",
+    "name": "neg_skew_close_20",
+    "original": "-ts_skewness(close,20)",
+    "expression": "-1 * ts_skewness(close, 20)",
+    "ok": false,
+    "stage": "simulation",
+    "status": "ERROR",
+    "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "4mlsjK7pm4oc9pJE8VUpx3a",
+      "type": "REGULAR",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 5,
+        "end": 27,
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      }
+    }
+  },
+  {
+    "id": "OA22",
+    "name": "skew_vwap_minus_close_10",
+    "original": "ts_skewness(vwap-close,10)",
+    "expression": "ts_skewness(vwap - close, 10)",
+    "ok": false,
+    "stage": "simulation",
+    "status": "ERROR",
+    "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "1LayEg4AR4Rgadw19VgejPFP",
+      "type": "REGULAR",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 0,
+        "end": 29,
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      }
+    }
+  },
+  {
+    "id": "OA23",
+    "name": "kurt_delta_close_20",
+    "original": "ts_kurtosis(ts_delta(close,1),20)",
+    "expression": "ts_kurtosis(ts_delta(close, 1), 20)",
+    "ok": false,
+    "stage": "simulation",
+    "status": "ERROR",
+    "message": "Attempted to use inaccessible or unknown operator \"ts_kurtosis\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "3A9QGL8bR4Itbw2hegaSHne",
+      "type": "REGULAR",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_kurtosis\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 0,
+        "end": 35,
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      }
+    }
+  },
+  {
+    "id": "OA24",
+    "name": "vol_low_minus_vol_high_100",
+    "original": "ts_std(low/ts_delay(close,1)-1,100) - ts_std(high/ts_delay(close,1)-1,100)",
+    "expression": "ts_std_dev(low/ts_delay(close, 1) - 1, 100) - ts_std_dev(high/ts_delay(close, 1) - 1, 100)",
+    "ok": true,
+    "alpha_id": "vR5wxKO3",
+    "alpha": {
+      "id": "vR5wxKO3",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_std_dev(low/ts_delay(close, 1) - 1, 100) - ts_std_dev(high/ts_delay(close, 1) - 1, 100)",
+        "description": null,
+        "operatorCount": 9
+      },
+      "dateCreated": "2026-05-11T06:49:40-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T06:49:41-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "EXCELLENT",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 17492041,
+        "bookSize": 20000000,
+        "longCount": 1978,
+        "shortCount": 1159,
+        "turnover": 0.0694,
+        "returns": 0.3535,
+        "drawdown": 0.3966,
+        "margin": 0.010187,
+        "sharpe": 1.47,
+        "fitness": 2.47,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.47
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 2.47
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0694
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0694
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.64,
+            "value": 0.78
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": 1.47,
+    "turnover": 0.0694,
+    "fitness": 2.47,
+    "returns": 0.3535,
+    "drawdown": 0.3966,
+    "margin": 0.010187,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.47
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.47
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0694
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0694
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.64,
+        "value": 0.78
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "OA25",
+    "name": "mean_open_minus_close_2_indneut",
+    "original": "cs_indneut(ts_mean(open-close,2), ...)",
+    "expression": "ts_mean(open - close, 2)",
+    "ok": true,
+    "alpha_id": "O0nQqbXd",
+    "alpha": {
+      "id": "O0nQqbXd",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_mean(open - close, 2)",
+        "description": null,
+        "operatorCount": 2
+      },
+      "dateCreated": "2026-05-11T06:51:56-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T06:51:56-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 5250176,
+        "bookSize": 20000000,
+        "longCount": 1588,
+        "shortCount": 1549,
+        "turnover": 0.9857,
+        "returns": 0.1061,
+        "drawdown": 0.174,
+        "margin": 0.000215,
+        "sharpe": 1.02,
+        "fitness": 0.33,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": 1.02
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": 0.33
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.9857
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "FAIL",
+            "limit": 0.7,
+            "value": 0.9857
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "FAIL",
+            "date": "2022-12-28",
+            "limit": 0.1,
+            "value": 0.257782
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.44,
+            "value": 0.83
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.9857,
+    "fitness": 0.33,
+    "returns": 0.1061,
+    "drawdown": 0.174,
+    "margin": 0.000215,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.02
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.33
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.9857
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 0.9857
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2022-12-28",
+        "limit": 0.1,
+        "value": 0.257782
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.44,
+        "value": 0.83
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "OA26",
+    "name": "ols_beta_marketRet_ret_5",
+    "original": "ts_ols(csi_500_ret1,ret1,5)[0]",
+    "expression": "ts_regression(group_mean(returns, 1, market), returns, 5, rettype=2)",
+    "ok": true,
+    "alpha_id": "e7nkK7Op",
+    "alpha": {
+      "id": "e7nkK7Op",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_regression(group_mean(returns, 1, market), returns, 5, rettype=2)",
+        "description": null,
+        "operatorCount": 2
+      },
+      "dateCreated": "2026-05-11T06:55:59-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T06:56:00-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": -272091,
+        "bookSize": 20000000,
+        "longCount": 1455,
+        "shortCount": 1678,
+        "turnover": 0.6848,
+        "returns": -0.0055,
+        "drawdown": 0.2571,
+        "margin": -1.6e-05,
+        "sharpe": -0.05,
+        "fitness": -0.0,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": -0.05
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": -0.0
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.6848
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.6848
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "FAIL",
+            "date": "2022-06-24",
+            "limit": 0.1,
+            "value": 0.499955
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": -0.02,
+            "value": -0.15
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": -0.05,
+    "turnover": 0.6848,
+    "fitness": -0.0,
+    "returns": -0.0055,
+    "drawdown": 0.2571,
+    "margin": -1.6e-05,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.05
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.6848
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.6848
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2022-06-24",
+        "limit": 0.1,
+        "value": 0.499955
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.02,
+        "value": -0.15
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "OA27",
+    "name": "neg_regression_marketRet_delayRet_50",
+    "original": "-ts_regression(csi_500_ret1,ts_delay(ret1,1),50,0)",
+    "expression": "-1 * ts_regression(group_mean(returns, 1, market), ts_delay(returns, 1), 50, rettype=0)",
+    "ok": true,
+    "alpha_id": "rKbpLJ9j",
+    "alpha": {
+      "id": "rKbpLJ9j",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "-1 * ts_regression(group_mean(returns, 1, market), ts_delay(returns, 1), 50, rettype=0)",
+        "description": null,
+        "operatorCount": 4
+      },
+      "dateCreated": "2026-05-11T06:58:12-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T06:58:13-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 772010,
+        "bookSize": 20000000,
+        "longCount": 1569,
+        "shortCount": 1565,
+        "turnover": 1.3739,
+        "returns": 0.0156,
+        "drawdown": 0.1085,
+        "margin": 2.3e-05,
+        "sharpe": 0.25,
+        "fitness": 0.03,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": 0.25
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": 0.03
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 1.3739
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "FAIL",
+            "limit": 0.7,
+            "value": 1.3739
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.11,
+            "value": 0.13
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": 0.25,
+    "turnover": 1.3739,
+    "fitness": 0.03,
+    "returns": 0.0156,
+    "drawdown": 0.1085,
+    "margin": 2.3e-05,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.03
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 1.3739
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 1.3739
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.11,
+        "value": 0.13
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "OA28",
+    "name": "neg_regression_marketRet_amount_30",
+    "original": "-ts_regression(csi_500_ret1,amount,30,0)",
+    "expression": "-1 * ts_regression(group_mean(returns, 1, market), vwap * volume, 30, rettype=0)",
+    "ok": false,
+    "stage": "simulation",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:2,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "3LuW0b27c5bcbcUGrgl1a5C",
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "-1 * ts_regression(group_mean(returns, 1, market), vwap * volume, 30, rettype=0)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"ts_regression\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[CSPrice:2,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 0,
+        "end": 80,
+        "type": "UNITS",
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      },
+      "alpha": "78x7QlK2"
+    }
   }
 ]
