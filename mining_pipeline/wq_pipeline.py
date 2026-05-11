@@ -191,6 +191,7 @@ def _add_blacklist(field: str) -> None:
 import re
 _INVALID_FIELD_RE = re.compile(r"Invalid data field (\S+?)\.")
 _UNIT_MISMATCH_RE = re.compile(r"Incompatible unit")
+_INVALID_OP_RE = re.compile(r'inaccessible or unknown operator "(\S+?)"')
 
 
 def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
@@ -231,6 +232,12 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
                 # the settings. No trial can rescue it; abort and move on.
                 log.info(f"      expression has incompatible units; "
                          f"aborting remaining trials")
+                study.stop()
+            elif (m := _INVALID_OP_RE.search(res.error)):
+                # Operator not available to this account tier — no setting
+                # tweak can fix it. Move on.
+                log.info(f"      operator '{m.group(1)}' inaccessible; "
+                         f"aborting remaining trials for this expression")
                 study.stop()
             return -10.0
         penalty = 0.0
