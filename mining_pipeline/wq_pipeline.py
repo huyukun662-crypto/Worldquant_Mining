@@ -35,6 +35,7 @@ from typing import Any
 import optuna
 
 from .expressions import generate, integer_positions, parameterize, reload_pool
+from .factor_zoo_seeds import ZOO_SEEDS
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
@@ -306,6 +307,8 @@ def main():
                      help="Maximum mining batches before stopping unconditionally")
     ap.add_argument("--target-rounds", type=int, default=4,
                      help="Stop after producing this many milestone rounds (each = 5 survivors)")
+    ap.add_argument("--use-seeds", action="store_true",
+                     help="Mine the factor-zoo seed expressions before random batches")
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
     args = ap.parse_args()
 
@@ -331,28 +334,47 @@ def main():
     seen_exprs: set[str] = set()
     emitted_rounds = 0
 
+    # Build the queue: seed batches first (if enabled), then random batches.
+    seed_batches: list[list[tuple[str, str]]] = []
+    if args.use_seeds:
+        for i in range(0, len(ZOO_SEEDS), args.n_exprs):
+            seed_batches.append(ZOO_SEEDS[i : i + args.n_exprs])
+        log.info(f"seed mode ON: {len(seed_batches)} seed batches "
+                 f"× {args.n_exprs} = {len(ZOO_SEEDS)} curated expressions "
+                 f"(Fama-French, Barra, Tonglian-424, Alpha360, Huatai, "
+                 f"PEAD, Options — no Alpha101)")
+
     for batch_idx in range(1, args.batches + 1):
         batch_seed = args.seed + batch_idx * 1000
-        # Reload pool minus newly-blacklisted fields from prior batches
         n_fields, n_cats = reload_pool()
+
+        # Decide whether this batch is a seeded one or a random one
+        if batch_idx <= len(seed_batches):
+            tagged = seed_batches[batch_idx - 1]
+            round_exprs = [expr for _, expr in tagged]
+            tags = [tag for tag, _ in tagged]
+            label = f"SEED ({', '.join(tags)})"
+        else:
+            label = f"random (seed={batch_seed})"
+            round_exprs = []
+            attempt = 0
+            while len(round_exprs) < args.n_exprs and attempt < 50:
+                attempt += 1
+                cand = generate(args.n_exprs * 2, seed=batch_seed + attempt,
+                                max_depth=args.max_depth)
+                for e in cand:
+                    if e in seen_exprs:
+                        continue
+                    round_exprs.append(e); seen_exprs.add(e)
+                    if len(round_exprs) >= args.n_exprs:
+                        break
         log.info("")
         log.info(f"############## BATCH {batch_idx}/{args.batches} "
-                 f"(seed={batch_seed}, pool={n_fields} fields / "
-                 f"{n_cats} categories) ##############")
-        round_exprs: list[str] = []
-        attempt = 0
-        while len(round_exprs) < args.n_exprs and attempt < 50:
-            attempt += 1
-            cand = generate(args.n_exprs * 2, seed=batch_seed + attempt,
-                            max_depth=args.max_depth)
-            for e in cand:
-                if e in seen_exprs:
-                    continue
-                round_exprs.append(e); seen_exprs.add(e)
-                if len(round_exprs) >= args.n_exprs:
-                    break
-        log.info(f"batch {batch_idx}: {len(round_exprs)} fresh expressions")
+                 f"[{label}] pool={n_fields} fields / "
+                 f"{n_cats} categories ##############")
+        log.info(f"batch {batch_idx}: {len(round_exprs)} expressions")
         for e in round_exprs:
+            seen_exprs.add(e)
             log.info(f"   {e}")
 
         for i, expr in enumerate(round_exprs, 1):
