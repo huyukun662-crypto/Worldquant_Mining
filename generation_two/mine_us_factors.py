@@ -60,6 +60,25 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND35_ALPHAS: list[str] = [
+    # Round 35 — fix #1-3 book size with minimal aux. Keep BAB dominant
+    # so IS Sharpe/fit metrics match pure BAB (1.36 / 0.055 / 1.64) while
+    # adding small universal-coverage component to fill 2020-2022 book gap.
+
+    # 1. BAB 0.9 + VWAP-rev 0.1 (minimal microstructure aux).
+    "group_neutralize(ts_decay_linear(0.9 * rank(ts_corr(returns, ts_mean(returns, 1), 60)) + 0.1 * -ts_rank(close - vwap, 252), 60), industry)",
+
+    # 2. BAB 0.95 + tiny cap-rank coverage filler.
+    "group_neutralize(ts_decay_linear(0.95 * rank(ts_corr(returns, ts_mean(returns, 1), 60)) + 0.05 * rank(cap), 60), industry)",
+
+    # 3. BAB 0.9 + rank(volume) coverage filler.
+    "group_neutralize(ts_decay_linear(0.9 * rank(ts_corr(returns, ts_mean(returns, 1), 60)) + 0.1 * rank(volume), 60), industry)",
+
+    # 4. BAB 0.9 + small reversal (returns rank, full coverage).
+    "group_neutralize(ts_decay_linear(0.9 * rank(ts_corr(returns, ts_mean(returns, 1), 60)) + 0.1 * -ts_rank(returns, 60), 60), industry)",
+]
+
+
 ROUND34_ALPHAS: list[str] = [
     # Round 34 — fix factors #1-3 (pure BAB-flipped) book utilization
     # which is < 50% during 2020-2022. The `rank(ts_corr)` signal is
@@ -1114,7 +1133,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1129,6 +1148,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round35": ROUND35_ALPHAS,
         "round34": ROUND34_ALPHAS,
         "round33": ROUND33_ALPHAS,
         "round32": ROUND32_ALPHAS,
