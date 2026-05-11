@@ -37,6 +37,7 @@ SDIR.mkdir(parents=True, exist_ok=True)
 
 IS_SH_FLOOR = 1.25
 IS_TO_CEIL = 0.25
+IS_FIT_FLOOR = 1.0   # WQ fitness > 1 means risk-adjusted return is real
 
 # Base expressions that scored high SH but high TO in wq_continuous_miner
 # (these are the seeds — the optimizer will wrap them in ts_decay_linear
@@ -162,7 +163,9 @@ def submit_one(session, eid: int, base_idx: int, base_expr: str,
             ay = ra.json(); isb = ay.get("is") or {}; checks = isb.get("checks") or []
             checks_pass = sum(1 for c in checks if c.get("result") == "PASS")
             sh = float(isb.get("sharpe") or 0.0); to = float(isb.get("turnover") or 0.0)
+            fit = float(isb.get("fitness") or 0.0)
             survivor = (sh > IS_SH_FLOOR and to < IS_TO_CEIL
+                         and fit > IS_FIT_FLOOR
                          and checks_pass == len(checks))
             return Result(eid=eid, base_idx=base_idx, base_expr=base_expr,
                            expression=expression, structural_sig=sig,
