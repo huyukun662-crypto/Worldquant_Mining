@@ -328,5 +328,71 @@
         ]
       }
     ]
+  },
+  {
+    "idx": 6,
+    "id": "stm_rev_vwap",
+    "code": "rank(reverse(ts_decay_linear(divide(subtract(close, vwap), vwap), 5)))",
+    "ok": true,
+    "alpha_id": "rKbpzlP1",
+    "sharpe": 1.2,
+    "turnover": 0.3254,
+    "fitness": 0.66,
+    "returns": 0.0994,
+    "drawdown": 0.0844,
+    "longCount": 1561,
+    "shortCount": 1573,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.2
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.66
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3254
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3254
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.52,
+        "value": 0.63
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   }
 ]
