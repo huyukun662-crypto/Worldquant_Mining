@@ -1,0 +1,126 @@
+{
+  "config": {
+    "k": 4,
+    "n_candidates": 800,
+    "seeds": [
+      7,
+      19,
+      23,
+      31,
+      42
+    ],
+    "n_trials": 25,
+    "max_depth": 3,
+    "corr_threshold_requested": 0.5,
+    "corr_threshold_used": 0.8,
+    "sharpe_floor": 1.0,
+    "turnover_ceiling": 0.25,
+    "oos_min_ratio": 0.5,
+    "oos_min_sharpe": 0.4,
+    "is_window": [
+      "2019-01-01",
+      "2023-12-31"
+    ],
+    "os_window": [
+      "2024-01-01",
+      "2026-05-08"
+    ],
+    "universe_size": 251,
+    "elapsed_seconds": 957.7
+  },
+  "stats": {
+    "generated_per_seed": 800,
+    "n_seeds": 5,
+    "pool_after_oos_gate": 41,
+    "picked": 4
+  },
+  "factors": [
+    {
+      "expression": "normalize(ts_mean(multiply(divide(volume, open), ts_corr(open, high, 40)), 20))",
+      "optimized": "normalize(ts_mean(multiply(divide(volume, open), ts_corr(open, high, 42)), 45))",
+      "params": {
+        "0": 42,
+        "1": 45
+      },
+      "skeleton": "normalize(ts_mean(multiply(divide(X,X),ts_corr(X,X,D)),D))",
+      "is_sharpe": 1.576380732062148,
+      "is_turnover": 0.0033220392425588785,
+      "is_annret": 0.18587576016804652,
+      "os_sharpe": 1.3070350432555735,
+      "os_turnover": 0.003953552348544461,
+      "os_annret": 0.11114907580998697
+    },
+    {
+      "expression": "scale(ts_decay_linear(ts_std_dev(ts_mean(volume, 5), 10), 20))",
+      "optimized": "scale(ts_decay_linear(ts_std_dev(ts_mean(volume, 59), 46), 15))",
+      "params": {
+        "0": 59,
+        "1": 46,
+        "2": 15
+      },
+      "skeleton": "scale(ts_decay_linear(ts_std_dev(ts_mean(X,D),D),D))",
+      "is_sharpe": 1.4342533335690673,
+      "is_turnover": 0.01097831449472804,
+      "is_annret": 0.1527820040391265,
+      "os_sharpe": 1.2081495601670262,
+      "os_turnover": 0.011513886456159061,
+      "os_annret": 0.1403602018628603
+    },
+    {
+      "expression": "normalize(divide(ts_std_dev(ts_mean(returns, 5), 40), ts_mean(vwap, 20)))",
+      "optimized": "normalize(divide(ts_std_dev(ts_mean(returns, 3), 3), ts_mean(vwap, 17)))",
+      "params": {
+        "0": 3,
+        "1": 3,
+        "2": 17
+      },
+      "skeleton": "normalize(divide(ts_std_dev(ts_mean(X,D),D),ts_mean(X,D)))",
+      "is_sharpe": 1.3696980729602122,
+      "is_turnover": 0.24609495302949413,
+      "is_annret": 0.17460000081236826,
+      "os_sharpe": 0.7443717992062452,
+      "os_turnover": 0.2617299568952792,
+      "os_annret": 0.06714731418413195
+    },
+    {
+      "expression": "scale(s_log_1p(divide(ts_decay_linear(open, 5), multiply(high, close))))",
+      "optimized": "scale(s_log_1p(divide(ts_decay_linear(open, 12), multiply(high, close))))",
+      "params": {
+        "0": 12
+      },
+      "skeleton": "scale(s_log_1p(divide(ts_decay_linear(X,D),multiply(X,X))))",
+      "is_sharpe": 1.3114230864882819,
+      "is_turnover": 0.017477545991253188,
+      "is_annret": 0.11585632815499361,
+      "os_sharpe": 0.6834762095014333,
+      "os_turnover": 0.015755457690498242,
+      "os_annret": 0.03694180090937716
+    }
+  ],
+  "abs_pnl_corr_matrix": [
+    [
+      1.0,
+      0.7733,
+      0.4231,
+      0.311
+    ],
+    [
+      0.7733,
+      1.0,
+      0.3199,
+      0.1168
+    ],
+    [
+      0.4231,
+      0.3199,
+      1.0,
+      0.7672
+    ],
+    [
+      0.311,
+      0.1168,
+      0.7672,
+      1.0
+    ]
+  ]
+}

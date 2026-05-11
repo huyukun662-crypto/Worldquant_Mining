@@ -1,0 +1,31 @@
+{
+  "mechanism": "sharesout_cap_long_window",
+  "rationale": "Best random WQ-direct hit was rank(reverse(ts_rank(sharesout, 40))) at +0.94 WQ_SH on TOP3000/INDUSTRY. Sharesout/cap are non-volume-flow fields and survive industry neutralization better. Sweep nearby variants.",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 4,
+    "truncation": 0.08,
+    "neutralization": "INDUSTRY",
+    "pasteurization": "ON",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "visualization": false,
+    "testPeriod": "P0Y0M"
+  },
+  "expressions": [
+    "rank(reverse(ts_rank(sharesout, 40)))",
+    "rank(reverse(ts_rank(sharesout, 60)))",
+    "rank(reverse(ts_rank(sharesout, 120)))",
+    "rank(reverse(ts_rank(sharesout, 240)))",
+    "rank(reverse(ts_rank(cap, 40)))",
+    "rank(reverse(ts_rank(cap, 120)))",
+    "rank(reverse(ts_zscore(sharesout, 60)))",
+    "rank(reverse(ts_zscore(cap, 60)))"
+  ]
+}

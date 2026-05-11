@@ -1,0 +1,44 @@
+session_id: 20260510_pv_leadlag_corr
+owner_agent: 2 (Hypothesis Architect)
+workflow: huyukun662-crypto/Factor_Zoo/worldquant-5-agent-workflow
+
+mechanism: lead_lag_price_volume_corr
+hypothesis: |
+  In stocks where past-day price extremes become highly correlated with
+  today's traded volume over a long (~year) window, the price-volume
+  pair has co-moved long enough that informed flow is exhausted and
+  liquidity providers' patience pays off; future returns are negative.
+  Wrap with `reverse` so high-signal -> long position.
+
+universe_target: USA equities, TOP500 (best signal in prior runs)
+horizon: ~year (window 200-240 days)
+risk_premium_source: liquidity provision / mean-reversion at long horizon
+expected_turnover: low (<0.05) — long window slows signal updates
+
+failure_conditions:
+  - WQ_SH(top4) < 1.25 -> escalate to Agent 2 for hypothesis revision
+  - WQ_TO(top4) > 0.25 -> mechanism is over-trading; tighten window
+  - top-4 PnL pairwise |corr| > 0.95 -> not 4 distinct factors
+
+settings:
+  instrumentType: EQUITY
+  region: USA
+  language: FASTEXPR
+  universe: TOP500
+  delay: 1                # account tier locked to 1
+  decay: 4
+  truncation: 0.08
+  neutralization: NONE    # contradicts user's screenshot but signal collapses on INDUSTRY
+  pasteurization: OFF
+  maxTrade: OFF
+  maxPosition: OFF
+  unitHandling: VERIFY
+  nanHandling: OFF
+  visualization: false
+  testPeriod: P0Y0M
+
+evaluation_targets:
+  is_sharpe_floor: 1.25
+  is_turnover_ceiling: 0.25
+  rank_by: WQ_IS_Sharpe (descending), tie-break by fitness, then -turnover
+  picks: 4 (skeleton-distinct)

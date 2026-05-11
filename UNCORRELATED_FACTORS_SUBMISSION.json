@@ -1,0 +1,110 @@
+{
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "universe": "TOP3000",
+    "language": "FASTEXPR",
+    "decay": 0,
+    "delay": 1,
+    "truncation": 0.08,
+    "neutralization": "INDUSTRY",
+    "pasteurization": "ON",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF"
+  },
+  "n_factors": 4,
+  "payloads": [
+    {
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "language": "FASTEXPR",
+        "decay": 0,
+        "delay": 1,
+        "truncation": 0.08,
+        "neutralization": "INDUSTRY",
+        "pasteurization": "ON",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF"
+      },
+      "regular": "normalize(ts_mean(multiply(divide(volume, open), ts_corr(open, high, 42)), 45))",
+      "_local": {
+        "is_sharpe": 1.576,
+        "is_turnover": 0.0033,
+        "os_sharpe": 1.307,
+        "skeleton": "normalize(ts_mean(multiply(divide(X,X),ts_corr(X,X,D)),D))"
+      }
+    },
+    {
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "language": "FASTEXPR",
+        "decay": 0,
+        "delay": 1,
+        "truncation": 0.08,
+        "neutralization": "INDUSTRY",
+        "pasteurization": "ON",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF"
+      },
+      "regular": "scale(ts_decay_linear(ts_std_dev(ts_mean(volume, 59), 46), 15))",
+      "_local": {
+        "is_sharpe": 1.434,
+        "is_turnover": 0.011,
+        "os_sharpe": 1.208,
+        "skeleton": "scale(ts_decay_linear(ts_std_dev(ts_mean(X,D),D),D))"
+      }
+    },
+    {
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "language": "FASTEXPR",
+        "decay": 0,
+        "delay": 1,
+        "truncation": 0.08,
+        "neutralization": "INDUSTRY",
+        "pasteurization": "ON",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF"
+      },
+      "regular": "normalize(divide(ts_std_dev(ts_mean(returns, 3), 3), ts_mean(vwap, 17)))",
+      "_local": {
+        "is_sharpe": 1.37,
+        "is_turnover": 0.2461,
+        "os_sharpe": 0.744,
+        "skeleton": "normalize(divide(ts_std_dev(ts_mean(X,D),D),ts_mean(X,D)))"
+      }
+    },
+    {
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "language": "FASTEXPR",
+        "decay": 0,
+        "delay": 1,
+        "truncation": 0.08,
+        "neutralization": "INDUSTRY",
+        "pasteurization": "ON",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF"
+      },
+      "regular": "scale(s_log_1p(divide(ts_decay_linear(open, 12), multiply(high, close))))",
+      "_local": {
+        "is_sharpe": 1.311,
+        "is_turnover": 0.0175,
+        "os_sharpe": 0.683,
+        "skeleton": "scale(s_log_1p(divide(ts_decay_linear(X,D),multiply(X,X))))"
+      }
+    }
+  ]
+}

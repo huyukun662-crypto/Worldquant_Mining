@@ -1,0 +1,31 @@
+{
+  "mechanism": "realized_vol_of_returns_long",
+  "rationale": "QML ICIR=+4.05 on Std(close/Ref(close,5)-1, 240). Hypothesis: stocks with high realized vol of short-horizon returns at annual scale are over-discounted; mean-revert. Wrap with reverse.",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "universe": "TOP500",
+    "delay": 1,
+    "decay": 4,
+    "truncation": 0.08,
+    "neutralization": "NONE",
+    "pasteurization": "OFF",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "visualization": false,
+    "testPeriod": "P0Y0M"
+  },
+  "expressions": [
+    "reverse(ts_std_dev(divide(close, ts_delay(close, 5)), 240))",
+    "reverse(ts_std_dev(divide(close, ts_delay(close, 10)), 240))",
+    "reverse(ts_std_dev(divide(close, ts_delay(close, 20)), 240))",
+    "reverse(ts_std_dev(subtract(divide(close, ts_delay(close, 5)), 1), 200))",
+    "reverse(ts_std_dev(divide(vwap, ts_delay(vwap, 5)), 240))",
+    "reverse(ts_std_dev(divide(close, ts_delay(close, 5)), 120))",
+    "reverse(ts_mean(ts_std_dev(divide(close, ts_delay(close, 5)), 60), 240))",
+    "reverse(ts_std_dev(subtract(divide(high, ts_delay(low, 5)), 1), 240))"
+  ]
+}

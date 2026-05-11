@@ -1,0 +1,31 @@
+{
+  "session_id": "20260510_pv_leadlag_corr",
+  "mechanism": "lead_lag_price_volume_corr",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "universe": "TOP500",
+    "delay": 1,
+    "decay": 4,
+    "truncation": 0.08,
+    "neutralization": "NONE",
+    "pasteurization": "OFF",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "visualization": false,
+    "testPeriod": "P0Y0M"
+  },
+  "expressions": [
+    "reverse(ts_corr(ts_delay(high, 1), volume, 237))",
+    "reverse(ts_corr(ts_delay(high, 5), volume, 237))",
+    "reverse(ts_corr(ts_delay(close, 1), volume, 237))",
+    "reverse(ts_corr(ts_delay(vwap, 1), volume, 237))",
+    "reverse(ts_corr(ts_delay(high, 1), ts_delay(volume, 1), 237))",
+    "reverse(ts_corr(ts_delay(high, 1), volume, 120))",
+    "reverse(rank(ts_corr(ts_delay(high, 1), volume, 237)))",
+    "reverse(ts_corr(ts_delay(high, 1), multiply(volume, vwap), 237))"
+  ]
+}

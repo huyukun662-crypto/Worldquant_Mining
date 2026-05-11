@@ -1,0 +1,31 @@
+{
+  "mechanism": "vwap_argmin_position",
+  "rationale": "QML ICIR=+3.31 on IdxMin(vwap, 240). Captures 'how recently was the year's vwap-low set'. Recent lows mean trend break or capitulation -- contra signal. Also test cap-weighted variant.",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "universe": "TOP500",
+    "delay": 1,
+    "decay": 4,
+    "truncation": 0.08,
+    "neutralization": "INDUSTRY",
+    "pasteurization": "ON",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "visualization": false,
+    "testPeriod": "P0Y0M"
+  },
+  "expressions": [
+    "reverse(ts_arg_min(vwap, 240))",
+    "reverse(ts_arg_min(close, 240))",
+    "reverse(ts_arg_max(vwap, 240))",
+    "reverse(ts_arg_min(low, 240))",
+    "reverse(divide(subtract(close, ts_min(vwap, 240)), subtract(240, ts_arg_min(vwap, 240))))",
+    "reverse(divide(subtract(close, ts_min(close, 240)), subtract(240, ts_arg_min(close, 240))))",
+    "rank(reverse(ts_arg_min(vwap, 240)))",
+    "rank(reverse(ts_arg_max(vwap, 240)))"
+  ]
+}
