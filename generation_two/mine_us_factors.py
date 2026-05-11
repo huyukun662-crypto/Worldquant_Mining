@@ -60,6 +60,38 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND41_ALPHAS: list[str] = [
+    # Round 41 — R38-R40 plateau at Sharpe ~0.88-0.89 across PV/volume
+    # variants. Try 3 boost mechanisms + 3 brand-new families to break out.
+
+    # 1. Best combo (R40#6) with SUBINDUSTRY neutralization (finer slicing).
+    "group_neutralize(ts_decay_linear(0.5 * -rank(ts_corr(returns, ts_delta(volume, 1), 20)) + 0.5 * -rank(ts_sum(returns * vwap * volume, 40)), 30), subindustry)",
+
+    # 2. Best combo with SECTOR (broader; more cross-sector active).
+    "group_neutralize(ts_decay_linear(0.5 * -rank(ts_corr(returns, ts_delta(volume, 1), 20)) + 0.5 * -rank(ts_sum(returns * vwap * volume, 40)), 30), sector)",
+
+    # 3. Best combo with TRADE_WHEN filter (only trade on high-volume regime).
+    #    Filter: ts_mean(volume, 5) > ts_mean(volume, 60).
+    "group_neutralize(ts_decay_linear(trade_when(ts_mean(volume, 5) > ts_mean(volume, 60), 0.5 * -rank(ts_corr(returns, ts_delta(volume, 1), 20)) + 0.5 * -rank(ts_sum(returns * vwap * volume, 40)), -1), 30), industry)",
+
+    # 4. Best combo with group_rank (rank within industry) instead of plain rank.
+    "group_neutralize(ts_decay_linear(0.5 * -group_rank(ts_corr(returns, ts_delta(volume, 1), 20), industry) + 0.5 * -group_rank(ts_sum(returns * vwap * volume, 40), industry), 30), industry)",
+
+    # 5. NEW: price acceleration (2nd-derivative of close — short-window
+    #    inflection points).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(ts_delta(close, 5), 5)), 60), industry)",
+
+    # 6. NEW: coefficient of variation reversal (short high CV = high noise).
+    "group_neutralize(ts_decay_linear(-rank(ts_std_dev(returns, 20) / (abs(ts_mean(returns, 20)) + 0.001)), 60), industry)",
+
+    # 7. NEW: range-relative price z-score (z-score breakout reversion).
+    "group_neutralize(ts_decay_linear(-rank((close - ts_mean(close, 60)) / (ts_std_dev(close, 60) + 0.001)), 60), industry)",
+
+    # 8. NEW: OBV momentum FLIPPED (R40 raw was -0.62, flip = +0.62).
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(sign(returns) * volume, 20)), 60), industry)",
+]
+
+
 ROUND40_ALPHAS: list[str] = [
     # Round 40 — push R39's two viable signals over the 1.25 gate.
     #   Price-Volume contrarian (corr 20): Sharpe 0.89, turn 0.059
@@ -1298,7 +1330,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1313,6 +1345,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round41": ROUND41_ALPHAS,
         "round40": ROUND40_ALPHAS,
         "round39": ROUND39_ALPHAS,
         "round38": ROUND38_ALPHAS,
