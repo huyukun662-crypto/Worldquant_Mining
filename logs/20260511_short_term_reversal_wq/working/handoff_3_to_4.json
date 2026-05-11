@@ -1,0 +1,62 @@
+{
+  "batch_id": "batch_0001",
+  "selected_mechanism": "short_term_price_reversal",
+  "expressions": [
+    {
+      "idx": 1,
+      "id": "stm_rev_mean5",
+      "code": "rank(reverse(ts_mean(returns, 5)))",
+      "rationale": "Long 5d losers. Pure short-term reversal baseline.",
+      "expected_turnover_direction": "higher"
+    },
+    {
+      "idx": 2,
+      "id": "stm_rev_decay8",
+      "code": "rank(reverse(ts_decay_linear(returns, 8)))",
+      "rationale": "Linear-decay-smoothed reversal; lower TO than mean5.",
+      "expected_turnover_direction": "lower"
+    },
+    {
+      "idx": 3,
+      "id": "stm_rev_zscore10",
+      "code": "rank(reverse(ts_zscore(returns, 10)))",
+      "rationale": "Z-scored reversal: normalizes by stock-specific vol.",
+      "expected_turnover_direction": "neutral"
+    },
+    {
+      "idx": 4,
+      "id": "stm_rev_volcond",
+      "code": "rank(reverse(multiply(ts_mean(returns, 5), ts_mean(divide(volume, adv20), 5))))",
+      "rationale": "Reversal weighted by abnormal volume - extreme moves on heavy flow tend to revert harder.",
+      "expected_turnover_direction": "higher"
+    },
+    {
+      "idx": 5,
+      "id": "stm_rev_volnorm",
+      "code": "rank(reverse(divide(ts_delta(close, 3), ts_std_dev(returns, 20))))",
+      "rationale": "Vol-normalized 3d price change; reversal in vol-adjusted space.",
+      "expected_turnover_direction": "higher"
+    },
+    {
+      "idx": 6,
+      "id": "stm_rev_vwap",
+      "code": "rank(reverse(ts_decay_linear(divide(subtract(close, vwap), vwap), 5)))",
+      "rationale": "Microstructure: close-vs-VWAP overextension; intraday traders fade.",
+      "expected_turnover_direction": "higher"
+    },
+    {
+      "idx": 7,
+      "id": "stm_rev_tsrank10",
+      "code": "rank(reverse(ts_rank(returns, 10)))",
+      "rationale": "Rank-based 10d reversal; more robust to return outliers than zscore.",
+      "expected_turnover_direction": "neutral"
+    },
+    {
+      "idx": 8,
+      "id": "stm_rev_volwt_decay",
+      "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), s_log_1p(divide(volume, adv20))), 10)))",
+      "rationale": "Z-scored reversal weighted by log(abnormal-volume), decay-smoothed - composite low-TO variant.",
+      "expected_turnover_direction": "lower"
+    }
+  ]
+}
