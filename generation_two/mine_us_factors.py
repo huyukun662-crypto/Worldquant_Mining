@@ -60,6 +60,39 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND21_ALPHAS: list[str] = [
+    # Round 21 — STRUCTURE + LOGIC both distinct from R1-R20.
+    # All R1-R20 used `returns` as input + ts_decay_linear smoothing +
+    # subindustry group_neutralize, with mean-reversion logic.
+    # Round 21 pivots to NON-returns inputs (Option, Analyst, Sentiment,
+    # Fundamental) and NON-reversal logic (event-driven, quality, vol-premium).
+
+    # 1. OPTION — Put-Call IV skew (defensive-demand premium). Pure
+    #    cross-sectional rank, no time-series smoothing, no group_neutralize
+    #    (rely on sim-level INDUSTRY neut). Long stocks with high put skew.
+    "rank(implied_volatility_put_30 - implied_volatility_call_30)",
+
+    # 2. ANALYST — EPS-revision momentum (event-driven, NOT reversal). 21d
+    #    delta of mean analyst EPS forecast, ranked, ts_decay_linear=30.
+    #    No outer group_neutralize.
+    "ts_decay_linear(rank(ts_delta(anl4_eps_mean, 21)), 30)",
+
+    # 3. SENTIMENT — Buzz-shock × intraday direction. Cross-sectional
+    #    sentiment-buzz z-score multiplied by close-vs-open sign. SECTOR
+    #    neutralization (different group than R1-R20).
+    "group_neutralize(rank(ts_zscore(scl12_buzz, 60)) * sign(close - open), sector)",
+
+    # 4. OPTION — IV term structure. Short-dated vs long-dated call IV
+    #    ratio, ranked. Long stocks with elevated short-term IV (forward
+    #    risk premium). INDUSTRY neutralization.
+    "group_neutralize(rank(implied_volatility_call_30 / (implied_volatility_call_120 + 0.01)), industry)",
+
+    # 5. FUNDAMENTAL — Operating-margin quality. Pure cross-sectional
+    #    rank of operating_income / sales (NOT reversal). INDUSTRY neut.
+    "group_neutralize(rank(operating_income / (sales + 1)), industry)",
+]
+
+
 ROUND20_ALPHAS: list[str] = [
     # Round 20 — 3 small, high-confidence variants. Need 1 more PASS.
     # Both extreme-decile (90/10) and quartile (75/25) barbells PASS — 80/20
@@ -767,7 +800,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -782,6 +815,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round21": ROUND21_ALPHAS,
         "round20": ROUND20_ALPHAS,
         "round19": ROUND19_ALPHAS,
         "round18": ROUND18_ALPHAS,
