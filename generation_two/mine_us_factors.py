@@ -60,6 +60,41 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND37_ALPHAS: list[str] = [
+    # Round 37 — STRUCTURAL FIX. Yearly stats on platform showed
+    # group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns,1),
+    # 120)), 60), industry) had Sharpe=0 / turn=0 / 0 longs/0 shorts for
+    # 2019-2022 inclusive. Root cause: ts_mean(returns, 1) is just `returns`
+    # itself (rolling 1-day mean), so ts_corr(returns, returns, N) is ~1.0 and
+    # rank() collapses to a constant until numerical noise breaks the tie in
+    # late 2022. The whole BAB family was structurally degenerate — IS Sharpe
+    # was being earned over <1.5 of the 5 IS years.
+    #
+    # Real fix: correlate against group_mean(returns, 1, market) (equal-weighted
+    # market return) — an actual cross-sectional series that varies every day
+    # from t=120 onward. This is the canonical Frazzini-Pedersen BAB shape.
+
+    # 1. Pure corrected-BAB-flipped corr 60, decay 60.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, group_mean(returns, 1, market), 60)), 60), industry)",
+
+    # 2. Pure corrected-BAB-flipped corr 30, decay 60.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, group_mean(returns, 1, market), 30)), 60), industry)",
+
+    # 3. Pure corrected-BAB-flipped corr 90, decay 60.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, group_mean(returns, 1, market), 90)), 60), industry)",
+
+    # 4. Pure corrected-BAB-flipped corr 120, decay 60.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, group_mean(returns, 1, market), 120)), 60), industry)",
+
+    # 5. Corrected-BAB corr 60 against sector-average instead of market.
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, group_mean(returns, 1, sector), 60)), 60), industry)",
+
+    # 6. Corrected BAB 0.9 + VWAP-rev 0.1 decay 90 (replacement for #6 with
+    #    proper market proxy).
+    "group_neutralize(ts_decay_linear(0.9 * rank(ts_corr(returns, group_mean(returns, 1, market), 60)) + 0.1 * -ts_rank(close - vwap, 252), 90), industry)",
+]
+
+
 ROUND36_ALPHAS: list[str] = [
     # Round 36 — push factor #6 sub-univ Sharpe over 0.66 cutoff (currently
     # 0.64 with R33's 0.8 BAB + 0.2 VWAP-rev decay 90). Need MORE BAB.
@@ -1153,7 +1188,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1168,6 +1203,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round37": ROUND37_ALPHAS,
         "round36": ROUND36_ALPHAS,
         "round35": ROUND35_ALPHAS,
         "round34": ROUND34_ALPHAS,
