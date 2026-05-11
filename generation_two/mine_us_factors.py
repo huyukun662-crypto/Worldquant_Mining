@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND48_ALPHAS: list[str] = [
+    # Round 48 — R47 sim-failed on guessed field names (eps_estimate_value,
+    # actual_eps_value_quarterly, dividend_estimate_value). Switch to the
+    # canonical field IDs found in upstream_data_fields_USA_TOP3000.json:
+    # anl4_af_eps_value (actual EPS), anl4_afv4_eps_mean (forecast mean),
+    # anl4_afv4_eps_std (forecast dispersion), scl12_sentiment,
+    # implied_volatility_mean_30, anl4_adjusted_netincome_ft (proven).
+
+    # 1. EPS estimate revision momentum (analyst forecast mean delta).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(anl4_afv4_eps_mean, 30)), 60), industry)",
+
+    # 2. EPS forecast dispersion (analyst disagreement, contrarian on certainty).
+    "group_neutralize(ts_decay_linear(-rank(anl4_afv4_eps_std / (abs(anl4_afv4_eps_mean) + 0.01)), 60), industry)",
+
+    # 3. Earnings surprise (actual EPS minus forecast mean).
+    "group_neutralize(ts_decay_linear(rank(anl4_af_eps_value - anl4_afv4_eps_mean), 60), industry)",
+
+    # 4. Sentiment LEVEL (not buzz — distinct from R23).
+    "group_neutralize(ts_decay_linear(rank(scl12_sentiment), 60), industry)",
+
+    # 5. Sentiment momentum (5d delta).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(scl12_sentiment, 5)), 60), industry)",
+
+    # 6. Short-IV momentum (delta of implied vol — different from put-call skew).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(implied_volatility_mean_30, 10)), 60), industry)",
+
+    # 7. Cap-adjusted earnings momentum (proven anl4_adjusted_netincome_ft).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(anl4_adjusted_netincome_ft, 60) / cap), 60), industry)",
+
+    # 8. CFPS-yield (operating cash-flow per share / price).
+    "group_neutralize(ts_decay_linear(rank(anl4_af_cfps_value / close), 60), industry)",
+]
+
+
 ROUND47_ALPHAS: list[str] = [
     # Round 47 — alternative-data fields (analyst, fundamentals,
     # sentiment, options term-structure, news). Field names taken from
@@ -1529,7 +1563,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1544,6 +1578,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round48": ROUND48_ALPHAS,
         "round47": ROUND47_ALPHAS,
         "round46": ROUND46_ALPHAS,
         "round45": ROUND45_ALPHAS,
