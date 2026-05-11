@@ -211,7 +211,7 @@ def candidate_stream():
 
 
 def main():
-    target = 4; max_subs = 200
+    target = 4; max_subs = 200; n_workers = 1  # leave slot(s) for other sessions
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
     if not cm.authenticate(auto_load=True, auto_prompt=False):
@@ -242,8 +242,8 @@ def main():
                               expr, settings_extra, d_wrap)
         return None
 
-    with ThreadPoolExecutor(max_workers=2) as ex:
-        for _ in range(2):
+    with ThreadPoolExecutor(max_workers=n_workers) as ex:
+        for _ in range(n_workers):
             if submitted >= max_subs: break
             f = schedule_one()
             if f is None: break
