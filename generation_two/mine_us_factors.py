@@ -60,6 +60,38 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND69_ALPHAS: list[str] = [
+    # Round 69 — pivot to TOP500 after R68 confirmed SH>1.35 + TO<0.15 is
+    # structurally unreachable on TOP200 PV-only. Re-screen the top R64-R68
+    # PV signals on a larger universe to see if the SH/TO tradeoff changes.
+    # Run with --universe TOP500.
+
+    # 1. R11 winner baseline — plain 252d reversal (SH 1.62 / TO 0.236 on TOP200)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 252), 60), subindustry)",
+
+    # 2. R67 H60 — best diverse survivor on TOP200 (SH 1.32 / TO 0.228)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 60), 252), 60), subindustry)",
+
+    # 3. R68 #4 — H60 over 504d (SH 1.36 / TO 0.227)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 60), 504), 60), subindustry)",
+
+    # 4. R20 winner — 200d reversal (SH 1.62 / TO 0.236)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 200), 60), subindustry)",
+
+    # 5. R11 quantile cuts 85/15 — proven SH 1.70 TO 0.213 winner
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.85, -1, if_else(ts_rank(returns, 252) < 0.15, 1, 0)), 60), subindustry)",
+
+    # 6. R18 quantile cuts 90/10 — tighter cuts (SH 1.58 / TO 0.194)
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.90, -1, if_else(ts_rank(returns, 252) < 0.10, 1, 0)), 60), subindustry)",
+
+    # 7. R66 G — vol-adjusted returns 252d (SH 0.73 on TOP200 — try larger univ)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns / (ts_std_dev(returns, 60) + 0.001), 252), 60), subindustry)",
+
+    # 8. R66 H — 20d detrend 252d (SH 1.28 / TO 0.288 — near-miss on TOP200)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 20), 252), 60), subindustry)",
+]
+
+
 ROUND68_ALPHAS: list[str] = [
     # Round 68 — raised the bar: SH > 1.35 AND TO < 0.15 (was 1.25 / 0.25).
     # R67 H60 (SH 1.32 / TO 0.228) fails both. Need aggressive TO suppression
@@ -2214,7 +2246,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2229,6 +2261,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round69": ROUND69_ALPHAS,
         "round68": ROUND68_ALPHAS,
         "round67": ROUND67_ALPHAS,
         "round66": ROUND66_ALPHAS,
