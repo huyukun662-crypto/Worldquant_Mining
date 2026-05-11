@@ -60,6 +60,41 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND47_ALPHAS: list[str] = [
+    # Round 47 — alternative-data fields (analyst, fundamentals,
+    # sentiment, options term-structure, news). Field names taken from
+    # the upstream USA TOP3000 schema. AVOID R22-R26 IV-skew family
+    # (those used put_30 - call_30, the "skew"); this round uses
+    # term-structure (long-IV minus short-IV) instead.
+
+    # 1. EPS estimate revision momentum (30d delta of consensus EPS estimate).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(eps_estimate_value, 30)), 60), industry)",
+
+    # 2. Sentiment momentum (daily change in social sentiment).
+    "group_neutralize(ts_decay_linear(rank(scl12_sentiment_fast_d1), 60), industry)",
+
+    # 3. Earnings surprise (actual minus consensus estimate).
+    "group_neutralize(ts_decay_linear(rank(actual_eps_value_quarterly - eps_estimate_value), 60), industry)",
+
+    # 4. IV TERM-STRUCTURE (long-IV minus short-IV, different from R22-R26
+    #    which was put-call SKEW). Long IV term-structure = contango.
+    "group_neutralize(ts_decay_linear(rank(implied_volatility_mean_360 - implied_volatility_mean_30), 60), industry)",
+
+    # 5. Sales surprise (quarterly actual vs median estimate).
+    "group_neutralize(ts_decay_linear(rank(actual_sales_value_quarterly - median_sales_estimate), 60), industry)",
+
+    # 6. Cash-flow quality (CFPS over EPS, quarterly).
+    "group_neutralize(ts_decay_linear(rank(actual_cashflow_per_share_value_quarterly / (actual_eps_value_quarterly + 0.001)), 60), industry)",
+
+    # 7. Dividend estimate momentum (rising dividend expectations).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(dividend_estimate_value, 60)), 60), industry)",
+
+    # 8. Sentiment buzz delta (R23 used raw scl12_buzz; this is the daily
+    #    delta, different structural signal).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(scl12_buzz, 5)), 60), industry)",
+]
+
+
 ROUND46_ALPHAS: list[str] = [
     # Round 46 — R45 all 8 failed. Try truly different angles:
     # time-series structure, autocorrelation, cross-frequency divergence,
@@ -1494,7 +1529,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1509,6 +1544,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round47": ROUND47_ALPHAS,
         "round46": ROUND46_ALPHAS,
         "round45": ROUND45_ALPHAS,
         "round44": ROUND44_ALPHAS,
