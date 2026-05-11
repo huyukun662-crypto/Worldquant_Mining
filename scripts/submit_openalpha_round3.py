@@ -62,33 +62,19 @@ FIT_THRESH = 1.0
 
 FIXES: list[tuple[str, str, str]] = [
     (
-        "OA21",
-        "neg_skew_close_20",
-        "-1 * ts_mean(power(ts_zscore(close, 20), 3), 20)",
-    ),
-    (
-        "OA22",
-        "skew_vwap_minus_close_10",
-        "ts_mean(power(ts_zscore(vwap - close, 10), 3), 10)",
-    ),
-    (
-        "OA23",
-        "kurt_delta_close_20",
-        "ts_mean(power(ts_zscore(ts_delta(close, 1), 20), 4), 20) - 3",
-    ),
-    (
         "OA34",
         "ols_beta_skewRet_ret_5",
+        # ts_regression wants unit-free 2nd arg; ts_zscore(returns,5) gives it.
         "ts_regression("
         "ts_mean(power(ts_zscore(returns, 5), 3), 5), "
-        "returns, 5, rettype=2)",
+        "ts_zscore(returns, 5), 5, rettype=2)",
     ),
     (
         "OA35",
         "neg_regression_skewRet_ret_7",
         "-1 * ts_regression("
         "ts_mean(power(ts_zscore(returns, 3), 3), 3), "
-        "returns, 7, rettype=0)",
+        "ts_zscore(returns, 7), 7, rettype=0)",
     ),
 ]
 
