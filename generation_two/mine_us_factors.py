@@ -60,6 +60,43 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND38_ALPHAS: list[str] = [
+    # Round 38 — CLEAN SLATE. R37 exposed the BAB family (R27-R36) as
+    # numerical-noise signal: ts_mean(returns, 1) === returns, so the
+    # "correlation with self" rank() collapsed to a constant and only
+    # produced trades from accidental floating-point ties in late 2022-2023.
+    # Replacing with a real market proxy (group_mean(returns,1,market))
+    # gave Sharpe ~0.4-0.6, confirming there was no genuine alpha.
+    #
+    # Five brand-new architectures, each structurally and economically
+    # different from prior winners (R1-R20 returns-reversal, R22-R26 IV-skew,
+    # R27-R37 BAB-degenerate). Pure PV fields only — no field-name risk.
+    # All wrap in group_neutralize(ts_decay_linear(..., 60), industry).
+
+    # 1. Price-Volume confirmation (long stocks where returns track volume
+    #    surges = breakout-quality momentum, short low-conviction moves).
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_delta(volume, 1), 20)), 60), industry)",
+
+    # 2. Overnight-gap reversion (short stocks that gap up overnight,
+    #    long stocks that gap down — overnight-gap-reversal anomaly).
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(open / ts_delay(close, 1) - 1, 10)), 60), industry)",
+
+    # 3. Williams %R mean-reversion (short stocks at top of 30-day range,
+    #    long stocks at bottom — short-horizon range reversion).
+    "group_neutralize(ts_decay_linear(-((close - ts_min(low, 30)) / (ts_max(high, 30) - ts_min(low, 30))), 60), industry)",
+
+    # 4. Dollar-volume momentum (long stocks with positive dollar-volume
+    #    flow over 20 days; structurally different from price-only momentum).
+    "group_neutralize(ts_decay_linear(rank(ts_sum(returns * vwap * volume, 20)), 60), industry)",
+
+    # 5. Low-vol anomaly (short high-realized-vol names, long low-vol;
+    #    classic Black-Frazzini-Pedersen low-vol premium, but NOT BAB
+    #    because uses realized-vol of stock returns directly, no market
+    #    correlation involved).
+    "group_neutralize(ts_decay_linear(-rank(ts_std_dev(returns, 60)), 60), industry)",
+]
+
+
 ROUND37_ALPHAS: list[str] = [
     # Round 37 — STRUCTURAL FIX. Yearly stats on platform showed
     # group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns,1),
@@ -1188,7 +1225,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1203,6 +1240,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round38": ROUND38_ALPHAS,
         "round37": ROUND37_ALPHAS,
         "round36": ROUND36_ALPHAS,
         "round35": ROUND35_ALPHAS,
