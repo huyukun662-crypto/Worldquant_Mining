@@ -60,6 +60,41 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND40_ALPHAS: list[str] = [
+    # Round 40 — push R39's two viable signals over the 1.25 gate.
+    #   Price-Volume contrarian (corr 20): Sharpe 0.89, turn 0.059
+    #   Dollar-volume reversal (sum 40):    Sharpe 0.75, turn 0.045
+    # Both have very low turnover → room to drop decay for more responsiveness.
+    # Add 2 brand-new families: intraday body/range pressure & on-balance volume.
+
+    # 1. PV-contrarian corr 20, decay 20 (sharper).
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_delta(volume, 1), 20)), 20), industry)",
+
+    # 2. PV-contrarian corr 20, decay 30.
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_delta(volume, 1), 20)), 30), industry)",
+
+    # 3. PV-contrarian corr 10, decay 30 (shorter corr window).
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_delta(volume, 1), 10)), 30), industry)",
+
+    # 4. Dollar-volume reversal sum 20, decay 30.
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(returns * vwap * volume, 20)), 30), industry)",
+
+    # 5. Dollar-volume reversal sum 60, decay 60.
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(returns * vwap * volume, 60)), 60), industry)",
+
+    # 6. COMBO: PV-contrarian + dollar-vol reversal (both contrarian-flow).
+    "group_neutralize(ts_decay_linear(0.5 * -rank(ts_corr(returns, ts_delta(volume, 1), 20)) + 0.5 * -rank(ts_sum(returns * vwap * volume, 40)), 30), industry)",
+
+    # 7. NEW: intraday body/range pressure momentum.
+    #    (close-open)/(high-low) is the "candlestick body proportion";
+    #    accumulated body pressure should predict continuation.
+    "group_neutralize(ts_decay_linear(rank(ts_sum((close - open) / (high - low + 0.0001), 20)), 60), industry)",
+
+    # 8. NEW: on-balance volume momentum (sign(returns) * volume).
+    "group_neutralize(ts_decay_linear(rank(ts_sum(sign(returns) * volume, 20)), 60), industry)",
+]
+
+
 ROUND39_ALPHAS: list[str] = [
     # Round 39 — R38 revealed 3 of 5 families had viable absolute Sharpe
     # (0.46, 0.78, 0.89) but WRONG sign. Flip signs and sweep windows
@@ -1263,7 +1298,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1278,6 +1313,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round40": ROUND40_ALPHAS,
         "round39": ROUND39_ALPHAS,
         "round38": ROUND38_ALPHAS,
         "round37": ROUND37_ALPHAS,
