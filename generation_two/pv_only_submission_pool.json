@@ -1,0 +1,63 @@
+{
+  "rationale": "PV-only candidates curated from prior WQ-platform mining rounds. All fields (returns/close/vwap) have 100% coverage on TOP200/500/1000 by construction, so the platform concentration check ('Weight is too strongly concentrated') cannot trigger from sparse data — which was the blocker for the IV+ROA factor family (R56-R62). Sharpe / turnover values below are from WQ Brain platform simulation, not local backtest.",
+  "settings": {
+    "Region": "USA",
+    "Universe": "TOP200",
+    "Neutralization": "INDUSTRY or SUBINDUSTRY (matches `group_neutralize` arg)",
+    "Delay": 1,
+    "Decay": 0,
+    "Truncation": 0.05,
+    "Pasteurization": "ON",
+    "NaN Handling": "ON"
+  },
+  "candidates": [
+    {
+      "id": "PV1",
+      "alpha_family": "Long-term return reversal — quantile cuts",
+      "rationale": "Tail-trimmed reversal: short the top 15% by 252-day rank-of-returns, long the bottom 15%. Quantile gating throttles trading to extreme names, lowering turnover.",
+      "platform_sharpe": 1.70,
+      "platform_turnover": 0.213,
+      "platform_returns": 0.1324,
+      "expression": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.85, -1, if_else(ts_rank(returns, 252) < 0.15, 1, 0)), 60), subindustry)"
+    },
+    {
+      "id": "PV2",
+      "alpha_family": "Long-term return reversal — continuous",
+      "rationale": "Continuous version of PV1: negative 200-day rank-of-returns, neutralized by subindustry. Simpler, less hyperparameter risk.",
+      "platform_sharpe": 1.62,
+      "platform_turnover": 0.236,
+      "platform_returns": 0.1572,
+      "expression": "group_neutralize(ts_decay_linear(-ts_rank(returns, 200), 60), subindustry)"
+    },
+    {
+      "id": "PV3",
+      "alpha_family": "Acceleration / 2nd-order momentum — very-low-TO",
+      "rationale": "Stacked decay × negative rank of second-difference of close. Different alpha source (price acceleration, not level reversal) so combines well with PV1/PV2 in a portfolio. Turnover 0.10 is the lowest in the pool.",
+      "platform_sharpe": 1.53,
+      "platform_turnover": 0.100,
+      "platform_returns": null,
+      "expression": "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 60), 60), industry)"
+    }
+  ],
+  "fallback_candidates": [
+    {
+      "id": "PV4",
+      "alpha_family": "Correlation × intraday gap",
+      "expression": "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns, 1), 60)) * -ts_rank(close - vwap, 252), 90), industry)",
+      "platform_sharpe": 1.52,
+      "platform_turnover": 0.227
+    },
+    {
+      "id": "PV5",
+      "alpha_family": "Long-term reversal — TO 0.10 + 0.85 quantile cuts",
+      "expression": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.9, -1, if_else(ts_rank(returns, 252) < 0.1, 1, 0)), 60), subindustry)",
+      "platform_sharpe": 1.58,
+      "platform_turnover": 0.194
+    }
+  ],
+  "submission_order": [
+    "1. PV1 first (highest Sharpe, proven low turnover, quantile-gated → robust to noise).",
+    "2. PV2 as backup (simpler, easier to defend to a reviewer).",
+    "3. PV3 if portfolio diversity matters (orthogonal alpha source, lowest TO)."
+  ]
+}
