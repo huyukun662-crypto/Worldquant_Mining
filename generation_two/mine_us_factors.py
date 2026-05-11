@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND49_ALPHAS: list[str] = [
+    # Round 49 — R48 surfaced 3 promising alt-data raw signals:
+    #   scl12_sentiment 5d delta (flipped): |Sharpe| 0.98 / turn 1.055 (crazy)
+    #   IV-mean-30 10d momentum:           Sharpe 0.72 / turn 0.352 (over)
+    #   CFPS / close yield:                Sharpe 0.60 / turn 0.012 (stable)
+    # Apply cascade-decay smoothing trick to cut the high-turn signals.
+    # Also add a few brand-new alt-data architectures.
+
+    # 1. Cascade-decay sentiment delta flipped (smooth the 1.055-turn beast).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(scl12_sentiment, 5)), 60), 60), industry)",
+
+    # 2. Cascade-decay IV momentum (pull 0.352 turn under 0.25).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(rank(ts_delta(implied_volatility_mean_30, 10)), 60), 60), industry)",
+
+    # 3. Combine CFPS yield + IV momentum (potentially uncorrelated).
+    "group_neutralize(ts_decay_linear(0.5 * rank(anl4_af_cfps_value / close) + 0.5 * rank(ts_delta(implied_volatility_mean_30, 10)), 60), industry)",
+
+    # 4. Single-decay sentiment delta flipped with HEAVY decay 250.
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(scl12_sentiment, 5)), 250), industry)",
+
+    # 5. NEW: realized 3rd moment (manual skewness via cubed returns).
+    "group_neutralize(ts_decay_linear(-rank(ts_mean(returns * returns * returns, 60)), 60), industry)",
+
+    # 6. NEW: industry-residual returns accumulated (peer-adjusted momentum).
+    "group_neutralize(ts_decay_linear(rank(ts_sum(returns - group_mean(returns, 1, industry), 20)), 60), industry)",
+
+    # 7. NEW: dividend-yield proxy (using analyst dividend forecast).
+    "group_neutralize(ts_decay_linear(rank(anl4_af_div_value / close), 60), industry)",
+
+    # 8. NEW: news12 sentiment if available — try a probe.
+    "group_neutralize(ts_decay_linear(rank(nws12_afterhsz_01l), 60), industry)",
+]
+
+
 ROUND48_ALPHAS: list[str] = [
     # Round 48 — R47 sim-failed on guessed field names (eps_estimate_value,
     # actual_eps_value_quarterly, dividend_estimate_value). Switch to the
@@ -1563,7 +1597,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1578,6 +1612,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round49": ROUND49_ALPHAS,
         "round48": ROUND48_ALPHAS,
         "round47": ROUND47_ALPHAS,
         "round46": ROUND46_ALPHAS,
