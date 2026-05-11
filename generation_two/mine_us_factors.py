@@ -46,8 +46,8 @@ from generation_two.core.simulator_tester import (
 
 IS_START = "2019-01-01"
 IS_END = "2023-12-31"
-MIN_SHARPE = 1.25
-MAX_TURNOVER = 0.25
+MIN_SHARPE = 1.30
+MAX_TURNOVER = 0.20
 MIN_FITNESS = 1.0
 
 
