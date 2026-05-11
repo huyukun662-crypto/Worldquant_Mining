@@ -170,7 +170,12 @@ R62 confirmed: signed_power(0.3) and 10% adv20 tiebreaker still fail
 platform check even though they pass internal Sharpe/turnover.
 
 Things to try (in order):
-1. **`densify(.)` wrap** — WQ's canonical "spread the support" operator.
+1. **`densify(group)` on the group, not the signal** — WQ's `densify`
+   takes a *group* input (`Unit[Group:1]`), not a raw signal (`Unit[]`).
+   Wrapping `densify(signal)` raises "Incompatible unit for input of
+   densify at index 0, expected Unit[Group:1], found Unit[]". Correct
+   usage is `group_neutralize(signal, densify(industry))` — it merges
+   sparse industries so each group has enough non-NaN names.
 2. **`quantile(., driver="uniform")`** — forces uniform output dist.
 3. **Expand universe** to TOP500/TOP1000 — sparse fields cover more
    names absolutely, so concentration check is easier to pass.
