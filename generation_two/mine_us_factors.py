@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND76_ALPHAS: list[str] = [
+    # Round 76 — direction-signal diversity. R75 found 2 more survivors
+    # but all 3 (R74 #7, R75 #1, R75 #6) share the same direction
+    # (demeaned 252d return, inner 126). For a real portfolio we need
+    # alphas with independent direction signals, keeping the
+    # vol-shock-as-magnitude scaffold that drives the low TO.
+    # All TOP200, decay 60, subindustry.
+
+    # 1. Direction = zscore-of-close (price level reversion)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_zscore(close, 252), 60), subindustry)",
+
+    # 2. Direction = close vs 252d MA (relative-to-MA reversion)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * (close / ts_mean(close, 252) - 1), 60), subindustry)",
+
+    # 3. Direction = short-vs-long return spread (60d minus 252d, similar to detrend)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * (ts_mean(returns, 60) - ts_mean(returns, 252)), 60), subindustry)",
+
+    # 4. Magnitude swap: VWAP dispersion (close-vwap)/close as scaler
+    "group_neutralize(ts_decay_linear(-((close - vwap) / close) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 5. Magnitude swap: 60d realized vol (std of returns) as scaler
+    "group_neutralize(ts_decay_linear(-ts_std_dev(returns, 60) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 6. Range-vol-shock magnitude: high-low normalized by close
+    "group_neutralize(ts_decay_linear(-((high - low) / close - ts_mean((high - low) / close, 60)) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 7. Inverse direction: vol-shock * negative price-level zscore
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * (ts_mean(close, 60) / ts_mean(close, 252) - 1), 60), subindustry)",
+
+    # 8. Hybrid: vol-shock x zscore(close,252) with longer decay (smoother direction)
+    "group_neutralize(ts_decay_linear(-(adv20 / ts_mean(adv20, 60) - 1) * ts_zscore(close, 252), 60), subindustry)",
+]
+
+
 ROUND75_ALPHAS: list[str] = [
     # Round 75 — mine more survivors in the R74 #7 family before submission.
     # Base winner (SH 1.50/TO 0.107/fit 2.45):
@@ -2447,7 +2481,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2462,6 +2496,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round76": ROUND76_ALPHAS,
         "round75": ROUND75_ALPHAS,
         "round74": ROUND74_ALPHAS,
         "round73": ROUND73_ALPHAS,
