@@ -1,0 +1,29 @@
+[
+  {
+    "expr": "group_neutralize(winsorize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), std=4), industry)",
+    "success": true,
+    "sharpe": 1.53,
+    "fitness": 1.72,
+    "turnover": 0.1068,
+    "returns": 0.1583,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(scale(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), scale=1, longscale=1, shortscale=1), industry)",
+    "success": true,
+    "sharpe": 1.53,
+    "fitness": 1.72,
+    "turnover": 0.1068,
+    "returns": 0.1583,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(ts_decay_linear(0.49 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.49 * rank(ts_delta(return_assets, 180)) + 0.02 * rank(close), 60), industry)",
+    "success": true,
+    "sharpe": 1.52,
+    "fitness": 1.71,
+    "turnover": 0.1066,
+    "returns": 0.1587,
+    "error": ""
+  }
+]
