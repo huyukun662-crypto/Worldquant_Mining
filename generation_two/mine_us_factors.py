@@ -60,6 +60,39 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND65_ALPHAS: list[str] = [
+    # Round 65 — R64 lesson: short windows (10-30d) + industry neut give SH < 0.5
+    # on TOP200. Every prior PV-only winner uses 252d ts_rank + subindustry.
+    # Strategy: keep the proven long-window + subindustry skeleton, swap the
+    # *input field* to non-returns sources for structural diversity / low
+    # correlation to R11/R18/R20 returns-reversal winners.
+
+    # A) 252d volume rank reversal — high-volume names underperform
+    "group_neutralize(ts_decay_linear(-ts_rank(volume, 252), 60), subindustry)",
+
+    # B) 252d turnover rank (volume / adv20)
+    "group_neutralize(ts_decay_linear(-ts_rank(volume / adv20, 252), 60), subindustry)",
+
+    # C) 252d intraday range rank
+    "group_neutralize(ts_decay_linear(-ts_rank((high - low) / close, 252), 60), subindustry)",
+
+    # D) 252d realized-vol-of-vol rank
+    "group_neutralize(ts_decay_linear(-ts_rank(ts_std_dev(returns, 20), 252), 60), subindustry)",
+
+    # E) Distance from 252d high — close / ts_max(close, 252)
+    "group_neutralize(ts_decay_linear(-ts_rank(close / ts_max(close, 252), 252), 60), subindustry)",
+
+    # F) 252d VWAP-relative price rank
+    "group_neutralize(ts_decay_linear(-ts_rank(close / vwap, 252), 60), subindustry)",
+
+    # G) Long-MA mean reversion — 200d MA distance, cross-sectional rank
+    "group_neutralize(ts_decay_linear(-rank(close / ts_mean(close, 200) - 1), 60), subindustry)",
+
+    # H) 252d cumulative gap rank
+    "group_neutralize(ts_decay_linear(-ts_rank(ts_sum((open - ts_delay(close, 1)) / ts_delay(close, 1), 60), 252), 60), subindustry)",
+]
+
+
 ROUND64_ALPHAS: list[str] = [
     # Round 64 — pivot off the IV+ROA family entirely. R56-R63 all hit the
     # sparse-data concentration wall. Strategy: PV-only fields (100% coverage
@@ -2081,7 +2114,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2096,6 +2129,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round65": ROUND65_ALPHAS,
         "round64": ROUND64_ALPHAS,
         "round63": ROUND63_ALPHAS,
         "round62": ROUND62_ALPHAS,
