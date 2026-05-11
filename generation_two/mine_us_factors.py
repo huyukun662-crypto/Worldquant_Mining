@@ -59,6 +59,37 @@ MAX_TURNOVER = 0.25
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND14_ALPHAS: list[str] = [
+    # Round 14 — Round 13 gave 0 survivors. Fixes + new architectures
+    # structurally distinct from Alpha-101 / Classical templates AND
+    # the 5 existing PASSing factors.
+
+    # 1. Reversal acceleration with heavy decay (R13#1 was Sharpe 1.77 /
+    #    turn 0.64; push decay 60→200 + interval 5→10 to slash turnover).
+    "group_neutralize(ts_decay_linear(-ts_delta(ts_rank(returns, 252), 10), 200), subindustry)",
+
+    # 2. Multi-horizon zscore spread, sign-flipped (R13#2 was -0.81 / turn 0.099).
+    "group_neutralize(ts_decay_linear(ts_zscore(returns, 252) - ts_zscore(returns, 60), 60), subindustry)",
+
+    # 3. Drawdown signal as raw DIFFERENCE (no division — R13#4 had ratio
+    #    which sim-failed). Stocks deep in drawdown get long-weight.
+    "group_neutralize(ts_decay_linear(ts_rank(close - ts_max(close, 60), 252), 60), subindustry)",
+
+    # 4. Trend-regime-gated reversal (replaces skewness gate which sim-failed).
+    #    Only trade reversal when stock is BELOW its 252d-mean (oversold regime).
+    "group_neutralize(ts_decay_linear(if_else(close < ts_mean(close, 252), -ts_rank(returns, 252), 0), 60), subindustry)",
+
+    # 5. Multi-scale cumulative-return reversal — cross-sectional rank of
+    #    sum-of-cumulative-returns across 3 horizons. Templates use
+    #    single-horizon cumulative reversal; multi-scale composition is new.
+    "group_neutralize(ts_decay_linear(-rank(ts_sum(returns, 5) + ts_sum(returns, 21) + ts_sum(returns, 63)), 60), subindustry)",
+
+    # 6. Tail-event reversal with fixed threshold (replaces σ-scaled R13#3
+    #    which sim-failed). Long signed-flip of large-magnitude returns only.
+    "group_neutralize(ts_decay_linear(-ts_sum(if_else(abs(returns) > 0.03, returns, 0), 21), 60), subindustry)",
+]
+
+
 ROUND13_ALPHAS: list[str] = [
     # Round 13 — architectures explicitly NOT used in Alpha-101 or in the
     # workspace CLASSICAL_FACTORS, AND structurally distinct from the six
@@ -588,7 +619,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -600,6 +631,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round14": ROUND14_ALPHAS,
         "round13": ROUND13_ALPHAS,
         "round11": ROUND11_ALPHAS,
         "round10": ROUND10_ALPHAS,
