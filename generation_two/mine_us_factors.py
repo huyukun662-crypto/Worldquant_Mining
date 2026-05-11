@@ -60,6 +60,33 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND18_ALPHAS: list[str] = [
+    # Round 18 — settings/parameter variations of existing winners.
+    # User: "all settings tunable; just hit Sharpe>1.25, turn<0.25, fit>1.0".
+    # Existing winners' inner neutralization is subindustry. Vary group,
+    # lookback, threshold, additive weights to produce new factor IDs that
+    # still inherit the proven reversal architecture.
+
+    # 1. F1 with sector neutralization (broader group than subindustry).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 252), 60), sector)",
+
+    # 2. F1 with market neutralization (broadest grouping).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 252), 60), market)",
+
+    # 3. F1 with intermediate lookback 180 (between 144 and 252).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 180), 60), subindustry)",
+
+    # 4. F5 (barbell) with quartile threshold (75/25 not 85/15).
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.75, -1, if_else(ts_rank(returns, 252) < 0.25, 1, 0)), 60), subindustry)",
+
+    # 5. F5 (barbell) with extreme decile (90/10) — fewer but stronger signals.
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.9, -1, if_else(ts_rank(returns, 252) < 0.1, 1, 0)), 60), subindustry)",
+
+    # 6. F4 additive with re-weighted components (0.7 rank + 0.3 zscore).
+    "group_neutralize(ts_decay_linear(-0.7 * ts_rank(returns, 252) - 0.3 * ts_zscore(returns, 252), 60), subindustry)",
+]
+
+
 ROUND17_ALPHAS: list[str] = [
     # Round 17 — tame reversal-acceleration turnover.
     # Baseline (R13#1/R16#6): -ts_delta(ts_rank(returns, 252), 5) decay 60
@@ -701,7 +728,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -716,6 +743,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round18": ROUND18_ALPHAS,
         "round17": ROUND17_ALPHAS,
         "round16": ROUND16_ALPHAS,
         "round15": ROUND15_ALPHAS,
