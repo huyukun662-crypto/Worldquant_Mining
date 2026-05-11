@@ -60,6 +60,39 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND44_ALPHAS: list[str] = [
+    # Round 44 — cascade-decay trick (decay-of-decay) cut R42's
+    # price-accel turnover from 0.266 → 0.100 while keeping Sharpe 1.53.
+    # Apply the same trick to OTHER viable signals (R39/R40 had:
+    # PV-contrarian 0.89, dollar-vol-rev 0.75, OBV-flipped 0.62) to get
+    # 4 more structurally distinct survivors.
+
+    # 1. Cascade-decay PV-contrarian (R39 winner).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_corr(returns, ts_delta(volume, 1), 20)), 60), 60), industry)",
+
+    # 2. Cascade-decay dollar-volume reversal (R39 winner).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_sum(returns * vwap * volume, 40)), 60), 60), industry)",
+
+    # 3. Cascade-decay OBV-flipped (R41 result).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_sum(sign(returns) * volume, 20)), 60), 60), industry)",
+
+    # 4. Cascade-decay overnight-gap momentum (R39 #5 was +0.46).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(rank(ts_sum(open / ts_delay(close, 1) - 1, 10)), 60), 60), industry)",
+
+    # 5. Cascade-decay price-accel SUBINDUSTRY (variant of R43 winner).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 60), 60), subindustry)",
+
+    # 6. Cascade-decay price-accel applied to RETURNS (not close).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(returns, 5), 5)), 60), 60), industry)",
+
+    # 7. Cascade-decay combo (PV-contrarian + dollar-vol-rev).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(0.5 * -rank(ts_corr(returns, ts_delta(volume, 1), 20)) + 0.5 * -rank(ts_sum(returns * vwap * volume, 40)), 60), 60), industry)",
+
+    # 8. Cascade-decay price-accel with wider inner window (10/5).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 10), 5)), 60), 60), industry)",
+]
+
+
 ROUND43_ALPHAS: list[str] = [
     # Round 43 — push R42 winners' turnover below 0.25 gate.
     # R42 best: -rank(ts_delta(ts_delta(close, 5), 5)) decay 250 industry
@@ -1396,7 +1429,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1411,6 +1444,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round44": ROUND44_ALPHAS,
         "round43": ROUND43_ALPHAS,
         "round42": ROUND42_ALPHAS,
         "round41": ROUND41_ALPHAS,
