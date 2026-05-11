@@ -44,16 +44,19 @@ REPO = Path(__file__).resolve().parent.parent
 VENDOR = REPO / "vendor" / "worldquant-miner"
 
 
-# Setting search space - per user note: "delay decay truncation universe
-# 中性化等是可以调的". Expressions themselves stay free to mutate (no
-# template reuse).
+# Setting search space — per user spec, ALL settings tunable so the
+# optimizer can find any combination that satisfies SH>1.25, TO<0.25,
+# FIT>1. Expressions themselves stay free to mutate (no template reuse).
+# Account-imposed limits: delay must be 1 (no delay-0 access on this tier).
 SETTING_SPACE = {
     "universe":       ["TOP3000", "TOP1000", "TOP500", "TOP200"],
-    "delay":          [1],  # this account has no delay-0 access
-    "decay":          [0, 4, 8, 16, 32, 64],
-    "truncation":     [0.01, 0.05, 0.08, 0.10],
-    "neutralization": ["NONE", "MARKET", "INDUSTRY", "SUBINDUSTRY", "SECTOR"],
+    "delay":          [1],
+    "decay":          [0, 2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128],
+    "truncation":     [0.0, 0.01, 0.02, 0.05, 0.08, 0.10, 0.15, 0.20],
+    "neutralization": ["NONE", "MARKET", "SECTOR", "INDUSTRY",
+                       "SUBINDUSTRY", "COUNTRY", "STATISTICAL", "CROWDING"],
     "pasteurization": ["ON", "OFF"],
+    "nanHandling":    ["OFF", "ON"],
 }
 
 FIXED_SETTINGS = {
@@ -61,7 +64,6 @@ FIXED_SETTINGS = {
     "region":         "USA",
     "language":       "FASTEXPR",
     "unitHandling":   "VERIFY",
-    "nanHandling":    "OFF",
     "visualization":  False,
     "maxTrade":       "OFF",
     "testPeriod":     "P0Y0M",
