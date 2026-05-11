@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND43_ALPHAS: list[str] = [
+    # Round 43 — push R42 winners' turnover below 0.25 gate.
+    # R42 best: -rank(ts_delta(ts_delta(close, 5), 5)) decay 250 industry
+    #   Sharpe 1.77, fitness 1.38, turnover 0.266 (barely over)
+    # R42 subindustry: same with decay 120, subindustry
+    #   Sharpe 1.70, fitness 1.11, turnover 0.291
+    # Need turn < 0.25. Try more decay or smoothing inside.
+
+    # 1. Decay 300 industry.
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 300), industry)",
+
+    # 2. Decay 400 industry.
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 400), industry)",
+
+    # 3. Decay 200 industry + inner smoothing (ts_mean wrap close).
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(ts_mean(close, 3), 5), 5)), 200), industry)",
+
+    # 4. Decay 250 sector.
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 250), sector)",
+
+    # 5. Decay 250 market (broadest).
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 250), market)",
+
+    # 6. Decay 200 subindustry (R42#8 had decay 120 / 0.291 turn → bigger decay).
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 200), subindustry)",
+
+    # 7. Decay 250 subindustry.
+    "group_neutralize(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 250), subindustry)",
+
+    # 8. Double decay (cascade smoothing): decay then decay.
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 60), 60), industry)",
+]
+
+
 ROUND42_ALPHAS: list[str] = [
     # Round 42 — BREAKTHROUGH from R41: price-acceleration family
     # ts_delta(ts_delta(close, 5), 5) with WRONG sign gave |Sharpe| 1.50
@@ -1362,7 +1396,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1377,6 +1411,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round43": ROUND43_ALPHAS,
         "round42": ROUND42_ALPHAS,
         "round41": ROUND41_ALPHAS,
         "round40": ROUND40_ALPHAS,
