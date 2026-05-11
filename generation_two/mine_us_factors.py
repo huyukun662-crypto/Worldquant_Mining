@@ -60,6 +60,35 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND17_ALPHAS: list[str] = [
+    # Round 17 — tame reversal-acceleration turnover.
+    # Baseline (R13#1/R16#6): -ts_delta(ts_rank(returns, 252), 5) decay 60
+    #   TOP3000: Sharpe 1.77 / turn 0.640 / fit 0.86
+    #   TOP1000: Sharpe 1.78 / turn 0.640 / fit 0.96  ← fit just below 1.0 gate
+    # Need turn <0.25 without crushing Sharpe (R14#1 decay=200 over-killed it
+    # to 0.59 / 0.45). Try ALTERNATIVE turnover-shaping transforms.
+
+    # 1. Hump-filter 0.05 — suppress small wiggles in the change rate.
+    "group_neutralize(ts_decay_linear(hump(-ts_delta(ts_rank(returns, 252), 5), 0.05), 60), subindustry)",
+
+    # 2. Hump-filter 0.10 — more aggressive deadband.
+    "group_neutralize(ts_decay_linear(hump(-ts_delta(ts_rank(returns, 252), 5), 0.10), 60), subindustry)",
+
+    # 3. Vol-scaled — divide acceleration by realized vol (slow-moving denom).
+    "group_neutralize(ts_decay_linear(-ts_delta(ts_rank(returns, 252), 5) / (ts_std_dev(returns, 21) + 0.01), 60), subindustry)",
+
+    # 4. Longer interval (delta=21) — measure rank change over 21d not 5d.
+    "group_neutralize(ts_decay_linear(-ts_delta(ts_rank(returns, 252), 21), 60), subindustry)",
+
+    # 5. Pre-smoothed ranks — ts_mean the rank series before differencing.
+    "group_neutralize(ts_decay_linear(-ts_delta(ts_mean(ts_rank(returns, 252), 21), 5), 60), subindustry)",
+
+    # 6. TS-zscore of the delta — standardize cross-sectionally before decay
+    #    (60d window matches the existing winning decay).
+    "group_neutralize(ts_decay_linear(-ts_zscore(ts_delta(ts_rank(returns, 252), 5), 60), 60), subindustry)",
+]
+
+
 ROUND16_ALPHAS: list[str] = [
     # Round 16 — re-screen the best non-template candidates from Rounds
     # 13-15 on a DIFFERENT universe (USA TOP1000 or TOP500). The TOP3000
@@ -672,7 +701,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -687,6 +716,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round17": ROUND17_ALPHAS,
         "round16": ROUND16_ALPHAS,
         "round15": ROUND15_ALPHAS,
         "round14": ROUND14_ALPHAS,
