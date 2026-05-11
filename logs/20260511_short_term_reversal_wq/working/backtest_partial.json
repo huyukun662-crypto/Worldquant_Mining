@@ -130,5 +130,71 @@
         ]
       }
     ]
+  },
+  {
+    "idx": 3,
+    "id": "stm_rev_zscore10",
+    "code": "rank(reverse(ts_zscore(returns, 10)))",
+    "ok": true,
+    "alpha_id": "Grn16wrG",
+    "sharpe": 1.97,
+    "turnover": 0.6858,
+    "fitness": 0.97,
+    "returns": 0.1647,
+    "drawdown": 0.075,
+    "longCount": 1570,
+    "shortCount": 1566,
+    "checks_passed": 6,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.97
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.97
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.6858
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.6858
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.85,
+        "value": 1.66
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   }
 ]
