@@ -60,6 +60,41 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND61_ALPHAS: list[str] = [
+    # Round 61 — fix weight concentration on TOP3000. IV (0.69 coverage)
+    # + ROA (0.50 coverage) → only ~30% of universe gets weight. Use
+    # coalesce() to fill NaN with PV-proxy fallback for full coverage.
+    #   IV momentum proxy: ts_delta(ts_std_dev(returns, 30), 10) — realized
+    #     vol momentum (100% coverage).
+    #   ROA momentum proxy: ts_mean(returns, 180) / ts_std_dev(returns, 180)
+    #     — long-term risk-adjusted momentum (100% coverage).
+
+    # 1. F2 with coalesce on IV only (keep ROA gap).
+    "group_neutralize(ts_decay_linear(0.5 * coalesce(rank(ts_delta(implied_volatility_mean_90, 10)), rank(ts_delta(ts_std_dev(returns, 30), 10))) + 0.5 * rank(ts_delta(return_assets, 180)), 60), industry)",
+
+    # 2. F2 with coalesce on ROA only (keep IV gap).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * coalesce(rank(ts_delta(return_assets, 180)), rank(ts_mean(returns, 180) / (ts_std_dev(returns, 180) + 0.001))), 60), industry)",
+
+    # 3. F2 with coalesce on BOTH (full coverage).
+    "group_neutralize(ts_decay_linear(0.5 * coalesce(rank(ts_delta(implied_volatility_mean_90, 10)), rank(ts_delta(ts_std_dev(returns, 30), 10))) + 0.5 * coalesce(rank(ts_delta(return_assets, 180)), rank(ts_mean(returns, 180) / (ts_std_dev(returns, 180) + 0.001))), 60), industry)",
+
+    # 4. Pure PV proxy (vol-Δ + risk-adj-momentum, both 100% coverage).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(ts_std_dev(returns, 30), 10)) + 0.5 * rank(ts_mean(returns, 180) / (ts_std_dev(returns, 180) + 0.001)), 60), industry)",
+
+    # 5. F5 (IV-270) with coalesce on both.
+    "group_neutralize(ts_decay_linear(0.5 * coalesce(rank(ts_delta(implied_volatility_mean_270, 10)), rank(ts_delta(ts_std_dev(returns, 30), 10))) + 0.5 * coalesce(rank(ts_delta(return_assets, 180)), rank(ts_mean(returns, 180) / (ts_std_dev(returns, 180) + 0.001))), 60), industry)",
+
+    # 6. F2 wrapped in winsorize to cap concentration.
+    "group_neutralize(winsorize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), std=4), industry)",
+
+    # 7. F2 wrapped in scale() to normalize.
+    "group_neutralize(scale(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.5 * rank(ts_delta(return_assets, 180)), 60), scale=1, longscale=1, shortscale=1), industry)",
+
+    # 8. F2 with a tiny universe-wide tiebreaker (ensures every stock weighted).
+    "group_neutralize(ts_decay_linear(0.49 * rank(ts_delta(implied_volatility_mean_90, 10)) + 0.49 * rank(ts_delta(return_assets, 180)) + 0.02 * rank(close), 60), industry)",
+]
+
+
 ROUND60_ALPHAS: list[str] = [
     # Round 60 — VERIFY/RE-BACKTEST on TOP3000. The user reports F2-F8 from
     # TOP200 screening all failed on the actual platform. Likely the
@@ -1943,7 +1978,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1958,6 +1993,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round61": ROUND61_ALPHAS,
         "round60": ROUND60_ALPHAS,
         "round59": ROUND59_ALPHAS,
         "round58": ROUND58_ALPHAS,
