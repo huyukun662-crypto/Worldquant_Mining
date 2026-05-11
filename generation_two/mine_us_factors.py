@@ -60,6 +60,31 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND23_ALPHAS: list[str] = [
+    # Round 23 — build on R22 IV-skew win (Sharpe 2.10).
+    # IV-skew is anti-predictive (high put-skew = oversold). Extend to:
+    # - ratio formulation (vs difference)
+    # - put IV alone, call IV alone
+    # - sentiment without intraday-sign noise
+    # - intraday range vol-premium (different category)
+
+    # 1. IV skew RATIO — different formulation than R22#1 difference.
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30 / (implied_volatility_call_30 + 0.01)), 60), industry)",
+
+    # 2. PUT IV alone — long stocks with low put IV (less hedging demand).
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_put_30), 60), industry)",
+
+    # 3. CALL IV alone — long stocks with low call IV (no chasing).
+    "group_neutralize(ts_decay_linear(-rank(implied_volatility_call_30), 60), industry)",
+
+    # 4. SENTIMENT buzz alone (no intraday sign — fix R22#2 turnover).
+    "group_neutralize(ts_decay_linear(-rank(scl12_buzz), 60), industry)",
+
+    # 5. INTRADAY range vol-premium — long high-range stocks.
+    "group_neutralize(ts_decay_linear(rank((high - low) / (close + 0.01)), 60), industry)",
+]
+
+
 ROUND22_ALPHAS: list[str] = [
     # Round 22 — fix R21 fails + add diverse new candidates.
     # R21 findings: IV skew & sentiment buzz are STRONG signals but
@@ -827,7 +852,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -842,6 +867,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round23": ROUND23_ALPHAS,
         "round22": ROUND22_ALPHAS,
         "round21": ROUND21_ALPHAS,
         "round20": ROUND20_ALPHAS,
