@@ -127,8 +127,10 @@ EXPRESSIONS = [
     },
     {
         "idx": 8, "id": "stm_rev_volwt_decay",
-        "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), s_log_1p(divide(volume, adv20))), 10)))",
-        "rationale": "Z-scored reversal weighted by log(abnormal-volume), decay-smoothed - composite low-TO variant.",
+        # log(1+x) form used because s_log_1p is not exposed on this WQ tier
+        # (G1 failure observed in run 20260511; retry_round=1).
+        "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 10)))",
+        "rationale": "Z-scored reversal weighted by log(1 + abnormal-volume), decay-smoothed - composite low-TO variant.",
         "expected_turnover_direction": "lower",
     },
 ]
