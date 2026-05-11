@@ -60,6 +60,41 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND71_ALPHAS: list[str] = [
+    # Round 71 — deepen the two R70 winners (H and C families).
+    # H = -(volume/ts_mean(volume,60)-1)*returns  was SH 0.59 / TO 0.118.
+    # C = -ts_corr(close, volume, 60)             was SH 0.43 / TO 0.048.
+    # Goal: lift Sharpe toward 1.0+ while keeping TO < 0.20.
+    # All TOP200, decay 60 unless noted, subindustry-neutralized.
+
+    # --- H family: volume-shock-weighted returns ---
+    # 1. Long denominator window (252d normal volume)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 252) - 1) * returns, 60), subindustry)",
+
+    # 2. Cumulative vol-shock returns (ts_sum smooths and lengthens horizon)
+    "group_neutralize(ts_decay_linear(-ts_sum((volume / ts_mean(volume, 60) - 1) * returns, 60), 60), subindustry)",
+
+    # 3. Sign-only return (strip magnitude noise, keep vol-shock weight)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * sign(returns), 60), subindustry)",
+
+    # 4. Rank-wrap of the H signal (cross-sectional standardization)
+    "group_neutralize(ts_decay_linear(-ts_rank((volume / ts_mean(volume, 60) - 1) * returns, 252), 60), subindustry)",
+
+    # --- C family: price-volume correlation reversal ---
+    # 5. Long-window PV correlation (252d)
+    "group_neutralize(ts_decay_linear(-ts_corr(close, volume, 252), 60), subindustry)",
+
+    # 6. Returns instead of close (Alpha101 style — return-volume sync)
+    "group_neutralize(ts_decay_linear(-ts_corr(returns, volume, 60), 60), subindustry)",
+
+    # 7. Alpha101 #6 style: rank-rank correlation
+    "group_neutralize(ts_decay_linear(-ts_corr(rank(close), rank(volume), 60), 60), subindustry)",
+
+    # 8. Cumulative short-window PV correlation
+    "group_neutralize(ts_decay_linear(-ts_sum(ts_corr(returns, volume, 20), 60), 60), subindustry)",
+]
+
+
 ROUND70_ALPHAS: list[str] = [
     # Round 70 — abandon ts_rank(returns) family. R64-R69 proved that the
     # rank-of-long-window-return construction has a TO floor near 0.20 on
@@ -2279,7 +2314,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2294,6 +2329,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round71": ROUND71_ALPHAS,
         "round70": ROUND70_ALPHAS,
         "round69": ROUND69_ALPHAS,
         "round68": ROUND68_ALPHAS,
