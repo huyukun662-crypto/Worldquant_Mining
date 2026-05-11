@@ -60,6 +60,40 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND67_ALPHAS: list[str] = [
+    # Round 67 — R66 produced our first SH>1.25 hit: H (detrended-returns 252d
+    # rank) gave SH 1.28 / TO 0.288 / fit 0.88 — passed Sharpe but failed
+    # turnover (>0.25) and fitness (<1.0). Strategy: dampen turnover on H/B/G
+    # via larger decay window, quantile cuts (R11-winner trick), and adv20
+    # tiebreaker. Each entry is structurally distinct from R11 winner
+    # (-ts_rank(returns,252)) — H detrends, B uses 126d, G vol-adjusts.
+
+    # 1. H + larger decay (90) — most direct turnover knob
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 20), 252), 90), subindustry)",
+
+    # 2. H + quantile cuts (R11-winner structure applied to H)
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns - ts_mean(returns, 20), 252) > 0.85, -1, if_else(ts_rank(returns - ts_mean(returns, 20), 252) < 0.15, 1, 0)), 60), subindustry)",
+
+    # 3. H + 10% adv20 tiebreaker (R62 trick) — adds dense liquidity rank
+    "group_neutralize(ts_decay_linear(0.9 * -ts_rank(returns - ts_mean(returns, 20), 252) + 0.1 * rank(adv20), 60), subindustry)",
+
+    # 4. H with longer detrend (60d local mean instead of 20d)
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 60), 252), 60), subindustry)",
+
+    # 5. H over 504d horizon — slower signal → lower TO naturally
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 20), 504), 60), subindustry)",
+
+    # 6. B (126d) + quantile cuts
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 126) > 0.85, -1, if_else(ts_rank(returns, 126) < 0.15, 1, 0)), 60), subindustry)",
+
+    # 7. G (vol-adjusted) + quantile cuts
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns / (ts_std_dev(returns, 60) + 0.001), 252) > 0.85, -1, if_else(ts_rank(returns / (ts_std_dev(returns, 60) + 0.001), 252) < 0.15, 1, 0)), 60), subindustry)",
+
+    # 8. H × G blend — average of two strongest R66 signals for diversification
+    "group_neutralize(ts_decay_linear(-0.6 * ts_rank(returns - ts_mean(returns, 20), 252) - 0.4 * ts_rank(returns / (ts_std_dev(returns, 60) + 0.001), 252), 60), subindustry)",
+]
+
+
 ROUND66_ALPHAS: list[str] = [
     # Round 66 — R65 confirmed: long-window ts_rank only works on the *returns*
     # field. Best non-returns result was SH 0.62 (cumulative gap). So variation
@@ -2147,7 +2181,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2162,6 +2196,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round67": ROUND67_ALPHAS,
         "round66": ROUND66_ALPHAS,
         "round65": ROUND65_ALPHAS,
         "round64": ROUND64_ALPHAS,
