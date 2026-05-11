@@ -60,6 +60,39 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND68_ALPHAS: list[str] = [
+    # Round 68 — raised the bar: SH > 1.35 AND TO < 0.15 (was 1.25 / 0.25).
+    # R67 H60 (SH 1.32 / TO 0.228) fails both. Need aggressive TO suppression
+    # via (a) stacked ts_decay_linear (R43 trick — got TO 0.10 there),
+    # (b) tight quantile cuts (90/10 or 95/5), (c) longer horizons (504d).
+    # Mix H60 variants and proven R11/R20/R43 motifs to maximize hit chance.
+
+    # 1. H60 + stacked decay — most direct TO killer
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 60), 252), 60), 60), subindustry)",
+
+    # 2. H60 + tight quantile cuts (95/5)
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns - ts_mean(returns, 60), 252) > 0.95, -1, if_else(ts_rank(returns - ts_mean(returns, 60), 252) < 0.05, 1, 0)), 60), subindustry)",
+
+    # 3. H60 + larger decay 120
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 60), 252), 120), subindustry)",
+
+    # 4. H60 over 504d horizon — slower signal naturally lowers TO
+    "group_neutralize(ts_decay_linear(-ts_rank(returns - ts_mean(returns, 60), 504), 60), subindustry)",
+
+    # 5. Plain 200d reversal + stacked decay (R20 base + R43 TO trick)
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-ts_rank(returns, 200), 60), 60), subindustry)",
+
+    # 6. R11 quantile winner with tighter 90/10 cuts (proven structure, lower TO)
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.90, -1, if_else(ts_rank(returns, 252) < 0.10, 1, 0)), 60), subindustry)",
+
+    # 7. R11 quantile (85/15) + stacked decay
+    "group_neutralize(ts_decay_linear(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.85, -1, if_else(ts_rank(returns, 252) < 0.15, 1, 0)), 60), 60), subindustry)",
+
+    # 8. R43-style price acceleration with 10-day double-delta (different family)
+    "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 10), 10)), 60), 60), subindustry)",
+]
+
+
 ROUND67_ALPHAS: list[str] = [
     # Round 67 — R66 produced our first SH>1.25 hit: H (detrended-returns 252d
     # rank) gave SH 1.28 / TO 0.288 / fit 0.88 — passed Sharpe but failed
@@ -2181,7 +2214,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2196,6 +2229,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round68": ROUND68_ALPHAS,
         "round67": ROUND67_ALPHAS,
         "round66": ROUND66_ALPHAS,
         "round65": ROUND65_ALPHAS,
