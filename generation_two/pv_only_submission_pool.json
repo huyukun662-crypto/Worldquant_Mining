@@ -1,5 +1,5 @@
 {
-  "rationale": "PV-only candidates curated from prior WQ-platform mining rounds. All fields (returns/close/vwap) have 100% coverage on TOP200/500/1000 by construction, so the platform concentration check ('Weight is too strongly concentrated') cannot trigger from sparse data — which was the blocker for the IV+ROA factor family (R56-R62). Sharpe / turnover values below are from WQ Brain platform simulation, not local backtest.",
+  "rationale": "PV-only candidates curated from WQ-platform mining rounds. All fields (volume/close/high/low/returns/adv20/vwap) have 100% coverage on TOP200/500/1000 by construction, so the platform concentration check ('Weight is too strongly concentrated') cannot trigger from sparse data — which was the blocker for the IV+ROA factor family (R56-R62). Sharpe / turnover values below are from WQ Brain platform simulation, not local backtest. Headline picks: R74 #7 and R76 #6 from rounds 74/76 are the two independent winners under the SH>=1.30, TO<0.20, fitness>1.0 gate; both share the same direction signal but use independent magnitude sources (volume-shock vs intraday-range-shock).",
   "settings": {
     "Region": "USA",
     "Universe": "TOP200",
@@ -12,52 +12,73 @@
   },
   "candidates": [
     {
-      "id": "PV1",
-      "alpha_family": "Long-term return reversal — quantile cuts",
-      "rationale": "Tail-trimmed reversal: short the top 15% by 252-day rank-of-returns, long the bottom 15%. Quantile gating throttles trading to extreme names, lowering turnover.",
-      "platform_sharpe": 1.70,
-      "platform_turnover": 0.213,
-      "platform_returns": 0.1324,
-      "expression": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.85, -1, if_else(ts_rank(returns, 252) < 0.15, 1, 0)), 60), subindustry)"
+      "id": "PV-R74-7",
+      "alpha_family": "Volume-shock x demeaned long return",
+      "rationale": "vol-shock (volume / 60d mean - 1) provides low-turnover magnitude scaling; (mean(returns,252) - mean(mean(returns,252),126)) is a cross-time demeaned long return that captures recent-overshoot reversion. Subtracting the rolling time-mean of the 252d return removes the slow drift component, sharpening reversion direction. The combination passes the new gate (SH>=1.30, TO<0.20, fit>1.0) with margin.",
+      "platform_sharpe": 1.50,
+      "platform_turnover": 0.1067,
+      "platform_fitness": 2.45,
+      "platform_returns": 0.3342,
+      "expression": "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)"
     },
     {
-      "id": "PV2",
-      "alpha_family": "Long-term return reversal — continuous",
-      "rationale": "Continuous version of PV1: negative 200-day rank-of-returns, neutralized by subindustry. Simpler, less hyperparameter risk.",
-      "platform_sharpe": 1.62,
-      "platform_turnover": 0.236,
-      "platform_returns": 0.1572,
-      "expression": "group_neutralize(ts_decay_linear(-ts_rank(returns, 200), 60), subindustry)"
-    },
-    {
-      "id": "PV3",
-      "alpha_family": "Acceleration / 2nd-order momentum — very-low-TO",
-      "rationale": "Stacked decay × negative rank of second-difference of close. Different alpha source (price acceleration, not level reversal) so combines well with PV1/PV2 in a portfolio. Turnover 0.10 is the lowest in the pool.",
-      "platform_sharpe": 1.53,
-      "platform_turnover": 0.100,
-      "platform_returns": null,
-      "expression": "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 60), 60), industry)"
+      "id": "PV-R76-6",
+      "alpha_family": "Range-shock x demeaned long return (independent magnitude axis vs PV-R74-7)",
+      "rationale": "Same demeaned long-return direction as PV-R74-7, but magnitude swapped from volume-shock to intraday-range-shock: ((high-low)/close - mean((high-low)/close,60)). Range-shock fires on intraday volatility spikes which are only loosely correlated with trading-intensity spikes, giving genuine portfolio independence from PV-R74-7. Slightly higher returns (0.4547) at modestly higher TO.",
+      "platform_sharpe": 1.44,
+      "platform_turnover": 0.1193,
+      "platform_fitness": 2.75,
+      "platform_returns": 0.4547,
+      "expression": "group_neutralize(ts_decay_linear(-((high - low) / close - ts_mean((high - low) / close, 60)) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)"
     }
   ],
   "fallback_candidates": [
     {
-      "id": "PV4",
-      "alpha_family": "Correlation × intraday gap",
-      "expression": "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_mean(returns, 1), 60)) * -ts_rank(close - vwap, 252), 90), industry)",
-      "platform_sharpe": 1.52,
-      "platform_turnover": 0.227
+      "id": "PV-R75-1",
+      "alpha_family": "adv20-shock x demeaned long return (volume-source variant of PV-R74-7)",
+      "rationale": "Same family as PV-R74-7 but replaces raw volume with adv20 (20d dollar-volume average) in the shock denominator. Smoother magnitude, lower TO (0.0765) but slightly lower Sharpe. Use as a substitute for PV-R74-7 if low TO is critical.",
+      "platform_sharpe": 1.44,
+      "platform_turnover": 0.0765,
+      "platform_fitness": 2.13,
+      "platform_returns": 0.2729,
+      "expression": "group_neutralize(ts_decay_linear(-(adv20 / ts_mean(adv20, 60) - 1) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)"
     },
     {
-      "id": "PV5",
-      "alpha_family": "Long-term reversal — TO 0.10 + 0.85 quantile cuts",
-      "expression": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.9, -1, if_else(ts_rank(returns, 252) < 0.1, 1, 0)), 60), subindustry)",
-      "platform_sharpe": 1.58,
-      "platform_turnover": 0.194
+      "id": "PV-R75-6",
+      "alpha_family": "Short-denom vol-shock x demeaned long return",
+      "rationale": "Same family as PV-R74-7 but vol-shock denominator shortened from 60d to 20d for faster magnitude reaction. Higher returns (0.3154) at slightly higher TO (0.1495).",
+      "platform_sharpe": 1.33,
+      "platform_turnover": 0.1495,
+      "platform_fitness": 1.93,
+      "platform_returns": 0.3154,
+      "expression": "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 20) - 1) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)"
+    },
+    {
+      "id": "PV1",
+      "alpha_family": "Long-term return reversal — quantile cuts (legacy)",
+      "expression": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.85, -1, if_else(ts_rank(returns, 252) < 0.15, 1, 0)), 60), subindustry)",
+      "platform_sharpe": 1.70,
+      "platform_turnover": 0.213
+    },
+    {
+      "id": "PV2",
+      "alpha_family": "Long-term return reversal — continuous (legacy)",
+      "expression": "group_neutralize(ts_decay_linear(-ts_rank(returns, 200), 60), subindustry)",
+      "platform_sharpe": 1.62,
+      "platform_turnover": 0.236
+    },
+    {
+      "id": "PV3",
+      "alpha_family": "Acceleration / 2nd-order momentum (legacy)",
+      "expression": "group_neutralize(ts_decay_linear(ts_decay_linear(-rank(ts_delta(ts_delta(close, 5), 5)), 60), 60), industry)",
+      "platform_sharpe": 1.53,
+      "platform_turnover": 0.100
     }
   ],
   "submission_order": [
-    "1. PV1 first (highest Sharpe, proven low turnover, quantile-gated → robust to noise).",
-    "2. PV2 as backup (simpler, easier to defend to a reviewer).",
-    "3. PV3 if portfolio diversity matters (orthogonal alpha source, lowest TO)."
+    "1. PV-R74-7 first  — highest Sharpe (1.50) with TO 0.107, fitness 2.45. Headline pick.",
+    "2. PV-R76-6 second — independent magnitude axis (range-shock vs volume-shock), Sharpe 1.44 / TO 0.119, fitness 2.75. Genuinely diversifies PV-R74-7.",
+    "3. PV-R75-1, PV-R75-6 are same-family substitutes for PV-R74-7. Use only if PV-R74-7 fails platform checks.",
+    "4. Legacy PV1-PV3 retained as deeper fallbacks if both R74/R76 alphas fail the platform concentration / submission check (unlikely since both use 100%-coverage PV fields)."
   ]
 }
