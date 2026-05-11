@@ -188,16 +188,18 @@ def submit_one(session, eid: int, base_idx: int, base_expr: str,
 
 def candidate_stream():
     """For each base expr × decay_wrap × setting cell, yield one job.
-    We interleave across base expressions so we explore all 5 mechanisms
-    in parallel rather than exhausting one before starting the next.
+    Grid order: NEUT × TRUNC × UNIV × DECAY_WRAP × DECAY_SETTING — so the
+    inner-most cycling dimension is the platform decay setting (the
+    main TO knob), then the ts_decay_linear wrap. This means we
+    explore decay sweeps for the (INDUSTRY, 0.05, TOP3000) cell first
+    before moving to neutralization/truncation variants.
     """
-    grid = list(itertools.product(DECAY_LINEAR_WINDOWS, DECAY_SETTINGS,
-                                   NEUTRALIZATIONS, TRUNCATIONS, UNIVERSES))
+    grid = list(itertools.product(NEUTRALIZATIONS, TRUNCATIONS, UNIVERSES,
+                                   DECAY_LINEAR_WINDOWS, DECAY_SETTINGS))
     eid = 0
-    # Round-robin across base expressions
     for cell in grid:
         for base_idx, base in enumerate(BASE_EXPRS):
-            d_wrap, decay_set, neut, trunc, univ = cell
+            neut, trunc, univ, d_wrap, decay_set = cell
             if d_wrap is None:
                 expr = base
             else:
