@@ -5216,7 +5216,7 @@
     "category": "body-range-ratio",
     "idea": "Average ratio of candle body to total range over 60d. Persistent high body-fraction = decisive moves; persistent low = indecision / mean-reverting. Sign negative: short decisive-trend names (momentum is already priced in).",
     "original": "Mean(|C-O| / (H-L), 60)",
-    "expression": "-1 * ts_mean(abs(close - open) / (high - low + 0.001), 60)",
+    "expression": "-1 * ts_mean(abs(close - open) / (high - low + 0.0001 * close), 60)",
     "settings": {
       "instrumentType": "EQUITY",
       "region": "USA",
@@ -5233,13 +5233,12 @@
       "maxTrade": "OFF",
       "testPeriod": "P0Y0M"
     },
-    "ok": false,
-    "stage": "simulation",
-    "status": "WARNING",
-    "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
-    "data": {
-      "id": "1GUi693Qb4xpbwFC3tVr0VV",
+    "ok": true,
+    "alpha_id": "Grn15kVP",
+    "alpha": {
+      "id": "Grn15kVP",
       "type": "REGULAR",
+      "author": "YW92315",
       "settings": {
         "instrumentType": "EQUITY",
         "region": "USA",
@@ -5254,23 +5253,163 @@
         "maxTrade": "OFF",
         "maxPosition": "OFF",
         "language": "FASTEXPR",
-        "visualization": false
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
       },
-      "regular": "-1 * ts_mean(abs(close - open) / (high - low + 0.001), 60)",
-      "status": "WARNING",
-      "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
-      "location": {
-        "line": 1,
-        "start": 0,
-        "end": 58,
-        "type": "UNITS",
-        "property": "regular"
+      "regular": {
+        "code": "-1 * ts_mean(abs(close - open) / (high - low + 0.0001 * close), 60)",
+        "description": null,
+        "operatorCount": 8
       },
-      "links": {
-        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      "dateCreated": "2026-05-11T09:47:37-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T09:47:38-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": -1018547,
+        "bookSize": 20000000,
+        "longCount": 1550,
+        "shortCount": 1587,
+        "turnover": 0.0951,
+        "returns": -0.0206,
+        "drawdown": 0.1486,
+        "margin": -0.000433,
+        "sharpe": -0.29,
+        "fitness": -0.12,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": -0.29
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": -0.12
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0951
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0951
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": -0.13,
+            "value": -0.16
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
       },
-      "alpha": "VkX1Lnm5"
-    }
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": -0.29,
+    "turnover": 0.0951,
+    "fitness": -0.12,
+    "returns": -0.0206,
+    "drawdown": 0.1486,
+    "margin": -0.000433,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.29
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.12
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0951
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0951
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.13,
+        "value": -0.16
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "QM_R6_03",
@@ -5455,6 +5594,406 @@
         "result": "PASS",
         "limit": 0.37,
         "value": 0.64
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "QM_R6_04",
+    "category": "close-in-range-position",
+    "idea": "Average (close-low)/(high-low) over 60d -- close's position in the daily range. Persistent closing near high = buying pressure dominates = momentum signal; long it.",
+    "original": "Mean((C-L)/(H-L), 60)",
+    "expression": "ts_mean((close - low) / (high - low + 0.0001 * close), 60)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "9q9ZOkwq",
+    "alpha": {
+      "id": "9q9ZOkwq",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_mean((close - low) / (high - low + 0.0001 * close), 60)",
+        "description": null,
+        "operatorCount": 6
+      },
+      "dateCreated": "2026-05-11T09:50:21-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T09:50:22-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": -2189426,
+        "bookSize": 20000000,
+        "longCount": 1565,
+        "shortCount": 1506,
+        "turnover": 0.0917,
+        "returns": -0.0442,
+        "drawdown": 0.275,
+        "margin": -0.000965,
+        "sharpe": -0.51,
+        "fitness": -0.3,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": -0.51
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": -0.3
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0917
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0917
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": -0.22,
+            "value": -0.37
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": -0.51,
+    "turnover": 0.0917,
+    "fitness": -0.3,
+    "returns": -0.0442,
+    "drawdown": 0.275,
+    "margin": -0.000965,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.51
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0917
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0917
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.22,
+        "value": -0.37
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "QM_R6_05",
+    "category": "signed-body-power",
+    "idea": "Average signed_power((close-open)/open, 0.5) over 60d. Concave transform of the daily body emphasises moderate moves and dampens outliers; persistent positive bias = institutional accumulation.",
+    "original": "Mean(SignedPow((C-O)/O, 0.5), 60)",
+    "expression": "ts_mean(signed_power((close - open) / open, 0.5), 60)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "Grn15PkP",
+    "alpha": {
+      "id": "Grn15PkP",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_mean(signed_power((close - open) / open, 0.5), 60)",
+        "description": null,
+        "operatorCount": 4
+      },
+      "dateCreated": "2026-05-11T09:45:16-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T09:45:16-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": -6400621,
+        "bookSize": 20000000,
+        "longCount": 1615,
+        "shortCount": 1522,
+        "turnover": 0.1013,
+        "returns": -0.1294,
+        "drawdown": 0.7517,
+        "margin": -0.002554,
+        "sharpe": -0.91,
+        "fitness": -0.93,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": -0.91
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": -0.93
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.1013
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.1013
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": -0.39,
+            "value": -0.81
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": -0.91,
+    "turnover": 0.1013,
+    "fitness": -0.93,
+    "returns": -0.1294,
+    "drawdown": 0.7517,
+    "margin": -0.002554,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.91
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.93
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1013
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1013
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.39,
+        "value": -0.81
       },
       {
         "name": "SELF_CORRELATION",
