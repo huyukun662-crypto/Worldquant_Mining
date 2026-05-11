@@ -60,6 +60,37 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND54_ALPHAS: list[str] = [
+    # Round 54 — R53 TOP500 finding: IV momentum + ROA delta 50/50 combo
+    # gives Sharpe 1.09 / turn 0.112 / fit 0.82. Turn ✓, Sharpe and fit
+    # short. Tune weights, add subindustry, try 3-way combo, etc.
+
+    # 1. Combo weight shift: 0.6 IV + 0.4 ROA.
+    "group_neutralize(ts_decay_linear(0.6 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.4 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 2. Combo 0.7 IV + 0.3 ROA (more IV).
+    "group_neutralize(ts_decay_linear(0.7 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.3 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 3. Combo 0.4 IV + 0.6 ROA (more ROA).
+    "group_neutralize(ts_decay_linear(0.4 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.6 * rank(ts_delta(return_assets, 90)), 60), industry)",
+
+    # 4. 50/50 combo with SUBINDUSTRY (subindustry IV solo was 0.82 vs 0.73).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), subindustry)",
+
+    # 5. 3-WAY combo: IV momentum + ROA Δ + CFPS yield.
+    "group_neutralize(ts_decay_linear(0.4 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.4 * rank(ts_delta(return_assets, 90)) + 0.2 * rank(anl4_af_cfps_value / close), 60), industry)",
+
+    # 6. 3-WAY: IV + ROA + ROE delta.
+    "group_neutralize(ts_decay_linear(0.4 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.3 * rank(ts_delta(return_assets, 90)) + 0.3 * rank(ts_delta(return_equity, 90)), 60), industry)",
+
+    # 7. Combo with cascade-decay (smoother).
+    "group_neutralize(ts_decay_linear(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 60), 60), industry)",
+
+    # 8. Combo with HEAVIER decay (250).
+    "group_neutralize(ts_decay_linear(0.5 * rank(ts_delta(implied_volatility_mean_30, 10)) + 0.5 * rank(ts_delta(return_assets, 90)), 250), industry)",
+]
+
+
 ROUND53_ALPHAS: list[str] = [
     # Round 53 — R52 on TOP1000 showed IV momentum's turnover dropped
     # from 0.352 → 0.209 (now passes turnover gate), Sharpe stable at 0.73.
@@ -1723,7 +1754,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1738,6 +1769,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round54": ROUND54_ALPHAS,
         "round53": ROUND53_ALPHAS,
         "round52": ROUND52_ALPHAS,
         "round51": ROUND51_ALPHAS,
