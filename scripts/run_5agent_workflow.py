@@ -82,58 +82,116 @@ def _load(p: Path, name: str):
 # conditioning, (d) microstructure source (vwap vs close). All wrapped in
 # rank() for cross-sectional scaling. INDUSTRY neutralization removes
 # industry-level drift; truncation=0.08 caps tail weights.
-EXPRESSIONS = [
-    {
-        "idx": 1, "id": "stm_rev_mean5",
-        "code": "rank(reverse(ts_mean(returns, 5)))",
-        "rationale": "Long 5d losers. Pure short-term reversal baseline.",
-        "expected_turnover_direction": "higher",
-    },
-    {
-        "idx": 2, "id": "stm_rev_decay8",
-        "code": "rank(reverse(ts_decay_linear(returns, 8)))",
-        "rationale": "Linear-decay-smoothed reversal; lower TO than mean5.",
-        "expected_turnover_direction": "lower",
-    },
-    {
-        "idx": 3, "id": "stm_rev_zscore10",
-        "code": "rank(reverse(ts_zscore(returns, 10)))",
-        "rationale": "Z-scored reversal: normalizes by stock-specific vol.",
-        "expected_turnover_direction": "neutral",
-    },
-    {
-        "idx": 4, "id": "stm_rev_volcond",
-        "code": "rank(reverse(multiply(ts_mean(returns, 5), ts_mean(divide(volume, adv20), 5))))",
-        "rationale": "Reversal weighted by abnormal volume - extreme moves on heavy flow tend to revert harder.",
-        "expected_turnover_direction": "higher",
-    },
-    {
-        "idx": 5, "id": "stm_rev_volnorm",
-        "code": "rank(reverse(divide(ts_delta(close, 3), ts_std_dev(returns, 20))))",
-        "rationale": "Vol-normalized 3d price change; reversal in vol-adjusted space.",
-        "expected_turnover_direction": "higher",
-    },
-    {
-        "idx": 6, "id": "stm_rev_vwap",
-        "code": "rank(reverse(ts_decay_linear(divide(subtract(close, vwap), vwap), 5)))",
-        "rationale": "Microstructure: close-vs-VWAP overextension; intraday traders fade.",
-        "expected_turnover_direction": "higher",
-    },
-    {
-        "idx": 7, "id": "stm_rev_tsrank10",
-        "code": "rank(reverse(ts_rank(returns, 10)))",
-        "rationale": "Rank-based 10d reversal; more robust to return outliers than zscore.",
-        "expected_turnover_direction": "neutral",
-    },
-    {
-        "idx": 8, "id": "stm_rev_volwt_decay",
-        # log(1+x) form used because s_log_1p is not exposed on this WQ tier
-        # (G1 failure observed in run 20260511; retry_round=1).
-        "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 10)))",
-        "rationale": "Z-scored reversal weighted by log(1 + abnormal-volume), decay-smoothed - composite low-TO variant.",
-        "expected_turnover_direction": "lower",
-    },
-]
+EXPRESSION_SETS = {
+    "short_term_reversal": [
+        {
+            "idx": 1, "id": "stm_rev_mean5",
+            "code": "rank(reverse(ts_mean(returns, 5)))",
+            "rationale": "Long 5d losers. Pure short-term reversal baseline.",
+            "expected_turnover_direction": "higher",
+        },
+        {
+            "idx": 2, "id": "stm_rev_decay8",
+            "code": "rank(reverse(ts_decay_linear(returns, 8)))",
+            "rationale": "Linear-decay-smoothed reversal; lower TO than mean5.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 3, "id": "stm_rev_zscore10",
+            "code": "rank(reverse(ts_zscore(returns, 10)))",
+            "rationale": "Z-scored reversal: normalizes by stock-specific vol.",
+            "expected_turnover_direction": "neutral",
+        },
+        {
+            "idx": 4, "id": "stm_rev_volcond",
+            "code": "rank(reverse(multiply(ts_mean(returns, 5), ts_mean(divide(volume, adv20), 5))))",
+            "rationale": "Reversal weighted by abnormal volume - extreme moves on heavy flow tend to revert harder.",
+            "expected_turnover_direction": "higher",
+        },
+        {
+            "idx": 5, "id": "stm_rev_volnorm",
+            "code": "rank(reverse(divide(ts_delta(close, 3), ts_std_dev(returns, 20))))",
+            "rationale": "Vol-normalized 3d price change; reversal in vol-adjusted space.",
+            "expected_turnover_direction": "higher",
+        },
+        {
+            "idx": 6, "id": "stm_rev_vwap",
+            "code": "rank(reverse(ts_decay_linear(divide(subtract(close, vwap), vwap), 5)))",
+            "rationale": "Microstructure: close-vs-VWAP overextension; intraday traders fade.",
+            "expected_turnover_direction": "higher",
+        },
+        {
+            "idx": 7, "id": "stm_rev_tsrank10",
+            "code": "rank(reverse(ts_rank(returns, 10)))",
+            "rationale": "Rank-based 10d reversal; more robust to return outliers than zscore.",
+            "expected_turnover_direction": "neutral",
+        },
+        {
+            "idx": 8, "id": "stm_rev_volwt_decay",
+            # log(1+x) form used because s_log_1p is not exposed on this WQ tier
+            # (G1 failure observed in run 20260511; retry_round=1).
+            "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 10)))",
+            "rationale": "Z-scored reversal weighted by log(1 + abnormal-volume), decay-smoothed - composite low-TO variant.",
+            "expected_turnover_direction": "lower",
+        },
+    ],
+
+    # Round 2: seeded by Round 1's near-miss (stm_rev_volwt_decay: SH 1.66 /
+    # TO 0.32 / FIT 0.95). Goal: drop TO below 0.25 while preserving SH > 1.25
+    # and lifting FIT above 1.0. Lever: extend ts_decay_linear windows to
+    # 16-30 and add longer signal horizons. All variants stay in the
+    # short-term-reversal mechanism family.
+    "short_term_reversal_r2": [
+        {
+            "idx": 1, "id": "r2_volwt_decay20",
+            "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 20)))",
+            "rationale": "Round-1 seed with decay 10 -> 20. Direct TO refinement of the closest miss.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 2, "id": "r2_zscore10_decay16",
+            "code": "rank(reverse(ts_decay_linear(ts_zscore(returns, 10), 16)))",
+            "rationale": "Pure z-score reversal with decay-16 smoothing (R1 zscore10 had SH 1.97 / TO 0.69).",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 3, "id": "r2_tsrank10_decay16",
+            "code": "rank(reverse(ts_decay_linear(ts_rank(returns, 10), 16)))",
+            "rationale": "Rank-based reversal with decay-16 smoothing (R1 tsrank10 had SH 1.95 / TO 0.69).",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 4, "id": "r2_volwt_decay30",
+            "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 5), log(add(divide(volume, adv20), 1))), 30)))",
+            "rationale": "Same composite as #1 but decay 30 - aggressive TO suppression at the cost of some SH.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 5, "id": "r2_vwap_decay20",
+            "code": "rank(reverse(ts_decay_linear(divide(subtract(close, vwap), vwap), 20)))",
+            "rationale": "Close-VWAP fade smoothed over 20d (R1 vwap with decay 5 was SH 1.20 / TO 0.33).",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 6, "id": "r2_volnorm_decay16",
+            "code": "rank(reverse(ts_decay_linear(divide(ts_delta(close, 5), ts_std_dev(returns, 20)), 16)))",
+            "rationale": "Vol-normalized 5d price change, decay-16 (R1 volnorm 3d/decay-0 was SH 1.33 / TO 0.40).",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 7, "id": "r2_zscore10_volwt_decay20",
+            "code": "rank(reverse(ts_decay_linear(multiply(ts_zscore(returns, 10), log(add(divide(volume, adv20), 1))), 20)))",
+            "rationale": "Seed but with longer 10d z-score horizon; captures more reversal mass.",
+            "expected_turnover_direction": "lower",
+        },
+        {
+            "idx": 8, "id": "r2_volnorm_zscore_decay20",
+            "code": "rank(reverse(ts_decay_linear(ts_zscore(divide(ts_delta(close, 3), ts_std_dev(returns, 20)), 5), 20)))",
+            "rationale": "Vol-normalized 3d delta z-scored then decay-20 smoothed - double-normalization composite.",
+            "expected_turnover_direction": "lower",
+        },
+    ],
+}
 
 
 # -- Stage 4 submission ------------------------------------------------------
@@ -346,14 +404,14 @@ def stage2_architect(session_dir: Path):
     write_json(session_dir / "working" / "handoff_2_to_3.json", handoff)
 
 
-def stage3_builder(session_dir: Path):
+def stage3_builder(session_dir: Path, expressions: list):
     log.info("[Stage 3] Alpha Builder")
-    assert len(EXPRESSIONS) == 8, "Rule of 8: must produce exactly 8 expressions"
+    assert len(expressions) == 8, "Rule of 8: must produce exactly 8 expressions"
 
     md = f"# Expression Batch 0001 - short_term_price_reversal\n\n"
     md += f"Mechanism: short_term_price_reversal | horizon: 1-10d | "
     md += f"neutralization: INDUSTRY | delay: 1\n\n"
-    for e in EXPRESSIONS:
+    for e in expressions:
         md += f"## {e['idx']}. `{e['id']}`\n"
         md += f"```\n{e['code']}\n```\n"
         md += f"- Rationale: {e['rationale']}\n"
@@ -363,12 +421,12 @@ def stage3_builder(session_dir: Path):
     handoff = {
         "batch_id": "batch_0001",
         "selected_mechanism": "short_term_price_reversal",
-        "expressions": EXPRESSIONS,
+        "expressions": expressions,
     }
     write_json(session_dir / "working" / "handoff_3_to_4.json", handoff)
 
 
-def stage4_operator(session_dir: Path):
+def stage4_operator(session_dir: Path, expressions: list):
     log.info("[Stage 4] Backtest Operator - submitting 8 to WQ Brain")
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
@@ -382,7 +440,7 @@ def stage4_operator(session_dir: Path):
     md += f"| # | id | SH | TO | FIT | RET | DD | checks | alpha_id |\n"
     md += f"|---|----|----|----|-----|-----|----|---|---|\n"
 
-    for e in EXPRESSIONS:
+    for e in expressions:
         log.info(f"  [{e['idx']}/8] {e['id']}: {e['code']}")
         res = submit(cm.session, e["code"], DEFAULT_SETTINGS)
         entry = {"idx": e["idx"], "id": e["id"], "code": e["code"], **res}
@@ -566,10 +624,16 @@ def main():
     })
     log.info(f"Session: {session_dir}")
 
+    expressions = EXPRESSION_SETS.get(args.topic)
+    if expressions is None:
+        log.error(f"unknown topic {args.topic!r}; "
+                   f"known: {list(EXPRESSION_SETS)}")
+        return 2
+
     stage1_librarian(session_dir, args.topic)
     stage2_architect(session_dir)
-    stage3_builder(session_dir)
-    results = stage4_operator(session_dir)
+    stage3_builder(session_dir, expressions)
+    results = stage4_operator(session_dir, expressions)
     if not isinstance(results, list):
         return results
     stage5_evaluator(session_dir, results)
