@@ -60,6 +60,39 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND46_ALPHAS: list[str] = [
+    # Round 46 — R45 all 8 failed. Try truly different angles:
+    # time-series structure, autocorrelation, cross-frequency divergence,
+    # intraday-shape distribution. Avoid: returns-rev, IV-skew, BAB,
+    # PV-contrarian, dollar-vol-rev, price-acceleration.
+
+    # 1. Returns AR(1) autocorrelation (persistence/anti-persistence).
+    "group_neutralize(ts_decay_linear(rank(ts_corr(returns, ts_delay(returns, 1), 60)), 60), industry)",
+
+    # 2. Volume variability (coefficient of variation of volume).
+    "group_neutralize(ts_decay_linear(rank(ts_std_dev(volume, 20) / (ts_mean(volume, 20) + 1)), 60), industry)",
+
+    # 3. Intraday upper-tail skewness: (high-close)/(close-low) ratio.
+    "group_neutralize(ts_decay_linear(rank((high - close) / (close - low + 0.001)), 60), industry)",
+
+    # 4. MACD-like short MA minus long MA divergence (short=12, long=26).
+    "group_neutralize(ts_decay_linear(rank(ts_mean(close, 12) - ts_mean(close, 26)), 60), industry)",
+
+    # 5. Cross-frequency momentum divergence (10d minus 60d return).
+    "group_neutralize(ts_decay_linear(rank(ts_mean(returns, 10) - ts_mean(returns, 60)), 60), industry)",
+
+    # 6. Negative-side AR(1) (anti-persistence detector).
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_delay(returns, 1), 60)), 60), industry)",
+
+    # 7. Open-close intraday gap accumulated (different from R45#3
+    #    overnight component — this is OPEN→CLOSE only).
+    "group_neutralize(ts_decay_linear(rank(ts_sum((close - open) / open, 20)), 60), industry)",
+
+    # 8. High-Low spread expansion (vol expansion regime).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(high - low, 20)), 60), industry)",
+]
+
+
 ROUND45_ALPHAS: list[str] = [
     # Round 45 — price-acceleration family ALSO collinear with user's
     # existing factor library. Need brand-new architectures.
@@ -1461,7 +1494,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1476,6 +1509,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round46": ROUND46_ALPHAS,
         "round45": ROUND45_ALPHAS,
         "round44": ROUND44_ALPHAS,
         "round43": ROUND43_ALPHAS,
