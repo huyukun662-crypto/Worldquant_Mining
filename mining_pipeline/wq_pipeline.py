@@ -53,8 +53,7 @@ SETTING_SPACE = {
     "delay":          [1],
     "decay":          [0, 2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128],
     "truncation":     [0.0, 0.01, 0.02, 0.05, 0.08, 0.10, 0.15, 0.20],
-    "neutralization": ["NONE", "MARKET", "SECTOR", "INDUSTRY",
-                       "SUBINDUSTRY", "COUNTRY", "STATISTICAL", "CROWDING"],
+    "neutralization": ["NONE", "MARKET", "SECTOR", "INDUSTRY", "SUBINDUSTRY"],
     "pasteurization": ["ON", "OFF"],
     "nanHandling":    ["OFF", "ON"],
 }
