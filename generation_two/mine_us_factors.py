@@ -60,6 +60,38 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND45_ALPHAS: list[str] = [
+    # Round 45 — price-acceleration family ALSO collinear with user's
+    # existing factor library. Need brand-new architectures.
+    # Blocked: returns-rev, IV-skew, BAB, PV-contrarian, dollar-vol-rev,
+    # price-acceleration.
+
+    # 1. 52-week-high drawdown reversion (long depressed names).
+    "group_neutralize(ts_decay_linear(rank((close / ts_max(close, 252)) - 1), 60), industry)",
+
+    # 2. Short-vs-long volatility regime ratio (short rising-vol names).
+    "group_neutralize(ts_decay_linear(-rank(ts_std_dev(returns, 10) / (ts_std_dev(returns, 60) + 0.001)), 60), industry)",
+
+    # 3. Intraday-only return accumulation (long persistent intraday buyers).
+    "group_neutralize(ts_decay_linear(rank(ts_sum((close - open) / ts_delay(close, 1), 20)), 60), industry)",
+
+    # 4. Daily range as % of price (low-range names tend to outperform).
+    "group_neutralize(ts_decay_linear(-rank(ts_mean((high - low) / close, 20)), 60), industry)",
+
+    # 5. Max single-day return reversal (short tail-risk names).
+    "group_neutralize(ts_decay_linear(-rank(ts_max(returns, 20)), 60), industry)",
+
+    # 6. Signed days count (count of positive vs negative days).
+    "group_neutralize(ts_decay_linear(rank(ts_sum(sign(returns), 20)), 60), industry)",
+
+    # 7. Range-position in 60-day window (where close sits in recent range).
+    "group_neutralize(ts_decay_linear(rank((close - ts_min(low, 60)) / (ts_max(high, 60) - ts_min(low, 60) + 0.001)), 60), industry)",
+
+    # 8. Min single-day return (long stocks with worst recent days).
+    "group_neutralize(ts_decay_linear(-rank(ts_min(returns, 20)), 60), industry)",
+]
+
+
 ROUND44_ALPHAS: list[str] = [
     # Round 44 — cascade-decay trick (decay-of-decay) cut R42's
     # price-accel turnover from 0.266 → 0.100 while keeping Sharpe 1.53.
@@ -1429,7 +1461,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1444,6 +1476,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round45": ROUND45_ALPHAS,
         "round44": ROUND44_ALPHAS,
         "round43": ROUND43_ALPHAS,
         "round42": ROUND42_ALPHAS,
