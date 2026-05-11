@@ -60,6 +60,33 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND28_ALPHAS: list[str] = [
+    # Round 28 — distinct from R1-R26 winners AND satisfies new constraints:
+    #   weight_concentration <= 10%, sub_universe_sharpe >= 0.79.
+    # Strategy: use FULL-COVERAGE signals (returns/close/volume/vwap have
+    # data for all stocks; IV-skew only had data for ~half, causing
+    # concentrated weights). Lower sim-level truncation to 0.05.
+
+    # 1. TREND-FOLLOWING — 50d/200d SMA ratio. Long stocks in uptrend.
+    "group_neutralize(ts_decay_linear(rank(ts_mean(close, 50) / (ts_mean(close, 200) + 0.01) - 1), 60), industry)",
+
+    # 2. LOW-VOL ANOMALY — 252d realized vol, long low-vol. Smoothed + neut.
+    "group_neutralize(ts_decay_linear(-rank(ts_std_dev(returns, 252)), 60), industry)",
+
+    # 3. DOLLAR-VOLUME momentum — long high dollar-volume names.
+    "group_neutralize(ts_decay_linear(rank(volume * vwap), 60), industry)",
+
+    # 4. VOL-OF-VOL — higher-moment vol-dispersion signal.
+    "group_neutralize(ts_decay_linear(rank(ts_std_dev(ts_std_dev(returns, 21), 60)), 60), industry)",
+
+    # 5. BETTING-AGAINST-BETA — corr of stock vs cross-sectional mean.
+    "group_neutralize(ts_decay_linear(-rank(ts_corr(returns, ts_mean(returns, 1), 60)), 60), industry)",
+
+    # 6. LOTTERY AVERSION — long stocks with LOW max-daily-return (avoid lottery).
+    "group_neutralize(ts_decay_linear(-rank(ts_max(returns, 21)), 60), industry)",
+]
+
+
 ROUND27_ALPHAS: list[str] = [
     # Round 27 — 5 (+1) candidates with structure AND logic distinct from
     # ALL prior winners.
@@ -824,12 +851,12 @@ class ScreenRecord:
         )
 
 
-def _settings(universe: str = "TOP3000") -> SimulationSettings:
+def _settings(universe: str = "TOP3000", truncation: float = 0.05) -> SimulationSettings:
     return SimulationSettings(
         region="USA",
         universe=universe,
         neutralization="INDUSTRY",
-        truncation=0.08,
+        truncation=truncation,
         startDate=IS_START,
         endDate=IS_END,
     )
@@ -949,7 +976,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -964,6 +991,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round28": ROUND28_ALPHAS,
         "round27": ROUND27_ALPHAS,
         "round26": ROUND26_ALPHAS,
         "round25": ROUND25_ALPHAS,
