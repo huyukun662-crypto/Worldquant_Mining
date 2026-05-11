@@ -60,6 +60,37 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND50_ALPHAS: list[str] = [
+    # Round 50 — found canonical profitability/quality fields:
+    # return_assets (ROA), return_equity (ROE), capex, retained_earnings,
+    # cap, adv20, sharesout. These are textbook quality factors.
+
+    # 1. ROA Quality (high ROA outperform).
+    "group_neutralize(ts_decay_linear(rank(return_assets), 60), industry)",
+
+    # 2. ROE Quality.
+    "group_neutralize(ts_decay_linear(rank(return_equity), 60), industry)",
+
+    # 3. Capex intensity reversal (short capex-heavy names).
+    "group_neutralize(ts_decay_linear(-rank(capex / (cap + 1)), 60), industry)",
+
+    # 4. Retained earnings momentum (book-value growth).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(retained_earnings, 90)), 60), industry)",
+
+    # 5. IV term-structure curvature (convexity, NOT skew like R22-R26).
+    "group_neutralize(ts_decay_linear(rank((implied_volatility_mean_120 + implied_volatility_mean_60) - 2 * implied_volatility_mean_90), 60), industry)",
+
+    # 6. ADV20 surge (recent dollar-volume growth normalized).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(adv20, 60) / (adv20 + 1)), 60), industry)",
+
+    # 7. Cap-weighted earnings yield.
+    "group_neutralize(ts_decay_linear(rank(anl4_adjusted_netincome_ft / cap), 60), industry)",
+
+    # 8. ROA delta (improving profitability).
+    "group_neutralize(ts_decay_linear(rank(ts_delta(return_assets, 90)), 60), industry)",
+]
+
+
 ROUND49_ALPHAS: list[str] = [
     # Round 49 — R48 surfaced 3 promising alt-data raw signals:
     #   scl12_sentiment 5d delta (flipped): |Sharpe| 0.98 / turn 1.055 (crazy)
@@ -1597,7 +1628,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -1612,6 +1643,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round50": ROUND50_ALPHAS,
         "round49": ROUND49_ALPHAS,
         "round48": ROUND48_ALPHAS,
         "round47": ROUND47_ALPHAS,
