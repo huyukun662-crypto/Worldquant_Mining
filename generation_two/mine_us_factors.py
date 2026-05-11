@@ -60,6 +60,38 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND73_ALPHAS: list[str] = [
+    # Round 73 — amplify R72 #1 family.
+    # Base: -(volume/ts_mean(volume,60)-1) * ts_mean(returns, 252)
+    # SH 0.91 / TO 0.106 / fitness 1.08. Goal: push SH past 1.0 while
+    # keeping TO under 0.20. All TOP200, decay 60, subindustry.
+
+    # 1. Longer return window (504d)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_mean(returns, 504), 60), subindustry)",
+
+    # 2. Detrended return (60d minus 252d — captures recent overshoot)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * (ts_mean(returns, 60) - ts_mean(returns, 252)), 60), subindustry)",
+
+    # 3. Long vol-shock denominator (252d) with same long return
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 252) - 1) * ts_mean(returns, 252), 60), subindustry)",
+
+    # 4. Direction via ts_zscore(returns, 252) instead of mean
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_zscore(returns, 252), 60), subindustry)",
+
+    # 5. Shorter return window (126d) — more responsive direction
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_mean(returns, 126), 60), subindustry)",
+
+    # 6. adv20-based vol-shock magnitude with long return direction
+    "group_neutralize(ts_decay_linear(-(adv20 / ts_mean(adv20, 60) - 1) * ts_mean(returns, 252), 60), subindustry)",
+
+    # 7. Magnify magnitude with abs(zscore) — emphasize stretched names
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * ts_mean(returns, 252) * abs(ts_zscore(close, 252)), 60), subindustry)",
+
+    # 8. Use returns minus index-style mean (cross-sectionally demeaned)
+    "group_neutralize(ts_decay_linear(-(volume / ts_mean(volume, 60) - 1) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 252)), 60), subindustry)",
+]
+
+
 ROUND72_ALPHAS: list[str] = [
     # Round 72 — multiplicative combinations. R71 parametric tweaks failed;
     # the next move is to use low-TO PV signals (H, C) as magnitude OR
@@ -2348,7 +2380,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2363,6 +2395,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round73": ROUND73_ALPHAS,
         "round72": ROUND72_ALPHAS,
         "round71": ROUND71_ALPHAS,
         "round70": ROUND70_ALPHAS,
