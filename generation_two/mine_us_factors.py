@@ -60,6 +60,29 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND19_ALPHAS: list[str] = [
+    # Round 19 — retry R18 fails + 3 new variants. Need 2 more PASSes.
+
+    # 1. Retry: F1 with market neutralization (R18#2 submit-failed).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 252), 60), market)",
+
+    # 2. Retry: F4 additive re-weighted 0.7r + 0.3z (R18#6 submit-failed).
+    "group_neutralize(ts_decay_linear(-0.7 * ts_rank(returns, 252) - 0.3 * ts_zscore(returns, 252), 60), subindustry)",
+
+    # 3. Retry: F1 lookback=180 (R18#3 sim-failed).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 180), 60), subindustry)",
+
+    # 4. F1 lookback=200 (between 180 and 252).
+    "group_neutralize(ts_decay_linear(-ts_rank(returns, 200), 60), subindustry)",
+
+    # 5. F4 additive opposite weighting (0.3 rank + 0.7 zscore).
+    "group_neutralize(ts_decay_linear(-0.3 * ts_rank(returns, 252) - 0.7 * ts_zscore(returns, 252), 60), subindustry)",
+
+    # 6. F5 barbell 80/20 (between quartile and decile).
+    "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.8, -1, if_else(ts_rank(returns, 252) < 0.2, 1, 0)), 60), subindustry)",
+]
+
+
 ROUND18_ALPHAS: list[str] = [
     # Round 18 — settings/parameter variations of existing winners.
     # User: "all settings tunable; just hit Sharpe>1.25, turn<0.25, fit>1.0".
@@ -728,7 +751,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -743,6 +766,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round19": ROUND19_ALPHAS,
         "round18": ROUND18_ALPHAS,
         "round17": ROUND17_ALPHAS,
         "round16": ROUND16_ALPHAS,
