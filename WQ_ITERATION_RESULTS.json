@@ -62,5 +62,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r1_fcf_yield",
+    "expression": "group_zscore(ts_mean(divide(subtract(cashflow_op, capex), cap), 120), subindustry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P0naJK6E",
+    "sharpe": 0.27,
+    "turnover": 0.0165,
+    "fitness": 0.12,
+    "returns": 0.0265,
+    "drawdown": 0.3189,
+    "longCount": 1536,
+    "shortCount": 1389,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
