@@ -60,6 +60,48 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND81_ALPHAS: list[str] = [
+    # Round 81 — fix R80's broken families and add a new orthogonal family.
+    # R80 evidence: Family A sim-failed (the +0.0001 stabilizer breaks the
+    # platform), Family B was mostly submit-fail (delay-1 issues with raw
+    # open/ts_delay(close,1)), Family C ran but with WRONG sign — flipping
+    # gives SH +0.14 / +0.80 leads worth exploiting.
+    # All TOP200, subindustry-neutralized, decay 60.
+
+    # === Family A fix — drop the stabilizer, let platform NaN-handle ===
+    # A1*. Plain intraday closing position, no stabilizer
+    "group_neutralize(ts_decay_linear(-ts_mean((close - low) / (high - low), 20), 60), subindustry)",
+
+    # A2*. Longer window 60d, no stabilizer
+    "group_neutralize(ts_decay_linear(-ts_mean((close - low) / (high - low), 60), 60), subindustry)",
+
+    # === Family C exploitation — FLIPPED sign (R80 best lead) ===
+    # C1+. VWAP-close gap, FLIPPED sign (was SH -0.14, flipped = +0.14)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 20), 60), subindustry)",
+
+    # C2+. VWAP-close gap × vol-shock, FLIPPED sign (was SH -0.80, flipped = +0.80)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 20) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # C3+. Same as C2+ but with adv20-based magnitude (smoother)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 20) * (adv20 / ts_mean(adv20, 60) - 1), 60), subindustry)",
+
+    # === NEW Family D — Return skewness (lottery-preference premium) ===
+    # Captures cross-sectional 3rd-moment distributional asymmetry.
+    # Theoretical edge: high right-skew stocks (lottery-like payoffs)
+    # historically underperform — investors overpay for skewness exposure.
+    # Completely orthogonal to price-level / vol / microstructure signals.
+
+    # D1. Short return skewness (60d) — short lottery premium
+    "group_neutralize(ts_decay_linear(-ts_skewness(returns, 60), 60), subindustry)",
+
+    # D2. Longer return skewness (252d) — slower-moving premium
+    "group_neutralize(ts_decay_linear(-ts_skewness(returns, 252), 60), subindustry)",
+
+    # D3. Skewness × demeaned long return (combines with R74-family direction)
+    "group_neutralize(ts_decay_linear(-ts_skewness(returns, 60) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+]
+
+
 ROUND80_ALPHAS: list[str] = [
     # Round 80 — three structurally and logically distinct alpha families.
     # Each captures a different market premium with no signal overlap to
@@ -2633,7 +2675,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2648,6 +2690,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round81": ROUND81_ALPHAS,
         "round80": ROUND80_ALPHAS,
         "round79": ROUND79_ALPHAS,
         "round78": ROUND78_ALPHAS,
