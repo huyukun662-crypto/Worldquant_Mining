@@ -1109,5 +1109,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r5_ebit_rev5_sector_trunc010",
+    "expression": "add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 5), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "SECTOR",
+      "truncation": 0.1,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "WjNQgR7j",
+    "sharpe": 1.16,
+    "turnover": 0.1865,
+    "fitness": 0.84,
+    "returns": 0.0986,
+    "drawdown": 0.1137,
+    "longCount": 1527,
+    "shortCount": 1497,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
