@@ -1,7 +1,7 @@
 """Submit 5 fundamental / alternative-data factors to WorldQuant Brain.
 
 User-specified survivor thresholds:
-    sharpe   >= 2.5
+    sharpe   >= 1.75
     turnover <  0.25
     fitness  >  1.5
 
@@ -61,7 +61,7 @@ REPO = Path(__file__).resolve().parent.parent
 VENDOR = REPO / "vendor" / "worldquant-miner"
 
 # User-specified survivor thresholds.
-SHARPE_FLOOR   = 2.5
+SHARPE_FLOOR   = 1.75
 TURNOVER_CEIL  = 0.25
 FITNESS_FLOOR  = 1.5
 
