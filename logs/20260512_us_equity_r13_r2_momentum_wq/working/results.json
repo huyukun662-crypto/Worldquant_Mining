@@ -1,0 +1,285 @@
+[
+  {
+    "variant": "X1_mom252_long",
+    "logic": "pure 252d cumulative return, LONG (no reverse)",
+    "expression": "zscore(ts_decay_linear(ts_mean(returns, 252), 20))",
+    "ok": true,
+    "alpha_id": "le7qAmon",
+    "sharpe": -0.71,
+    "turnover": 0.0431,
+    "fitness": -0.9,
+    "returns": -0.2004,
+    "drawdown": 1.2815,
+    "longCount": 1517,
+    "shortCount": 1620,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.71
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.9
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0431
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0431
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2019-08-16",
+        "limit": 0.1,
+        "value": 0.391338
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.31,
+        "value": -0.38
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "X2_mom12_1_long",
+    "logic": "12-1 skip-month momentum, LONG (Asness convention)",
+    "expression": "zscore(ts_decay_linear(subtract(ts_mean(returns, 252), ts_mean(returns, 21)), 20))",
+    "ok": true,
+    "alpha_id": "E5q7QGkr",
+    "sharpe": -0.11,
+    "turnover": 0.0898,
+    "fitness": -0.05,
+    "returns": -0.021,
+    "drawdown": 0.4911,
+    "longCount": 1597,
+    "shortCount": 1540,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.11
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.05
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0898
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0898
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2019-08-08",
+        "limit": 0.1,
+        "value": 0.314152
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": -0.05,
+        "value": 0.27
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "X3_riskadj_mom252_long",
+    "logic": "risk-adjusted 252d momentum (returns / std_dev), LONG",
+    "expression": "zscore(ts_decay_linear(divide(ts_mean(returns, 252), ts_std_dev(returns, 252)), 20))",
+    "ok": true,
+    "alpha_id": "LLnjK3Pv",
+    "sharpe": -0.55,
+    "turnover": 0.0465,
+    "fitness": -0.54,
+    "returns": -0.1189,
+    "drawdown": 0.8611,
+    "longCount": 1476,
+    "shortCount": 1661,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.55
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.54
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0465
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0465
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2020-06-16",
+        "limit": 0.1,
+        "value": 0.230941
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": -0.24,
+        "value": -0.02
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "X4_mom252_reversed",
+    "logic": "252d cumulative return REVERSED (long-horizon mean reversion)",
+    "expression": "zscore(reverse(ts_decay_linear(ts_mean(returns, 252), 20)))",
+    "ok": true,
+    "alpha_id": "O0nY6vjd",
+    "sharpe": 0.71,
+    "turnover": 0.0431,
+    "fitness": 0.9,
+    "returns": 0.2004,
+    "drawdown": 0.3706,
+    "longCount": 1620,
+    "shortCount": 1517,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.71
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.9
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0431
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0431
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2019-08-16",
+        "limit": 0.1,
+        "value": 0.391338
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.31,
+        "value": 0.38
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "X5_mom12_1_reversed",
+    "logic": "12-1 skip-month REVERSED (mean reversion w/ skip)",
+    "expression": "zscore(reverse(ts_decay_linear(subtract(ts_mean(returns, 252), ts_mean(returns, 21)), 20)))",
+    "ok": false,
+    "stage": "poll-timeout"
+  }
+]
