@@ -60,6 +60,48 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND84_ALPHAS: list[str] = [
+    # Round 84 — push C2+b toward SH 1.30 gate + sweep E3+ + add quality-mom.
+    # Two confirmed leads: C2+b at SH 0.86 (vwap-close 10d x vol-shock),
+    # E3+ at SH 0.78 (returns 10d x low-volume continuation).
+    # All TOP200, subindustry-neutralized, decay 60 unless noted.
+
+    # === C+ boosts: try to push C2+b past gate ===
+
+    # C2+b-amp. C2+b multiplied by abs(ts_zscore(close, 252)) magnitude
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 10) * (volume / ts_mean(volume, 60) - 1) * abs(ts_zscore(close, 252)), 60), subindustry)",
+
+    # C2+b-ind. C2+b with INDUSTRY neutralization (broader group)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 10) * (volume / ts_mean(volume, 60) - 1), 60), industry)",
+
+    # C2+b-dec120. C2+b with longer decay 120 (smoother turnover)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 10) * (volume / ts_mean(volume, 60) - 1), 120), subindustry)",
+
+    # === E+ window sweep around the working 10d return ===
+
+    # E3+-15. Returns 15d x low-volume
+    "group_neutralize(ts_decay_linear(ts_mean(returns, 15) * (1 - volume / ts_mean(volume, 60)), 60), subindustry)",
+
+    # E3+-7. Returns 7d x low-volume
+    "group_neutralize(ts_decay_linear(ts_mean(returns, 7) * (1 - volume / ts_mean(volume, 60)), 60), subindustry)",
+
+    # === NEW Family H — Quality-momentum (Sharpe of returns) ===
+    # Stocks with high RISK-ADJUSTED return persist; raw return alone
+    # is noisy. Distinct from all prior families (raw level, vol-shock,
+    # vwap-divergence, momentum*volume) -- uses the RATIO of return
+    # to volatility as the signal.
+
+    # H1. Short quality-mom 20d
+    "group_neutralize(ts_decay_linear(ts_mean(returns, 20) / ts_std_dev(returns, 20), 60), subindustry)",
+
+    # H2. Long-term quality reversal 252d
+    "group_neutralize(ts_decay_linear(-ts_mean(returns, 252) / ts_std_dev(returns, 252), 60), subindustry)",
+
+    # H3. Long quality reversal x vol-shock magnitude (combine with R74 magnitude axis)
+    "group_neutralize(ts_decay_linear(-ts_mean(returns, 252) / ts_std_dev(returns, 252) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+]
+
+
 ROUND83_ALPHAS: list[str] = [
     # Round 83 — exploit two R82 leads + one new family.
     # Lead 1 (C+): C2+b vwap-close 10d x vol-shock at SH 0.86 / FIT 0.93.
@@ -2771,7 +2813,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83", "round84"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2786,6 +2828,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round84": ROUND84_ALPHAS,
         "round83": ROUND83_ALPHAS,
         "round82": ROUND82_ALPHAS,
         "round81": ROUND81_ALPHAS,
