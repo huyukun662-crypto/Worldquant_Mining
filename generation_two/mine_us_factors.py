@@ -60,6 +60,42 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND78_ALPHAS: list[str] = [
+    # Round 78 — optimize 2019-2021 IS performance of the submitted Stage-1 alpha:
+    #   ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100)
+    # Baseline shows 4.43/4.31/4.81/5.22/4.11 yearly Sharpe (2019-2023), with
+    # 2019-2021 marginally dragging combined-book Sharpe down (deltas
+    # -0.08/-0.06/-0.14) while 2022-2023 add. Goal: reduce correlation with
+    # existing book and/or stabilize the asymmetry signal in low-vol regimes.
+    # All TOP200, default platform settings unless explicit ts_decay_linear.
+
+    # 1. Industry-neutralize + decay 20 — most direct decorrelation lever
+    "group_neutralize(ts_decay_linear(ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100), 20), industry)",
+
+    # 2. Vol-normalize by total intraday range — isolates pure asymmetry,
+    #    removes overall vol level that drove 2020 COVID correlation
+    "(ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100)) / ts_std_dev(close / open - 1, 100)",
+
+    # 3. ts_zscore over 250d — unit-free signal, comparable across regimes
+    "ts_zscore(ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100), 250)",
+
+    # 4. Shorten window from 100d to 60d — more reactive in 2019 low-vol
+    "ts_std_dev(low / open - 1, 60) - ts_std_dev(high / open - 1, 60)",
+
+    # 5. Switch reference from open to vwap — less sensitive to opening-auction noise
+    "ts_std_dev(low / vwap - 1, 100) - ts_std_dev(high / vwap - 1, 100)",
+
+    # 6. Rank-wrap + industry neutralize — fully bounded weight allocation
+    "group_neutralize(rank(ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100)), industry)",
+
+    # 7. Subindustry-neutralize variant (sharper than industry) + decay 60
+    "group_neutralize(ts_decay_linear(ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100), 60), subindustry)",
+
+    # 8. Hybrid: vol-normalize + zscore + neutralize (combined fixes)
+    "group_neutralize(ts_zscore((ts_std_dev(low / open - 1, 100) - ts_std_dev(high / open - 1, 100)) / ts_std_dev(close / open - 1, 100), 250), industry)",
+]
+
+
 ROUND77_ALPHAS: list[str] = [
     # Round 77 — fix PV-R76-6's platform concentration failure
     # ("Weight concentration 43.89% above cutoff of 10% on 9/25/2023").
@@ -2518,7 +2554,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2533,6 +2569,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round78": ROUND78_ALPHAS,
         "round77": ROUND77_ALPHAS,
         "round76": ROUND76_ALPHAS,
         "round75": ROUND75_ALPHAS,
