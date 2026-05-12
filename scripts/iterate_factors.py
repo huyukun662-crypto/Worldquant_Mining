@@ -688,6 +688,97 @@ ROUND_10 = [
 ]
 
 
+# =====================================================================
+# Round 11: one factor from each non-PV category per the user's UI
+# breakdown (Analyst, Fundamental, Model, News, Option, Social Media).
+# Each independent (no stacking with prior winners yet) so we can
+# measure the per-axis edge before composing.
+# =====================================================================
+ROUND_11 = [
+    # ANALYST  -- announced EBIT financial value / market cap, smoothed
+    {
+        "name": "r11_analyst_ebit_yield",
+        "category": "analyst",
+        "expression": (
+            "group_zscore(ts_mean(divide(anl4_ebit_value, cap), 60), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # FUNDAMENTAL -- asset turnover (sales / assets), smoothed.
+    # Not yet tested; orthogonal to ROA / E-yield (margin x turnover).
+    {
+        "name": "r11_fund_asset_turnover",
+        "category": "fundamental",
+        "expression": (
+            "group_zscore(ts_mean(divide(sales, assets), 120), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # MODEL -- low idiosyncratic risk premium (90d unsystematic risk).
+    # User UI marks Model category value-score=7 (highest).
+    {
+        "name": "r11_model_low_idio_risk",
+        "category": "model",
+        "expression": (
+            "-group_rank(ts_mean(unsystematic_risk_last_90_days, 22), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # MODEL (alt) -- pre-built value-vs-price ratio rank.
+    {
+        "name": "r11_model_garp_vp_ratio",
+        "category": "model",
+        "expression": (
+            "group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22),"
+            " subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # NEWS -- composite sentiment of business news, 22d smoothed
+    {
+        "name": "r11_news_business_sentiment",
+        "category": "news",
+        "expression": (
+            "group_rank(ts_mean(rp_css_business, 22), industry)"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # OPTION -- short-dated IV mean-reversion. High 10d IV historically
+    # reverts (negative carries).
+    {
+        "name": "r11_option_iv10_revert",
+        "category": "option",
+        "expression": (
+            "-group_rank(ts_zscore(implied_volatility_mean_10, 60), sector)"
+        ),
+        "settings": base_settings(decay=8, neutralization="SECTOR",
+                                  truncation=0.10, universe="TOP1000",
+                                  pasteurization="OFF"),
+    },
+    # SOCIAL MEDIA -- buzz extreme fade (contrarian on viral names)
+    {
+        "name": "r11_social_buzz_fade",
+        "category": "socialmedia",
+        "expression": (
+            "-group_rank(ts_zscore(scl12_buzz, 22), industry)"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -886,6 +977,8 @@ def main():
         batch = ROUND_9
     elif args.round == 10:
         batch = ROUND_10
+    elif args.round == 11:
+        batch = ROUND_11
     else:
         log.error(f"unknown round {args.round}"); return 2
 
