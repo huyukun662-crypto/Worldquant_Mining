@@ -1,0 +1,279 @@
+[
+  {
+    "variant": "P1_accruals_rev",
+    "anomaly": "Accruals (Sloan 1996)",
+    "expression": "zscore(reverse(ts_decay_linear(divide(subtract(income, cashflow_op), assets), 20)))",
+    "ok": true,
+    "alpha_id": "qMnrkVYj",
+    "sharpe": 0.03,
+    "turnover": 0.0239,
+    "fitness": 0.01,
+    "returns": 0.0035,
+    "drawdown": 0.5467,
+    "longCount": 1503,
+    "shortCount": 1408,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.03
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.01
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0239
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0239
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.01,
+        "value": -0.08
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "P2_gross_profitability",
+    "anomaly": "Gross profitability (Novy-Marx 2013)",
+    "expression": "zscore(ts_decay_linear(divide(subtract(revenue, cogs), assets), 20))",
+    "ok": true,
+    "alpha_id": "JjnEYL2j",
+    "sharpe": 0.11,
+    "turnover": 0.0191,
+    "fitness": 0.03,
+    "returns": 0.0105,
+    "drawdown": 0.2104,
+    "longCount": 1271,
+    "shortCount": 1575,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.11
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.03
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0191
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0191
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.05,
+        "value": 0.03
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "P3_earnings_yield",
+    "anomaly": "Earnings yield (Basu 1977)",
+    "expression": "zscore(ts_decay_linear(divide(eps, close), 20))",
+    "ok": false,
+    "stage": "poll-timeout"
+  },
+  {
+    "variant": "P4_fcf_yield",
+    "anomaly": "FCF yield (cashflow_op - capex) / EV",
+    "expression": "zscore(ts_decay_linear(divide(subtract(cashflow_op, capex), enterprise_value), 20))",
+    "ok": true,
+    "alpha_id": "RRNQYeAj",
+    "sharpe": 0.21,
+    "turnover": 0.0792,
+    "fitness": 0.11,
+    "returns": 0.0342,
+    "drawdown": 0.5279,
+    "longCount": 1153,
+    "shortCount": 957,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.21
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.11
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0792
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0792
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2019-06-18",
+        "limit": 0.1,
+        "value": 0.135917
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.09,
+        "value": -0.06
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "P5_asset_growth_rev",
+    "anomaly": "Asset growth (Cooper-Gulen-Schill 2008)",
+    "expression": "zscore(reverse(ts_decay_linear(divide(subtract(assets, ts_delay(assets, 252)), ts_delay(assets, 252)), 20)))",
+    "ok": true,
+    "alpha_id": "j2nRwN2W",
+    "sharpe": 0.48,
+    "turnover": 0.0325,
+    "fitness": 0.42,
+    "returns": 0.097,
+    "drawdown": 0.4216,
+    "longCount": 1947,
+    "shortCount": 875,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.48
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.42
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0325
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0325
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2022-01-11",
+        "limit": 0.1,
+        "value": 0.185815
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.21,
+        "value": 0.5
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  }
+]
