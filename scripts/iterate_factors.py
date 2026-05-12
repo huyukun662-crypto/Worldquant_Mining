@@ -434,6 +434,72 @@ ROUND_6 = [
 ]
 
 
+# =====================================================================
+# Round 7: stack the R6 winners (rev3, adv20-z) and explore decay
+# axis where the SH-TO Pareto is steep (d=4 -> 1.59 / 0.282; d=8 ->
+# 1.54 / 0.170 with adv20-z helping).
+# =====================================================================
+EBIT_REV3_ADVZ = f"add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE})"
+EBIT_REV5_ADVZ = f"add(add({EBIT_YIELD}, {SHORT_REV_5}), {ADV_ZSCORE})"
+
+ROUND_7 = [
+    # 1. ebit + rev3 + adv20-z (main stack of R6's two winners)
+    {
+        "name": "r7_ebit_rev3_advz",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. same, decay=4 (push SH higher; we know adv20-z helps TO)
+    {
+        "name": "r7_ebit_rev3_advz_d4",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. ebit + rev5 + adv20-z, decay=4 (chase R6#1's SH 1.59 with vol axis)
+    {
+        "name": "r7_ebit_rev5_advz_d4",
+        "expression": EBIT_REV5_ADVZ,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. ebit + rev3 + adv20-z, SUBINDUSTRY
+    {
+        "name": "r7_ebit_rev3_advz_subind",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=8, neutralization="SUBINDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. ebit + rev3 + adv20-z + vol-z (4-axis stack of all winners)
+    {
+        "name": "r7_full4axis",
+        "expression": (
+            f"add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+            f" {VOL_ZSCORE})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. ebit + (rev3+rev5)/2 + adv20-z (multi-window reversal stack)
+    {
+        "name": "r7_ebit_rev35_advz",
+        "expression": (
+            f"add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {SHORT_REV_5}),"
+            f" {ADV_ZSCORE})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -614,6 +680,8 @@ def main():
         batch = ROUND_5
     elif args.round == 6:
         batch = ROUND_6
+    elif args.round == 7:
+        batch = ROUND_7
     else:
         log.error(f"unknown round {args.round}"); return 2
 
