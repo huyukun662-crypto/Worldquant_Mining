@@ -163,6 +163,67 @@ ROUND_1 = [
 ]
 
 
+# =====================================================================
+# Round 3: EBIT-yield base (best of R1, SH=0.62 alone) crossed with
+# orthogonal PV axes (momentum 12m, low-vol, short-term reversal).
+# Each axis is empirically near-zero correlated with cross-sectional
+# value/quality fundamentals, so stacking should add Sharpe.
+# =====================================================================
+EBIT_YIELD = "group_rank(ts_mean(divide(ebit, cap), 120), subindustry)"
+MOM_12M    = "group_rank(ts_sum(returns, 240), subindustry)"
+LOWVOL_60D = "-group_rank(ts_std_dev(returns, 60), subindustry)"
+SHORT_REV  = "-group_rank(ts_sum(returns, 5), subindustry)"
+ROA        = "group_rank(divide(operating_income, assets), subindustry)"
+
+ROUND_3 = [
+    # 1. EBIT + 12-month momentum
+    {
+        "name": "r3_ebit_x_mom12m",
+        "expression": f"add({EBIT_YIELD}, {MOM_12M})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 2. EBIT + low-volatility
+    {
+        "name": "r3_ebit_x_lowvol",
+        "expression": f"add({EBIT_YIELD}, {LOWVOL_60D})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 3. EBIT + short-term reversal (1-week)
+    {
+        "name": "r3_ebit_x_shortrev",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.05, universe="TOP3000"),
+    },
+    # 4. EBIT + momentum + low-vol (3-axis)
+    {
+        "name": "r3_ebit_mom_lowvol",
+        "expression": f"add(add({EBIT_YIELD}, {MOM_12M}), {LOWVOL_60D})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 5. Full 5-axis stack: value (EBIT) + quality (ROA) + momentum +
+    #    low-vol + short-rev
+    {
+        "name": "r3_full5axis",
+        "expression": (f"add(add(add(add({EBIT_YIELD}, {ROA}), {MOM_12M}),"
+                       f" {LOWVOL_60D}), {SHORT_REV})"),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 6. Pure PV (no fundamentals): momentum + low-vol + short-rev
+    #    -- baseline to see whether fundamentals add anything
+    {
+        "name": "r3_pure_pv",
+        "expression": f"add(add({MOM_12M}, {LOWVOL_60D}), {SHORT_REV})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -300,6 +361,8 @@ def main():
         if not args.base_expr:
             log.error("round 2 needs --base-expr"); return 2
         batch = sweep_settings(args.base_expr, args.base_name)
+    elif args.round == 3:
+        batch = ROUND_3
     else:
         log.error(f"unknown round {args.round}"); return 2
 
