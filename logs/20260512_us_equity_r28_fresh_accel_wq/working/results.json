@@ -1,0 +1,332 @@
+[
+  {
+    "variant": "CC1_accel4_D40",
+    "logic": "accel(W=4) vol-weighted, D=40 (extend W beyond {1,2,3})",
+    "expression": "zscore(reverse(ts_decay_linear(multiply(subtract(returns, ts_delay(returns, 4)), log(add(divide(volume, adv20), 1))), 40)))",
+    "ok": true,
+    "alpha_id": "O0nEYvqb",
+    "sharpe": 2.06,
+    "turnover": 0.1542,
+    "fitness": 3.47,
+    "returns": 0.4382,
+    "drawdown": 0.3665,
+    "longCount": 1811,
+    "shortCount": 1325,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 2.06
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 3.47
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1542
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1542
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.89,
+        "value": 1.52
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "CC2_accel2_D35",
+    "logic": "accel(W=2) vol-weighted, D=35 (bridge 30/40)",
+    "expression": "zscore(reverse(ts_decay_linear(multiply(subtract(returns, ts_delay(returns, 2)), log(add(divide(volume, adv20), 1))), 35)))",
+    "ok": true,
+    "alpha_id": "O0nEYR5v",
+    "sharpe": 2.12,
+    "turnover": 0.1596,
+    "fitness": 3.49,
+    "returns": 0.4334,
+    "drawdown": 0.3588,
+    "longCount": 1817,
+    "shortCount": 1320,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 2.12
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 3.49
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1596
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1596
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.92,
+        "value": 1.68
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "CC3_accel2_D45",
+    "logic": "accel(W=2) vol-weighted, D=45 (bridge 40/50)",
+    "expression": "zscore(reverse(ts_decay_linear(multiply(subtract(returns, ts_delay(returns, 2)), log(add(divide(volume, adv20), 1))), 45)))",
+    "ok": true,
+    "alpha_id": "WjN6Q8oj",
+    "sharpe": 2.1,
+    "turnover": 0.1356,
+    "fitness": 3.79,
+    "returns": 0.4428,
+    "drawdown": 0.367,
+    "longCount": 1845,
+    "shortCount": 1292,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 2.1
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 3.79
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1356
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1356
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.91,
+        "value": 1.57
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "CC4_accel_x_intraday",
+    "logic": "accel(W=1) x (close-open)/open compound, D=40 (no vol weight)",
+    "expression": "zscore(reverse(ts_decay_linear(multiply(subtract(returns, ts_delay(returns, 1)), divide(subtract(close, open), open)), 40)))",
+    "ok": true,
+    "alpha_id": "omnM5nZJ",
+    "sharpe": 1.38,
+    "turnover": 0.0716,
+    "fitness": 2.66,
+    "returns": 0.4651,
+    "drawdown": 0.6549,
+    "longCount": 2198,
+    "shortCount": 939,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.38
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.66
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0716
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0716
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.6,
+        "value": 0.98
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "CC5_accel_x_histvol",
+    "logic": "accel(W=1) x historical_volatility_20, D=40 (alt vol weight)",
+    "expression": "zscore(reverse(ts_decay_linear(multiply(subtract(returns, ts_delay(returns, 1)), historical_volatility_20), 40)))",
+    "ok": true,
+    "alpha_id": "WjN6QexQ",
+    "sharpe": 1.17,
+    "turnover": 0.3914,
+    "fitness": 0.92,
+    "returns": 0.2425,
+    "drawdown": 0.3686,
+    "longCount": 1419,
+    "shortCount": 1527,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.17
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.92
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3914
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3914
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.51,
+        "value": 0.49
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  }
+]
