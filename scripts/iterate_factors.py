@@ -986,6 +986,51 @@ ROUND_14 = [
 ]
 
 
+# =====================================================================
+# Round 15: 3 News-category factors. Three subtypes:
+#   * earnings news sentiment
+#   * analyst-ratings news sentiment (event-score variant)
+#   * news-driven max up-move (post-news momentum)
+# =====================================================================
+ROUND_15 = [
+    # 1. Earnings news composite sentiment, 22d mean
+    {
+        "name": "r15_news_earnings_sentiment",
+        "category": "news",
+        "expression": (
+            "group_rank(ts_mean(rp_css_earnings, 22), industry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. Analyst ratings event-sentiment score, 22d
+    {
+        "name": "r15_news_ratings_ess",
+        "category": "news",
+        "expression": (
+            "group_rank(ts_mean(rp_ess_ratings, 22), industry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. News-driven max up-return -- post-news momentum (stocks that
+    #    spike on news continue up). Lower neutralization (sector) to
+    #    let event-driven mid-caps through.
+    {
+        "name": "r15_news_max_up_ret_mom",
+        "category": "news",
+        "expression": (
+            "group_rank(ts_mean(news_max_up_ret, 22), sector)"
+        ),
+        "settings": base_settings(decay=8, neutralization="SECTOR",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1192,6 +1237,8 @@ def main():
         batch = ROUND_13
     elif args.round == 14:
         batch = ROUND_14
+    elif args.round == 15:
+        batch = ROUND_15
     else:
         log.error(f"unknown round {args.round}"); return 2
 
