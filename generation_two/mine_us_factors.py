@@ -60,6 +60,51 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND86_ALPHAS: list[str] = [
+    # Round 86 — pivot to LESS-USED OPERATORS for fresh signal axes.
+    # R71-85 saturated on TOP200 with ts_mean/ts_std/ts_corr scaffolds.
+    # R86 explores ts_arg_max/min (recency-of-extremes), signed_power
+    # (non-linear compression), and ts_rank-based cross-sectional dynamics.
+    # All TOP200, subindustry-neutralized, decay 60.
+
+    # === Family L — Recency of extremes (ts_arg_max/ts_arg_min) ===
+    # Days since the max/min event captures regime memory orthogonal to
+    # any moment-based statistic.
+
+    # L1. Days since max return = recently peaked -> reversal
+    "group_neutralize(ts_decay_linear(-ts_arg_max(returns, 60), 60), subindustry)",
+
+    # L2. Days since min return = recently bottomed -> bounce
+    "group_neutralize(ts_decay_linear(ts_arg_min(returns, 60), 60), subindustry)",
+
+    # L3. Days since volume peak = activity recency
+    "group_neutralize(ts_decay_linear(-ts_arg_max(volume, 60), 60), subindustry)",
+
+    # === Family M — signed_power compression on saturated leads ===
+    # Non-linear compression of established SH 0.8+ signals. Reduces
+    # tail weight, potentially decorrelates from existing book.
+
+    # M1. signed_power(0.5) on C2+b winner -- sqrt-compression
+    "group_neutralize(ts_decay_linear(signed_power(ts_mean((vwap - close) / close, 10) * (volume / ts_mean(volume, 60) - 1), 0.5), 60), subindustry)",
+
+    # M2. signed_power(0.3) on E3+ winner -- stronger compression
+    "group_neutralize(ts_decay_linear(signed_power(ts_mean(returns, 10) * (1 - volume / ts_mean(volume, 60)), 0.3), 60), subindustry)",
+
+    # === Family N — Rank-based cross-sectional dynamics ===
+    # Distinct from raw-value signals: uses cross-sectional rank as
+    # the input to time-series operators. Naturally bounded weights.
+
+    # N1. Short rank - long rank (rank-based momentum)
+    "group_neutralize(ts_decay_linear(rank(ts_rank(close, 20)) - rank(ts_rank(close, 252)), 60), subindustry)",
+
+    # N2. Rank-based long-term reversal
+    "group_neutralize(ts_decay_linear(-rank(ts_rank(returns, 252)), 60), subindustry)",
+
+    # N3. Rank of vwap-close gap (rank-wrapped C+ direction signal)
+    "group_neutralize(ts_decay_linear(rank(ts_mean((vwap - close) / close, 10)) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+]
+
+
 ROUND85_ALPHAS: list[str] = [
     # Round 85 — three NEW families with no overlap to R74-84.
     # C+ and E+ have saturated (max SH 0.86 / 0.78). Switch to fresh
@@ -2857,7 +2902,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83", "round84", "round85"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83", "round84", "round85", "round86"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2872,6 +2917,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round86": ROUND86_ALPHAS,
         "round85": ROUND85_ALPHAS,
         "round84": ROUND84_ALPHAS,
         "round83": ROUND83_ALPHAS,
