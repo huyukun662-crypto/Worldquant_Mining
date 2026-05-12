@@ -821,5 +821,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r4_ebit_rev22",
+    "expression": "add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "omn59jkn",
+    "sharpe": 0.83,
+    "turnover": 0.0969,
+    "fitness": 0.63,
+    "returns": 0.0722,
+    "drawdown": 0.1265,
+    "longCount": 1533,
+    "shortCount": 1478,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
