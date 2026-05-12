@@ -720,8 +720,18 @@ def main():
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
-    if not cm.authenticate(auto_load=True, auto_prompt=False):
-        log.error("auth failed"); return 2
+    # Sandbox TLS-inspection CA rotates the server cert ~hourly; auth
+    # immediately after a rotation fails with "certificate not yet
+    # valid". Retry a few times with backoff.
+    auth_ok = False
+    for attempt in range(6):
+        if cm.authenticate(auto_load=True, auto_prompt=False):
+            auth_ok = True; break
+        wait = 10 + 5 * attempt
+        log.warning(f"   auth attempt {attempt+1}/6 failed; sleep {wait}s")
+        time.sleep(wait)
+    if not auth_ok:
+        log.error("auth failed after retries"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
 
     existing = []
