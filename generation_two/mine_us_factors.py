@@ -60,6 +60,50 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND85_ALPHAS: list[str] = [
+    # Round 85 — three NEW families with no overlap to R74-84.
+    # C+ and E+ have saturated (max SH 0.86 / 0.78). Switch to fresh
+    # search axes. All TOP200, subindustry-neutralized, decay 60.
+    #
+    # Family I — Intraday-only return premium (close/open - 1):
+    #   captures the within-session return separately from overnight.
+    # Family J — Volume-weighted return / informed-flow imprint:
+    #   correlation of returns with volume reveals informed trading.
+    # Family K — Extreme-return signal (ts_max/min over window):
+    #   captures crash-risk / lottery premium via tail statistics.
+
+    # === Family I — Intraday-only return decomposition ===
+
+    # I1. Intraday return mean reversion 20d
+    "group_neutralize(ts_decay_linear(-ts_mean(close / open - 1, 20), 60), subindustry)",
+
+    # I2. Longer intraday mean reversion 60d
+    "group_neutralize(ts_decay_linear(-ts_mean(close / open - 1, 60), 60), subindustry)",
+
+    # I3. Intraday return mean reversion x vol-shock (combine with R74 magnitude)
+    "group_neutralize(ts_decay_linear(-ts_mean(close / open - 1, 20) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # === Family J — Volume-weighted returns / Kyle's lambda ===
+
+    # J1. Return-volume correlation: high = informed trend, low/neg = reversal
+    "group_neutralize(ts_decay_linear(-ts_corr(returns, volume, 20), 60), subindustry)",
+
+    # J2. Volume-weighted return mean (Kyle-style price impact)
+    "group_neutralize(ts_decay_linear(-ts_mean(returns * volume / ts_mean(volume, 60), 20), 60), subindustry)",
+
+    # J3. Volume-weighted return longer window 60d
+    "group_neutralize(ts_decay_linear(-ts_mean(returns * volume / ts_mean(volume, 60), 60), 60), subindustry)",
+
+    # === Family K — Extreme-return tail statistics ===
+
+    # K1. Recent max return (lottery premium) — short max = reversal
+    "group_neutralize(ts_decay_linear(-ts_max(returns, 20), 60), subindustry)",
+
+    # K2. Range of returns: max - min over window (vol proxy via extremes)
+    "group_neutralize(ts_decay_linear(-(ts_max(returns, 20) - ts_min(returns, 20)), 60), subindustry)",
+]
+
+
 ROUND84_ALPHAS: list[str] = [
     # Round 84 — push C2+b toward SH 1.30 gate + sweep E3+ + add quality-mom.
     # Two confirmed leads: C2+b at SH 0.86 (vwap-close 10d x vol-shock),
@@ -2813,7 +2857,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83", "round84"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83", "round84", "round85"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2828,6 +2872,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round85": ROUND85_ALPHAS,
         "round84": ROUND84_ALPHAS,
         "round83": ROUND83_ALPHAS,
         "round82": ROUND82_ALPHAS,
