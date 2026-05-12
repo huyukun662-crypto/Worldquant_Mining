@@ -562,6 +562,63 @@ ROUND_8 = [
 ]
 
 
+# =====================================================================
+# Round 9: one fundamental + one option + one sentiment factor.
+# Different data axes than R1-R8 (which were dominated by EBIT/rev/adv).
+# Per-factor settings independent.
+# =====================================================================
+ROUND_9 = [
+    # ------------------------------------------------------------------
+    # 1. FUNDAMENTAL -- Net Profit Margin (income / sales), smoothed
+    #    120 days. Different ratio than EBIT/cap. Captures margin
+    #    quality, less collinear with size/value than ROA or EBIT yield.
+    # ------------------------------------------------------------------
+    {
+        "name": "r9_net_profit_margin",
+        "category": "fundamental",
+        "expression": (
+            "group_zscore(ts_mean(divide(income, sales), 120), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+
+    # ------------------------------------------------------------------
+    # 2. OPTION -- IV Skew (call IV / put IV at 270d). High value =
+    #    market priced more upside than downside = bullish positioning.
+    #    Smaller universe because option data coverage is ~0.70.
+    # ------------------------------------------------------------------
+    {
+        "name": "r9_iv_skew_callput270",
+        "category": "option",
+        "expression": (
+            "group_rank(ts_mean(divide(implied_volatility_call_270,"
+            " implied_volatility_put_270), 22), sector)"
+        ),
+        "settings": base_settings(decay=8, neutralization="SECTOR",
+                                  truncation=0.10, universe="TOP1000",
+                                  pasteurization="OFF"),
+    },
+
+    # ------------------------------------------------------------------
+    # 3. SENTIMENT -- Social-media sentiment momentum (22d). Bullish
+    #    social sentiment that *sustains* (rolling mean) predicts up.
+    #    scl12 has full coverage (1.00) so we can stay on TOP3000.
+    # ------------------------------------------------------------------
+    {
+        "name": "r9_social_sentiment_mom",
+        "category": "sentiment",
+        "expression": (
+            "group_rank(ts_mean(scl12_sentiment, 22), industry)"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -756,6 +813,8 @@ def main():
         batch = ROUND_7
     elif args.round == 8:
         batch = ROUND_8
+    elif args.round == 9:
+        batch = ROUND_9
     else:
         log.error(f"unknown round {args.round}"); return 2
 
