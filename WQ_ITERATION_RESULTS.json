@@ -629,5 +629,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r3_ebit_mom_lowvol",
+    "expression": "add(add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), group_rank(ts_sum(returns, 240), subindustry)), -group_rank(ts_std_dev(returns, 60), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "1Yob1o2Q",
+    "sharpe": 0.06,
+    "turnover": 0.0402,
+    "fitness": 0.02,
+    "returns": 0.0094,
+    "drawdown": 0.4753,
+    "longCount": 1555,
+    "shortCount": 1460,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
