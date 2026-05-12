@@ -60,6 +60,55 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND82_ALPHAS: list[str] = [
+    # Round 82 — exploit R81's C2+ winner (SH 0.80) + 2 new families.
+    # C2+ baseline:
+    #   group_neutralize(ts_decay_linear(
+    #     ts_mean((vwap-close)/close, 20) * (volume/ts_mean(volume,60) - 1),
+    #   60), subindustry)
+    # Economic logic: vwap>close = institutional overhead supply / accumulation,
+    # × recent volume-shock = activity confirmation, → long next period.
+    # ALL TOP200, subindustry-neutralized, decay 60.
+
+    # === Family C+ exploitation — parameter sweep around C2+ winner ===
+
+    # C2+a. Shorter vwap-close window 5d (faster reaction)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 5) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # C2+b. Shorter vwap-close window 10d
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 10) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # C2+c. Longer vwap-close window 40d (slower)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 40) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # C2+d. Shorter vol-shock denom 20d (more reactive magnitude)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 20) * (volume / ts_mean(volume, 20) - 1), 60), subindustry)",
+
+    # === NEW Family E — Price-volume dislocation ===
+    # Captures stocks where price and volume have temporarily decoupled.
+    # Economic logic: when price moves strongly without volume confirmation,
+    # the move is likely to reverse. Different from R74-76 (which use vol
+    # ONLY as magnitude) — here vol is a confirmation/disconfirmation signal.
+
+    # E1. Price change without volume confirmation = reversal
+    "group_neutralize(ts_decay_linear(-ts_mean(returns, 20) * (1 - volume / ts_mean(volume, 60)), 60), subindustry)",
+
+    # E2. Same with adv20 reference for stability
+    "group_neutralize(ts_decay_linear(-ts_mean(returns, 20) * (1 - adv20 / ts_mean(adv20, 60)), 60), subindustry)",
+
+    # === NEW Family F — Volatility regime shift (vol-of-vol) ===
+    # 2nd-order vol signal: stocks where realized vol is becoming MORE
+    # volatile (regime instability) tend to underperform. Distinct from
+    # range-asymmetry (user-alpha) which is 1st-order intraday vol.
+
+    # F1. Recent vol vs longer-term vol (regime change ratio)
+    "group_neutralize(ts_decay_linear(-ts_std_dev(returns, 20) / ts_std_dev(returns, 252), 60), subindustry)",
+
+    # F2. Vol-of-vol: std-dev OF the 20d rolling vol
+    "group_neutralize(ts_decay_linear(-ts_std_dev(ts_std_dev(returns, 20), 60), 60), subindustry)",
+]
+
+
 ROUND81_ALPHAS: list[str] = [
     # Round 81 — fix R80's broken families and add a new orthogonal family.
     # R80 evidence: Family A sim-failed (the +0.0001 stabilizer breaks the
@@ -2675,7 +2724,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2690,6 +2739,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round82": ROUND82_ALPHAS,
         "round81": ROUND81_ALPHAS,
         "round80": ROUND80_ALPHAS,
         "round79": ROUND79_ALPHAS,
