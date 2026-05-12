@@ -294,6 +294,86 @@ ROUND_4 = [
 ]
 
 
+# =====================================================================
+# Round 5: keep the R3 winner expression (EBIT + 5d short reversal,
+# SH=1.47 TO=0.271), vary ONLY truncation / neutralization / universe
+# to push TO under 0.25 without smoothing the signal. From R2 we
+# already know these axes leave 0.62 EBIT-only signal unchanged
+# (so a similar invariance may give us SH ~ 1.47 with TO < 0.25).
+# =====================================================================
+R3_WINNER_EXPR = f"add({EBIT_YIELD}, {SHORT_REV_5})"
+
+ROUND_5 = [
+    # 1. higher truncation 0.10 (cap extreme position weights)
+    {
+        "name": "r5_ebit_rev5_trunc010",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000"),
+    },
+    # 2. trunc 0.15
+    {
+        "name": "r5_ebit_rev5_trunc015",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.15, universe="TOP3000"),
+    },
+    # 3. SUBINDUSTRY neutralization (tighter group)
+    {
+        "name": "r5_ebit_rev5_subind",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 4. SUBINDUSTRY + trunc 0.10
+    {
+        "name": "r5_ebit_rev5_subind_trunc010",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="SUBINDUSTRY",
+                                  truncation=0.10, universe="TOP3000"),
+    },
+    # 5. SECTOR + trunc 0.10
+    {
+        "name": "r5_ebit_rev5_sector_trunc010",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="SECTOR",
+                                  truncation=0.10, universe="TOP3000"),
+    },
+    # 6. trunc 0.10 with pasteurization OFF (less artificial flattening
+    #    of the signal across same-name observations)
+    {
+        "name": "r5_ebit_rev5_trunc010_nopast",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 7. multi-window reversal: average of 3,5,7-day returns. Smoother
+    #    on TO than raw 5-day; may keep SH high.
+    {
+        "name": "r5_ebit_rev_multi357",
+        "expression": (
+            f"add({EBIT_YIELD},"
+            f" -group_rank(add(add(ts_sum(returns, 3),"
+            f" ts_sum(returns, 5)), ts_sum(returns, 7)), subindustry))"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000"),
+    },
+    # 8. ts_zscore-based 5-day reversal (name-history normalized,
+    #    not cross-sectional rank)
+    {
+        "name": "r5_ebit_revz5",
+        "expression": (
+            f"add({EBIT_YIELD},"
+            f" -group_rank(ts_zscore(ts_sum(returns, 5), 60), subindustry))"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -470,6 +550,8 @@ def main():
         batch = ROUND_3
     elif args.round == 4:
         batch = ROUND_4
+    elif args.round == 5:
+        batch = ROUND_5
     else:
         log.error(f"unknown round {args.round}"); return 2
 
