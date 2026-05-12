@@ -779,6 +779,93 @@ ROUND_11 = [
 ]
 
 
+# =====================================================================
+# Round 12: replace fundamental EBIT with analyst EBIT (+0.30 SH alone)
+# and add -garp_vp_ratio (R11 sign-flipped +1.12 TO 0.019) as a new
+# ultra-low-TO axis.
+# =====================================================================
+ANL_EBIT_YIELD = (
+    "group_zscore(ts_mean(divide(anl4_ebit_value, cap), 60), subindustry)"
+)
+GARP_FLIP = (
+    "-group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22),"
+    " subindustry)"
+)
+ASSET_TURNOVER = (
+    "group_zscore(ts_mean(divide(sales, assets), 120), subindustry)"
+)
+
+ROUND_12 = [
+    # 1. R10 winner with EBIT base replaced by analyst-EBIT
+    #    expr = anlEBIT + rev3 + adv20-z + iv-skew  (4-axis, d=10)
+    {
+        "name": "r12_anlebit_rev3_advz_ivskew_d10",
+        "expression": (
+            f"add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=10, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. d=8 variant of #1
+    {
+        "name": "r12_anlebit_rev3_advz_ivskew_d8",
+        "expression": (
+            f"add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. 5-axis: anlEBIT + rev3 + adv20-z + iv-skew + (-)garp
+    {
+        "name": "r12_5axis_anlebit_garp_d10",
+        "expression": (
+            f"add(add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW}), {GARP_FLIP})"
+        ),
+        "settings": base_settings(decay=10, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. 5-axis at d=8 (potentially highest SH config)
+    {
+        "name": "r12_5axis_anlebit_garp_d8",
+        "expression": (
+            f"add(add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW}), {GARP_FLIP})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. 6-axis: add asset turnover too
+    {
+        "name": "r12_6axis_anlebit_garp_turnover_d10",
+        "expression": (
+            f"add(add(add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW}), {GARP_FLIP}), {ASSET_TURNOVER})"
+        ),
+        "settings": base_settings(decay=10, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. -garp replacing iv-skew (test whether garp is a better 4th axis)
+    {
+        "name": "r12_anlebit_rev3_advz_garp_d10",
+        "expression": (
+            f"add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {GARP_FLIP})"
+        ),
+        "settings": base_settings(decay=10, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -979,6 +1066,8 @@ def main():
         batch = ROUND_10
     elif args.round == 11:
         batch = ROUND_11
+    elif args.round == 12:
+        batch = ROUND_12
     else:
         log.error(f"unknown round {args.round}"); return 2
 
