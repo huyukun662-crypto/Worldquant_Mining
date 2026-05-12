@@ -1,0 +1,232 @@
+[
+  {
+    "variant": "F1_value_btm",
+    "family": "value",
+    "field": "bookvalue_ps",
+    "logic": "book-to-market LONG (cheap stocks outperform)",
+    "expression": "zscore(ts_decay_linear(divide(bookvalue_ps, close), 20))",
+    "ok": true,
+    "alpha_id": "rKb38rEJ",
+    "sharpe": 0.47,
+    "turnover": 0.0288,
+    "fitness": 0.37,
+    "returns": 0.0788,
+    "drawdown": 0.4034,
+    "longCount": 1151,
+    "shortCount": 1725,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.47
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.37
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0288
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0288
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2022-03-08",
+        "limit": 0.1,
+        "value": 0.278119
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.2,
+        "value": -0.01
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "F2_quality_roe",
+    "family": "quality",
+    "field": "return_equity",
+    "logic": "ROE LONG (high quality outperforms)",
+    "expression": "zscore(ts_decay_linear(return_equity, 20))",
+    "ok": true,
+    "alpha_id": "j2nEM2we",
+    "sharpe": -0.07,
+    "turnover": 0.0397,
+    "fitness": -0.02,
+    "returns": -0.0101,
+    "drawdown": 0.3245,
+    "longCount": 1570,
+    "shortCount": 1457,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.07
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.02
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0397
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0397
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2019-04-01",
+        "limit": 0.1,
+        "value": 0.199547
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": -0.03,
+        "value": 0.59
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "F3_earnings_revision",
+    "family": "earnings_momentum",
+    "field": "snt1_d1_earningsrevision",
+    "logic": "analyst earnings revision LONG (rising estimates carry)",
+    "expression": "zscore(ts_decay_linear(snt1_d1_earningsrevision, 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Invalid data field snt1_d1_earningsrevision. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "F4_lowvol",
+    "family": "low_vol_anomaly",
+    "field": "historical_volatility_60",
+    "logic": "60d historical vol REVERSED (low-vol anomaly)",
+    "expression": "zscore(reverse(ts_decay_linear(historical_volatility_60, 20)))",
+    "ok": true,
+    "alpha_id": "d5nXP0Rj",
+    "sharpe": 0.23,
+    "turnover": 0.0466,
+    "fitness": 0.16,
+    "returns": 0.0578,
+    "drawdown": 0.8267,
+    "longCount": 1803,
+    "shortCount": 1143,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.23
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.16
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0466
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0466
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.1,
+        "value": 0.16
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "F5_nettarget_revision",
+    "family": "analyst_targets",
+    "field": "snt1_d1_nettargetpercent",
+    "logic": "net target-revision LONG (raised targets carry)",
+    "expression": "zscore(ts_decay_linear(snt1_d1_nettargetpercent, 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Invalid data field snt1_d1_nettargetpercent. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  }
+]
