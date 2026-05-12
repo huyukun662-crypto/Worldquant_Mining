@@ -2965,5 +2965,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": true
+  },
+  {
+    "name": "r16_r13winner_plus_essratings_d8",
+    "expression": "add(add(add(add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 3), subindustry)), group_rank(ts_zscore(adv20, 60), subindustry)), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), group_rank(ts_mean(rp_ess_ratings, 22), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "1YoEeZmK",
+    "sharpe": 2.15,
+    "turnover": 0.1562,
+    "fitness": 1.79,
+    "returns": 0.1086,
+    "drawdown": 0.058,
+    "longCount": 1312,
+    "shortCount": 1309,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": true
   }
 ]
