@@ -938,6 +938,54 @@ ROUND_13 = [
 ]
 
 
+# =====================================================================
+# Round 14: 3 fresh Model-category factors (different from R11's
+# unsystematic_risk and garp_vp_ratio). Three diverse axes:
+#   * value      -- 5y relative leading EPS yield
+#   * composite  -- FANGMA growth-profitability model
+#   * liquidity  -- short-interest ratio
+# Each standalone first, then sign decided by result.
+# =====================================================================
+ROUND_14 = [
+    # 1. VALUE -- 5-year relative leading 12m EPS yield (mdl177)
+    {
+        "name": "r14_model_5y_rel_eps_yield",
+        "category": "model_value",
+        "expression": (
+            "group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep,"
+            " 22), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. COMPOSITE -- FANGMA growth/profit (full coverage)
+    {
+        "name": "r14_model_fangma_gpam11",
+        "category": "model_composite",
+        "expression": (
+            "group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22),"
+            " subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. LIQUIDITY RISK -- short-interest ratio (fade crowded shorts)
+    {
+        "name": "r14_model_si_ratio_fade",
+        "category": "model_liquidity",
+        "expression": (
+            "-group_rank(ts_mean(mdl177_2_liquidityriskfactor_si_ratio, 22),"
+            " subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1142,6 +1190,8 @@ def main():
         batch = ROUND_12
     elif args.round == 13:
         batch = ROUND_13
+    elif args.round == 14:
+        batch = ROUND_14
     else:
         log.error(f"unknown round {args.round}"); return 2
 
