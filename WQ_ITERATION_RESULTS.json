@@ -693,5 +693,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r3_pure_pv",
+    "expression": "add(add(group_rank(ts_sum(returns, 240), subindustry), -group_rank(ts_std_dev(returns, 60), subindustry)), -group_rank(ts_sum(returns, 5), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "GrnA65gJ",
+    "sharpe": 0.29,
+    "turnover": 0.1498,
+    "fitness": 0.15,
+    "returns": 0.04,
+    "drawdown": 0.3466,
+    "longCount": 1631,
+    "shortCount": 1501,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
