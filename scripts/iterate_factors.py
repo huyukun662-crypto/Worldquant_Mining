@@ -224,6 +224,76 @@ ROUND_3 = [
 ]
 
 
+# =====================================================================
+# Round 4: lock in R3 winner (EBIT + 5d short reversal, SH=1.47 but
+# TO=0.271 just over the 0.25 cap). Push TO under cap, then stack
+# low-vol cleanly (NO mom12m, which we know is poison on this account).
+# =====================================================================
+SHORT_REV_5  = "-group_rank(ts_sum(returns, 5), subindustry)"
+SHORT_REV_10 = "-group_rank(ts_sum(returns, 10), subindustry)"
+SHORT_REV_22 = "-group_rank(ts_sum(returns, 22), subindustry)"
+SHORT_REV_5_SMOOTH = "-group_rank(ts_decay_linear(ts_sum(returns, 5), 10), subindustry)"
+
+ROUND_4 = [
+    # 1. EBIT + 5d reversal, decay=16 (more setting-level smoothing)
+    {
+        "name": "r4_ebit_rev5_d16",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV_5})",
+        "settings": base_settings(decay=16, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 2. EBIT + 5d reversal, decay=32
+    {
+        "name": "r4_ebit_rev5_d32",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV_5})",
+        "settings": base_settings(decay=32, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 3. EBIT + 10d reversal (slower => lower TO)
+    {
+        "name": "r4_ebit_rev10",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV_10})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 4. EBIT + 22d reversal
+    {
+        "name": "r4_ebit_rev22",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV_22})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 5. EBIT + ts_decay_linear(5d reversal, 10) - smooth inside expr
+    {
+        "name": "r4_ebit_rev5_inner_decay10",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV_5_SMOOTH})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 6. EBIT + 5d reversal + low-vol (3-axis, NO mom)
+    {
+        "name": "r4_ebit_rev5_lowvol",
+        "expression": f"add(add({EBIT_YIELD}, {SHORT_REV_5}), {LOWVOL_60D})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 7. EBIT + 10d reversal + low-vol, decay=16 (the conservative stack)
+    {
+        "name": "r4_ebit_rev10_lowvol_d16",
+        "expression": f"add(add({EBIT_YIELD}, {SHORT_REV_10}), {LOWVOL_60D})",
+        "settings": base_settings(decay=16, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+    # 8. Pure 5d reversal alone (baseline: how much SH does shortrev have?)
+    {
+        "name": "r4_shortrev_only",
+        "expression": SHORT_REV_5,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -398,6 +468,8 @@ def main():
         batch = sweep_settings(args.base_expr, args.base_name)
     elif args.round == 3:
         batch = ROUND_3
+    elif args.round == 4:
+        batch = ROUND_4
     else:
         log.error(f"unknown round {args.round}"); return 2
 
