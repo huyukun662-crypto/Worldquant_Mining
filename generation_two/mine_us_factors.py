@@ -60,6 +60,49 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND80_ALPHAS: list[str] = [
+    # Round 80 — three structurally and logically distinct alpha families.
+    # Each captures a different market premium with no signal overlap to
+    # prior rounds (vol-shock R74-76, range-asymmetry user-alpha, return-
+    # reversal PV1-PV3). All TOP200, subindustry-neutralized, decay 60.
+    # Gate: SH>=1.30, TO<0.20, fit>1.0.
+    #
+    # FAMILY A — Intraday closing position (close-low)/(high-low):
+    #   end-of-day buying pressure / accumulation-distribution premium.
+    # FAMILY B — Overnight vs intraday return decomposition:
+    #   separates overnight gap (informed) from intraday (liquidity) flow.
+    # FAMILY C — VWAP vs close divergence (vwap-close)/close:
+    #   institutional flow vs marked-to-market price.
+
+    # === FAMILY A — Intraday closing position ===
+    # A1. Reversion: high recent closing position → sell next day
+    "group_neutralize(ts_decay_linear(-ts_mean((close - low) / (high - low + 0.0001), 20), 60), subindustry)",
+
+    # A2. Longer window 60d — slower position-bias signal
+    "group_neutralize(ts_decay_linear(-ts_mean((close - low) / (high - low + 0.0001), 60), 60), subindustry)",
+
+    # A3. Position × vol-shock magnitude (combines axis A with magnitude scaler)
+    "group_neutralize(ts_decay_linear(-ts_mean((close - low) / (high - low + 0.0001), 20) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # === FAMILY B — Overnight vs intraday return decomposition ===
+    # B1. Overnight return mean reversion (open/prev_close - 1)
+    "group_neutralize(ts_decay_linear(-ts_mean(open / ts_delay(close, 1) - 1, 20), 60), subindustry)",
+
+    # B2. Intraday return mean reversion (close/open - 1)
+    "group_neutralize(ts_decay_linear(-ts_mean(close / open - 1, 20), 60), subindustry)",
+
+    # B3. Overnight-intraday spread: persistent gap > intraday → reversal
+    "group_neutralize(ts_decay_linear(-(ts_mean(open / ts_delay(close, 1) - 1, 60) - ts_mean(close / open - 1, 60)), 60), subindustry)",
+
+    # === FAMILY C — VWAP vs close divergence ===
+    # C1. Persistent VWAP-close gap mean reversion
+    "group_neutralize(ts_decay_linear(-ts_mean((vwap - close) / close, 20), 60), subindustry)",
+
+    # C2. VWAP gap × volume-shock (institutional flow magnitude scaler)
+    "group_neutralize(ts_decay_linear(-ts_mean((vwap - close) / close, 20) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+]
+
+
 ROUND79_ALPHAS: list[str] = [
     # Round 79 — minimal-touch tweaks to the ts_std_dev asymmetry alpha.
     # R78 evidence: every neutralization/normalization variant destroyed
@@ -2590,7 +2633,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2605,6 +2648,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round80": ROUND80_ALPHAS,
         "round79": ROUND79_ALPHAS,
         "round78": ROUND78_ALPHAS,
         "round77": ROUND77_ALPHAS,
