@@ -235,15 +235,22 @@ def submit(session, expression, settings):
     body = {"type": "REGULAR", "settings": settings, "regular": expression}
     log.info(f"-> {expression[:90]}")
     log.info(f"   {settings}")
-    for _ in range(5):
-        r = session.post("https://api.worldquantbrain.com/simulations",
-                         json=body, timeout=30)
+    # POST with retry on 429 + transient network errors
+    r = None
+    for attempt in range(5):
+        try:
+            r = session.post("https://api.worldquantbrain.com/simulations",
+                             json=body, timeout=30)
+        except _requests.exceptions.RequestException as e:
+            log.warning(f"   POST error: {e}; retry {attempt+1}/5 in 10s")
+            time.sleep(10); continue
         if r.status_code == 429:
             time.sleep(float(r.headers.get("Retry-After") or 30)); continue
         break
-    if r.status_code != 201:
+    if r is None or r.status_code != 201:
         return {"ok": False, "stage": "submit",
-                "status": r.status_code, "body": r.text[:300]}
+                "status": getattr(r, "status_code", None),
+                "body": (r.text[:300] if r is not None else "no response")}
     progress = r.headers.get("Location")
     if not progress:
         return {"ok": False, "stage": "submit", "error": "no Location"}
@@ -251,19 +258,31 @@ def submit(session, expression, settings):
     last = ""
     while time.time() - t0 < POLL_TIMEOUT_S:
         time.sleep(POLL_INTERVAL_S)
-        rp = session.get(progress, timeout=30)
+        try:
+            rp = session.get(progress, timeout=30)
+        except _requests.exceptions.RequestException as e:
+            log.warning(f"   poll network error: {type(e).__name__}; retry")
+            continue
         if rp.status_code == 429:
             time.sleep(30); continue
         if rp.status_code != 200:
             continue
-        d = rp.json(); st = d.get("status", "")
+        try:
+            d = rp.json()
+        except ValueError:
+            continue
+        st = d.get("status", "")
         if st != last:
             log.info(f"   status={st} ({int(time.time()-t0)}s)")
             last = st
         if st == "COMPLETE":
             aid = d.get("alpha")
-            ra = session.get(f"https://api.worldquantbrain.com/alphas/{aid}",
-                              timeout=30)
+            try:
+                ra = session.get(f"https://api.worldquantbrain.com/alphas/{aid}",
+                                  timeout=30)
+            except _requests.exceptions.RequestException as e:
+                return {"ok": False, "stage": "alpha-get-network",
+                        "alpha_id": aid, "error": str(e)[:200]}
             if ra.status_code != 200:
                 return {"ok": False, "stage": "alpha-get",
                         "status": ra.status_code, "alpha_id": aid}
@@ -276,9 +295,25 @@ def submit(session, expression, settings):
 
 def run_batch(session, batch, append_to=None):
     out = list(append_to or [])
+    # Skip-resume: a batch member whose (name, expression, settings) is
+    # already in `out` is not re-submitted -- preserves R3 progress
+    # across crashes / retries.
+    done_keys = {(r.get("name"), r.get("expression"),
+                  json.dumps(r.get("settings"), sort_keys=True))
+                 for r in out if r.get("ok")}
     for i, f in enumerate(batch, 1):
+        key = (f["name"], f["expression"],
+               json.dumps(f["settings"], sort_keys=True))
+        if key in done_keys:
+            log.info(f"=== [{i}/{len(batch)}] {f['name']}  [SKIP: already done]")
+            continue
         log.info(f"=== [{i}/{len(batch)}] {f['name']} ===")
-        res = submit(session, f["expression"], f["settings"])
+        try:
+            res = submit(session, f["expression"], f["settings"])
+        except Exception as e:
+            log.error(f"   submit() crashed: {type(e).__name__}: {e}")
+            res = {"ok": False, "stage": "exception",
+                   "error": f"{type(e).__name__}: {str(e)[:200]}"}
         rec = {"name": f["name"], "expression": f["expression"],
                "settings": f["settings"]}
         if res.get("ok"):
