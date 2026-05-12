@@ -42,6 +42,17 @@ import sys
 import time
 from pathlib import Path
 
+# The sandbox proxy rejects requests sent with the default
+# `python-requests/*` User-Agent (returns 503 "DNS resolution failure").
+# Patch every requests.Session created downstream so it advertises a
+# UA that the proxy accepts.
+import requests as _requests
+_orig_session_init = _requests.Session.__init__
+def _patched_session_init(self, *a, **kw):
+    _orig_session_init(self, *a, **kw)
+    self.headers["User-Agent"] = "curl/8.5.0"
+_requests.Session.__init__ = _patched_session_init
+
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("submit-fund")
