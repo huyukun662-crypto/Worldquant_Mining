@@ -1,0 +1,105 @@
+[
+  {
+    "variant": "Z1_low_beta",
+    "field": "beta_last_60_days_spy",
+    "logic": "low-beta anomaly: SPY beta REVERSED",
+    "expression": "zscore(reverse(ts_decay_linear(beta_last_60_days_spy, 20)))",
+    "ok": true,
+    "alpha_id": "RRNQxQJ1",
+    "sharpe": 0.01,
+    "turnover": 0.1219,
+    "fitness": 0.0,
+    "returns": 0.0025,
+    "drawdown": 0.4282,
+    "longCount": 1465,
+    "shortCount": 1297,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.01
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1219
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1219
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.0,
+        "value": 0.08
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "Z2_low_distress",
+    "field": "distress_risk_measure",
+    "logic": "low-distress quality: distress_risk_measure REVERSED",
+    "expression": "zscore(reverse(ts_decay_linear(distress_risk_measure, 20)))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Invalid data field distress_risk_measure. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "Z3_equity_value_score",
+    "field": "equity_value_score",
+    "logic": "proprietary value composite LONG",
+    "expression": "zscore(ts_decay_linear(equity_value_score, 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Invalid data field equity_value_score. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "Z4_fcfyield_forward_roe",
+    "field": "fcf_yield_times_forward_roe",
+    "logic": "FCF yield x forward ROE LONG (value x quality)",
+    "expression": "zscore(ts_decay_linear(fcf_yield_times_forward_roe, 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Invalid data field fcf_yield_times_forward_roe. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "Z5_consensus_rating",
+    "field": "consensus_analyst_rating",
+    "logic": "analyst consensus rating LONG",
+    "expression": "zscore(ts_decay_linear(consensus_analyst_rating, 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Invalid data field consensus_analyst_rating. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  }
+]
