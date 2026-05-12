@@ -866,6 +866,78 @@ ROUND_12 = [
 ]
 
 
+# =====================================================================
+# Round 13: push SH past 2.0 while keeping TO < 0.20 AND FIT > 1.25.
+# decay-axis Pareto on (fundEBIT+rev3+adv20-z+iv-skew):
+#   d=5  SH 2.22  TO 0.224  (FAILS TO)
+#   d=8  SH 2.02  TO 0.163  (PASS, current best at SH>=2)
+#   d=10 SH 1.92  TO 0.140  (PASS)
+# Target: d=6/7 sweet spot. Plus 5-axis with R11 flipped-IV10 momentum.
+# =====================================================================
+FLIPPED_IV10 = "-group_rank(ts_zscore(implied_volatility_mean_10, 60), sector)"
+# NOTE: R11 found this SH=-0.87, so flipped sign (drop the leading -)
+# is the +0.87 momentum signal. Wrap as a momentum (positive) axis:
+IV10_MOMENTUM = "group_rank(ts_zscore(implied_volatility_mean_10, 60), sector)"
+
+ROUND_13 = [
+    # 1. R10 4-axis at decay=6 (between d=5 fail and d=8 pass)
+    {
+        "name": "r13_rev3_advz_ivskew_d6",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. d=7
+    {
+        "name": "r13_rev3_advz_ivskew_d7",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=7, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. + iv-mean-10 momentum (R11 flipped, SH=0.87 alone)
+    {
+        "name": "r13_5axis_iv10mom_d8",
+        "expression": (
+            f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW}), {IV10_MOMENTUM})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. 5-axis at d=6 (where 4-axis lands at sweet spot)
+    {
+        "name": "r13_5axis_iv10mom_d6",
+        "expression": (
+            f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW}), {IV10_MOMENTUM})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. tighter truncation 0.08 on R10 4-axis d=8 (might lower TO)
+    {
+        "name": "r13_rev3_advz_ivskew_d8_t008",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. trunc 0.05 (more concentrated; may push SH up if winners are
+    #    in the tail)
+    {
+        "name": "r13_rev3_advz_ivskew_d6_t008",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1068,6 +1140,8 @@ def main():
         batch = ROUND_11
     elif args.round == 12:
         batch = ROUND_12
+    elif args.round == 13:
+        batch = ROUND_13
     else:
         log.error(f"unknown round {args.round}"); return 2
 
