@@ -374,6 +374,66 @@ ROUND_5 = [
 ]
 
 
+# =====================================================================
+# Round 6: combine R5's pasteurization=OFF insight with R3#3's original
+# trunc=0.08, plus test new orthogonal axes (volume z-score, 3-day rev).
+# =====================================================================
+SHORT_REV_3 = "-group_rank(ts_sum(returns, 3), subindustry)"
+VOL_ZSCORE  = "group_rank(ts_zscore(volume, 60), subindustry)"
+ADV_ZSCORE  = "group_rank(ts_zscore(adv20, 60), subindustry)"
+
+ROUND_6 = [
+    # 1. R3#3 expr + pasteurization=OFF + trunc=0.08
+    {
+        "name": "r6_ebit_rev5_nopast_t008",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. Same + lower decay (decay=4)
+    {
+        "name": "r6_ebit_rev5_nopast_d4_t010",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. 3-day reversal (more aggressive) + pasteurization=OFF + trunc=0.10
+    {
+        "name": "r6_ebit_rev3_nopast",
+        "expression": f"add({EBIT_YIELD}, {SHORT_REV_3})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. EBIT + rev5 + volume z-score (new orthogonal axis)
+    {
+        "name": "r6_ebit_rev5_volz",
+        "expression": f"add(add({EBIT_YIELD}, {SHORT_REV_5}), {VOL_ZSCORE})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. EBIT + rev5 + adv20 z-score (alt liquidity axis)
+    {
+        "name": "r6_ebit_rev5_advz",
+        "expression": f"add(add({EBIT_YIELD}, {SHORT_REV_5}), {ADV_ZSCORE})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. EBIT + rev5, SUBINDUSTRY + pasteurization=OFF + trunc=0.08
+    {
+        "name": "r6_ebit_rev5_subind_nopast_t008",
+        "expression": R3_WINNER_EXPR,
+        "settings": base_settings(decay=8, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -552,6 +612,8 @@ def main():
         batch = ROUND_4
     elif args.round == 5:
         batch = ROUND_5
+    elif args.round == 6:
+        batch = ROUND_6
     else:
         log.error(f"unknown round {args.round}"); return 2
 
