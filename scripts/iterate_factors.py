@@ -1031,6 +1031,78 @@ ROUND_15 = [
 ]
 
 
+# =====================================================================
+# Round 16: fresh News fields + stack rp_ess_ratings (R15 +0.28) into
+# R13 winner to test whether News axis adds SH/FIT.
+# =====================================================================
+ESS_RATINGS = "group_rank(ts_mean(rp_ess_ratings, 22), industry)"
+
+ROUND_16 = [
+    # 1. News-derived PE fade (-news_pe_ratio): low PE = value
+    {
+        "name": "r16_news_pe_fade",
+        "expression": (
+            "-group_rank(ts_mean(news_pe_ratio, 22), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. News-derived ATR14 low-vol premium (-z-score)
+    {
+        "name": "r16_news_atr14_lowvol",
+        "expression": (
+            "-group_rank(ts_zscore(news_atr14, 60), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. Quick-spike momentum: shorter time-to-10% up = stronger
+    {
+        "name": "r16_news_mins10_pctup",
+        "expression": (
+            "-group_rank(ts_mean(news_mins_10_pct_up, 22), subindustry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. Investor-relations news impact projection
+    {
+        "name": "r16_news_nip_investor",
+        "expression": (
+            "group_rank(ts_mean(rp_nip_inverstor, 22), industry)"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. R13 winner + rp_ess_ratings as 5th axis, d=6 (push SH past 2.2?)
+    {
+        "name": "r16_r13winner_plus_essratings_d6",
+        "expression": (
+            f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+            f" {IV_SKEW}), {ESS_RATINGS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. Same stack d=8 (TO-friendly)
+    {
+        "name": "r16_r13winner_plus_essratings_d8",
+        "expression": (
+            f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+            f" {IV_SKEW}), {ESS_RATINGS})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1239,6 +1311,8 @@ def main():
         batch = ROUND_14
     elif args.round == 15:
         batch = ROUND_15
+    elif args.round == 16:
+        batch = ROUND_16
     else:
         log.error(f"unknown round {args.round}"); return 2
 
