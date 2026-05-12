@@ -2453,5 +2453,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": true
+  },
+  {
+    "name": "r13_rev3_advz_ivskew_d7",
+    "expression": "add(add(add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 3), subindustry)), group_rank(ts_zscore(adv20, 60), subindustry)), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 7,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "2rvb0vG5",
+    "sharpe": 2.08,
+    "turnover": 0.1784,
+    "fitness": 1.82,
+    "returns": 0.1369,
+    "drawdown": 0.0903,
+    "longCount": 1417,
+    "shortCount": 1431,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": true
   }
 ]
