@@ -2325,5 +2325,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r12_5axis_anlebit_garp_d8",
+    "expression": "add(add(add(add(group_zscore(ts_mean(divide(anl4_ebit_value, cap), 60), subindustry), -group_rank(ts_sum(returns, 3), subindustry)), group_rank(ts_zscore(adv20, 60), subindustry)), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "gJmEJP1v",
+    "sharpe": 1.76,
+    "turnover": 0.1026,
+    "fitness": 1.82,
+    "returns": 0.1333,
+    "drawdown": 0.0927,
+    "longCount": 1323,
+    "shortCount": 1376,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": true
   }
 ]
