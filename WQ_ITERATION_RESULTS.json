@@ -190,5 +190,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r1_analyst_triple",
+    "expression": "add(add(group_rank(ts_mean(snt1_d1_earningsrevision, 22), industry), group_rank(snt1_cored1_score, industry)), group_rank(snt1_d1_netrecpercent, industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "blNZkN06",
+    "sharpe": -0.01,
+    "turnover": 0.0869,
+    "fitness": -0.0,
+    "returns": -0.0008,
+    "drawdown": 0.2415,
+    "longCount": 411,
+    "shortCount": 399,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
