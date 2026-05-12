@@ -30,5 +30,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r1_roic_smoothed",
+    "expression": "group_zscore(ts_mean(divide(operating_income, add(equity, debt)), 120), subindustry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "pwnrqjPj",
+    "sharpe": 0.36,
+    "turnover": 0.0189,
+    "fitness": 0.2,
+    "returns": 0.0367,
+    "drawdown": 0.2976,
+    "longCount": 1405,
+    "shortCount": 1420,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
