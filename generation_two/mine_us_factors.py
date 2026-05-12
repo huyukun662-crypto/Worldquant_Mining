@@ -60,6 +60,43 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND77_ALPHAS: list[str] = [
+    # Round 77 — fix PV-R76-6's platform concentration failure
+    # ("Weight concentration 43.89% above cutoff of 10% on 9/25/2023").
+    # Root cause: (high-low)/close range-shock is unbounded; on a high-vol
+    # day a single name's intraday range explodes and dominates the
+    # subindustry-neutralized weight. Cure: rank-wrap (or rank-equivalent)
+    # the magnitude so any single name is capped to ~1/N before the
+    # multiplication. Headline fix is #1; #2-#8 explore close variants
+    # that keep more continuous magnitude info while still bounding spikes.
+    # All TOP200, decay 60, subindustry. Gate: SH>=1.30, TO<0.20, fit>1.0.
+
+    # 1. HEADLINE Fix A: rank-wrap the range-shock magnitude
+    "group_neutralize(ts_decay_linear(-rank((high - low) / close - ts_mean((high - low) / close, 60)) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 2. Rank-wrap the raw (high-low)/close (no mean-subtract)
+    "group_neutralize(ts_decay_linear(-rank((high - low) / close) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 3. ts_rank(60) wrap — cross-time rank, name-by-name, also caps spikes
+    "group_neutralize(ts_decay_linear(-ts_rank((high - low) / close - ts_mean((high - low) / close, 60), 60) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 4. ts_zscore(60) wrap — preserves continuous magnitude but bounded
+    "group_neutralize(ts_decay_linear(-ts_zscore((high - low) / close - ts_mean((high - low) / close, 60), 60) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 5. ts_zscore(252) wrap — longer baseline for the z-score
+    "group_neutralize(ts_decay_linear(-ts_zscore((high - low) / close - ts_mean((high - low) / close, 60), 252) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 6. Rank both terms (rank the direction signal too) — fully bounded
+    "group_neutralize(ts_decay_linear(-rank((high - low) / close - ts_mean((high - low) / close, 60)) * rank(ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+
+    # 7. Rank the product (compress the combined signal)
+    "group_neutralize(ts_decay_linear(-rank(((high - low) / close - ts_mean((high - low) / close, 60)) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126))), 60), subindustry)",
+
+    # 8. Rank-wrap with shorter range-shock baseline (20d vs 60d) for faster reaction
+    "group_neutralize(ts_decay_linear(-rank((high - low) / close - ts_mean((high - low) / close, 20)) * (ts_mean(returns, 252) - ts_mean(ts_mean(returns, 252), 126)), 60), subindustry)",
+]
+
+
 ROUND76_ALPHAS: list[str] = [
     # Round 76 — direction-signal diversity. R75 found 2 more survivors
     # but all 3 (R74 #7, R75 #1, R75 #6) share the same direction
@@ -2481,7 +2518,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2496,6 +2533,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round77": ROUND77_ALPHAS,
         "round76": ROUND76_ALPHAS,
         "round75": ROUND75_ALPHAS,
         "round74": ROUND74_ALPHAS,
