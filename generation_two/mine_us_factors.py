@@ -60,6 +60,53 @@ MIN_FITNESS = 1.0
 #     news12_*, fn_assets_fair_val_a, model risk fields
 #   * conditional / regime-switching structures via trade_when / if_else
 # ---------------------------------------------------------------------------
+ROUND83_ALPHAS: list[str] = [
+    # Round 83 — exploit two R82 leads + one new family.
+    # Lead 1 (C+): C2+b vwap-close 10d x vol-shock at SH 0.86 / FIT 0.93.
+    # Lead 2 (E flipped): R82 E1/E2 had SH -0.97/-1.00; flipped sign
+    #   should give +0.97/+1.00 per the verified sign-flip pattern.
+    # Economic logic E+: momentum x LOW volume = continuation (low-vol
+    # moves haven't been front-run yet). Distinct from R74-76 (vol as
+    # magnitude) and C+ (vwap-close as direction).
+    # All TOP200, subindustry-neutralized, decay 60.
+
+    # === Family C+ refinement around 10d sweet spot ===
+
+    # C2+b1. Window 8d (between best 10 and second-best 5)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 8) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # C2+b2. Window 12d
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 12) * (volume / ts_mean(volume, 60) - 1), 60), subindustry)",
+
+    # C2+b3. Window 10d + adv20-based magnitude (smoother)
+    "group_neutralize(ts_decay_linear(ts_mean((vwap - close) / close, 10) * (adv20 / ts_mean(adv20, 60) - 1), 60), subindustry)",
+
+    # === Family E+ FLIPPED — momentum x low-volume continuation ===
+
+    # E1+. Flipped sign: SH +0.97 expected (was -0.97)
+    "group_neutralize(ts_decay_linear(ts_mean(returns, 20) * (1 - volume / ts_mean(volume, 60)), 60), subindustry)",
+
+    # E2+. Flipped with adv20: SH +1.00 expected (was -1.00)
+    "group_neutralize(ts_decay_linear(ts_mean(returns, 20) * (1 - adv20 / ts_mean(adv20, 60)), 60), subindustry)",
+
+    # E3+. Flipped with shorter return window 10d (faster momentum)
+    "group_neutralize(ts_decay_linear(ts_mean(returns, 10) * (1 - volume / ts_mean(volume, 60)), 60), subindustry)",
+
+    # === NEW Family G — Price-volume correlation regime ===
+    # ts_corr(close, volume, N): when price and volume covary positively,
+    # informed flow is driving moves (trend); when negative, accumulation
+    # or distribution patterns dominate (reversal). Distinct from
+    # all prior families: uses cross-time CORRELATION as a signal axis,
+    # not levels, shocks, or directions.
+
+    # G1. Negative price-volume corr = mean reversion signal
+    "group_neutralize(ts_decay_linear(-ts_corr(close, volume, 20), 60), subindustry)",
+
+    # G2. Longer window 60d
+    "group_neutralize(ts_decay_linear(-ts_corr(close, volume, 60), 60), subindustry)",
+]
+
+
 ROUND82_ALPHAS: list[str] = [
     # Round 82 — exploit R81's C2+ winner (SH 0.80) + 2 new families.
     # C2+ baseline:
@@ -2724,7 +2771,7 @@ def main() -> int:
     p.add_argument("--slots", type=int, default=3,
                    help="Concurrent WQ Brain simulation slots to saturate")
     p.add_argument("--pool",
-                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82"],
+                   choices=["novel", "round2", "round3", "round4", "round5", "round6", "round7", "round8", "round9", "round10", "round11", "round13", "round14", "round15", "round16", "round17", "round18", "round19", "round20", "round21", "round22", "round23", "round24", "round25", "round26", "round27", "round28", "round29", "round30", "round31", "round32", "round33", "round34", "round35", "round36", "round37", "round38", "round39", "round40", "round41", "round42", "round43", "round44", "round45", "round46", "round47", "round48", "round49", "round50", "round51", "round52", "round53", "round54", "round55", "round56", "round57", "round58", "round59", "round60", "round61", "round62", "round63", "round64", "round65", "round66", "round67", "round68", "round69", "round70", "round71", "round72", "round73", "round74", "round75", "round76", "round77", "round78", "round79", "round80", "round81", "round82", "round83"],
                    default="novel",
                    help="Which candidate pool to screen")
     p.add_argument("--limit", type=int, default=0,
@@ -2739,6 +2786,7 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     pool = {
+        "round83": ROUND83_ALPHAS,
         "round82": ROUND82_ALPHAS,
         "round81": ROUND81_ALPHAS,
         "round80": ROUND80_ALPHAS,
