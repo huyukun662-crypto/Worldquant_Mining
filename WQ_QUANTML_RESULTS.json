@@ -20254,5 +20254,405 @@
         ]
       }
     ]
+  },
+  {
+    "id": "QM_R22_01",
+    "category": "rank-stability",
+    "idea": "60d std of cross-sectional rank(returns). Captures rank instability over time -- noisy-rank names. Sign negative: short rank-noisy (uninvestible, no edge).",
+    "original": "-Std(Rank(Ret), 60)",
+    "expression": "-1 * ts_std_dev(rank(returns), 60)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "Xgkrnql8",
+    "alpha": {
+      "id": "Xgkrnql8",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.05,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "-1 * ts_std_dev(rank(returns), 60)",
+        "description": null,
+        "operatorCount": 3
+      },
+      "dateCreated": "2026-05-11T22:19:06-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T22:19:06-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 2667018,
+        "bookSize": 20000000,
+        "longCount": 1655,
+        "shortCount": 1479,
+        "turnover": 0.0541,
+        "returns": 0.0539,
+        "drawdown": 0.7423,
+        "margin": 0.001994,
+        "sharpe": 0.26,
+        "fitness": 0.17,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": 0.26
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": 0.17
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0541
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0541
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": 0.11,
+            "value": 0.04
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": 0.26,
+    "turnover": 0.0541,
+    "fitness": 0.17,
+    "returns": 0.0539,
+    "drawdown": 0.7423,
+    "margin": 0.001994,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.26
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.17
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0541
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0541
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.11,
+        "value": 0.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "QM_R22_02",
+    "category": "vol-weighted-return-mean",
+    "idea": "Volume-weighted mean return over 60d. ts_mean(returns*volume, 60) / ts_mean(volume, 60). Different from R8_03 (session mean decomp) -- uses volume weights to emphasise high-flow days.",
+    "original": "Mean(R*V,60) / Mean(V,60)",
+    "expression": "ts_mean(returns * volume, 60) / ts_mean(volume, 60)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "9q9vr8b9",
+    "alpha": {
+      "id": "9q9vr8b9",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.05,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_mean(returns * volume, 60) / ts_mean(volume, 60)",
+        "description": null,
+        "operatorCount": 4
+      },
+      "dateCreated": "2026-05-11T22:26:23-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-11T22:26:23-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": -13445437,
+        "bookSize": 20000000,
+        "longCount": 1230,
+        "shortCount": 1907,
+        "turnover": 0.0783,
+        "returns": -0.2717,
+        "drawdown": 1.4785,
+        "margin": -0.006944,
+        "sharpe": -1.44,
+        "fitness": -2.12,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": -1.44
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": -2.12
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0783
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0783
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "FAIL",
+            "limit": -0.62,
+            "value": -0.92
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": -1.44,
+    "turnover": 0.0783,
+    "fitness": -2.12,
+    "returns": -0.2717,
+    "drawdown": 1.4785,
+    "margin": -0.006944,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -1.44
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -2.12
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0783
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0783
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.62,
+        "value": -0.92
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   }
 ]
