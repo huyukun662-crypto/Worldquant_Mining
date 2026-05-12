@@ -1,0 +1,158 @@
+[
+  {
+    "variant": "II1_nws18_sse",
+    "field": "nws18_sse",
+    "expression": "zscore(ts_decay_linear(last_diff_value(nws18_sse, 20), 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Operator last_diff_value does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "II2_nws18_ssc",
+    "field": "nws18_ssc",
+    "expression": "zscore(ts_decay_linear(last_diff_value(nws18_ssc, 20), 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Operator last_diff_value does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "II3_nws18_qep",
+    "field": "nws18_qep",
+    "expression": "zscore(ts_decay_linear(last_diff_value(nws18_qep, 20), 20))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Operator last_diff_value does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "II4_rp_css_earnings",
+    "field": "rp_css_earnings",
+    "expression": "zscore(ts_decay_linear(last_diff_value(rp_css_earnings, 20), 20))",
+    "ok": true,
+    "alpha_id": "RRNnGGne",
+    "sharpe": 0.36,
+    "turnover": 0.0973,
+    "fitness": 0.14,
+    "returns": 0.019,
+    "drawdown": 0.0659,
+    "longCount": 1594,
+    "shortCount": 1359,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.36
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.14
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0973
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0973
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.16,
+        "value": 0.05
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "II5_rp_ess_earnings",
+    "field": "rp_ess_earnings",
+    "expression": "zscore(ts_decay_linear(last_diff_value(rp_ess_earnings, 20), 20))",
+    "ok": true,
+    "alpha_id": "akNvrM7W",
+    "sharpe": 0.29,
+    "turnover": 0.0815,
+    "fitness": 0.11,
+    "returns": 0.0191,
+    "drawdown": 0.1684,
+    "longCount": 1527,
+    "shortCount": 1418,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.29
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.11
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0815
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0815
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.13,
+        "value": 0.26
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  }
+]
