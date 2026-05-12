@@ -500,6 +500,68 @@ ROUND_7 = [
 ]
 
 
+# =====================================================================
+# Round 8: fine-grain decay sweep (5, 6, 7) on R7 winners; try smaller
+# universes; try outer zscore wrap for FIT push.
+# R7 best: ebit+rev3+adv20-z d=4 SH=2.02 TO=0.287 FIT=1.41
+#          ebit+rev3+adv20-z d=8 SH=1.74 TO=0.181 FIT=1.40
+# decay 5-7 should land in the SH 1.8-1.95 / TO 0.20-0.27 sweet spot.
+# =====================================================================
+ROUND_8 = [
+    # 1. ebit+rev3+adv20-z, decay=5
+    {
+        "name": "r8_rev3_advz_d5",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. decay=6
+    {
+        "name": "r8_rev3_advz_d6",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. decay=7
+    {
+        "name": "r8_rev3_advz_d7",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=7, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. ebit+rev5+adv20-z d=5 (push FIT on the rev5 variant)
+    {
+        "name": "r8_rev5_advz_d5",
+        "expression": EBIT_REV5_ADVZ,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. 4-axis (vol+adv20) d=5
+    {
+        "name": "r8_4axis_d5",
+        "expression": (
+            f"add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+            f" {VOL_ZSCORE})"
+        ),
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. ebit+rev3+adv20-z d=4 TOP1000 (denser universe might lift FIT)
+    {
+        "name": "r8_rev3_advz_d4_TOP1000",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP1000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -682,6 +744,8 @@ def main():
         batch = ROUND_6
     elif args.round == 7:
         batch = ROUND_7
+    elif args.round == 8:
+        batch = ROUND_8
     else:
         log.error(f"unknown round {args.round}"); return 2
 
