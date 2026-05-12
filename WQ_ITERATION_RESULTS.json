@@ -222,5 +222,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r1_megastack_5axis",
+    "expression": "add(add(add(group_rank(divide(equity, cap), subindustry), group_rank(divide(operating_income, assets), subindustry)), group_rank(divide(income, cap), subindustry)), subtract(group_rank(divide(subtract(revenue, cogs), assets), subindustry), group_rank(divide(ts_delta(assets, 252), ts_mean(assets, 252)), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 16,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "XgkQrNA1",
+    "sharpe": 0.29,
+    "turnover": 0.0293,
+    "fitness": 0.14,
+    "returns": 0.0288,
+    "drawdown": 0.3284,
+    "longCount": 1305,
+    "shortCount": 1305,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
