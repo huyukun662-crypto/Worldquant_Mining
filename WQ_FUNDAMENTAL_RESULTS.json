@@ -624,5 +624,30 @@
       }
     ],
     "survivor": false
+  },
+  {
+    "name": "analyst_revision_score",
+    "category": "alternative",
+    "rationale": "Earnings-revision momentum (Chan-Jegadeesh-Lakonishok) + proprietary analyst score, stacked for robustness.",
+    "expression": "add(group_rank(ts_mean(snt1_d1_earningsrevision, 22), industry), group_rank(snt1_cored1_score, industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "timeout",
+    "survivor": false
   }
 ]
