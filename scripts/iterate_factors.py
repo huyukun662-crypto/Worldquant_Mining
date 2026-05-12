@@ -44,8 +44,8 @@ POLL_INTERVAL_S = 5
 
 # Survivor floor
 SHARPE_FLOOR  = 1.75
-TURNOVER_CEIL = 0.25
-FITNESS_FLOOR = 1.5
+TURNOVER_CEIL = 0.15
+FITNESS_FLOOR = 1.25
 
 
 def base_settings(**overrides):
@@ -619,6 +619,75 @@ ROUND_9 = [
 ]
 
 
+# =====================================================================
+# Round 10: tighter filter (TO < 0.15). Strategy:
+#   * stack IV-skew (R9#2: SH=0.61, TO=0.047) as a 4th ultra-low-TO axis
+#     -- mathematically lowers blended TO proportionally
+#   * sweep decay 9, 10, 12 on the R7/R8 winning expression to walk
+#     down the decay-Pareto curve toward TO < 0.15
+# =====================================================================
+IV_SKEW = ("group_rank(ts_mean(divide(implied_volatility_call_270,"
+           " implied_volatility_put_270), 22), sector)")
+EBIT_REV3_ADVZ_IVSKEW = (
+    f"add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}), {IV_SKEW})"
+)
+
+ROUND_10 = [
+    # 1. R7 winner + IV-skew (4th low-TO axis)
+    {
+        "name": "r10_rev3_advz_ivskew_d5",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. d=8
+    {
+        "name": "r10_rev3_advz_ivskew_d8",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. Walk decay axis: d=10 on rev3+adv20-z (no IV) to bridge d=8 (TO=0.181)
+    #    and d=16 (TO=0.111)
+    {
+        "name": "r10_rev3_advz_d10",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=10, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. d=12 on rev3+adv20-z
+    {
+        "name": "r10_rev3_advz_d12",
+        "expression": EBIT_REV3_ADVZ,
+        "settings": base_settings(decay=12, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. rev5 variant + IV-skew + d=8
+    {
+        "name": "r10_rev5_advz_ivskew_d8",
+        "expression": (
+            f"add(add(add({EBIT_YIELD}, {SHORT_REV_5}), {ADV_ZSCORE}),"
+            f" {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. rev3+adv20-z+iv-skew, d=10 (denser smoothing on the 4-axis)
+    {
+        "name": "r10_rev3_advz_ivskew_d10",
+        "expression": EBIT_REV3_ADVZ_IVSKEW,
+        "settings": base_settings(decay=10, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -815,6 +884,8 @@ def main():
         batch = ROUND_8
     elif args.round == 9:
         batch = ROUND_9
+    elif args.round == 10:
+        batch = ROUND_10
     else:
         log.error(f"unknown round {args.round}"); return 2
 
