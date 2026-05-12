@@ -168,10 +168,13 @@ def main():
         sub_ok = sub_check.get("result") == "PASS"
         if conc_ok and sub_ok and r["sharpe"] > 1.25 and r["turnover"] < 0.25:
             survivors.append(r)
+        conc_val = conc_check.get("value", "?")
+        sub_val = sub_check.get("value", "?")
+        conc_cell = "YES" if conc_ok else f"FAIL ({conc_val})"
+        sub_cell = "YES" if sub_ok else f"FAIL ({sub_val})"
         md += (f"| {r['variant']} | {r['fix']} | "
                 f"{r['sharpe']:+.3f} | {r['turnover']:.3f} | {r['fitness']:+.3f} | "
-                f"{'YES' if conc_ok else f'FAIL ({conc_check.get(\"value\", \"?\")})'} | "
-                f"{'YES' if sub_ok else f'FAIL ({sub_check.get(\"value\", \"?\")})'} | "
+                f"{conc_cell} | {sub_cell} | "
                 f"{r['checks_passed']}/{r['checks_total']} |\n")
     for r in [r for r in results if not r.get("ok")]:
         md += (f"| {r['variant']} | {r['fix']} | FAIL | - | - | - | - | - |\n")
