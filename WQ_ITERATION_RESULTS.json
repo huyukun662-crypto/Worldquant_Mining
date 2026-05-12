@@ -126,5 +126,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r1_gross_profitability",
+    "expression": "group_zscore(ts_mean(divide(subtract(revenue, cogs), assets), 120), subindustry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "A1nZ9wqe",
+    "sharpe": 0.37,
+    "turnover": 0.0133,
+    "fitness": 0.17,
+    "returns": 0.0256,
+    "drawdown": 0.1517,
+    "longCount": 1302,
+    "shortCount": 1522,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
