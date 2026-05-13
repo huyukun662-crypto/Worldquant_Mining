@@ -1170,6 +1170,69 @@ ROUND_17 = [
 ]
 
 
+# =====================================================================
+# Round 18: push SH past 2.4 with TRULY orthogonal axes (not value
+# duplicates). R17 confirmed value-side additions dilute. R18 tries:
+#   * pure decay push d=4/5 on R16 base 5-axis
+#   * non-value extension: rev2 (different time-scale reversal)
+#   * iv10 momentum (different option tenor than iv-skew 270d)
+# =====================================================================
+SHORT_REV_2 = "-group_rank(ts_sum(returns, 2), subindustry)"
+
+ROUND_18 = [
+    # 1. R16 base (5-axis) d=5 -- push SH
+    {
+        "name": "r18_r16base_d5",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. R16 base d=4 (most aggressive)
+    {
+        "name": "r18_r16base_d4",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. 6-axis with rev2 added (different reversal tenor)
+    {
+        "name": "r18_6axis_rev2_d6",
+        "expression": f"add({R16_BASE_5AXIS}, {SHORT_REV_2})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. 6-axis with flipped iv10-mom (different option tenor)
+    {
+        "name": "r18_6axis_iv10mom_d6",
+        "expression": f"add({R16_BASE_5AXIS}, {IV10_MOMENTUM})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. 6-axis with iv10-mom at d=8 (heavier smoothing since iv10 has TO)
+    {
+        "name": "r18_6axis_iv10mom_d8",
+        "expression": f"add({R16_BASE_5AXIS}, {IV10_MOMENTUM})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. 7-axis: rev2 + iv10mom both -- maximum orthogonal stack
+    {
+        "name": "r18_7axis_rev2_iv10mom_d6",
+        "expression": (
+            f"add(add({R16_BASE_5AXIS}, {SHORT_REV_2}), {IV10_MOMENTUM})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1382,6 +1445,8 @@ def main():
         batch = ROUND_16
     elif args.round == 17:
         batch = ROUND_17
+    elif args.round == 18:
+        batch = ROUND_18
     else:
         log.error(f"unknown round {args.round}"); return 2
 
