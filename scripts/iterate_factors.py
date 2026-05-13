@@ -1290,6 +1290,77 @@ ROUND_19 = [
 ]
 
 
+# =====================================================================
+# Round 20: shift the Pareto curve by replacing fund EBIT with analyst
+# EBIT in the 5-axis (akNvjWRR class). R12 found anlEBIT 4-axis has
+# ~30% lower TO at similar SH; if the same shift applies to 5-axis,
+# d=5 anlEBIT-5axis may land at SH 2.20+ AND TO < 0.20.
+# =====================================================================
+ANLEBIT_5AXIS = (
+    f"add(add(add(add({ANL_EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+    f" {IV_SKEW}), {ESS_RATINGS})"
+)
+
+ROUND_20 = [
+    # 1. anlEBIT 5-axis d=5 (key candidate)
+    {
+        "name": "r20_anl5axis_d5",
+        "expression": ANLEBIT_5AXIS,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. anlEBIT 5-axis d=6 (direct comparison to akNvjWRR)
+    {
+        "name": "r20_anl5axis_d6",
+        "expression": ANLEBIT_5AXIS,
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. anlEBIT 5-axis d=8 (TO-safe)
+    {
+        "name": "r20_anl5axis_d8",
+        "expression": ANLEBIT_5AXIS,
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. anlEBIT 5-axis d=4 (most aggressive)
+    {
+        "name": "r20_anl5axis_d4",
+        "expression": ANLEBIT_5AXIS,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. fund-EBIT 5-axis with rev5 instead of rev3 (less aggressive reversal)
+    {
+        "name": "r20_fundrev5_5axis_d6",
+        "expression": (
+            f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_5}), {ADV_ZSCORE}),"
+            f" {IV_SKEW}), {ESS_RATINGS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. fund-EBIT 5-axis with IV-skew 120d (different option tenor)
+    {
+        "name": "r20_iv120skew_5axis_d6",
+        "expression": (
+            f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+            f" group_rank(ts_mean(divide(implied_volatility_call_120,"
+            f" implied_volatility_put_120), 22), sector)),"
+            f" {ESS_RATINGS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1506,6 +1577,8 @@ def main():
         batch = ROUND_18
     elif args.round == 19:
         batch = ROUND_19
+    elif args.round == 20:
+        batch = ROUND_20
     else:
         log.error(f"unknown round {args.round}"); return 2
 
