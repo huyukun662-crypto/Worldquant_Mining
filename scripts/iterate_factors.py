@@ -1503,6 +1503,98 @@ ROUND_22 = [
 ]
 
 
+# =====================================================================
+# Round 23: build a FRESH composite using R22's positive standalones,
+# explicitly NOT reusing rev3 / adv20-z / IV-skew / ess_ratings (the
+# akNvjWRR family). Goal: produce another SH>=1.75/TO<0.20/FIT>1.25
+# alpha from a DIFFERENT axis set.
+# =====================================================================
+VWAP_REVERT      = "-group_rank(divide(close, ts_mean(vwap, 60)), subindustry)"
+OPEN_CLOSE_CONT  = ("group_rank(ts_mean(divide(subtract(close, open), close), 22),"
+                    " subindustry)")
+QUALITY_MINUS_GROWTH = (
+    "subtract(group_zscore(ts_mean(divide(subtract(revenue, cogs), assets),"
+    " 120), subindustry),"
+    " group_zscore(divide(ts_delta(assets, 252), ts_mean(assets, 252)),"
+    " subindustry))"
+)
+LIQ_REV_FLIP = (
+    "multiply(group_rank(ts_sum(returns, 5), subindustry),"
+    " -group_rank(ts_std_dev(returns, 60), subindustry))"
+)
+
+ROUND_23 = [
+    # 1. 3-axis pure R22: vwap_revert + quality-growth + open_close_cont
+    {
+        "name": "r23_3axis_pure_r22",
+        "expression": (
+            f"add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}), {OPEN_CLOSE_CONT})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. 4-axis pure R22: + flipped liq-weighted rev
+    {
+        "name": "r23_4axis_pure_r22",
+        "expression": (
+            f"add(add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}),"
+            f" {OPEN_CLOSE_CONT}), {LIQ_REV_FLIP})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. 4-axis: pure R22 + EBIT yield (4 totally different axes than R20)
+    {
+        "name": "r23_4axis_r22_plus_ebit",
+        "expression": (
+            f"add(add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}),"
+            f" {OPEN_CLOSE_CONT}), {EBIT_YIELD})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. 5-axis: + EBIT + (-)garp (the deep value flip from R11)
+    {
+        "name": "r23_5axis_r22_ebit_garp",
+        "expression": (
+            f"add(add(add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}),"
+            f" {OPEN_CLOSE_CONT}), {EBIT_YIELD}),"
+            f" -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22),"
+            f" subindustry))"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. d=4 of 3-axis (push SH)
+    {
+        "name": "r23_3axis_d4",
+        "expression": (
+            f"add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}), {OPEN_CLOSE_CONT})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. 5-axis at d=4 (maximum aggressive)
+    {
+        "name": "r23_5axis_d4",
+        "expression": (
+            f"add(add(add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}),"
+            f" {OPEN_CLOSE_CONT}), {EBIT_YIELD}),"
+            f" -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22),"
+            f" subindustry))"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1725,6 +1817,8 @@ def main():
         batch = ROUND_21
     elif args.round == 22:
         batch = ROUND_22
+    elif args.round == 23:
+        batch = ROUND_23
     else:
         log.error(f"unknown round {args.round}"); return 2
 
