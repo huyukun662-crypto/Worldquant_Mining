@@ -1829,6 +1829,93 @@ ROUND_26 = [
 ]
 
 
+# =====================================================================
+# Round 27: compose R26's new-structure signals into PASS alphas.
+# All ingredients are ts_corr / sector-rel / divide / sign-gated --
+# zero overlap with the rev3-based akNvjWRR family.
+# =====================================================================
+RV_CORR_FADE       = "-group_rank(ts_corr(returns, volume, 22), subindustry)"
+CLOSE_VWAP_CORR_FLIP = "-group_rank(ts_corr(close, vwap, 22), subindustry)"
+EBIT_SECTOR_REL    = (
+    "subtract(group_rank(ts_mean(divide(ebit, cap), 120), subindustry),"
+    " group_mean(group_rank(ts_mean(divide(ebit, cap), 120), subindustry),"
+    " 1, sector))"
+)
+RATIO_FLIP = (
+    "-divide(group_rank(ts_sum(returns, 22), subindustry),"
+    " group_rank(ts_std_dev(returns, 60), subindustry))"
+)
+
+ROUND_27 = [
+    # 1. 3-axis new-structure: sector-rel-EBIT + R-V corr fade + close-vwap corr flip
+    {
+        "name": "r27_3axis_new_struct_d6",
+        "expression": (
+            f"add(add({EBIT_SECTOR_REL}, {RV_CORR_FADE}), {CLOSE_VWAP_CORR_FLIP})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. 4-axis: + ratio flip
+    {
+        "name": "r27_4axis_new_struct_d6",
+        "expression": (
+            f"add(add(add({EBIT_SECTOR_REL}, {RV_CORR_FADE}),"
+            f" {CLOSE_VWAP_CORR_FLIP}), {RATIO_FLIP})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. 5-axis: + 3 model-flips (mix new structure with model-flips,
+    #    no add-rank stack family at all)
+    {
+        "name": "r27_5axis_struct_plus_3flips_d6",
+        "expression": (
+            f"add(add(add({EBIT_SECTOR_REL}, {RV_CORR_FADE}),"
+            f" {CLOSE_VWAP_CORR_FLIP}), {SLOW_3FLIPS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. multiply interaction: sector-rel-EBIT x close-vwap-corr-flip
+    #    (different combinator, not add)
+    {
+        "name": "r27_multiply_interaction_d6",
+        "expression": (
+            f"multiply({EBIT_SECTOR_REL}, {CLOSE_VWAP_CORR_FLIP})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. d=4 push of R27#3 (the most likely PASS candidate)
+    {
+        "name": "r27_5axis_struct_plus_3flips_d4",
+        "expression": (
+            f"add(add(add({EBIT_SECTOR_REL}, {RV_CORR_FADE}),"
+            f" {CLOSE_VWAP_CORR_FLIP}), {SLOW_3FLIPS})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. 6-axis: + close-z (the R25 winning fast signal) +IV-skew
+    {
+        "name": "r27_6axis_super_struct_d6",
+        "expression": (
+            f"add(add(add(add({EBIT_SECTOR_REL}, {RV_CORR_FADE}),"
+            f" {CLOSE_VWAP_CORR_FLIP}), {FAST_CLOSE_Z}), {SLOW_3FLIPS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2059,6 +2146,8 @@ def main():
         batch = ROUND_25
     elif args.round == 26:
         batch = ROUND_26
+    elif args.round == 27:
+        batch = ROUND_27
     else:
         log.error(f"unknown round {args.round}"); return 2
 
