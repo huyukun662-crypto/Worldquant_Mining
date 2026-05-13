@@ -4652,5 +4652,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r26_sign_gated_rev",
+    "expression": "multiply(sign(subtract(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), 0.5)), -group_rank(ts_sum(returns, 5), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "WjNK3xYd",
+    "sharpe": -0.48,
+    "turnover": 0.1408,
+    "fitness": -0.24,
+    "returns": -0.0347,
+    "drawdown": 0.3345,
+    "longCount": 1391,
+    "shortCount": 1630,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
