@@ -1595,6 +1595,89 @@ ROUND_23 = [
 ]
 
 
+# =====================================================================
+# Round 24: SLOW-only composite using 3 model-value sign-flipped
+# factors. Each had SH ~+1.12 TO 0.02 standalone (R11/R14). Stacking
+# them with EBIT and asset_turnover may produce a fundamentally
+# different alpha than the rev3-centric akNvjWRR family.
+# =====================================================================
+FLIP_5Y       = ("-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep,"
+                 " 22), subindustry)")
+FLIP_GARP     = ("-group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio,"
+                 " 22), subindustry)")
+FLIP_FANGMA11 = ("-group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11,"
+                 " 22), subindustry)")
+ASSET_TURNOVER_R11 = (
+    "group_zscore(ts_mean(divide(sales, assets), 120), subindustry)"
+)
+
+ROUND_24 = [
+    # 1. 3 model-flips stacked
+    {
+        "name": "r24_3model_flips_d8",
+        "expression": f"add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. + EBIT yield (4 slow axes)
+    {
+        "name": "r24_3model_plus_ebit_d8",
+        "expression": (
+            f"add(add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11}),"
+            f" {EBIT_YIELD})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. + EBIT + asset_turnover (5 slow axes)
+    {
+        "name": "r24_5slow_d8",
+        "expression": (
+            f"add(add(add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11}),"
+            f" {EBIT_YIELD}), {ASSET_TURNOVER_R11})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. + iv-skew (slow but option-side)
+    {
+        "name": "r24_5slow_iv_d8",
+        "expression": (
+            f"add(add(add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11}),"
+            f" {EBIT_YIELD}), {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. 3-flip + analystEBIT (replace fund-EBIT with anlEBIT)
+    {
+        "name": "r24_3model_plus_anlebit_d8",
+        "expression": (
+            f"add(add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11}),"
+            f" {ANL_EBIT_YIELD})"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. d=4 (push SH)
+    {
+        "name": "r24_5slow_iv_d4",
+        "expression": (
+            f"add(add(add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11}),"
+            f" {EBIT_YIELD}), {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1819,6 +1902,8 @@ def main():
         batch = ROUND_22
     elif args.round == 23:
         batch = ROUND_23
+    elif args.round == 24:
+        batch = ROUND_24
     else:
         log.error(f"unknown round {args.round}"); return 2
 
