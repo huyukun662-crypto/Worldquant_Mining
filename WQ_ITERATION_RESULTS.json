@@ -3916,5 +3916,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r22_earnings_surprise_composite",
+    "expression": "add(add(group_rank(ts_mean(snt1_d1_earningssurprise, 22), industry), group_rank(ts_mean(snt1_d1_earningsrevision, 22), industry)), group_rank(snt1_d1_nettargetpercent, industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "QPneY7XM",
+    "sharpe": 0.07,
+    "turnover": 0.069,
+    "fitness": 0.02,
+    "returns": 0.0058,
+    "drawdown": 0.1836,
+    "longCount": 419,
+    "shortCount": 399,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
