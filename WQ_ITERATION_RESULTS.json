@@ -4684,5 +4684,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r26_return_over_risk",
+    "expression": "divide(group_rank(ts_sum(returns, 22), subindustry), group_rank(ts_std_dev(returns, 60), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P0njY9xE",
+    "sharpe": -0.33,
+    "turnover": 0.1188,
+    "fitness": -0.21,
+    "returns": -0.0484,
+    "drawdown": 0.5226,
+    "longCount": 862,
+    "shortCount": 2086,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
