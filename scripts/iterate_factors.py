@@ -1233,6 +1233,63 @@ ROUND_18 = [
 ]
 
 
+# =====================================================================
+# Round 19: TO-tightening sweep on the SH>2.3 configs from R18.
+# Levers: truncation 0.05/0.08, SUBINDUSTRY, TOP1000.
+# Goal: keep SH > 2.2 while bringing TO < 0.20.
+# =====================================================================
+ROUND_19 = [
+    # 1. R18#1 (d=5 5-axis) + trunc=0.05
+    {
+        "name": "r19_r16base_d5_t005",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.05, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. R18#1 d=5 + SUBINDUSTRY
+    {
+        "name": "r19_r16base_d5_subind",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=5, neutralization="SUBINDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. R18#1 d=5 + TOP1000
+    {
+        "name": "r19_r16base_d5_top1000",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP1000",
+                                  pasteurization="OFF"),
+    },
+    # 4. R18#5 (+iv10mom d=8) + trunc=0.05  (SH 2.17 TO 0.210 -- trunc may push TO under)
+    {
+        "name": "r19_iv10mom_d8_t005",
+        "expression": f"add({R16_BASE_5AXIS}, {IV10_MOMENTUM})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.05, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. R18#1 d=5 + trunc=0.05 + SUBINDUSTRY (stacked TO-tighteners)
+    {
+        "name": "r19_r16base_d5_t005_subind",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=5, neutralization="SUBINDUSTRY",
+                                  truncation=0.05, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. d=4 + trunc=0.05 (aggressive both directions)
+    {
+        "name": "r19_r16base_d4_t005",
+        "expression": R16_BASE_5AXIS,
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.05, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1447,6 +1504,8 @@ def main():
         batch = ROUND_17
     elif args.round == 18:
         batch = ROUND_18
+    elif args.round == 19:
+        batch = ROUND_19
     else:
         log.error(f"unknown round {args.round}"); return 2
 
