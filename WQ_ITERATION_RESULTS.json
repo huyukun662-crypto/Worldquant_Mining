@@ -4995,5 +4995,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r28_quantile_wrap_d6",
+    "expression": "quantile(add(add(-group_rank(ts_zscore(close, 22), subindustry), add(add(-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry)), -group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22), subindustry))), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "vR5aobvG",
+    "sharpe": 1.75,
+    "turnover": 0.0921,
+    "fitness": 1.74,
+    "returns": 0.1233,
+    "drawdown": 0.083,
+    "longCount": 1359,
+    "shortCount": 1353,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": true
   }
 ]
