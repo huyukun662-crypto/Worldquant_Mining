@@ -4739,5 +4739,37 @@
     "ok": false,
     "stage": "timeout",
     "survivor": false
+  },
+  {
+    "name": "r26_ebit_sector_relative",
+    "expression": "subtract(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), group_mean(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), 1, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "9q9gmooV",
+    "sharpe": 0.63,
+    "turnover": 0.0128,
+    "fitness": 0.43,
+    "returns": 0.0573,
+    "drawdown": 0.1583,
+    "longCount": 1528,
+    "shortCount": 1491,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
