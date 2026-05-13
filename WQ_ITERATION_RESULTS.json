@@ -3116,5 +3116,37 @@
     "ok": false,
     "stage": "timeout",
     "survivor": false
+  },
+  {
+    "name": "r17_7axis_d6",
+    "expression": "add(add(add(add(add(add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 3), subindustry)), group_rank(ts_zscore(adv20, 60), subindustry)), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), group_rank(ts_mean(rp_ess_ratings, 22), industry)), -group_rank(ts_mean(news_pe_ratio, 22), subindustry)), -group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "A1nKA0ne",
+    "sharpe": 1.74,
+    "turnover": 0.1466,
+    "fitness": 1.42,
+    "returns": 0.0979,
+    "drawdown": 0.1026,
+    "longCount": 936,
+    "shortCount": 940,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
