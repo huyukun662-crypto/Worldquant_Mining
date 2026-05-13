@@ -3948,5 +3948,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r22_gross_minus_asset_growth",
+    "expression": "subtract(group_zscore(ts_mean(divide(subtract(revenue, cogs), assets), 120), subindustry), group_zscore(divide(ts_delta(assets, 252), ts_mean(assets, 252)), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "78xOoG0x",
+    "sharpe": 0.49,
+    "turnover": 0.0258,
+    "fitness": 0.27,
+    "returns": 0.0375,
+    "drawdown": 0.1609,
+    "longCount": 1367,
+    "shortCount": 1235,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
