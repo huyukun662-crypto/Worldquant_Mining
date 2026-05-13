@@ -3500,5 +3500,37 @@
     "checks_passed": 6,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r19_r16base_d5_t005_subind",
+    "expression": "add(add(add(add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 3), subindustry)), group_rank(ts_zscore(adv20, 60), subindustry)), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), group_rank(ts_mean(rp_ess_ratings, 22), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 5,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "d5nwkGWE",
+    "sharpe": 2.2,
+    "turnover": 0.2137,
+    "fitness": 1.65,
+    "returns": 0.1195,
+    "drawdown": 0.0581,
+    "longCount": 1275,
+    "shortCount": 1274,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
