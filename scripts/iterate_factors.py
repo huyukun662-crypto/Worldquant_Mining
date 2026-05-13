@@ -1746,6 +1746,89 @@ ROUND_25 = [
 ]
 
 
+# =====================================================================
+# Round 26: TRULY different structural primitives. No `add()` stack of
+# ranks. Each factor uses a fundamentally different combinator:
+#   * ts_corr-based   -- cross-series correlation as signal
+#   * divide composite -- ratio of two ranks
+#   * sign-gated      -- one signal gates another's direction
+#   * ts_delta-based  -- discrete change operators
+#   * group_mean diff -- sector-relative deviation
+# =====================================================================
+ROUND_26 = [
+    # 1. RETURN-VOLUME DIVERGENCE -- ts_corr(returns, volume, 22) signal:
+    #    high correlation = buying climax = fade (negative).
+    {
+        "name": "r26_ret_vol_corr_fade",
+        "expression": (
+            "-group_rank(ts_corr(returns, volume, 22), subindustry)"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. CLOSE-VWAP DIVERGENCE -- close persistently above vwap fades
+    #    via ts_corr (where positive corr = close tracks vwap, fade
+    #    when diverging via negative coef rank).
+    {
+        "name": "r26_close_vwap_corr",
+        "expression": (
+            "-group_rank(ts_corr(close, vwap, 22), subindustry)"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. SIGN-GATED REVERSAL -- only fade reversal in cheap names:
+    #    multiply(sign(EBIT_rank - 0.5), -reversal). Cheap names get
+    #    long signal on selloff, expensive names get nothing.
+    {
+        "name": "r26_sign_gated_rev",
+        "expression": (
+            "multiply(sign(subtract(group_rank(ts_mean(divide(ebit, cap), 120),"
+            " subindustry), 0.5)),"
+            " -group_rank(ts_sum(returns, 5), subindustry))"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. RATIO COMPOSITE -- return/risk (Sharpe-like) ratio
+    {
+        "name": "r26_return_over_risk",
+        "expression": (
+            "divide(group_rank(ts_sum(returns, 22), subindustry),"
+            " group_rank(ts_std_dev(returns, 60), subindustry))"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. ts_delta REVERSAL -- 5-day discrete change in close, faded
+    {
+        "name": "r26_ts_delta_close_fade",
+        "expression": (
+            "-group_rank(ts_delta(close, 5), subindustry)"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. SECTOR-RELATIVE EBIT YIELD -- deviation from sector mean
+    {
+        "name": "r26_ebit_sector_relative",
+        "expression": (
+            "subtract(group_rank(ts_mean(divide(ebit, cap), 120), subindustry),"
+            " group_mean(group_rank(ts_mean(divide(ebit, cap), 120), subindustry),"
+            " 1, sector))"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1974,6 +2057,8 @@ def main():
         batch = ROUND_24
     elif args.round == 25:
         batch = ROUND_25
+    elif args.round == 26:
+        batch = ROUND_26
     else:
         log.error(f"unknown round {args.round}"); return 2
 
