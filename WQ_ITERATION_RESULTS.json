@@ -4963,5 +4963,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r28_ts_decay_wrap_d6",
+    "expression": "ts_decay_linear(add(add(-group_rank(ts_zscore(close, 22), subindustry), add(add(-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry)), -group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22), subindustry))), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), 10)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "GrnE7gw3",
+    "sharpe": 1.58,
+    "turnover": 0.0577,
+    "fitness": 1.48,
+    "returns": 0.1097,
+    "drawdown": 0.0849,
+    "longCount": 1355,
+    "shortCount": 1357,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
