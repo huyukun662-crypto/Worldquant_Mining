@@ -1361,6 +1361,67 @@ ROUND_20 = [
 ]
 
 
+# =====================================================================
+# Round 21: aggressive STRUCTURAL variants on R16_BASE_5AXIS to break
+# the SH=2.26 wall. The previous rounds confirmed setting tweaks and
+# add-stacking are exhausted -- this round changes how axes combine.
+# =====================================================================
+ROUND_21 = [
+    # 1. Winsorize the whole 5-axis composite (cap tails)
+    {
+        "name": "r21_winsorize_wrap_d6",
+        "expression": f"winsorize({R16_BASE_5AXIS}, std=4)",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. zscore wrap (centers and scales final composite)
+    {
+        "name": "r21_zscore_wrap_d6",
+        "expression": f"zscore({R16_BASE_5AXIS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. rank wrap (re-rank composite, smooth tails)
+    {
+        "name": "r21_rank_wrap_d6",
+        "expression": f"rank({R16_BASE_5AXIS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. Multiply value x reversal (interaction term, plus rest of stack)
+    #    Long stocks that are BOTH cheap AND just sold off.
+    {
+        "name": "r21_value_x_rev_d6",
+        "expression": (
+            f"add(add(add(multiply({EBIT_YIELD}, {SHORT_REV_3}),"
+            f" {ADV_ZSCORE}), {IV_SKEW}), {ESS_RATINGS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. signed_power dampening
+    {
+        "name": "r21_signed_power_d6",
+        "expression": f"signed_power({R16_BASE_5AXIS}, 0.7)",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. scale (long-side / short-side normalized to booksize)
+    {
+        "name": "r21_scale_wrap_d6",
+        "expression": f"scale({R16_BASE_5AXIS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1579,6 +1640,8 @@ def main():
         batch = ROUND_19
     elif args.round == 20:
         batch = ROUND_20
+    elif args.round == 21:
+        batch = ROUND_21
     else:
         log.error(f"unknown round {args.round}"); return 2
 
