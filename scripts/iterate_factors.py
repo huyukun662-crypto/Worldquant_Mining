@@ -1916,6 +1916,74 @@ ROUND_27 = [
 ]
 
 
+# =====================================================================
+# Round 28: truly novel external transforms + new value axes.
+# Tests structurally different wrappers and untested fields.
+# =====================================================================
+PRICE_TO_SALES = (
+    "-group_rank(divide(cap, sales), subindustry)"
+)
+PRICE_TO_BOOK = (
+    "-group_rank(divide(cap, equity), subindustry)"
+)
+R25_BASE = (
+    f"add(add({FAST_CLOSE_Z}, {SLOW_3FLIPS}), {IV_SKEW})"
+)
+
+ROUND_28 = [
+    # 1. ts_decay_linear wrap on R25 winner (different smoothing structure)
+    {
+        "name": "r28_ts_decay_wrap_d6",
+        "expression": f"ts_decay_linear({R25_BASE}, 10)",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. quantile wrap (project to gaussian distribution)
+    {
+        "name": "r28_quantile_wrap_d6",
+        "expression": f"quantile({R25_BASE})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. R25 base + price-to-sales (new value axis: -cap/sales)
+    {
+        "name": "r28_r25_plus_ps_d6",
+        "expression": f"add({R25_BASE}, {PRICE_TO_SALES})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. R25 base + price-to-book (new value axis: -cap/equity)
+    {
+        "name": "r28_r25_plus_pb_d6",
+        "expression": f"add({R25_BASE}, {PRICE_TO_BOOK})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. R25 base + both P/S + P/B (mega-value augmentation)
+    {
+        "name": "r28_r25_plus_ps_pb_d4",
+        "expression": (
+            f"add(add({R25_BASE}, {PRICE_TO_SALES}), {PRICE_TO_BOOK})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. R25 base + sector-rel EBIT (R26#6) at d=4
+    {
+        "name": "r28_r25_plus_sector_ebit_d4",
+        "expression": f"add({R25_BASE}, {EBIT_SECTOR_REL})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2148,6 +2216,8 @@ def main():
         batch = ROUND_26
     elif args.round == 27:
         batch = ROUND_27
+    elif args.round == 28:
+        batch = ROUND_28
     else:
         log.error(f"unknown round {args.round}"); return 2
 
