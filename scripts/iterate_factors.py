@@ -1422,6 +1422,87 @@ ROUND_21 = [
 ]
 
 
+# =====================================================================
+# Round 22: 6 NEW-LOGIC factors. NONE reuse the EBIT/rev3/adv20-z/
+# IV-skew/ess_ratings family. Each is a different anomaly:
+# =====================================================================
+ROUND_22 = [
+    # 1. INTRADAY GAP REVERSAL -- stocks that close below the open
+    #    (gap-down) tend to mean-revert. signal = -(open-close)/close
+    {
+        "name": "r22_open_close_gap_revert",
+        "expression": (
+            "group_rank(ts_mean(divide(subtract(close, open), close), 22),"
+            " subindustry)"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. VWAP DEVIATION REVERSAL -- close above 60d-vwap fades
+    {
+        "name": "r22_vwap_deviation_revert",
+        "expression": (
+            "-group_rank(divide(close, ts_mean(vwap, 60)), subindustry)"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. LIQUIDITY-WEIGHTED REVERSAL -- short-term reversal is stronger
+    #    in low-volatility names (interaction, not stack)
+    {
+        "name": "r22_liq_weighted_rev",
+        "expression": (
+            "multiply(-group_rank(ts_sum(returns, 5), subindustry),"
+            " -group_rank(ts_std_dev(returns, 60), subindustry))"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. EARNINGS-SURPRISE COMPOSITE (analyst-only, no price)
+    #    earnings surprise + revision + net target percent
+    {
+        "name": "r22_earnings_surprise_composite",
+        "expression": (
+            "add(add(group_rank(ts_mean(snt1_d1_earningssurprise, 22), industry),"
+            " group_rank(ts_mean(snt1_d1_earningsrevision, 22), industry)),"
+            " group_rank(snt1_d1_nettargetpercent, industry))"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP1000",
+                                  pasteurization="OFF"),
+    },
+    # 5. PIOTROSKI-STYLE QUALITY × LOW-GROWTH
+    #    Strong margins (revenue-cogs)/assets minus aggressive asset growth
+    {
+        "name": "r22_gross_minus_asset_growth",
+        "expression": (
+            "subtract(group_zscore(ts_mean(divide(subtract(revenue, cogs), assets),"
+            " 120), subindustry),"
+            " group_zscore(divide(ts_delta(assets, 252), ts_mean(assets, 252)),"
+            " subindustry))"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. BETA-NEUTRAL MOMENTUM -- 12m return rank within beta deciles
+    #    (cross-section momentum after removing market exposure)
+    {
+        "name": "r22_beta_neutral_momentum",
+        "expression": (
+            "group_neutralize(group_rank(ts_sum(returns, 240), subindustry),"
+            " bucket(rank(beta_last_360_days_spy), range='0,1,0.1'))"
+        ),
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1642,6 +1723,8 @@ def main():
         batch = ROUND_20
     elif args.round == 21:
         batch = ROUND_21
+    elif args.round == 22:
+        batch = ROUND_22
     else:
         log.error(f"unknown round {args.round}"); return 2
 
