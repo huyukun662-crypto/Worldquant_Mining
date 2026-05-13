@@ -1678,6 +1678,74 @@ ROUND_24 = [
 ]
 
 
+# =====================================================================
+# Round 25: alternative FAST signals (not rev3) combined with the R24
+# slow stack. Each is a different reversal/continuation primitive.
+# =====================================================================
+FAST_CLOSE_Z   = "-group_rank(ts_zscore(close, 22), subindustry)"
+FAST_RET_Z5    = "-group_rank(ts_zscore(returns, 5), subindustry)"
+FAST_ARGMAX22  = "group_rank(ts_arg_max(returns, 22), subindustry)"
+SLOW_3FLIPS    = f"add(add({FLIP_5Y}, {FLIP_GARP}), {FLIP_FANGMA11})"
+
+ROUND_25 = [
+    # 1. close-z fade + 3 model-flips (4 axes, all NEW logic)
+    {
+        "name": "r25_closez_slow_d6",
+        "expression": f"add({FAST_CLOSE_Z}, {SLOW_3FLIPS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. ret-z5 fade + 3 model-flips
+    {
+        "name": "r25_retz5_slow_d6",
+        "expression": f"add({FAST_RET_Z5}, {SLOW_3FLIPS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. arg_max + 3 model-flips
+    {
+        "name": "r25_argmax_slow_d6",
+        "expression": f"add({FAST_ARGMAX22}, {SLOW_3FLIPS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. close-z fade + 3 model-flips + IV-skew (5-axis)
+    {
+        "name": "r25_closez_slow_iv_d6",
+        "expression": (
+            f"add(add({FAST_CLOSE_Z}, {SLOW_3FLIPS}), {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. All R22 useful + 3 model-flips (large composite, mixed logic)
+    {
+        "name": "r25_r22_plus_3flips_d6",
+        "expression": (
+            f"add(add(add(add({VWAP_REVERT}, {QUALITY_MINUS_GROWTH}),"
+            f" {OPEN_CLOSE_CONT}), {FLIP_5Y}), {FLIP_GARP})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. R25#4 at d=4 (push SH)
+    {
+        "name": "r25_closez_slow_iv_d4",
+        "expression": (
+            f"add(add({FAST_CLOSE_Z}, {SLOW_3FLIPS}), {IV_SKEW})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1904,6 +1972,8 @@ def main():
         batch = ROUND_23
     elif args.round == 24:
         batch = ROUND_24
+    elif args.round == 25:
+        batch = ROUND_25
     else:
         log.error(f"unknown round {args.round}"); return 2
 
