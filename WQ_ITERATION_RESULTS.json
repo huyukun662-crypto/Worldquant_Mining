@@ -4899,5 +4899,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r27_5axis_struct_plus_3flips_d4",
+    "expression": "add(add(add(subtract(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), group_mean(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), 1, sector)), -group_rank(ts_corr(returns, volume, 22), subindustry)), -group_rank(ts_corr(close, vwap, 22), subindustry)), add(add(-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry)), -group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "MPb9VEJ9",
+    "sharpe": 0.96,
+    "turnover": 0.0882,
+    "fitness": 0.76,
+    "returns": 0.0785,
+    "drawdown": 0.1213,
+    "longCount": 1418,
+    "shortCount": 1379,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
