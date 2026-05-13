@@ -1103,6 +1103,73 @@ ROUND_16 = [
 ]
 
 
+# =====================================================================
+# Round 17: push SH past 2.4 by adding R16's strongest standalone news
+# signal (-news_pe_ratio: SH=0.81 TO=0.036) as 6th axis to akNvjWRR.
+# Also try flipped 5y_eps as alternative axis.
+# =====================================================================
+NEWS_PE_FADE  = "-group_rank(ts_mean(news_pe_ratio, 22), subindustry)"
+FLIP_5Y_EPS   = ("-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep,"
+                 " 22), subindustry)")
+R16_BASE_5AXIS = (
+    f"add(add(add(add({EBIT_YIELD}, {SHORT_REV_3}), {ADV_ZSCORE}),"
+    f" {IV_SKEW}), {ESS_RATINGS})"
+)
+
+ROUND_17 = [
+    # 1. 6-axis: akNvjWRR + (-news_pe), d=6
+    {
+        "name": "r17_6axis_newspe_d6",
+        "expression": f"add({R16_BASE_5AXIS}, {NEWS_PE_FADE})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. d=7
+    {
+        "name": "r17_6axis_newspe_d7",
+        "expression": f"add({R16_BASE_5AXIS}, {NEWS_PE_FADE})",
+        "settings": base_settings(decay=7, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. d=8
+    {
+        "name": "r17_6axis_newspe_d8",
+        "expression": f"add({R16_BASE_5AXIS}, {NEWS_PE_FADE})",
+        "settings": base_settings(decay=8, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. 6-axis: akNvjWRR + flipped_5y_eps (model value axis), d=6
+    {
+        "name": "r17_6axis_5yeps_d6",
+        "expression": f"add({R16_BASE_5AXIS}, {FLIP_5Y_EPS})",
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. 7-axis: + both (-news_pe) and flipped_5y_eps
+    {
+        "name": "r17_7axis_d6",
+        "expression": (
+            f"add(add({R16_BASE_5AXIS}, {NEWS_PE_FADE}), {FLIP_5Y_EPS})"
+        ),
+        "settings": base_settings(decay=6, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. d=5 6-axis (chase highest SH)
+    {
+        "name": "r17_6axis_newspe_d5",
+        "expression": f"add({R16_BASE_5AXIS}, {NEWS_PE_FADE})",
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.10, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -1313,6 +1380,8 @@ def main():
         batch = ROUND_15
     elif args.round == 16:
         batch = ROUND_16
+    elif args.round == 17:
+        batch = ROUND_17
     else:
         log.error(f"unknown round {args.round}"); return 2
 
