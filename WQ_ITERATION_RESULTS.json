@@ -3276,5 +3276,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r18_6axis_iv10mom_d6",
+    "expression": "add(add(add(add(add(group_rank(ts_mean(divide(ebit, cap), 120), subindustry), -group_rank(ts_sum(returns, 3), subindustry)), group_rank(ts_zscore(adv20, 60), subindustry)), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), group_rank(ts_mean(rp_ess_ratings, 22), industry)), group_rank(ts_zscore(implied_volatility_mean_10, 60), sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "9q9Qz9Rx",
+    "sharpe": 2.3,
+    "turnover": 0.2419,
+    "fitness": 1.67,
+    "returns": 0.1268,
+    "drawdown": 0.0549,
+    "longCount": 1262,
+    "shortCount": 1263,
+    "checks_passed": 6,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
