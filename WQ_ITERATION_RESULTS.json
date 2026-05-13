@@ -5027,5 +5027,28 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": true
+  },
+  {
+    "name": "r28_r25_plus_ps_d6",
+    "expression": "add(add(add(-group_rank(ts_zscore(close, 22), subindustry), add(add(-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry)), -group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22), subindustry))), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), -group_rank(divide(cap, sales), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "timeout",
+    "survivor": false
   }
 ]
