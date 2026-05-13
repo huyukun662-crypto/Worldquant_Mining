@@ -3980,5 +3980,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r22_beta_neutral_momentum",
+    "expression": "group_neutralize(group_rank(ts_sum(returns, 240), subindustry), bucket(rank(beta_last_360_days_spy), range='0,1,0.1'))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "npn0ALmE",
+    "sharpe": -0.09,
+    "turnover": 0.1137,
+    "fitness": -0.03,
+    "returns": -0.0104,
+    "drawdown": 0.2332,
+    "longCount": 1387,
+    "shortCount": 1348,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
