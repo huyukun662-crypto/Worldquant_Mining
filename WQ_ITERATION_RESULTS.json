@@ -5498,5 +5498,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r30_penta_obscure_v2",
+    "expression": "add(add(add(add(group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry), -group_rank(ts_mean(mdl77_2liquidityriskfactor_monchgsip, 22), subindustry)), -group_rank(ts_mean(industry_relative_fcf_to_price, 22), subindustry)), -group_rank(ts_mean(mdl77_shortsentimentfactor_days_to_cover, 22), subindustry)), -group_rank(ts_mean(inventory_change_avg_assets, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P0nrRelw",
+    "sharpe": 1.03,
+    "turnover": 0.0762,
+    "fitness": 0.79,
+    "returns": 0.0739,
+    "drawdown": 0.1651,
+    "longCount": 1248,
+    "shortCount": 1254,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
