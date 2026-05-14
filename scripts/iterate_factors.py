@@ -1984,6 +1984,108 @@ ROUND_28 = [
 ]
 
 
+# =====================================================================
+# Round 29: OBSCURE-FIELDS round. Every base field has userCount=0 on
+# the WQ data catalog (TOP3000, delay=1, USA), i.e. zero alphas have
+# been published using them on the platform. Goal: low correlation
+# vs. the dense factor zoo + our prior 28 rounds.
+#
+# Axis selection rationale:
+#   - IV mean-skew 180d (option/IV-surface)           : option-flow positioning
+#   - days_to_cover (short-interest pressure)         : short-side crowding
+#   - monchgsip (monthly change in short interest)    : flow of bear conviction
+#   - industry_relative_fcf_to_price (industry-rel)   : pure value, pre-neutralized
+#   - fcf_yield * forward_roe (composite Q*V)         : quality-tilted value
+#   - inventory_change / avg_assets (accruals)        : earnings-quality anti-momentum
+#
+# Signs:
+#   high IV skew (call rich)        -> reverse  (negative)
+#   high days_to_cover              -> reverse  (negative — short crowded)
+#   high monthly SI change          -> reverse  (negative — bears piling in)
+#   high industry-rel FCF/P         -> long     (positive — value)
+#   high FCF * fwd_ROE              -> long     (positive — quality value)
+#   high inventory build            -> reverse  (negative — accrual junk)
+# =====================================================================
+IV_SKEW_OBS  = "-group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)"
+DTC_OBS      = "-group_rank(ts_mean(mdl77_shortsentimentfactor_days_to_cover, 22), subindustry)"
+SI_CHG_OBS   = "-group_rank(ts_mean(mdl77_2liquidityriskfactor_monchgsip, 22), subindustry)"
+FCF_REL_OBS  = "group_rank(ts_mean(industry_relative_fcf_to_price, 22), subindustry)"
+FCFXROE_OBS  = "group_rank(ts_mean(fcf_yield_multiplied_forward_roe, 22), subindustry)"
+INV_ACCR_OBS = "-group_rank(ts_mean(inventory_change_avg_assets, 22), subindustry)"
+
+ROUND_29 = [
+    # 1. IV skew 180d — option positioning premium reversal
+    {
+        "name": "r29_iv_skew_180",
+        "expression": IV_SKEW_OBS,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. Days-to-cover — short-side crowding reversal
+    {
+        "name": "r29_days_to_cover",
+        "expression": DTC_OBS,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. Monthly SI change — bear flow proxy reversal
+    {
+        "name": "r29_monthly_si_change",
+        "expression": SI_CHG_OBS,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. Industry-rel FCF / P — pre-industry-normalized value
+    {
+        "name": "r29_fcf_industry_rel",
+        "expression": FCF_REL_OBS,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. FCF yield * forward ROE — quality-tilted value
+    {
+        "name": "r29_fcf_x_roe",
+        "expression": FCFXROE_OBS,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. Inventory change / avg assets — accrual anti-momentum
+    {
+        "name": "r29_inventory_accrual",
+        "expression": INV_ACCR_OBS,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 7. Tri-axis composite: IV skew + days_to_cover + industry-rel FCF
+    #    (option-flow + short-pressure + pure-value — three different
+    #    mechanics, all using zero-userCount fields)
+    {
+        "name": "r29_triple_obscure",
+        "expression": f"add(add({IV_SKEW_OBS}, {DTC_OBS}), {FCF_REL_OBS})",
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 8. Quad composite: above + inventory accrual (adds quality axis)
+    {
+        "name": "r29_quad_obscure",
+        "expression": (
+            f"add(add(add({IV_SKEW_OBS}, {DTC_OBS}), {FCF_REL_OBS}), "
+            f"{INV_ACCR_OBS})"
+        ),
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2218,6 +2320,8 @@ def main():
         batch = ROUND_27
     elif args.round == 28:
         batch = ROUND_28
+    elif args.round == 29:
+        batch = ROUND_29
     else:
         log.error(f"unknown round {args.round}"); return 2
 
