@@ -1,0 +1,200 @@
+[
+  {
+    "variant": "BB3_news_novelty_smoothed",
+    "rationale": "rank(ts_mean(novelty,20)) * rev * volwt, D=25",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(ts_mean(mean_event_novelty_score, 20)), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "E5q0jGwm",
+    "sharpe": 1.5,
+    "turnover": 0.2253,
+    "fitness": 0.89,
+    "returns": 0.0796,
+    "drawdown": 0.0807,
+    "longCount": 1508,
+    "shortCount": 1459,
+    "checks_passed": 6,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.5
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.89
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2253
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2253
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.65,
+        "value": 0.95
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "BB4_news_impact_smoothed",
+    "rationale": "rank(ts_mean(impact,20)) * rev * volwt, D=25",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(ts_mean(mean_news_impact_projection, 20)), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "vR5nEO2A",
+    "sharpe": 1.57,
+    "turnover": 0.2229,
+    "fitness": 1.06,
+    "returns": 0.1008,
+    "drawdown": 0.1101,
+    "longCount": 1509,
+    "shortCount": 1463,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.57
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 1.06
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2229
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2229
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.68,
+        "value": 0.9
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "BB5_buyback_x_novelty_smoothed",
+    "rationale": "rank(buyback) * rank(ts_mean(novelty,20)) * rev * volwt, D=25",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(multiply(rank(subtract(ts_delay(common_shares_outstanding_total, 60), common_shares_outstanding_total)), rank(ts_mean(mean_event_novelty_score, 20))), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "QPnr886r",
+    "sharpe": 1.21,
+    "turnover": 0.22,
+    "fitness": 0.61,
+    "returns": 0.0554,
+    "drawdown": 0.0638,
+    "longCount": 1255,
+    "shortCount": 1228,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.21
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.61
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.22
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.22
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.52,
+        "value": 1.24
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  }
+]
