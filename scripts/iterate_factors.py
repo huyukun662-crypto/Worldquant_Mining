@@ -2301,9 +2301,10 @@ D0_EST_EBIT    = "group_rank(ts_mean(divide(est_ebit, cap), 22), subindustry)"
 
 
 def base_settings_d0(**overrides):
-    return base_settings(delay=0, decay=4, neutralization="INDUSTRY",
-                         truncation=0.08, universe="TOP3000",
-                         pasteurization="OFF", **overrides)
+    d0 = dict(delay=0, decay=4, neutralization="INDUSTRY",
+              truncation=0.08, universe="TOP3000", pasteurization="OFF")
+    d0.update(overrides)
+    return base_settings(**d0)
 
 
 ROUND_32 = [
@@ -2327,6 +2328,70 @@ ROUND_32 = [
      "settings": base_settings_d0()},
     {"name": "r32_d0_est_ebit_yield",  "expression": D0_EST_EBIT,
      "settings": base_settings_d0()},
+]
+
+
+# =====================================================================
+# Round 33: delay=0 stacks toward the SH>=1.75 gate. R32 showed only
+# two D0 axes have usable turnover: IV_skew_180 (SH 0.89, TO 0.078)
+# and analyst-estimate value est_ebit/cap (SH 0.98, TO 0.018). All
+# news_* / rel_ret_* fields churn at TO 0.37-0.49 and are unusable
+# standalone. Strategy:
+#   - stack the low-TO analyst-estimate value axes (est_fcf, est_ebitda,
+#     est_netprofit, est_cashflow_op — all forward estimates, slow-moving)
+#   - diversify with IV_skew_180 (option-flow, orthogonal to value)
+#   - separately, tame the strong news_prevday_rev signal (SH 1.05 but
+#     TO 0.41) with a long ts_mean window + heavy decay
+# =====================================================================
+D0_EST_FCF      = "group_rank(ts_mean(divide(est_fcf, cap), 22), subindustry)"
+D0_EST_EBITDA   = "group_rank(ts_mean(divide(est_ebitda, cap), 22), subindustry)"
+D0_EST_NETPROF  = "group_rank(ts_mean(divide(est_netprofit, cap), 22), subindustry)"
+D0_EST_CFO      = "group_rank(ts_mean(divide(est_cashflow_op, cap), 22), subindustry)"
+# news_prevday_rev tamed: 60d smoothing window (vs 5d in R32)
+D0_NEWS_PREVD_SLOW = "-group_rank(ts_mean(news_prev_day_ret, 60), subindustry)"
+
+# 5-axis low-TO D0 stack: option-flow + 4 forward-estimate value axes
+D0_VALUE_OPT_5 = (
+    f"add(add(add(add({D0_IV_SKEW180}, {D0_EST_EBIT}), {D0_EST_FCF}), "
+    f"{D0_EST_EBITDA}), {D0_EST_CFO})"
+)
+
+ROUND_33 = [
+    # 1-4: calibrate the new forward-estimate value axes standalone
+    {"name": "r33_d0_est_fcf_yield",    "expression": D0_EST_FCF,
+     "settings": base_settings_d0()},
+    {"name": "r33_d0_est_ebitda_yield", "expression": D0_EST_EBITDA,
+     "settings": base_settings_d0()},
+    {"name": "r33_d0_est_netprof_yield","expression": D0_EST_NETPROF,
+     "settings": base_settings_d0()},
+    {"name": "r33_d0_est_cfo_yield",    "expression": D0_EST_CFO,
+     "settings": base_settings_d0()},
+    # 5: IV_skew + est_ebit (option + value, 2-axis)
+    {"name": "r33_d0_iv_plus_ebit",
+     "expression": f"add({D0_IV_SKEW180}, {D0_EST_EBIT})",
+     "settings": base_settings_d0()},
+    # 6: IV_skew + est_ebit + est_fcf (3-axis)
+    {"name": "r33_d0_iv_ebit_fcf",
+     "expression": f"add(add({D0_IV_SKEW180}, {D0_EST_EBIT}), {D0_EST_FCF})",
+     "settings": base_settings_d0()},
+    # 7: full 5-axis low-TO value+option stack
+    {"name": "r33_d0_value_opt_5axis",
+     "expression": D0_VALUE_OPT_5,
+     "settings": base_settings_d0()},
+    # 8: news_prevday_rev tamed (60d window + heavy decay)
+    {"name": "r33_d0_news_prevday_slow",
+     "expression": D0_NEWS_PREVD_SLOW,
+     "settings": base_settings_d0(decay=32)},
+    # 9: tamed news + IV_skew + est_ebit (mix strong news w/ low-TO anchors)
+    {"name": "r33_d0_news_slow_plus_iv_ebit",
+     "expression": (
+         f"add(add({D0_NEWS_PREVD_SLOW}, {D0_IV_SKEW180}), {D0_EST_EBIT})"
+     ),
+     "settings": base_settings_d0(decay=16)},
+    # 10: mega — 5-axis value+option + tamed news (6 axes)
+    {"name": "r33_d0_mega_6axis",
+     "expression": f"add({D0_VALUE_OPT_5}, {D0_NEWS_PREVD_SLOW})",
+     "settings": base_settings_d0(decay=16)},
 ]
 
 
@@ -2572,6 +2637,8 @@ def main():
         batch = ROUND_31
     elif args.round == 32:
         batch = ROUND_32
+    elif args.round == 33:
+        batch = ROUND_33
     else:
         log.error(f"unknown round {args.round}"); return 2
 
