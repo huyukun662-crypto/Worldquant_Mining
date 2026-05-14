@@ -7002,5 +7002,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r35_d0_sweep_d8_subind",
+    "expression": "add(add(add(-group_rank(ts_mean(news_prev_day_ret, 60), subindustry), group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)), group_rank(ts_mean(divide(est_ebit, cap), 22), subindustry)), group_rank(ts_mean(snt_buzz, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "9q9AzdWx",
+    "sharpe": 0.95,
+    "turnover": 0.0734,
+    "fitness": 0.76,
+    "returns": 0.0792,
+    "drawdown": 0.1584,
+    "longCount": 1296,
+    "shortCount": 1322,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
