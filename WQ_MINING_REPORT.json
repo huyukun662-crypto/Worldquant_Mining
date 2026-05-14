@@ -1,6 +1,39 @@
 [
   {
     "ok": true,
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(ts_mean(mean_news_impact_projection, 20)), reverse(ts_zscore(returns, 6))), log(add(divide(volume, adv20), 1))), 30))",
+    "optimized": "zscore(ts_decay_linear(multiply(multiply(rank(ts_mean(mean_news_impact_projection, 20)), reverse(ts_zscore(returns, 6))), log(add(divide(volume, adv20), 1))), 30))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.59,
+    "turnover": 0.2093,
+    "fitness": 1.14,
+    "returns": 0.1079,
+    "drawdown": 0.1034,
+    "longCount": 1513,
+    "shortCount": 1460,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "alpha_id": "XgkP2m70",
+    "error": "",
+    "note": "FF5 -- obscure-field diversifier (mean_news_impact_projection, userCount=0). Shipped per user decision after R56-R62 frontier mapping: the news_impact signal has a hard Pareto frontier SH=1.5 <=> TO~=0.205, so the strict SH>=1.5 ^ TO<0.20 gate is structurally unreachable. FF5 is the high-SH endpoint (SH 1.59 / FIT 1.14, TO 0.209 marginally over 0.20). 7/8 WQ checks PASS, SELF_CORRELATION pending."
+  },
+  {
+    "ok": true,
     "expression": "rank(ts_zscore(ts_delta(reverse(low), 12), 46))",
     "optimized": "rank(ts_zscore(ts_delta(reverse(low), 12), 46))",
     "settings": {
