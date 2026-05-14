@@ -2086,6 +2086,103 @@ ROUND_29 = [
 ]
 
 
+# =====================================================================
+# Round 30: sign-corrected obscure stacks. R29 calibration revealed
+# IV_skew_180 wants raw sign (+), industry_rel_FCF/P wants negative
+# sign in this regime (value penalty 2019-2023). The 5 surviving
+# obscure axes (each userCount=0) become:
+#   +group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)
+#   -group_rank(ts_mean(mdl77_shortsentimentfactor_days_to_cover, 22), subindustry)
+#   -group_rank(ts_mean(mdl77_2liquidityriskfactor_monchgsip, 22), subindustry)
+#   -group_rank(ts_mean(industry_relative_fcf_to_price, 22), subindustry)
+#   -group_rank(ts_mean(inventory_change_avg_assets, 22), subindustry)
+# =====================================================================
+IV_SKEW_OBS2  =  "group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)"
+FCF_REL_OBS2  = "-group_rank(ts_mean(industry_relative_fcf_to_price, 22), subindustry)"
+
+# Quad obscure (4 best uncorrelated axes, all corrected):
+OBS_QUAD = (
+    f"add(add(add({IV_SKEW_OBS2}, {SI_CHG_OBS}), {FCF_REL_OBS2}), {DTC_OBS})"
+)
+# Penta obscure (adds inventory-accrual quality):
+OBS_PENTA = (
+    f"add(add(add(add({IV_SKEW_OBS2}, {SI_CHG_OBS}), {FCF_REL_OBS2}), "
+    f"{DTC_OBS}), {INV_ACCR_OBS})"
+)
+
+ROUND_30 = [
+    # 1. IV skew 180 sign-flipped (verify standalone)
+    {
+        "name": "r30_iv_skew_180_pos",
+        "expression": IV_SKEW_OBS2,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. industry-rel FCF/P sign-flipped (verify standalone)
+    {
+        "name": "r30_fcf_industry_rel_neg",
+        "expression": FCF_REL_OBS2,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. Quad obscure stack (corrected)
+    {
+        "name": "r30_quad_obscure_v2",
+        "expression": OBS_QUAD,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. Penta obscure stack (corrected, 5 axes)
+    {
+        "name": "r30_penta_obscure_v2",
+        "expression": OBS_PENTA,
+        "settings": base_settings(decay=4, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. Penta obscure + R25 base (R25 PASSed at SH=1.75; obscure axes
+    #    add orthogonal lift). Hypothesis: WQ_SH > 2.0 with TO < 0.20.
+    {
+        "name": "r30_penta_obscure_plus_r25",
+        "expression": f"add({OBS_PENTA}, {R25_BASE})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. Triple-best (IV_skew + SI_chg + FCF_rel — strongest 3) + R25
+    {
+        "name": "r30_tri_best_plus_r25",
+        "expression": (
+            f"add(add(add({IV_SKEW_OBS2}, {SI_CHG_OBS}), {FCF_REL_OBS2}), "
+            f"{R25_BASE})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 7. Penta obscure decay=8 (smoother)
+    {
+        "name": "r30_penta_obscure_v2_d8",
+        "expression": OBS_PENTA,
+        "settings": base_settings(decay=8, neutralization="SUBINDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 8. Penta obscure + R25 base with quantile() wrap (R28#2 was a
+    #    PASS with quantile() wrap — same trick on the new bigger stack)
+    {
+        "name": "r30_quantile_penta_plus_r25",
+        "expression": f"quantile(add({OBS_PENTA}, {R25_BASE}))",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2322,6 +2419,8 @@ def main():
         batch = ROUND_28
     elif args.round == 29:
         batch = ROUND_29
+    elif args.round == 30:
+        batch = ROUND_30
     else:
         log.error(f"unknown round {args.round}"); return 2
 
