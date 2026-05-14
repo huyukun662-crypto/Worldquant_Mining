@@ -5530,5 +5530,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r30_penta_obscure_plus_r25",
+    "expression": "add(add(add(add(add(group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry), -group_rank(ts_mean(mdl77_2liquidityriskfactor_monchgsip, 22), subindustry)), -group_rank(ts_mean(industry_relative_fcf_to_price, 22), subindustry)), -group_rank(ts_mean(mdl77_shortsentimentfactor_days_to_cover, 22), subindustry)), -group_rank(ts_mean(inventory_change_avg_assets, 22), subindustry)), add(add(-group_rank(ts_zscore(close, 22), subindustry), add(add(-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry)), -group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22), subindustry))), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "88Ok0lwW",
+    "sharpe": 1.57,
+    "turnover": 0.0966,
+    "fitness": 1.59,
+    "returns": 0.1288,
+    "drawdown": 0.0906,
+    "longCount": 1217,
+    "shortCount": 1210,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
