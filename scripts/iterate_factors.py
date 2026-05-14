@@ -2183,6 +2183,97 @@ ROUND_30 = [
 ]
 
 
+# =====================================================================
+# Round 31: truly-orthogonal obscure axes + R25 anchor. R30 showed
+# IV_skew_180 and model-77 short-interest fields partially duplicate
+# R25_BASE (which already has IV_C270/P270 and model-177 axes), so
+# stacking diluted rather than added. R31 restricts new axes to the
+# ones with NO twin in R25:
+#   - inventory_change_avg_assets   (accruals — R25 has no accrual)
+#   - mdl77_shortsentimentfactor_days_to_cover (short-pressure — R25 no SI)
+#   - industry_relative_fcf_to_price  (industry-rel FCF — R25 no FCF/P)
+# Each is a userCount=0 obscure field on the WQ data catalog.
+# =====================================================================
+ROUND_31 = [
+    # 1. R25 + INV_ACCR only (1 truly-new axis)
+    {
+        "name": "r31_r25_plus_inv_accr",
+        "expression": f"add({R25_BASE}, {INV_ACCR_OBS})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 2. R25 + DTC only (1 truly-new axis)
+    {
+        "name": "r31_r25_plus_dtc",
+        "expression": f"add({R25_BASE}, {DTC_OBS})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 3. R25 + FCF_REL (negative sign — flipped per R30 calibration)
+    {
+        "name": "r31_r25_plus_fcf_rel",
+        "expression": f"add({R25_BASE}, {FCF_REL_OBS2})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 4. R25 + INV_ACCR + DTC (2 truly-orthogonal axes)
+    {
+        "name": "r31_r25_plus_inv_dtc",
+        "expression": f"add(add({R25_BASE}, {INV_ACCR_OBS}), {DTC_OBS})",
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 5. R25 + 3 truly-orthogonal axes (INV_ACCR + DTC + FCF_REL)
+    {
+        "name": "r31_r25_plus_tri_ortho",
+        "expression": (
+            f"add(add(add({R25_BASE}, {INV_ACCR_OBS}), {DTC_OBS}), "
+            f"{FCF_REL_OBS2})"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 6. Same #5 with winsorize wrap (R21 trick — clip tail outliers)
+    {
+        "name": "r31_winsorize_tri_ortho_plus_r25",
+        "expression": (
+            f"winsorize(add(add(add({R25_BASE}, {INV_ACCR_OBS}), {DTC_OBS}), "
+            f"{FCF_REL_OBS2}))"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 7. Same #5 with zscore wrap (R21 trick — re-standardize)
+    {
+        "name": "r31_zscore_tri_ortho_plus_r25",
+        "expression": (
+            f"zscore(add(add(add({R25_BASE}, {INV_ACCR_OBS}), {DTC_OBS}), "
+            f"{FCF_REL_OBS2}))"
+        ),
+        "settings": base_settings(decay=4, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+    # 8. Same #5 with decay=5 (R18 winners often used d=5 for SH lift)
+    {
+        "name": "r31_r25_plus_tri_ortho_d5",
+        "expression": (
+            f"add(add(add({R25_BASE}, {INV_ACCR_OBS}), {DTC_OBS}), "
+            f"{FCF_REL_OBS2})"
+        ),
+        "settings": base_settings(decay=5, neutralization="INDUSTRY",
+                                  truncation=0.08, universe="TOP3000",
+                                  pasteurization="OFF"),
+    },
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2421,6 +2512,8 @@ def main():
         batch = ROUND_29
     elif args.round == 30:
         batch = ROUND_30
+    elif args.round == 31:
+        batch = ROUND_31
     else:
         log.error(f"unknown round {args.round}"); return 2
 
