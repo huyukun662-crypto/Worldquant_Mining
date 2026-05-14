@@ -5658,5 +5658,37 @@
     "checks_passed": 7,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r31_r25_plus_inv_accr",
+    "expression": "add(add(add(-group_rank(ts_zscore(close, 22), subindustry), add(add(-group_rank(ts_mean(mdl177_2_5yearrelativevaluefactor_rel5yfwdep, 22), subindustry), -group_rank(ts_mean(mdl177_garpanalystmodel_qgp_vfpriceratio, 22), subindustry)), -group_rank(ts_mean(mdl177_fangma_gpam_usa_fangma_gpam11, 22), subindustry))), group_rank(ts_mean(divide(implied_volatility_call_270, implied_volatility_put_270), 22), sector)), -group_rank(ts_mean(inventory_change_avg_assets, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "LLnbQYGv",
+    "sharpe": 1.83,
+    "turnover": 0.1083,
+    "fitness": 1.86,
+    "returns": 0.1297,
+    "drawdown": 0.0814,
+    "longCount": 1227,
+    "shortCount": 1237,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "survivor": true
   }
 ]
