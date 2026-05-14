@@ -2457,6 +2457,54 @@ ROUND_34 = [
 ]
 
 
+# =====================================================================
+# Round 35: delay=0 SETTINGS sweep on the best base. R32-R34 found the
+# D0 expression ceiling at ~1.12 (QPnlpLeM = tamed-news + IV + est_ebit).
+# The one Pareto lever not yet pulled at D0 is the settings axis
+# (decay / neutralization / truncation / universe). Per prior-session
+# notes the decay axis is the primary control and pasteurization=OFF
+# lifts SH. Base = R33 best + buzz (the one confirmed orthogonal axis
+# from R34, SH 0.40 TO 0.083).
+# =====================================================================
+D0_R35_BASE = f"add({D0_R33_BASE}, {D0_BUZZ})"
+
+ROUND_35 = [
+    {"name": "r35_d0_sweep_d4_ind",
+     "expression": D0_R35_BASE, "settings": base_settings_d0(decay=4)},
+    {"name": "r35_d0_sweep_d8_ind",
+     "expression": D0_R35_BASE, "settings": base_settings_d0(decay=8)},
+    {"name": "r35_d0_sweep_d16_ind",
+     "expression": D0_R35_BASE, "settings": base_settings_d0(decay=16)},
+    {"name": "r35_d0_sweep_d32_ind",
+     "expression": D0_R35_BASE, "settings": base_settings_d0(decay=32)},
+    {"name": "r35_d0_sweep_d8_subind",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="SUBINDUSTRY")},
+    {"name": "r35_d0_sweep_d8_sector",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="SECTOR")},
+    {"name": "r35_d0_sweep_d8_market",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET")},
+    {"name": "r35_d0_sweep_d8_t005",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, truncation=0.05)},
+    {"name": "r35_d0_sweep_d8_t010",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, truncation=0.10)},
+    {"name": "r35_d0_sweep_d8_top1000",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, universe="TOP1000")},
+    {"name": "r35_d0_sweep_d8_top500",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=8, universe="TOP500")},
+    {"name": "r35_d0_sweep_d16_subind_t005",
+     "expression": D0_R35_BASE,
+     "settings": base_settings_d0(decay=16, neutralization="SUBINDUSTRY",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2703,6 +2751,8 @@ def main():
         batch = ROUND_33
     elif args.round == 34:
         batch = ROUND_34
+    elif args.round == 35:
+        batch = ROUND_35
     else:
         log.error(f"unknown round {args.round}"); return 2
 
