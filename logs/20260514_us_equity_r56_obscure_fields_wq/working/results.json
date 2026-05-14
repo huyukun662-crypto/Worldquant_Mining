@@ -1,47 +1,337 @@
 [
   {
-    "variant": "OBS1_unexpected_earn2",
-    "field": "standardized_unexpected_earnings_2",
-    "rationale": "earnings surprise (usr=0 alpha=0, cov=0.92)",
-    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(standardized_unexpected_earnings_2), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
-    "ok": false,
-    "stage": "sim",
-    "error": "ERROR: Invalid data field standardized_unexpected_earnings_2. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    "variant": "OBS1_sbp_decline",
+    "field": "allocated_sbp_expense_total",
+    "rationale": "SBC dilution detector (fundamental, usr=0)",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(subtract(ts_delay(allocated_sbp_expense_total, 60), allocated_sbp_expense_total)), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "npnkreAz",
+    "sharpe": 0.83,
+    "turnover": 0.2201,
+    "fitness": 0.43,
+    "returns": 0.0579,
+    "drawdown": 0.1356,
+    "longCount": 1280,
+    "shortCount": 1242,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.83
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.43
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2201
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2201
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.36,
+        "value": 0.67
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   },
   {
-    "variant": "OBS2_tw_cashflow_p",
-    "field": "time_weighted_cash_flow_to_price",
-    "rationale": "forward 2y CF/P (usr=0 alpha=0, cov=1.00)",
-    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(time_weighted_cash_flow_to_price), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
-    "ok": false,
-    "stage": "sim",
-    "error": "ERROR: Invalid data field time_weighted_cash_flow_to_price. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    "variant": "OBS2_buyback",
+    "field": "common_shares_outstanding_total",
+    "rationale": "net buyback detector (fundamental, usr=0)",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(subtract(ts_delay(common_shares_outstanding_total, 60), common_shares_outstanding_total)), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "P0nrAJKE",
+    "sharpe": 1.22,
+    "turnover": 0.2174,
+    "fitness": 0.73,
+    "returns": 0.0789,
+    "drawdown": 0.0654,
+    "longCount": 1283,
+    "shortCount": 1254,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.22
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.73
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2174
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2174
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.53,
+        "value": 1.21
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   },
   {
-    "variant": "OBS3_deepval_cashp",
-    "field": "mdl77_2deepvaluefactor_cashp",
-    "rationale": "cash/price deep value (usr=1, cov=0.91)",
-    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(mdl77_2deepvaluefactor_cashp), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
-    "ok": false,
-    "stage": "sim",
-    "error": "ERROR: Invalid data field mdl77_2deepvaluefactor_cashp. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    "variant": "OBS3_news_novelty",
+    "field": "mean_event_novelty_score",
+    "rationale": "news event novelty (news, usr=0, cov=1.0)",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(mean_event_novelty_score), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "vR5noMJG",
+    "sharpe": 1.36,
+    "turnover": 1.0744,
+    "fitness": 0.35,
+    "returns": 0.0707,
+    "drawdown": 0.0522,
+    "longCount": 1005,
+    "shortCount": 990,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.36
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.35
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 1.0744
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 1.0744
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.59,
+        "value": -0.25
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   },
   {
-    "variant": "OBS4_growth_module",
-    "field": "fundamental_growth_module_score",
-    "rationale": "growth composite (usr=1, cov=1.00)",
-    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(fundamental_growth_module_score), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
-    "ok": false,
-    "stage": "sim",
-    "error": "ERROR: Invalid data field fundamental_growth_module_score. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    "variant": "OBS4_news_impact",
+    "field": "mean_news_impact_projection",
+    "rationale": "projected news impact (news, usr=0, cov=1.0)",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(mean_news_impact_projection), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "qMnkwvxV",
+    "sharpe": 1.27,
+    "turnover": 0.6651,
+    "fitness": 0.43,
+    "returns": 0.0756,
+    "drawdown": 0.067,
+    "longCount": 1340,
+    "shortCount": 1297,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.27
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.43
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.6651
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.6651
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.55,
+        "value": 0.39
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   },
   {
-    "variant": "OBS5_milliq",
-    "field": "mdl77_2liquidityriskfactor_milliq",
-    "rationale": "monthly illiquidity premium (usr=1, cov=1.00)",
-    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(mdl77_2liquidityriskfactor_milliq), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
-    "ok": false,
-    "stage": "sim",
-    "error": "ERROR: Invalid data field mdl77_2liquidityriskfactor_milliq. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    "variant": "OBS5_social_vol",
+    "field": "snt_social_volume_fast_d1",
+    "rationale": "normalized tweet volume (socialmedia, usr=0, cov=1.0)",
+    "expression": "zscore(ts_decay_linear(multiply(multiply(rank(snt_social_volume_fast_d1), reverse(ts_zscore(returns, 5))), log(add(divide(volume, adv20), 1))), 25))",
+    "ok": true,
+    "alpha_id": "vR5noAxa",
+    "sharpe": 0.32,
+    "turnover": 0.2016,
+    "fitness": 0.1,
+    "returns": 0.0186,
+    "drawdown": 0.1329,
+    "longCount": 1547,
+    "shortCount": 1522,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.32
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.1
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2016
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2016
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.14,
+        "value": 0.4
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
   }
 ]
