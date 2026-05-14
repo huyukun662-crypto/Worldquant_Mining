@@ -2395,6 +2395,68 @@ ROUND_33 = [
 ]
 
 
+# =====================================================================
+# Round 34: genuinely-orthogonal delay=0 axes. R33 hit a ~1.12 ceiling
+# because every low-TO D0 signal was a collinear "forward earnings
+# yield". R34 adds axes that are structurally different from value:
+#   - estimate REVISION (ts_delta of est_*) — momentum of forecasts,
+#     orthogonal to forecast LEVEL
+#   - low-vol anomaly (parkinson_volatility) — risk axis
+#   - IV term-structure level (implied_volatility_mean_720)
+#   - social sentiment (scl12_sentiment, snt_buzz)
+# Items 1-6 calibrate standalone; 7-10 stack the confident ones onto
+# the best R33 base (tamed-news + IV + est_ebit, alpha QPnlpLeM).
+# =====================================================================
+D0_EST_EBIT_REV  = "group_rank(ts_delta(est_ebit, 60), subindustry)"
+D0_EST_NP_REV    = "group_rank(ts_delta(est_netprofit, 60), subindustry)"
+D0_PARKINSON_LV  = "-group_rank(ts_mean(parkinson_volatility_20, 22), subindustry)"
+D0_IV_LEVEL_720  = "-group_rank(ts_mean(implied_volatility_mean_720, 22), subindustry)"
+D0_SENTIMENT     = "group_rank(ts_mean(scl12_sentiment, 22), subindustry)"
+D0_BUZZ          = "group_rank(ts_mean(snt_buzz, 22), subindustry)"
+
+# Best R33 stack (tamed-news + IV + est_ebit) reused as the anchor:
+D0_R33_BASE = (
+    f"add(add({D0_NEWS_PREVD_SLOW}, {D0_IV_SKEW180}), {D0_EST_EBIT})"
+)
+
+ROUND_34 = [
+    # 1-6: calibrate the new orthogonal axes standalone
+    {"name": "r34_d0_est_ebit_revision",  "expression": D0_EST_EBIT_REV,
+     "settings": base_settings_d0()},
+    {"name": "r34_d0_est_np_revision",    "expression": D0_EST_NP_REV,
+     "settings": base_settings_d0()},
+    {"name": "r34_d0_parkinson_lowvol",   "expression": D0_PARKINSON_LV,
+     "settings": base_settings_d0()},
+    {"name": "r34_d0_iv_level_720",       "expression": D0_IV_LEVEL_720,
+     "settings": base_settings_d0()},
+    {"name": "r34_d0_sentiment",          "expression": D0_SENTIMENT,
+     "settings": base_settings_d0()},
+    {"name": "r34_d0_buzz",               "expression": D0_BUZZ,
+     "settings": base_settings_d0()},
+    # 7: R33 base + estimate-revision (value + revision momentum)
+    {"name": "r34_d0_base_plus_revision",
+     "expression": f"add({D0_R33_BASE}, {D0_EST_EBIT_REV})",
+     "settings": base_settings_d0(decay=16)},
+    # 8: R33 base + low-vol anomaly
+    {"name": "r34_d0_base_plus_lowvol",
+     "expression": f"add({D0_R33_BASE}, {D0_PARKINSON_LV})",
+     "settings": base_settings_d0(decay=16)},
+    # 9: R33 base + revision + low-vol (3 orthogonal axes added)
+    {"name": "r34_d0_base_plus_rev_lowvol",
+     "expression": (
+         f"add(add({D0_R33_BASE}, {D0_EST_EBIT_REV}), {D0_PARKINSON_LV})"
+     ),
+     "settings": base_settings_d0(decay=16)},
+    # 10: mega — R33 base + revision + low-vol + IV-level-720
+    {"name": "r34_d0_mega_orthogonal",
+     "expression": (
+         f"add(add(add({D0_R33_BASE}, {D0_EST_EBIT_REV}), "
+         f"{D0_PARKINSON_LV}), {D0_IV_LEVEL_720})"
+     ),
+     "settings": base_settings_d0(decay=16)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2639,6 +2701,8 @@ def main():
         batch = ROUND_32
     elif args.round == 33:
         batch = ROUND_33
+    elif args.round == 34:
+        batch = ROUND_34
     else:
         log.error(f"unknown round {args.round}"); return 2
 
