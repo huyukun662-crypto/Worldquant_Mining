@@ -58868,5 +58868,30 @@
         ]
       }
     ]
+  },
+  {
+    "id": "QM_D5_02",
+    "category": "illiq-vol-FLIP-W500",
+    "idea": "D4_01 flipped + W500 + tight trunc. The PV-winning recipe lifted body-asym-var from SH=1.51 to 1.94, hope same on illiq-vol.",
+    "original": "-Std(milliq, 500)",
+    "expression": "-1 * ts_std_dev(mdl77_liquidityriskfactor_milliq, 500)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 2,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "timeout"
   }
 ]
