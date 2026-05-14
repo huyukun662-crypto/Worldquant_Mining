@@ -1,11 +1,13 @@
 # Final viable factors — delivery
 
-23+ rounds of QuantML-port iteration + OpenAlpha port =
-**150+ WQ Brain submissions** on USA TOP3000.
+23+ rounds of QuantML-port iteration + OpenAlpha port + 12-round
+obscure-datafield push = **250+ WQ Brain submissions** on USA TOP3000.
 
-**Gate**: `SH > 1.3` ∧ `turnover < 0.2` ∧ `fitness > 1.0`.
+**Gate**: `SH > 1.3` ∧ `turnover < 0.2` ∧ `fitness > 1.0` for Families A–D;
+the obscure-datafield push (Family E) was run against a stricter
+`SH > 1.5` gate.
 
-## 7 viable factors — 4 distinct structural families
+## 11 viable factors — 5 distinct structural families
 
 ### Family A — OHLC channel statistics (3 viable members)
 | factor | shape | SH | TO | FIT | ann.ret | alpha_id |
@@ -31,6 +33,26 @@
 |--------|-------|---:|---:|---:|---:|----------|
 | **QM_R23_02F_MKT_t10** | Mean((C − peer_mean)/C, 60) @ MARKET-neut t=0.10 | **1.34** | **0.01** | **1.67** | 20% | `kqn7oJ56` |
 | **QM_R23_02F_MKT_t15** | same expression @ t=0.15 (variant) | **1.37** | **0.01** | **1.83** | 22% | `omnpojdm` |
+
+### Family E — Multiplicative CoV-blend of obscure liquidity-risk fields (NEW — obscure-datafield push)
+
+Built entirely from obscure `mdl77` liquidity-risk model fields (userCount ≤ 34,
+several uc=1 — effectively undiscovered). **Zero overlap with the OHLC-PV
+Families A–D** — uses no price, open, high, low, close, volume or returns.
+Shape = product of two *coefficient-of-variation* signals
+`CoV(x,W) = ts_std_dev(x,W) / ts_mean(x,W)`.
+
+| factor | shape | SH | TO | FIT | alpha_id |
+|--------|-------|---:|---:|---:|----------|
+| **QM_D12_05** | −CoV(milliq,150)·CoV(bap20d,150) | **1.89** | 0.04 | **2.79** | `JjnYx5bO` |
+| **QM_D12_04** | −CoV(milliq,100)·CoV(bap20d,100) @ decay=0 | **1.83** | 0.05 | **2.73** | `JjnY791A` |
+| **QM_D10_05** | −CoV(milliq,100)·CoV(bap20d,100) @ decay=4 | **1.80** | 0.05 | **2.67** | `88O7Q76V` |
+| **QM_D12_02** | −CoV(milliq,100)·CoV(cvvolp20d,100) | **1.59** | 0.05 | **1.81** | `omnAqegv` |
+
+`milliq` (Amihud illiquidity) is the essential component — pairing it with a
+second liquidity-instability CoV (`bap20d` bid-ask proxy, or `cvvolp20d`
+volume-vol/price-vol ratio) clears the gate with large margin. Single-field
+CoVs cap at SH≈1.49; the *multiplicative interaction* is what breaks through.
 
 ---
 
@@ -78,7 +100,26 @@ ts_mean((close - group_mean(close, 1, subindustry)) / close, 60)
 ### #7 QM_R23_02F_MKT_t15 (variant of #6)
 Same expression as #6, only `trunc=0.15` instead.
 
-Common across all 7: `instrumentType=EQUITY, region=USA, pasteurization=ON, unitHandling=VERIFY, nanHandling=OFF, language=FASTEXPR, visualization=false, maxTrade=OFF, testPeriod=P0Y0M`.
+### #8 QM_D12_05 — Family E champion (obscure-datafield push)
+```
+-1 * ts_std_dev(mdl77_liquidityriskfactor_milliq, 150)
+   / ts_mean(mdl77_liquidityriskfactor_milliq, 150)
+   * ts_std_dev(mdl77_liquidityriskfactor_bap20d, 150)
+   / ts_mean(mdl77_liquidityriskfactor_bap20d, 150)
+```
+`universe=TOP3000  delay=1  decay=4  neut=SUBINDUSTRY  trunc=0.05`
+
+### #9 QM_D12_04 (variant of #8)
+Same expression as #8 with windows W100 and `decay=0`. SH=1.83.
+
+### #10 QM_D10_05 (variant of #8)
+Same expression as #8 with windows W100 and `decay=4`. SH=1.80.
+
+### #11 QM_D12_02 (Family E, second field-pair)
+Same shape as #8 but the second field is `cvvolp20d` instead of `bap20d`,
+windows W100, `decay=4`. SH=1.59.
+
+Common across all 11: `instrumentType=EQUITY, region=USA, pasteurization=ON, unitHandling=VERIFY, nanHandling=OFF, language=FASTEXPR, visualization=false, maxTrade=OFF, testPeriod=P0Y0M`.
 
 ---
 
@@ -108,6 +149,29 @@ Family D's two members are setting variants of the same expression — they're e
 9. **Rank/z-sum composites consistently underperformed their best component** (R3_05, R4_04, R5_02, COMP1). Cross-sectional correlations too high among related shapes.
 10. **Shapes that failed to reach SH=1.3** (across 50+ attempts): auto-correlation, coefficient of variation, sign-streak, rank-reversal, volume-shock, Sortino, Sharpe ratio, regime-vol ratio, peer-relative momentum, vol-managed return, omega gain/loss, crash frequency, vwap-deviation vol, body autocorr, range-body coupling, vol-direction asym, GK-style range vol diff, Kaufman efficiency, WVAD, close-vwap path corr, volume-weighted close-vs-mid, beta time-variation, intraday body kurtosis, conditional reversal, Z-score velocity, peer-relative idio-vol.
 
+### Obscure-datafield push (rounds D1–D12, 60 submissions)
+
+Goal: build factors from the rarest `mdl77` model data-fields (low userCount)
+to minimise correlation with the OHLC-PV Families A–D.
+
+11. **Pure obscure single-field factors cap at SH≈1.49** on USA TOP3000. The
+    best single field is `mdl77_liquidityriskfactor_milliq` (Amihud illiquidity);
+    its coefficient-of-variation `CoV = Std/Mean` reaches SH=1.49 at W100,
+    SUBINDUSTRY-neut — but window/decay/trunc/universe/pasteurization/rank/zscore
+    levers are all exhausted there.
+12. **The breakthrough is a multiplicative interaction.** Multiplying two
+    independent liquidity-instability CoVs (`milliq` × `bap20d`) clears the gate
+    at SH=1.80–1.89 — far above either component alone. Additive composites
+    (rank-sum, z-sum) still dilute (D3 confirmed); only the *product* works.
+13. **`milliq` is the essential factor of the product.** `bap20d`×`volto`
+    (no `milliq`) only reaches SH=0.92; any pair *containing* `milliq` clears
+    or approaches the gate.
+14. **Variance, not level, is the carrier.** `ts_mean(milliq)` (level) gives
+    SH≈0.62; `ts_std_dev(milliq)` (volatility) gives SH≈1.00; `Std/Mean` (CoV)
+    gives SH≈1.49 — and the CoV product gives SH≈1.89.
+15. **SUBINDUSTRY-neut beats INDUSTRY and MARKET** for the liquidity-risk
+    family (opposite of the peer-distance Family D, which wanted MARKET).
+
 ---
 
 ## What's in this PR
@@ -115,7 +179,9 @@ Family D's two members are setting variants of the same expression — they're e
 - `scripts/openalpha_factors.py`, `submit_openalpha*.py` — OpenAlpha port (34 candidates → OA24).
 - `scripts/wq_runner.py` — reusable runner.
 - `scripts/submit_quantml_r{1..23}.py` + `submit_quantml_rN.py` — 23+1 QuantML rounds.
-- `WQ_OPENALPHA_RESULTS.json`, `WQ_QUANTML_RESULTS.json` — full submission records (130+ entries).
+- `scripts/submit_quantml_{O1,F1,F2}.py` — setting-grid and fundamental rounds.
+- `scripts/submit_quantml_D{1..12}.py` — obscure-datafield push (Family E).
+- `WQ_OPENALPHA_RESULTS.json`, `WQ_QUANTML_RESULTS.json` — full submission records (250+ entries).
 - `VIABLE_FACTORS_FINAL.md` — this doc.
 
 ## Reproducing
