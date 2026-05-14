@@ -2274,6 +2274,62 @@ ROUND_31 = [
 ]
 
 
+# =====================================================================
+# Round 32: DELAY=0 calibration. The CLAUDE.md note "delay=0 not
+# available" is STALE — a probe (alpha d5n79YEv) confirmed delay=0
+# now simulates fine on this account. delay=0 exposes only
+# fundamental / news / analyst / pv / option / socialmedia (NO model
+# category), so R25_BASE and the R31 winners cannot run at D0.
+# This round mines D0-native factors from scratch across the 4 alt-data
+# families that are dense at delay=0:
+#   - intraday news reaction  (news_*)        : reversal hypotheses
+#   - option IV surface       (implied_volatility_*)
+#   - supply-chain peer returns (rel_ret_*)   : lead-lag
+#   - analyst forward estimates (est_*)       : forward value
+# All base fields have low userCount on the WQ catalog.
+# =====================================================================
+D0_NEWS_5MIN   = "-group_rank(ts_mean(news_pct_5_min, 5), subindustry)"
+D0_NEWS_MAXUP  = "-group_rank(ts_mean(news_max_up_ret, 5), subindustry)"
+D0_NEWS_VOLRAT = "group_rank(ts_mean(news_ratio_vol, 5), subindustry)"
+D0_NEWS_RANGE  = "-group_rank(ts_mean(news_range_stddev, 5), subindustry)"
+D0_NEWS_PREVD  = "-group_rank(ts_mean(news_prev_day_ret, 5), subindustry)"
+D0_NEWS_GAP    = "-group_rank(ts_mean(news_open_gap, 5), subindustry)"
+D0_IV_SKEW180  = "group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)"
+D0_REL_COMP    = "group_rank(ts_mean(rel_ret_comp, 5), subindustry)"
+D0_REL_PART    = "group_rank(ts_mean(rel_ret_part, 5), subindustry)"
+D0_EST_EBIT    = "group_rank(ts_mean(divide(est_ebit, cap), 22), subindustry)"
+
+
+def base_settings_d0(**overrides):
+    return base_settings(delay=0, decay=4, neutralization="INDUSTRY",
+                         truncation=0.08, universe="TOP3000",
+                         pasteurization="OFF", **overrides)
+
+
+ROUND_32 = [
+    {"name": "r32_d0_news_5min_rev",   "expression": D0_NEWS_5MIN,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_news_maxup_rev",  "expression": D0_NEWS_MAXUP,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_news_vol_ratio",  "expression": D0_NEWS_VOLRAT,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_news_range_z",    "expression": D0_NEWS_RANGE,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_news_prevday_rev","expression": D0_NEWS_PREVD,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_news_gap_rev",    "expression": D0_NEWS_GAP,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_iv_skew_180",     "expression": D0_IV_SKEW180,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_rel_ret_comp",    "expression": D0_REL_COMP,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_rel_ret_part",    "expression": D0_REL_PART,
+     "settings": base_settings_d0()},
+    {"name": "r32_d0_est_ebit_yield",  "expression": D0_EST_EBIT,
+     "settings": base_settings_d0()},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2514,6 +2570,8 @@ def main():
         batch = ROUND_30
     elif args.round == 31:
         batch = ROUND_31
+    elif args.round == 32:
+        batch = ROUND_32
     else:
         log.error(f"unknown round {args.round}"); return 2
 

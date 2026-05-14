@@ -137,8 +137,13 @@ per hour; budget candidates accordingly.
 
 ### Account tier limits observed on `2445560398@qq.com`
 
-- `delay=0` not available for simulation (HTTP 400 "Delay 0 is not
-  available"). `wq_pipeline.SETTING_SPACE['delay'] = [1]` reflects this.
+- `delay=0` IS available for simulation (verified 2026-05-14 via probe
+  alpha `d5n79YEv`). An earlier note claimed HTTP 400 "Delay 0 is not
+  available" — that is no longer true. delay=0 exposes only the
+  fundamental / news / analyst / pv / option / socialmedia categories
+  (NO `model` category) and ~1,225 fields in TOP3000 vs ~5,905 at
+  delay=1. `wq_pipeline.SETTING_SPACE['delay']` may still be `[1]` —
+  widen to `[0, 1]` when mining delay=0.
 - `ILLIQUID_MINVOL1M` universe returns 0 fields on `/data-fields`.
 - USA `/data-fields` ceiling: 6,038 distinct field IDs across all
   documented universes × delays (vs the 7,831 the WQ UI advertises;
