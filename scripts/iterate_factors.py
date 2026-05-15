@@ -3503,6 +3503,86 @@ ROUND_49 = [
 ]
 
 
+# =====================================================================
+# Round 50: replace news_short_interest with put/call IV ratio (dense
+# option short-side proxy). R49 confirmed dense fundamental/sentiment
+# additions can't recover SH (all stacks SH<1.16) -- too collinear with
+# est_ebit. R50 tries divide(iv_put, iv_call) as short-side proxy
+# (different mechanic, cov ~0.7), plus news_eps_actual and other dense
+# news fields untouched by news_si's sparse-day spikes.
+# =====================================================================
+def _pc_ratio(tenor=180):
+    return (f"group_rank(ts_mean(divide(implied_volatility_put_{tenor}, "
+            f"implied_volatility_call_{tenor}), 22), subindustry)")
+
+def _news_eps_dense(window=60, mean_d=22):
+    return (f"group_rank(ts_mean(ts_backfill(news_eps_actual, {window}), "
+            f"{mean_d}), subindustry)")
+
+def _news_div_dense(window=60, mean_d=22):
+    return (f"group_rank(ts_mean(ts_backfill(news_dividend_yield, {window}), "
+            f"{mean_d}), subindustry)")
+
+def _hv_dense(window=60):
+    return f"-group_rank(ts_mean(historical_volatility_{window}, 22), subindustry)"
+
+ROUND_50 = [
+    # 1: base4_no_si + put/call IV 180
+    {"name": "r50_d0_4ax_plus_pc180",
+     "expression": f"add({BASE4_NO_SI}, {_pc_ratio(180)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base4_no_si + put/call IV 60
+    {"name": "r50_d0_4ax_plus_pc60",
+     "expression": f"add({BASE4_NO_SI}, {_pc_ratio(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base4_no_si + put/call IV 30
+    {"name": "r50_d0_4ax_plus_pc30",
+     "expression": f"add({BASE4_NO_SI}, {_pc_ratio(30)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: base4_no_si + news_eps_actual
+    {"name": "r50_d0_4ax_plus_eps",
+     "expression": f"add({BASE4_NO_SI}, {_news_eps_dense(60, 200)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: base4_no_si + pc180 + eps
+    {"name": "r50_d0_4ax_plus_pc180_eps",
+     "expression": (f"add(add({BASE4_NO_SI}, {_pc_ratio(180)}), "
+                    f"{_news_eps_dense(60, 200)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: base4_no_si + pc180 + invest
+    {"name": "r50_d0_4ax_plus_pc180_invest",
+     "expression": f"add(add({BASE4_NO_SI}, {_pc_ratio(180)}), {D0_INVEST})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: base4_no_si + pc60 + historical_vol60 (vol-based pair)
+    {"name": "r50_d0_4ax_plus_pc60_hv60",
+     "expression": f"add(add({BASE4_NO_SI}, {_pc_ratio(60)}), {_hv_dense(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: base4_no_si + pc180 + news_dividend
+    {"name": "r50_d0_4ax_plus_pc180_div",
+     "expression": (f"add(add({BASE4_NO_SI}, {_pc_ratio(180)}), "
+                    f"{_news_div_dense(60, 200)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: just pc180 as si replacement (5-axis: pe, pc, iv_ts, ebit, iv_skew)
+    {"name": "r50_d0_5ax_si_to_pc180",
+     "expression": (f"add(add(add(add({_pe_v3()}, {_pc_ratio(180)}), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: pc180 + pc60 + base4 (multi-tenor option short signal)
+    {"name": "r50_d0_4ax_plus_pc180_pc60",
+     "expression": (f"add(add({BASE4_NO_SI}, {_pc_ratio(180)}), {_pc_ratio(60)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3779,6 +3859,8 @@ def main():
         batch = ROUND_48
     elif args.round == 49:
         batch = ROUND_49
+    elif args.round == 50:
+        batch = ROUND_50
     else:
         log.error(f"unknown round {args.round}"); return 2
 
