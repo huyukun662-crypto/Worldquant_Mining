@@ -4352,6 +4352,72 @@ ROUND_61 = [
 ]
 
 
+# =====================================================================
+# Round 62: refine on R61 winners. mLqXe275 (SH=1.83 FIT=1.52),
+# xAengNPJ (SH=1.75 FIT=1.59), YPNAZMOo (SH=1.73 FIT=1.56).
+# mLqXe275 dropped revdev_60 and got higher SH! Try variations.
+# =====================================================================
+# mLqXe275 base: omn_zscore + news_pct_120min + snt_value (NO revdev)
+MLQX_BASE = f"add(add({OMN_ZSCORE}, {D0_NEWS_DRIFT}), {D0_SNT_VAL})"
+# xAengNPJ base: vR5d + news + snt (WITH revdev_60)
+XAEN_BASE = f"add(add({VR5D_BASE}, {D0_NEWS_DRIFT}), {D0_SNT_VAL})"
+# YPNAZMOo base: vR5d + news + snt + buyback
+YPNA_BASE = f"add(add(add({VR5D_BASE}, {D0_NEWS_DRIFT}), {D0_SNT_VAL}), {D0_BUYBACK})"
+
+ROUND_62 = [
+    # 1: mLqXe275 + buyback
+    {"name": "r62_d0_mlqx_plus_buyback",
+     "expression": f"add({MLQX_BASE}, {D0_BUYBACK})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: mLqXe275 + revdev_60 (add back the dropped axis)
+    {"name": "r62_d0_mlqx_plus_revdev60",
+     "expression": f"add({MLQX_BASE}, {_rev_dev(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: mLqXe275 at decay=10
+    {"name": "r62_d0_mlqx_d10",
+     "expression": MLQX_BASE,
+     "settings": base_settings_d0(decay=10, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: mLqXe275 at trunc=0.04
+    {"name": "r62_d0_mlqx_t004",
+     "expression": MLQX_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 5: mLqXe275 zscore wrap
+    {"name": "r62_d0_mlqx_zscore",
+     "expression": f"zscore({MLQX_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: xAengNPJ + buyback
+    {"name": "r62_d0_xaen_plus_buyback",
+     "expression": f"add({XAEN_BASE}, {D0_BUYBACK})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: xAengNPJ at trunc=0.04
+    {"name": "r62_d0_xaen_t004",
+     "expression": XAEN_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 8: YPNAZMOo + revdev_22 (multi-window dev)
+    {"name": "r62_d0_ypna_plus_revdev22",
+     "expression": f"add({YPNA_BASE}, {_rev_dev(22)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: YPNAZMOo zscore wrap
+    {"name": "r62_d0_ypna_zscore",
+     "expression": f"zscore({YPNA_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: mLqXe275 + revdev_22 (shorter dev)
+    {"name": "r62_d0_mlqx_plus_revdev22",
+     "expression": f"add({MLQX_BASE}, {_rev_dev(22)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4652,6 +4718,8 @@ def main():
         batch = ROUND_60
     elif args.round == 61:
         batch = ROUND_61
+    elif args.round == 62:
+        batch = ROUND_62
     else:
         log.error(f"unknown round {args.round}"); return 2
 
