@@ -3202,6 +3202,101 @@ ROUND_45 = [
 ]
 
 
+# =====================================================================
+# Round 46: extend ts_mean window to densify news fields.
+# R45 confirmed: ts_backfill(news_*, 90-252d) hits a 0.125 (=1/8) wall.
+# news_pe_ratio coverage is 0.97 (NOT a coverage problem) -- the issue is
+# DAILY UPDATE PATTERN. ts_mean(news_*, 22) only sees ~1-2 news values per
+# stock per month. Extending ts_mean to 60/120/252d covers more news
+# values per stock. Pair with backfill for additional carry.
+# =====================================================================
+def _bf_pe_v2(window, mean_d=22):
+    return (f"-group_rank(ts_mean(ts_backfill(news_pe_ratio, {window}), "
+            f"{mean_d}), subindustry)")
+
+def _bf_si_v2(window, mean_d=22):
+    return (f"group_rank(ts_mean(ts_backfill(news_short_interest, {window}), "
+            f"{mean_d}), subindustry)")
+
+def _base5_v2(bf_win, mean_d):
+    pe = _bf_pe_v2(bf_win, mean_d)
+    si = _bf_si_v2(bf_win, mean_d)
+    return (f"add(add(add(add({pe}, {si}), {D0_IV_TS_SLOPE}), "
+            f"{D0_EST_EBIT}), {D0_IV_SKEW180})")
+
+# Outer ts_backfill on the GROUP_RANK output (carries rank across NaN days)
+def _bf_pe_outer(rank_bf=22):
+    return (f"-ts_backfill(group_rank(ts_mean(news_pe_ratio, 22), subindustry), "
+            f"{rank_bf})")
+
+def _bf_si_outer(rank_bf=22):
+    return (f"ts_backfill(group_rank(ts_mean(news_short_interest, 22), subindustry), "
+            f"{rank_bf})")
+
+ROUND_46 = [
+    # 1: ts_mean=60d, bf=60d (more values per window)
+    {"name": "r46_d0_5axis_mean60_bf60",
+     "expression": _base5_v2(60, 60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: ts_mean=120d, bf=60d
+    {"name": "r46_d0_5axis_mean120_bf60",
+     "expression": _base5_v2(60, 120),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: ts_mean=252d, bf=60d (year of news)
+    {"name": "r46_d0_5axis_mean252_bf60",
+     "expression": _base5_v2(60, 252),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: ts_mean=120d, no bf
+    {"name": "r46_d0_5axis_mean120_nobf",
+     "expression": (f"add(add(add(add(-group_rank(ts_mean(news_pe_ratio, 120), subindustry), "
+                    f"group_rank(ts_mean(news_short_interest, 120), subindustry)), "
+                    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: outer ts_backfill on group_rank output (carry rank across NaN)
+    {"name": "r46_d0_5axis_outer_bf30",
+     "expression": (f"add(add(add(add({_bf_pe_outer(30)}, {_bf_si_outer(30)}), "
+                    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: ts_mean=60d + bf=120d
+    {"name": "r46_d0_5axis_mean60_bf120",
+     "expression": _base5_v2(120, 60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: ts_mean=60d + bf=252d (max carry)
+    {"name": "r46_d0_5axis_mean60_bf252",
+     "expression": _base5_v2(252, 60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: Replace ts_mean with ts_decay_linear (weight recent more, handle NaN better)
+    {"name": "r46_d0_5axis_decay_linear60",
+     "expression": (f"add(add(add(add(-group_rank(ts_decay_linear("
+                    f"news_pe_ratio, 60), subindustry), "
+                    f"group_rank(ts_decay_linear(news_short_interest, 60), subindustry)), "
+                    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: outer bf=60 (longer carry of rank)
+    {"name": "r46_d0_5axis_outer_bf60",
+     "expression": (f"add(add(add(add({_bf_pe_outer(60)}, {_bf_si_outer(60)}), "
+                    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: ts_mean=120d + outer bf=30d (combination)
+    {"name": "r46_d0_5axis_mean120_outerbf30",
+     "expression": (f"add(add(add(add("
+                    f"-ts_backfill(group_rank(ts_mean(news_pe_ratio, 120), subindustry), 30), "
+                    f"ts_backfill(group_rank(ts_mean(news_short_interest, 120), subindustry), 30)), "
+                    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3470,6 +3565,8 @@ def main():
         batch = ROUND_44
     elif args.round == 45:
         batch = ROUND_45
+    elif args.round == 46:
+        batch = ROUND_46
     else:
         log.error(f"unknown round {args.round}"); return 2
 
