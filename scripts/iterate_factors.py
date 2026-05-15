@@ -2668,6 +2668,71 @@ ROUND_38 = [
 ]
 
 
+# =====================================================================
+# Round 39: delay=0 stacks of the R38 winners with CORRECTED signs.
+# R38 confirmed news_pe_ratio (0.83), news_short_interest-flipped
+# (0.77) and iv_term_slope (0.67) all work standalone. R39 stacks them
+# (correct signs) plus selective best axes from earlier D0 rounds.
+# This is the final D0 attempt at the SH>1.5 gate.
+# =====================================================================
+D0_NEWS_SI_POS = "group_rank(ts_mean(news_short_interest, 22), subindustry)"
+
+ROUND_39 = [
+    # 1: 2 strongest R38 axes
+    {"name": "r39_d0_pe_plus_si",
+     "expression": f"add({D0_NEWS_PE}, {D0_NEWS_SI_POS})",
+     "settings": base_settings_d0(decay=8)},
+    # 2: 3 R38 axes
+    {"name": "r39_d0_pe_si_slope",
+     "expression": f"add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), {D0_IV_TS_SLOPE})",
+     "settings": base_settings_d0(decay=8)},
+    # 3: news_pe + est_ebit (best value pair)
+    {"name": "r39_d0_pe_plus_ebit",
+     "expression": f"add({D0_NEWS_PE}, {D0_EST_EBIT})",
+     "settings": base_settings_d0(decay=8)},
+    # 4: news_pe + IV skew (value + option-flow)
+    {"name": "r39_d0_pe_plus_ivskew",
+     "expression": f"add({D0_NEWS_PE}, {D0_IV_SKEW180})",
+     "settings": base_settings_d0(decay=8)},
+    # 5: news_pe + news_si + IV skew
+    {"name": "r39_d0_pe_si_ivskew",
+     "expression": f"add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), {D0_IV_SKEW180})",
+     "settings": base_settings_d0(decay=8)},
+    # 6: 5-axis kitchen sink (pe + si + slope + ebit + ivskew)
+    {"name": "r39_d0_5axis_sink",
+     "expression": (
+         f"add(add(add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=8)},
+    # 7: 5-axis sink at decay=4
+    {"name": "r39_d0_5axis_sink_d4",
+     "expression": (
+         f"add(add(add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=4)},
+    # 8: 5-axis sink at MARKET neutralization
+    {"name": "r39_d0_5axis_sink_market",
+     "expression": (
+         f"add(add(add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET")},
+    # 9: news_pe + investment (R36 axis)
+    {"name": "r39_d0_pe_plus_invest",
+     "expression": f"add({D0_NEWS_PE}, {D0_INVEST})",
+     "settings": base_settings_d0(decay=8)},
+    # 10: news_pe + news_si + investment + book-to-market
+    {"name": "r39_d0_pe_si_invest_bm",
+     "expression": (
+         f"add(add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), {D0_INVEST}), "
+         f"{D0_BOOK_MKT})"
+     ),
+     "settings": base_settings_d0(decay=8)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2922,6 +2987,8 @@ def main():
         batch = ROUND_37
     elif args.round == 38:
         batch = ROUND_38
+    elif args.round == 39:
+        batch = ROUND_39
     else:
         log.error(f"unknown round {args.round}"); return 2
 
