@@ -67421,5 +67421,47 @@
         ]
       }
     ]
+  },
+  {
+    "id": "QM_D13_04",
+    "category": "milliq-range-to-mean",
+    "idea": "(max-min)/mean: a robust range-based scale-free illiquidity dispersion -- complementary to CoV which uses standard deviation.",
+    "original": "-(max-min)/mean(milliq,60)",
+    "expression": "-1 * (ts_max(mdl77_liquidityriskfactor_milliq, 60) - ts_min(mdl77_liquidityriskfactor_milliq, 60)) / ts_mean(mdl77_liquidityriskfactor_milliq, 60)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "simulation",
+    "status": "ERROR",
+    "message": "Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "1iO6Fs1KG4vL8XErtzZ1uP",
+      "type": "REGULAR",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 6,
+        "end": 50,
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      }
+    }
   }
 ]
