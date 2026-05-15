@@ -8300,5 +8300,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r39_d0_pe_si_slope",
+    "expression": "add(add(-group_rank(ts_mean(news_pe_ratio, 22), subindustry), group_rank(ts_mean(news_short_interest, 22), subindustry)), group_rank(ts_mean(subtract(implied_volatility_mean_skew_30, implied_volatility_mean_skew_360), 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "omn3gm7E",
+    "sharpe": 1.04,
+    "turnover": 0.1481,
+    "fitness": 0.73,
+    "returns": 0.0725,
+    "drawdown": 0.0644,
+    "longCount": 387,
+    "shortCount": 397,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
