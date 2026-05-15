@@ -4221,6 +4221,75 @@ ROUND_59 = [
 ]
 
 
+# =====================================================================
+# Round 60: try unexplored dense D0 fields as new axes on vR5d69Oz.
+# Architecture ceiling SH=1.60 / FIT=1.36 with current 7 axes.
+# New axes: buyback (sharesout decline), sentiment value, dividend yield,
+# post-news drift (news_pct_120min), news downside (news_max_dn_ret).
+# =====================================================================
+D0_BUYBACK = "-group_rank(ts_delta(sharesout, 60), subindustry)"
+D0_SENT_VAL = "group_rank(ts_mean(scl12_sentiment, 60), subindustry)"
+D0_DIV_YIELD = "group_rank(ts_mean(divide(dividend, close), 60), subindustry)"
+D0_NEWS_DRIFT = "group_rank(ts_mean(ts_backfill(news_pct_120min, 30), 60), subindustry)"
+D0_NEWS_DN = "-group_rank(ts_mean(ts_backfill(news_max_dn_ret, 30), 60), subindustry)"
+D0_SNT_VAL = "group_rank(ts_mean(snt_value, 60), subindustry)"
+
+ROUND_60 = [
+    # 1: vR5d69Oz + buyback signal
+    {"name": "r60_d0_vr5d_plus_buyback",
+     "expression": f"add({VR5D_BASE}, {D0_BUYBACK})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: vR5d69Oz + sentiment value (vs buzz volume)
+    {"name": "r60_d0_vr5d_plus_sentval",
+     "expression": f"add({VR5D_BASE}, {D0_SENT_VAL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: vR5d69Oz + dividend yield
+    {"name": "r60_d0_vr5d_plus_divyield",
+     "expression": f"add({VR5D_BASE}, {D0_DIV_YIELD})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: vR5d69Oz + post-news drift
+    {"name": "r60_d0_vr5d_plus_newsdrift",
+     "expression": f"add({VR5D_BASE}, {D0_NEWS_DRIFT})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: vR5d69Oz + news downside (avoid)
+    {"name": "r60_d0_vr5d_plus_newsdn",
+     "expression": f"add({VR5D_BASE}, {D0_NEWS_DN})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: vR5d69Oz + snt_value (alternative sentiment)
+    {"name": "r60_d0_vr5d_plus_sntval",
+     "expression": f"add({VR5D_BASE}, {D0_SNT_VAL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: vR5d69Oz + buyback + sentiment value (2 new)
+    {"name": "r60_d0_vr5d_plus_buyback_sentval",
+     "expression": f"add(add({VR5D_BASE}, {D0_BUYBACK}), {D0_SENT_VAL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: vR5d69Oz + buyback + dividend (capital return)
+    {"name": "r60_d0_vr5d_plus_capreturn",
+     "expression": f"add(add({VR5D_BASE}, {D0_BUYBACK}), {D0_DIV_YIELD})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: vR5d69Oz + 3 new (buyback + sentval + newsdrift)
+    {"name": "r60_d0_vr5d_plus_3new",
+     "expression": (f"add(add(add({VR5D_BASE}, {D0_BUYBACK}), {D0_SENT_VAL}), "
+                    f"{D0_NEWS_DRIFT})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: vR5d69Oz with REPLACED scl_buzz -> sentval (testing buzz vs sentiment)
+    {"name": "r60_d0_4ax_rev5_sentval_revdev60",
+     "expression": (f"add(zscore(add(add({BASE4_NO_SI}, "
+                    f"{_reversal_window(5)}), {D0_SENT_VAL})), {_rev_dev(60)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4517,6 +4586,8 @@ def main():
         batch = ROUND_58
     elif args.round == 59:
         batch = ROUND_59
+    elif args.round == 60:
+        batch = ROUND_60
     else:
         log.error(f"unknown round {args.round}"); return 2
 
