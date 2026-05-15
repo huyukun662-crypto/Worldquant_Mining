@@ -3583,6 +3583,91 @@ ROUND_50 = [
 ]
 
 
+# =====================================================================
+# Round 51: transformations of news_short_interest to dampen the
+# concentration spike while preserving its SH contribution. R50 confirmed
+# any dense replacement (pc IV, news_eps, news_div, sentiment) loses
+# ~0.5 SH. R51 tries TRANSFORMING news_si rather than replacing it:
+# delta (changes), zscore (normalize), rank (within-series), winsorize
+# (clip), av_diff (smoothing), deviation from average.
+# =====================================================================
+def _si_bf90():  return "ts_backfill(news_short_interest, 90)"
+
+ROUND_51 = [
+    # 1: ts_delta(bf_si, 30) - changes not levels
+    {"name": "r51_d0_si_delta30",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(ts_delta({_si_bf90()}, 30), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: ts_zscore(bf_si, 252) - cross-time normalized
+    {"name": "r51_d0_si_zscore252",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(ts_zscore({_si_bf90()}, 252), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: ts_rank(bf_si, 252) - time-series rank
+    {"name": "r51_d0_si_tsrank252",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(ts_rank({_si_bf90()}, 252), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: winsorize wrap on news_si axis specifically
+    {"name": "r51_d0_si_winsorize",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"winsorize(group_rank(ts_mean({_si_bf90()}, 22), subindustry))), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: subtract from year average (deviation signal)
+    {"name": "r51_d0_si_dev",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(subtract({_si_bf90()}, "
+                    f"ts_mean({_si_bf90()}, 252)), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: signed_power(bf_si, 0.5) - dampen extremes
+    {"name": "r51_d0_si_sqrt",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(ts_mean(signed_power({_si_bf90()}, 0.5), 22), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: ts_av_diff (av deviation - smoother)
+    {"name": "r51_d0_si_av_diff",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(ts_av_diff({_si_bf90()}, 60), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: group_zscore (continuous cross-sectional) instead of group_rank
+    {"name": "r51_d0_si_groupzscore",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_zscore(ts_mean({_si_bf90()}, 200), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: ts_zscore + group_zscore (continuous on both)
+    {"name": "r51_d0_si_double_zscore",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_zscore(ts_zscore({_si_bf90()}, 252), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: ts_delta(bf_si, 60) - month-over-month change
+    {"name": "r51_d0_si_delta60",
+     "expression": (f"add(add(add(add({_pe_v3()}, "
+                    f"group_rank(ts_delta({_si_bf90()}, 60), subindustry)), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3861,6 +3946,8 @@ def main():
         batch = ROUND_49
     elif args.round == 50:
         batch = ROUND_50
+    elif args.round == 51:
+        batch = ROUND_51
     else:
         log.error(f"unknown round {args.round}"); return 2
 
