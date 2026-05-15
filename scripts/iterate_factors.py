@@ -2806,6 +2806,74 @@ ROUND_40 = [
 ]
 
 
+# =====================================================================
+# Round 41: target CONCENTRATED_WEIGHT and SUB_UNIVERSE_SHARPE checks.
+# R40 showed truncation 0.05/0.03 leaves concentration at 0.167 (=1/6),
+# so truncation is NOT the lever. Hypothesis: rank-bucketing or sector
+# concentration. R41 tries: pasteurization=ON, higher decay (smoothing),
+# outer wraps (zscore/normalize), continuous (ts_zscore) vs group_rank,
+# stripped 3-axis and 2-axis variants (less rank ties).
+# User accepts SH>=1.5; goal is CONCENTRATED_WEIGHT<=0.1 AND
+# SUB_UNIVERSE_SHARPE>=0.66.
+# =====================================================================
+ROUND_41 = [
+    # 1: base5 + pasteurization=ON (smooth signal)
+    {"name": "r41_d0_base5_pasteur_on",
+     "expression": D0_BASE5_PASS,
+     "settings": dict(base_settings_d0(decay=8, neutralization="MARKET",
+                                       truncation=0.05),
+                      pasteurization="ON")},
+    # 2: base5 + decay=16 (heavier smoothing)
+    {"name": "r41_d0_base5_decay16",
+     "expression": D0_BASE5_PASS,
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base5 + decay=32 (very heavy smoothing)
+    {"name": "r41_d0_base5_decay32",
+     "expression": D0_BASE5_PASS,
+     "settings": base_settings_d0(decay=32, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: zscore-wrap base5 (continuous redistribution)
+    {"name": "r41_d0_zscore_wrap",
+     "expression": f"zscore({D0_BASE5_PASS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: normalize wrap (L1-norm redistribute)
+    {"name": "r41_d0_normalize_wrap",
+     "expression": f"normalize({D0_BASE5_PASS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: scale wrap (1-norm)
+    {"name": "r41_d0_scale_wrap",
+     "expression": f"scale({D0_BASE5_PASS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: 3-axis only (pe + si + ivskew, R39's strong combo) - simpler signal
+    {"name": "r41_d0_3axis_d16",
+     "expression": (
+         f"add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: 2-axis pe + si only (simplest) + decay=16
+    {"name": "r41_d0_2axis_pe_si_d16",
+     "expression": f"add({D0_NEWS_PE}, {D0_NEWS_SI_POS})",
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: base5 SUBINDUSTRY neut + decay=16 + zscore wrap (max smoothing+redistribution)
+    {"name": "r41_d0_zscore_subind_d16",
+     "expression": f"zscore({D0_BASE5_PASS})",
+     "settings": base_settings_d0(decay=16, neutralization="SUBINDUSTRY",
+                                  truncation=0.05)},
+    # 10: zscore wrap + pasteurization=ON (combine fixes)
+    {"name": "r41_d0_zscore_pasteur_on",
+     "expression": f"zscore({D0_BASE5_PASS})",
+     "settings": dict(base_settings_d0(decay=8, neutralization="MARKET",
+                                       truncation=0.05),
+                      pasteurization="ON")},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3064,6 +3132,8 @@ def main():
         batch = ROUND_39
     elif args.round == 40:
         batch = ROUND_40
+    elif args.round == 41:
+        batch = ROUND_41
     else:
         log.error(f"unknown round {args.round}"); return 2
 
