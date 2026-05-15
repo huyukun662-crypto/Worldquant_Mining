@@ -8428,5 +8428,37 @@
     "checks_passed": 5,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r39_d0_5axis_sink",
+    "expression": "add(add(add(add(-group_rank(ts_mean(news_pe_ratio, 22), subindustry), group_rank(ts_mean(news_short_interest, 22), subindustry)), group_rank(ts_mean(subtract(implied_volatility_mean_skew_30, implied_volatility_mean_skew_360), 22), subindustry)), group_rank(ts_mean(divide(est_ebit, cap), 22), subindustry)), group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "j2n96mxW",
+    "sharpe": 1.37,
+    "turnover": 0.1446,
+    "fitness": 1.23,
+    "returns": 0.1172,
+    "drawdown": 0.0627,
+    "longCount": 379,
+    "shortCount": 388,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
