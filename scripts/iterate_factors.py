@@ -4159,6 +4159,68 @@ ROUND_58 = [
 ]
 
 
+# =====================================================================
+# Round 59: push beyond vR5d69Oz (SH=1.60 FIT=1.36). Target SH>=1.65,
+# FIT>=1.4. Same architecture: omn_zscore + revdev. Try longer dev
+# windows (120/250), multi-window dev stacks, decay/trunc tweaks.
+# =====================================================================
+VR5D_BASE = f"add({OMN_ZSCORE}, {_rev_dev(60)})"
+
+ROUND_59 = [
+    # 1: vR5d69Oz + revdev_22 (60+22 multi-window dev)
+    {"name": "r59_d0_vr5d_plus_revdev22",
+     "expression": f"add({VR5D_BASE}, {_rev_dev(22)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: omn_zscore + revdev_120 (very long)
+    {"name": "r59_d0_omn_zs_revdev120",
+     "expression": f"add({OMN_ZSCORE}, {_rev_dev(120)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: omn_zscore + revdev_30 + revdev_60 + revdev_120 (multi)
+    {"name": "r59_d0_omn_zs_revdev_3win",
+     "expression": (f"add(add(add({OMN_ZSCORE}, {_rev_dev(30)}), "
+                    f"{_rev_dev(60)}), {_rev_dev(120)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: vR5d69Oz at decay=10 (smoother)
+    {"name": "r59_d0_vr5d_d10",
+     "expression": VR5D_BASE,
+     "settings": base_settings_d0(decay=10, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: vR5d69Oz at decay=12
+    {"name": "r59_d0_vr5d_d12",
+     "expression": VR5D_BASE,
+     "settings": base_settings_d0(decay=12, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: vR5d69Oz at trunc=0.04
+    {"name": "r59_d0_vr5d_t004",
+     "expression": VR5D_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 7: vR5d69Oz at trunc=0.03
+    {"name": "r59_d0_vr5d_t003",
+     "expression": VR5D_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 8: vR5d69Oz + corr_pv (microstructure)
+    {"name": "r59_d0_vr5d_plus_corrpv",
+     "expression": f"add({VR5D_BASE}, {D0_CORR_PV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: zscore(vR5d69Oz) -- double zscore wrap
+    {"name": "r59_d0_vr5d_zscore",
+     "expression": f"zscore({VR5D_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: omn_zscore + revdev_60 + revdev_250 (very long stack)
+    {"name": "r59_d0_omn_zs_revdev60_250",
+     "expression": (f"add(add({OMN_ZSCORE}, {_rev_dev(60)}), {_rev_dev(250)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4453,6 +4515,8 @@ def main():
         batch = ROUND_57
     elif args.round == 58:
         batch = ROUND_58
+    elif args.round == 59:
+        batch = ROUND_59
     else:
         log.error(f"unknown round {args.round}"); return 2
 
