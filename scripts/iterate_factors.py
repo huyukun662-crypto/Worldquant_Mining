@@ -3965,6 +3965,68 @@ ROUND_55 = [
 ]
 
 
+# =====================================================================
+# Round 56: push omnVlzY5 (SH=1.62 FIT=1.23) to FIT >= 1.3.
+# Base: 4ax (no_si) + rev_5 + scl_buzz, decay=8, MARKET, trunc=0.05.
+# Stack more orthogonal axes (corr_pv +0.04, IV_call60, ROE, ebitda_cap)
+# or wraps (zscore/winsorize). Need FIT +0.07.
+# =====================================================================
+OMN_BASE = f"add(add({BASE4_NO_SI}, {_reversal_window(5)}), {D0_SCL_BUZZ})"
+
+ROUND_56 = [
+    # 1: omn_base + corr_pv (microstructure orthogonal)
+    {"name": "r56_d0_omn_plus_corrpv",
+     "expression": f"add({OMN_BASE}, {D0_CORR_PV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: omn_base + IV_call60 (option level)
+    {"name": "r56_d0_omn_plus_iv_call60",
+     "expression": f"add({OMN_BASE}, {D0_IV_CALL60})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: omn_base + low_vol
+    {"name": "r56_d0_omn_plus_lowvol",
+     "expression": f"add({OMN_BASE}, {D0_LOW_VOL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: omn_base + ebitda_cap (R52 fundamental)
+    {"name": "r56_d0_omn_plus_ebitda_cap",
+     "expression": f"add({OMN_BASE}, {D0_EBITDA_CAP})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: omn_base + roe (R52 quality)
+    {"name": "r56_d0_omn_plus_roe",
+     "expression": f"add({OMN_BASE}, {D0_ROE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: omn_base zscore wrap (continuous redistribution)
+    {"name": "r56_d0_omn_zscore",
+     "expression": f"zscore({OMN_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: omn_base winsorize wrap
+    {"name": "r56_d0_omn_winsorize",
+     "expression": f"winsorize({OMN_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: omn_base + rev_22 (multi-window reversal)
+    {"name": "r56_d0_omn_plus_rev22",
+     "expression": f"add({OMN_BASE}, {_reversal_window(22)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: omn_base + decay=12 (reduce TO for FIT lift)
+    {"name": "r56_d0_omn_d12",
+     "expression": OMN_BASE,
+     "settings": base_settings_d0(decay=12, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: omn_base + corr_pv + iv_call60 (2 orthogonal additions)
+    {"name": "r56_d0_omn_plus_corrpv_ivcall",
+     "expression": f"add(add({OMN_BASE}, {D0_CORR_PV}), {D0_IV_CALL60})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4253,6 +4315,8 @@ def main():
         batch = ROUND_54
     elif args.round == 55:
         batch = ROUND_55
+    elif args.round == 56:
+        batch = ROUND_56
     else:
         log.error(f"unknown round {args.round}"); return 2
 
