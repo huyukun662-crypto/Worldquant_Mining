@@ -24,9 +24,13 @@ import hashlib
 import random
 from typing import List, Tuple
 
-# Building blocks - intentionally small to keep expression space tractable.
+# Building blocks - only WQ Brain pv fields actually exposed on this account
+# (verified via constants/data_fields_union_USA.json). `dollar_volume` is
+# NOT a WQ field (use multiply(close, volume) instead). The advN family on
+# WQ Brain for this account is just `adv20`; adv5/adv60/adv120 are not
+# exposed.
 FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
-          "adv5", "adv20", "adv60", "dollar_volume")
+          "cap", "sharesout", "adv20")
 
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
                "ts_std_dev", "ts_returns", "ts_decay_linear")
@@ -103,26 +107,35 @@ def generate(n: int, seed: int = 42, max_depth: int = 3) -> List[str]:
     return out
 
 
-def parameterize(expr: str, windows: dict) -> str:
-    """Replace integer literals at known positions with values from `windows`.
+def _is_standalone_int_at(expr: str, i: int) -> bool:
+    """A digit at position `i` is a standalone integer literal (not part
+    of an identifier like `adv120`) iff the preceding character is not
+    alphanumeric / underscore.
+    """
+    if i == 0:
+        return True
+    prev = expr[i - 1]
+    return not (prev.isalnum() or prev == "_")
 
-    `windows` is a dict { 0: 5, 1: 20, ... } mapping the i-th integer
-    literal occurrence (left to right) in `expr` to a new value.
+
+def parameterize(expr: str, windows: dict) -> str:
+    """Replace standalone integer literals (not embedded in identifiers
+    like `adv120`) at known positions with values from `windows`.
+
+    `windows` is a dict { 0: 5, 1: 20, ... } mapping the i-th *standalone*
+    integer literal occurrence (left to right) in `expr` to a new value.
     """
     out = []
     i = 0
-    j = 0
     n = len(expr)
     seen_ints = 0
     while i < n:
         ch = expr[i]
-        if ch.isdigit():
-            # consume integer
+        if ch.isdigit() and _is_standalone_int_at(expr, i):
             k = i
             while k < n and (expr[k].isdigit() or expr[k] == '.'):
                 k += 1
             tok = expr[i:k]
-            # replace only pure-integer tokens that are window-shaped
             if "." not in tok:
                 if seen_ints in windows:
                     tok = str(int(windows[seen_ints]))
@@ -136,14 +149,16 @@ def parameterize(expr: str, windows: dict) -> str:
 
 
 def integer_positions(expr: str) -> List[int]:
-    """Return the list of indices (0-based) of integer literals in expr."""
+    """Return the indices (0-based) of standalone integer literals in expr,
+    skipping digits embedded in identifiers like `adv120`.
+    """
     pos: List[int] = []
     seen = 0
     i = 0
     n = len(expr)
     while i < n:
         ch = expr[i]
-        if ch.isdigit():
+        if ch.isdigit() and _is_standalone_int_at(expr, i):
             k = i
             while k < n and (expr[k].isdigit() or expr[k] == '.'):
                 k += 1
@@ -151,7 +166,12 @@ def integer_positions(expr: str) -> List[int]:
             if "." not in tok:
                 pos.append(seen)
             seen += 1
+            # advance past the integer
             i = k
+        elif ch.isdigit():
+            # digit inside an identifier - skip without counting
+            while i < n and (expr[i].isdigit() or expr[i] == '.'):
+                i += 1
         else:
             i += 1
     return pos
