@@ -2733,6 +2733,79 @@ ROUND_39 = [
 ]
 
 
+# =====================================================================
+# Round 40: harden MPbKGgxr to pass the FULL WQ check set.
+# MPbKGgxr (R39#8) cleared SH>1.5 but failed WQ's submittable gate:
+#   - Sharpe 1.52 < 2.0 cutoff
+#   - Weight concentration 16.67% > 10% (on 2021-05-05)
+#   - Sub-universe Sharpe 0.60 < 0.66
+# R40 attacks all three by:
+#   - tightening truncation 0.08 -> 0.05/0.03  (concentration fix)
+#   - adding 6th/7th orthogonal axes (push SH + sub-universe robust)
+#   - winsorize wrap (clip outlier weights -> concentration)
+# Base expression is MPbKGgxr's 5-axis: pe + si + iv_ts + ebit + ivskew
+# =====================================================================
+D0_BASE5_PASS = (
+    f"add(add(add(add({D0_NEWS_PE}, {D0_NEWS_SI_POS}), {D0_IV_TS_SLOPE}), "
+    f"{D0_EST_EBIT}), {D0_IV_SKEW180})"
+)
+
+ROUND_40 = [
+    # 1: base + truncation=0.05 (concentration fix)
+    {"name": "r40_d0_base5_t005",
+     "expression": D0_BASE5_PASS,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base + truncation=0.03 (very tight cap)
+    {"name": "r40_d0_base5_t003",
+     "expression": D0_BASE5_PASS,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 3: base + SUBINDUSTRY neut (sub-universe robustness)
+    {"name": "r40_d0_base5_subind_t005",
+     "expression": D0_BASE5_PASS,
+     "settings": base_settings_d0(decay=8, neutralization="SUBINDUSTRY",
+                                  truncation=0.05)},
+    # 4: 6-axis: base + investment (R36 strongest standalone 0.87)
+    {"name": "r40_d0_base5_plus_invest_t005",
+     "expression": f"add({D0_BASE5_PASS}, {D0_INVEST})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: 6-axis: base + leverage_pos
+    {"name": "r40_d0_base5_plus_leverage_t005",
+     "expression": f"add({D0_BASE5_PASS}, {D0_LEVERAGE_POS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: 6-axis: base + book-to-market
+    {"name": "r40_d0_base5_plus_bm_t005",
+     "expression": f"add({D0_BASE5_PASS}, {D0_BOOK_MKT})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: 7-axis: base + investment + leverage_pos
+    {"name": "r40_d0_base5_plus_invest_lev_t005",
+     "expression": (
+         f"add(add({D0_BASE5_PASS}, {D0_INVEST}), {D0_LEVERAGE_POS})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: base + winsorize wrap (clip outlier weights)
+    {"name": "r40_d0_base5_winsorize",
+     "expression": f"winsorize({D0_BASE5_PASS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.08)},
+    # 9: base + winsorize + trunc=0.05 (combine fixes)
+    {"name": "r40_d0_base5_winsorize_t005",
+     "expression": f"winsorize({D0_BASE5_PASS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: 6-axis + winsorize + trunc=0.05 (max safety)
+    {"name": "r40_d0_6axis_invest_winsorize_t005",
+     "expression": f"winsorize(add({D0_BASE5_PASS}, {D0_INVEST}))",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2989,6 +3062,8 @@ def main():
         batch = ROUND_38
     elif args.round == 39:
         batch = ROUND_39
+    elif args.round == 40:
+        batch = ROUND_40
     else:
         log.error(f"unknown round {args.round}"); return 2
 
