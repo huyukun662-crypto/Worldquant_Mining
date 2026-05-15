@@ -4027,6 +4027,77 @@ ROUND_56 = [
 ]
 
 
+# =====================================================================
+# Round 57: try different reversal formulations + boost SH to ~1.67.
+# R56 best QPnEbqpW (omn_base zscore) SH=1.63 FIT=1.24. Need +0.06 FIT.
+# Linear: SH~=1.67 -> FIT~=1.3. Try alt reversal mechanics:
+#   - ts_rank(returns, 5) vs ts_rank(close, 5)
+#   - close/vwap reversal
+#   - signed_power dampening
+# =====================================================================
+def _rev_ret(w):
+    return f"-group_rank(ts_rank(returns, {w}), subindustry)"
+def _rev_cvwap(w):
+    return f"-group_rank(ts_rank(divide(close, vwap), {w}), subindustry)"
+def _rev_dev(w):
+    return f"-group_rank(divide(subtract(close, ts_mean(close, {w})), ts_std_dev(close, {w})), subindustry)"
+
+OMN_ZSCORE = f"zscore({OMN_BASE})"
+
+ROUND_57 = [
+    # 1: base4 + return-based reversal_5
+    {"name": "r57_d0_4ax_revret5",
+     "expression": f"add({BASE4_NO_SI}, {_rev_ret(5)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base4 + close/vwap reversal
+    {"name": "r57_d0_4ax_rev_cvwap",
+     "expression": f"add({BASE4_NO_SI}, {_rev_cvwap(5)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base4 + dev-from-MA reversal
+    {"name": "r57_d0_4ax_rev_dev",
+     "expression": f"add({BASE4_NO_SI}, {_rev_dev(22)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: omn_base + return reversal (extra orthogonal reversal)
+    {"name": "r57_d0_omn_plus_revret",
+     "expression": f"add({OMN_BASE}, {_rev_ret(5)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: omn_zscore + revret (zscore winner + alt reversal)
+    {"name": "r57_d0_omn_zscore_revret",
+     "expression": f"add({OMN_ZSCORE}, {_rev_ret(5)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: omn_zscore + dev reversal
+    {"name": "r57_d0_omn_zscore_revdev",
+     "expression": f"add({OMN_ZSCORE}, {_rev_dev(22)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: omn_base at trunc=0.04 (between 0.03 and 0.05)
+    {"name": "r57_d0_omn_t004",
+     "expression": OMN_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 8: omn_zscore at trunc=0.04
+    {"name": "r57_d0_omn_zscore_t004",
+     "expression": OMN_ZSCORE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 9: 4ax + ts_rank(returns, 10) + scl_buzz (alt rev + buzz)
+    {"name": "r57_d0_4ax_revret10_buzz",
+     "expression": f"add(add({BASE4_NO_SI}, {_rev_ret(10)}), {D0_SCL_BUZZ})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: base4 + close/vwap + scl_buzz (alt rev + buzz)
+    {"name": "r57_d0_4ax_revcvwap_buzz",
+     "expression": f"add(add({BASE4_NO_SI}, {_rev_cvwap(5)}), {D0_SCL_BUZZ})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4317,6 +4388,8 @@ def main():
         batch = ROUND_55
     elif args.round == 56:
         batch = ROUND_56
+    elif args.round == 57:
+        batch = ROUND_57
     else:
         log.error(f"unknown round {args.round}"); return 2
 
