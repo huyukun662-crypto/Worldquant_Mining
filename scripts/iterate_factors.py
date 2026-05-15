@@ -3903,6 +3903,68 @@ ROUND_54 = [
 ]
 
 
+# =====================================================================
+# Round 55: push FITNESS from 1.21 -> >=1.3 on xAeRPvQg/mLqZqP76 base.
+# These cleared conc, SH>=1.5, sub-SH. Only remaining FAIL: FITNESS<1.3.
+# Try: reduce TO via decay, add orthogonal axes (without losing SH),
+# trunc=0.03, alt reversal windows (3/7/8d).
+# =====================================================================
+ROUND_55 = [
+    # 1: rev_5 + decay=12 (smoother, lower TO -> higher FIT)
+    {"name": "r55_d0_4ax_rev5_d12",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(5)})",
+     "settings": base_settings_d0(decay=12, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: rev_5 + decay=16
+    {"name": "r55_d0_4ax_rev5_d16",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(5)})",
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: rev_10 + decay=12
+    {"name": "r55_d0_4ax_rev10_d12",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(10)})",
+     "settings": base_settings_d0(decay=12, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: rev_5 + corr_pv (orthogonal microstructure)
+    {"name": "r55_d0_4ax_rev5_corrpv",
+     "expression": f"add(add({BASE4_NO_SI}, {_reversal_window(5)}), {D0_CORR_PV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: rev_5 + scl_buzz
+    {"name": "r55_d0_4ax_rev5_buzz",
+     "expression": f"add(add({BASE4_NO_SI}, {_reversal_window(5)}), {D0_SCL_BUZZ})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: rev_5 + rev_10 (multi-window short reversal)
+    {"name": "r55_d0_4ax_rev5_rev10",
+     "expression": (f"add(add({BASE4_NO_SI}, {_reversal_window(5)}), "
+                    f"{_reversal_window(10)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: rev_5 + trunc=0.03 (tighter cap may lift FIT)
+    {"name": "r55_d0_4ax_rev5_t003",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(5)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 8: rev_3 (even shorter)
+    {"name": "r55_d0_4ax_rev3",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(3)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: rev_7
+    {"name": "r55_d0_4ax_rev7",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(7)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: rev_5 + rev_22 (short + medium)
+    {"name": "r55_d0_4ax_rev5_rev22",
+     "expression": (f"add(add({BASE4_NO_SI}, {_reversal_window(5)}), "
+                    f"{_reversal_window(22)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4189,6 +4251,8 @@ def main():
         batch = ROUND_53
     elif args.round == 54:
         batch = ROUND_54
+    elif args.round == 55:
+        batch = ROUND_55
     else:
         log.error(f"unknown round {args.round}"); return 2
 
