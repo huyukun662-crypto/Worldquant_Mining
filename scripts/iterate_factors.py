@@ -2561,6 +2561,60 @@ ROUND_36 = [
 ]
 
 
+# =====================================================================
+# Round 37: delay=0 stacks with the 3 R36-confirmed orthogonal axes.
+# R36 found investment/capex (SH 0.87), leverage-FLIPPED (SH 0.73) and
+# book-to-market (SH 0.72) all work standalone with tiny TO. R37 stacks
+# them onto the R33 base (tamed-news + IV + est_ebit, SH 1.12) to push
+# past the SH>1.5 gate. Leverage sign is flipped vs R36 (high leverage
+# was bullish 2019-23).
+# =====================================================================
+D0_LEVERAGE_POS = "group_rank(divide(est_netdebt, est_shequity), subindustry)"
+# 3-axis quality/value block (all R36 winners):
+D0_QV3 = f"add(add({D0_INVEST}, {D0_LEVERAGE_POS}), {D0_BOOK_MKT})"
+# full stack: R33 base + 3-axis quality/value
+D0_FULL6 = f"add({D0_R33_BASE}, {D0_QV3})"
+
+ROUND_37 = [
+    {"name": "r37_d0_base_plus_invest",
+     "expression": f"add({D0_R33_BASE}, {D0_INVEST})",
+     "settings": base_settings_d0(decay=8)},
+    {"name": "r37_d0_base_plus_leverage",
+     "expression": f"add({D0_R33_BASE}, {D0_LEVERAGE_POS})",
+     "settings": base_settings_d0(decay=8)},
+    {"name": "r37_d0_base_plus_bookmkt",
+     "expression": f"add({D0_R33_BASE}, {D0_BOOK_MKT})",
+     "settings": base_settings_d0(decay=8)},
+    {"name": "r37_d0_base_plus_invest_leverage",
+     "expression": f"add(add({D0_R33_BASE}, {D0_INVEST}), {D0_LEVERAGE_POS})",
+     "settings": base_settings_d0(decay=8)},
+    {"name": "r37_d0_full6_d4",
+     "expression": D0_FULL6, "settings": base_settings_d0(decay=4)},
+    {"name": "r37_d0_full6_d8",
+     "expression": D0_FULL6, "settings": base_settings_d0(decay=8)},
+    {"name": "r37_d0_full6_d16",
+     "expression": D0_FULL6, "settings": base_settings_d0(decay=16)},
+    {"name": "r37_d0_full6_market",
+     "expression": D0_FULL6,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET")},
+    {"name": "r37_d0_full6_sector",
+     "expression": D0_FULL6,
+     "settings": base_settings_d0(decay=8, neutralization="SECTOR")},
+    {"name": "r37_d0_qv3_standalone",
+     "expression": D0_QV3, "settings": base_settings_d0(decay=8)},
+    {"name": "r37_d0_full6_winsorize",
+     "expression": f"winsorize({D0_FULL6})",
+     "settings": base_settings_d0(decay=8)},
+    # est_ebit may overlap book-to-market (both value); test base w/o it:
+    {"name": "r37_d0_news_iv_plus_qv3",
+     "expression": (
+         f"add(add(add(-group_rank(ts_mean(news_prev_day_ret, 60), subindustry), "
+         f"{D0_IV_SKEW180}), {D0_QV3}), {D0_EST_EBIT})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET")},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2811,6 +2865,8 @@ def main():
         batch = ROUND_35
     elif args.round == 36:
         batch = ROUND_36
+    elif args.round == 37:
+        batch = ROUND_37
     else:
         log.error(f"unknown round {args.round}"); return 2
 
