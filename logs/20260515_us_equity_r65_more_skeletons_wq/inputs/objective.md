@@ -1,0 +1,1 @@
+R65: 8 more skeletons after BB plateau (full GK / range term structure / overnight gap / intraday-vs-overnight / price-vol corr / days-since-low / range expansion / close-vs-midrange). Gate: SH>=1.5 ^ TO<0.20 ^ conc+sub PASS.
