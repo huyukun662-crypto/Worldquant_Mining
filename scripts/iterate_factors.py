@@ -3668,6 +3668,89 @@ ROUND_51 = [
 ]
 
 
+# =====================================================================
+# Round 52: stack DENSE CLASSIC FUNDAMENTAL FACTORS on news-si-free base
+# to recover SH>=1.5. 660 D0 fundamental fields previously untouched
+# beyond a few (book/leverage/invest). Build EV/EBITDA, FCF yield, ROE,
+# sales/cap from high-userCount fields with ts_backfill (quarterly cov=0.5).
+# =====================================================================
+def _bf_fund(field, bf=90):
+    return f"ts_backfill({field}, {bf})"
+
+# Classic value / quality factors (group_rank w/in subindustry)
+D0_EV_EBITDA_INV = (f"-group_rank(ts_mean(divide({_bf_fund('enterprise_value')}, "
+                    f"{_bf_fund('ebitda')}), 22), subindustry)")  # cheap = long
+D0_FCF_CAP       = (f"group_rank(ts_mean(divide(subtract({_bf_fund('cashflow_op')}, "
+                    f"{_bf_fund('capex')}), cap), 22), subindustry)")
+D0_ROE           = (f"group_rank(ts_mean(divide({_bf_fund('income')}, "
+                    f"{_bf_fund('equity')}), 22), subindustry)")
+D0_SALES_CAP     = (f"group_rank(ts_mean(divide({_bf_fund('sales')}, cap), 22), "
+                    f"subindustry)")
+D0_EBITDA_CAP    = (f"group_rank(ts_mean(divide({_bf_fund('ebitda')}, cap), 22), "
+                    f"subindustry)")
+D0_OP_INC_CAP    = (f"group_rank(ts_mean(divide({_bf_fund('operating_income')}, "
+                    f"cap), 22), subindustry)")
+D0_EPS_CLOSE     = (f"group_rank(ts_mean(divide({_bf_fund('eps')}, close), 22), "
+                    f"subindustry)")
+D0_DEBT_EQUITY_INV = (f"-group_rank(ts_mean(divide({_bf_fund('debt')}, "
+                      f"{_bf_fund('equity')}), 22), subindustry)")
+
+ROUND_52 = [
+    # 1: base4_no_si + EV/EBITDA inv (5-axis)
+    {"name": "r52_d0_4ax_plus_ev_ebitda",
+     "expression": f"add({BASE4_NO_SI}, {D0_EV_EBITDA_INV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base4_no_si + FCF/cap (5-axis)
+    {"name": "r52_d0_4ax_plus_fcf",
+     "expression": f"add({BASE4_NO_SI}, {D0_FCF_CAP})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base4_no_si + ROE (5-axis quality)
+    {"name": "r52_d0_4ax_plus_roe",
+     "expression": f"add({BASE4_NO_SI}, {D0_ROE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: base4_no_si + sales/cap (revenue yield)
+    {"name": "r52_d0_4ax_plus_sales",
+     "expression": f"add({BASE4_NO_SI}, {D0_SALES_CAP})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: base4_no_si + EBITDA/cap (alt earnings yield)
+    {"name": "r52_d0_4ax_plus_ebitda_cap",
+     "expression": f"add({BASE4_NO_SI}, {D0_EBITDA_CAP})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: base4_no_si + 2 value (EV/EBITDA + FCF)
+    {"name": "r52_d0_4ax_plus_ev_fcf",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_EV_EBITDA_INV}), {D0_FCF_CAP})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: base4_no_si + ROE + sales/cap
+    {"name": "r52_d0_4ax_plus_roe_sales",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_ROE}), {D0_SALES_CAP})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: base4_no_si + 3 classic (EV/EBITDA + FCF + sales/cap)
+    {"name": "r52_d0_4ax_plus_3classic",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {D0_EV_EBITDA_INV}), "
+                    f"{D0_FCF_CAP}), {D0_SALES_CAP})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: base4_no_si + EV/EBITDA + ROE (value+quality)
+    {"name": "r52_d0_4ax_plus_ev_roe",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_EV_EBITDA_INV}), {D0_ROE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: base4_no_si + ebitda/cap + op_inc/cap + eps/close (all earnings yields)
+    {"name": "r52_d0_4ax_plus_3earnings",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {D0_EBITDA_CAP}), "
+                    f"{D0_OP_INC_CAP}), {D0_EPS_CLOSE})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3948,6 +4031,8 @@ def main():
         batch = ROUND_50
     elif args.round == 51:
         batch = ROUND_51
+    elif args.round == 52:
+        batch = ROUND_52
     else:
         log.error(f"unknown round {args.round}"); return 2
 
