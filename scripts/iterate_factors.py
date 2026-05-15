@@ -4098,6 +4098,67 @@ ROUND_57 = [
 ]
 
 
+# =====================================================================
+# Round 58: KPnkgzE8 (omn_zscore + revdev_22) SH=1.61 FIT=1.27.
+# Gap to FIT 1.3 is only 0.03. Try decay variants, trunc=0.04, alt
+# revdev windows (10/30/60), and combos to push final 0.03.
+# =====================================================================
+KPNK_BASE = f"add({OMN_ZSCORE}, {_rev_dev(22)})"
+
+ROUND_58 = [
+    # 1: KPnkgzE8 base + decay=6 (between 4 and 8)
+    {"name": "r58_d0_kpnk_d6",
+     "expression": KPNK_BASE,
+     "settings": base_settings_d0(decay=6, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: KPnkgzE8 base + decay=10
+    {"name": "r58_d0_kpnk_d10",
+     "expression": KPNK_BASE,
+     "settings": base_settings_d0(decay=10, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: KPnkgzE8 + trunc=0.04
+    {"name": "r58_d0_kpnk_t004",
+     "expression": KPNK_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 4: KPnkgzE8 + trunc=0.03
+    {"name": "r58_d0_kpnk_t003",
+     "expression": KPNK_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 5: omn_zscore + revdev_10 (shorter dev)
+    {"name": "r58_d0_omn_zs_revdev10",
+     "expression": f"add({OMN_ZSCORE}, {_rev_dev(10)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: omn_zscore + revdev_60 (longer dev)
+    {"name": "r58_d0_omn_zs_revdev60",
+     "expression": f"add({OMN_ZSCORE}, {_rev_dev(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: omn_zscore + revdev_22 + revdev_60 (multi-window dev)
+    {"name": "r58_d0_omn_zs_revdev_multi",
+     "expression": f"add(add({OMN_ZSCORE}, {_rev_dev(22)}), {_rev_dev(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: KPnkgzE8 + corr_pv
+    {"name": "r58_d0_kpnk_plus_corrpv",
+     "expression": f"add({KPNK_BASE}, {D0_CORR_PV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: KPnkgzE8 winsorize wrap
+    {"name": "r58_d0_kpnk_winsorize",
+     "expression": f"winsorize({KPNK_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: KPnkgzE8 at decay=12, trunc=0.04 (combined small tweaks)
+    {"name": "r58_d0_kpnk_d12_t004",
+     "expression": KPNK_BASE,
+     "settings": base_settings_d0(decay=12, neutralization="MARKET",
+                                  truncation=0.04)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4390,6 +4451,8 @@ def main():
         batch = ROUND_56
     elif args.round == 57:
         batch = ROUND_57
+    elif args.round == 58:
+        batch = ROUND_58
     else:
         log.error(f"unknown round {args.round}"); return 2
 
