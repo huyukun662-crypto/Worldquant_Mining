@@ -2874,6 +2874,79 @@ ROUND_41 = [
 ]
 
 
+# =====================================================================
+# Round 42: kill CONCENTRATED_WEIGHT=0.167 via ts_backfill on news fields.
+# R41 audit (10 sims) showed: 2 alphas now pass SUB_UNIVERSE_SHARPE (decay=16
+# helps), but CONCENTRATED_WEIGHT stuck at exactly 0.167 across all variants
+# regardless of outer wraps, decay, neutralization, or truncation.
+# 1/6 is suspicious -- on sparse-news days the alpha has weight on only ~6
+# names. ts_backfill(news_*, 252) carries the news signal forward across
+# non-news days, densifying the signal and (hopefully) breaking the 1/6 wall.
+# =====================================================================
+D0_NEWS_PE_BF    = ("-group_rank(ts_mean(ts_backfill(news_pe_ratio, 252), 22), "
+                    "subindustry)")
+D0_NEWS_SI_BF    = ("group_rank(ts_mean(ts_backfill(news_short_interest, 252), 22), "
+                    "subindustry)")
+D0_BASE3_BF      = (f"add(add({D0_NEWS_PE_BF}, {D0_NEWS_SI_BF}), {D0_IV_SKEW180})")
+D0_BASE5_BF      = (f"add(add(add(add({D0_NEWS_PE_BF}, {D0_NEWS_SI_BF}), "
+                    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})")
+
+ROUND_42 = [
+    # 1: 3-axis ts_backfill, decay=16, MARKET (mirrors R41 MPbK6zKL config that
+    #    cleared SUB_SH=0.88 -- now add backfill to kill concentration)
+    {"name": "r42_d0_3axis_bf_d16",
+     "expression": D0_BASE3_BF,
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: 5-axis ts_backfill, decay=16, MARKET
+    {"name": "r42_d0_5axis_bf_d16",
+     "expression": D0_BASE5_BF,
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: 3-axis ts_backfill + zscore wrap
+    {"name": "r42_d0_3axis_bf_zscore_d16",
+     "expression": f"zscore({D0_BASE3_BF})",
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: 5-axis ts_backfill + zscore wrap + SUBINDUSTRY (mirrors Jjng8ORl)
+    {"name": "r42_d0_5axis_bf_zscore_subind",
+     "expression": f"zscore({D0_BASE5_BF})",
+     "settings": base_settings_d0(decay=16, neutralization="SUBINDUSTRY",
+                                  truncation=0.05)},
+    # 5: 3-axis ts_backfill with decay=8 (less smoothing, to recover SH)
+    {"name": "r42_d0_3axis_bf_d8",
+     "expression": D0_BASE3_BF,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: 3-axis ts_backfill + decay=32 (very heavy smoothing)
+    {"name": "r42_d0_3axis_bf_d32",
+     "expression": D0_BASE3_BF,
+     "settings": base_settings_d0(decay=32, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: 5-axis ts_backfill + pasteurization=ON
+    {"name": "r42_d0_5axis_bf_pasteur",
+     "expression": D0_BASE5_BF,
+     "settings": dict(base_settings_d0(decay=16, neutralization="MARKET",
+                                       truncation=0.05),
+                      pasteurization="ON")},
+    # 8: 3-axis ts_backfill + winsorize wrap
+    {"name": "r42_d0_3axis_bf_winsorize",
+     "expression": f"winsorize({D0_BASE3_BF})",
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: 3-axis ts_backfill at trunc=0.03
+    {"name": "r42_d0_3axis_bf_t003",
+     "expression": D0_BASE3_BF,
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 10: 5-axis ts_backfill + zscore + MARKET + decay=32 (max smoothing+redistribute)
+    {"name": "r42_d0_5axis_bf_zscore_d32",
+     "expression": f"zscore({D0_BASE5_BF})",
+     "settings": base_settings_d0(decay=32, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3134,6 +3207,8 @@ def main():
         batch = ROUND_40
     elif args.round == 41:
         batch = ROUND_41
+    elif args.round == 42:
+        batch = ROUND_42
     else:
         log.error(f"unknown round {args.round}"); return 2
 
