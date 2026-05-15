@@ -1,13 +1,13 @@
 # Final viable factors — delivery
 
-23+ rounds of QuantML-port iteration + OpenAlpha port + 12-round
-obscure-datafield push = **250+ WQ Brain submissions** on USA TOP3000.
+23+ rounds of QuantML-port iteration + OpenAlpha port + 18-round
+obscure-datafield push = **280+ WQ Brain submissions** on USA TOP3000.
 
 **Gate**: `SH > 1.3` ∧ `turnover < 0.2` ∧ `fitness > 1.0` for Families A–D;
-the obscure-datafield push (Family E) was run against a stricter
+the obscure-datafield push (Families E & F) was run against a stricter
 `SH > 1.5` gate.
 
-## 11 viable factors — 5 distinct structural families
+## 14 viable factors — 6 distinct structural families
 
 ### Family A — OHLC channel statistics (3 viable members)
 | factor | shape | SH | TO | FIT | ann.ret | alpha_id |
@@ -47,12 +47,33 @@ Shape = product of two *coefficient-of-variation* signals
 | **QM_D12_05** | −CoV(milliq,150)·CoV(bap20d,150) | **1.89** | 0.04 | **2.79** | `JjnYx5bO` |
 | **QM_D12_04** | −CoV(milliq,100)·CoV(bap20d,100) @ decay=0 | **1.83** | 0.05 | **2.73** | `JjnY791A` |
 | **QM_D10_05** | −CoV(milliq,100)·CoV(bap20d,100) @ decay=4 | **1.80** | 0.05 | **2.67** | `88O7Q76V` |
+| **QM_D15_05** | −CoV(milliq)·CoV(bap20d)·CoV(cvvolp20d) (triple) | **1.74** | 0.05 | **2.61** | `WjNNXwGO` |
 | **QM_D12_02** | −CoV(milliq,100)·CoV(cvvolp20d,100) | **1.59** | 0.05 | **1.81** | `omnAqegv` |
 
 `milliq` (Amihud illiquidity) is the essential component — pairing it with a
 second liquidity-instability CoV (`bap20d` bid-ask proxy, or `cvvolp20d`
 volume-vol/price-vol ratio) clears the gate with large margin. Single-field
 CoVs cap at SH≈1.49; the *multiplicative interaction* is what breaks through.
+
+Late addition (D15): a 3-way product `CoV(milliq)·CoV(bap20d)·CoV(cvvolp20d)`
+also clears, at SH=1.74 — the multiplicative-blend structure works at arity
+2 and 3, with diminishing returns at arity 3.
+
+### Family F — Conditional-firing trade_when (NEW — obscure-datafield push)
+
+A structurally different shape than Family E: instead of multiplying two
+CoVs, wrap a SINGLE `-CoV(milliq, 100)` signal in a `trade_when(...)`
+conditional that only fires on certain days. The signal then takes a flat
+−1 stance off-gate.
+
+| factor | shape | SH | TO | FIT | alpha_id |
+|--------|-------|---:|---:|---:|----------|
+| **QM_D18_05** | trade_when(vol > ts_mean(vol,120), −CoV, −1) @ decay=0 | **1.55** | 0.04 | **1.67** | `KPnnEd7p` |
+| **QM_D18_02** | trade_when(vol > ts_mean(vol,60)·1.5, −CoV, −1) | **1.53** | 0.04 | **1.64** | `0mAA7dLv` |
+
+D17–D18 tuning grid found: stricter volume gates beat looser ones; volume
+window 60 < 120; `returns > 0` gate (SH=1.42) underperformed volume gates;
+self-referential `CoV > rolling-avg(CoV)` gate just missed at SH=1.49.
 
 ---
 
@@ -119,20 +140,48 @@ Same expression as #8 with windows W100 and `decay=4`. SH=1.80.
 Same shape as #8 but the second field is `cvvolp20d` instead of `bap20d`,
 windows W100, `decay=4`. SH=1.59.
 
-Common across all 11: `instrumentType=EQUITY, region=USA, pasteurization=ON, unitHandling=VERIFY, nanHandling=OFF, language=FASTEXPR, visualization=false, maxTrade=OFF, testPeriod=P0Y0M`.
+### #12 QM_D15_05 (Family E triple product)
+```
+-1 * ts_std_dev(mdl77_liquidityriskfactor_milliq,    100)
+   / ts_mean   (mdl77_liquidityriskfactor_milliq,    100)
+   * ts_std_dev(mdl77_liquidityriskfactor_bap20d,    100)
+   / ts_mean   (mdl77_liquidityriskfactor_bap20d,    100)
+   * ts_std_dev(mdl77_liquidityriskfactor_cvvolp20d, 100)
+   / ts_mean   (mdl77_liquidityriskfactor_cvvolp20d, 100)
+```
+`universe=TOP3000  delay=1  decay=4  neut=SUBINDUSTRY  trunc=0.05`. SH=1.74.
+
+### #13 QM_D18_05 — Family F champion (trade_when conditional)
+```
+trade_when(
+  volume > ts_mean(volume, 120),
+  -1 * ts_std_dev(mdl77_liquidityriskfactor_milliq, 100)
+     / ts_mean   (mdl77_liquidityriskfactor_milliq, 100),
+  -1
+)
+```
+`universe=TOP3000  delay=1  decay=0  neut=SUBINDUSTRY  trunc=0.05`. SH=1.55.
+
+### #14 QM_D18_02 (Family F variant)
+Same shape as #13 but gate is `volume > ts_mean(volume, 60) * 1.5` and
+`decay=4`. SH=1.53.
+
+Common across all 14: `instrumentType=EQUITY, region=USA, pasteurization=ON, unitHandling=VERIFY, nanHandling=OFF, language=FASTEXPR, visualization=false, maxTrade=OFF, testPeriod=P0Y0M`.
 
 ---
 
 ## Correlation map (qualitative; WQ async PENDING)
 
-|        | A (OHLC) | B (session) | C (vol-weighted ret) | D (peer-dist) |
-|--------|----------|-------------|----------------------|---------------|
-| **A**  | within-family **high** (same shape, varied channel) | low | medium (both use returns/body) | low |
-| **B**  | low | — | medium | low |
-| **C**  | medium | medium | — | low |
-| **D**  | low | low | low | within-family **identical** (#6=#7 same expr) |
+|        | A (OHLC) | B (session) | C (vol-weighted ret) | D (peer-dist) | E (obscure-CoV-blend) | F (trade_when) |
+|--------|----------|-------------|----------------------|---------------|-----------------------|----------------|
+| **A**  | within-family **high** | low | medium | low | **expected very low** | **expected low-medium** |
+| **B**  | low | — | medium | low | **expected very low** | **expected very low** |
+| **C**  | medium | medium | — | low | **expected very low** | **expected low** |
+| **D**  | low | low | low | identical (#6=#7) | **expected very low** | **expected very low** |
+| **E**  | very low | very low | very low | very low | within-family **high** | **expected high** (shared base CoV) |
+| **F**  | low-med | very low | low | very low | high | within-family **high** (same wrapper shape) |
 
-Family D's two members are setting variants of the same expression — they're essentially duplicates for risk management.
+Families A–D use only PV inputs; Families E–F use only `mdl77` model fields and `volume`. **Expected E↔A–D correlation is very low** — different inputs and different shape entirely. Family F shares the `CoV(milliq)` base with Family E so within-pair correlation is high, but the conditional gate decorrelates it somewhat from Family E.
 
 ---
 
@@ -149,7 +198,7 @@ Family D's two members are setting variants of the same expression — they're e
 9. **Rank/z-sum composites consistently underperformed their best component** (R3_05, R4_04, R5_02, COMP1). Cross-sectional correlations too high among related shapes.
 10. **Shapes that failed to reach SH=1.3** (across 50+ attempts): auto-correlation, coefficient of variation, sign-streak, rank-reversal, volume-shock, Sortino, Sharpe ratio, regime-vol ratio, peer-relative momentum, vol-managed return, omega gain/loss, crash frequency, vwap-deviation vol, body autocorr, range-body coupling, vol-direction asym, GK-style range vol diff, Kaufman efficiency, WVAD, close-vwap path corr, volume-weighted close-vs-mid, beta time-variation, intraday body kurtosis, conditional reversal, Z-score velocity, peer-relative idio-vol.
 
-### Obscure-datafield push (rounds D1–D12, 60 submissions)
+### Obscure-datafield push (rounds D1–D18, 90 submissions)
 
 Goal: build factors from the rarest `mdl77` model data-fields (low userCount)
 to minimise correlation with the OHLC-PV Families A–D.
@@ -180,8 +229,8 @@ to minimise correlation with the OHLC-PV Families A–D.
 - `scripts/wq_runner.py` — reusable runner.
 - `scripts/submit_quantml_r{1..23}.py` + `submit_quantml_rN.py` — 23+1 QuantML rounds.
 - `scripts/submit_quantml_{O1,F1,F2}.py` — setting-grid and fundamental rounds.
-- `scripts/submit_quantml_D{1..12}.py` — obscure-datafield push (Family E).
-- `WQ_OPENALPHA_RESULTS.json`, `WQ_QUANTML_RESULTS.json` — full submission records (250+ entries).
+- `scripts/submit_quantml_D{1..18}.py` — obscure-datafield push (Families E & F).
+- `WQ_OPENALPHA_RESULTS.json`, `WQ_QUANTML_RESULTS.json` — full submission records (280+ entries).
 - `VIABLE_FACTORS_FINAL.md` — this doc.
 
 ## Reproducing
