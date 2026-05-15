@@ -8876,5 +8876,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": true
+  },
+  {
+    "name": "r40_d0_6axis_invest_winsorize_t005",
+    "expression": "winsorize(add(add(add(add(add(-group_rank(ts_mean(news_pe_ratio, 22), subindustry), group_rank(ts_mean(news_short_interest, 22), subindustry)), group_rank(ts_mean(subtract(implied_volatility_mean_skew_30, implied_volatility_mean_skew_360), 22), subindustry)), group_rank(ts_mean(divide(est_ebit, cap), 22), subindustry)), group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)), -group_rank(divide(est_capex, est_tot_assets), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "MARKET",
+      "truncation": 0.05,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "d5nE1nLE",
+    "sharpe": 0.98,
+    "turnover": 0.1269,
+    "fitness": 0.77,
+    "returns": 0.0788,
+    "drawdown": 0.0726,
+    "longCount": 304,
+    "shortCount": 322,
+    "checks_passed": 3,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
