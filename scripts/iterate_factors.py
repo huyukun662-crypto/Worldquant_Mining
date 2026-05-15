@@ -3297,6 +3297,65 @@ ROUND_46 = [
 ]
 
 
+# =====================================================================
+# Round 47: thread the needle between R46 #2 (SH=1.57 conc=0.150) and
+# R46 #3 (SH=1.22 conc=0.10 EXACT). Need conc<0.1 AND SH>=1.5.
+# Fine-grain ts_mean window 160-200d + decay tweaks.
+# =====================================================================
+ROUND_47 = [
+    # 1: mean=160, bf=60 (between 120 and 252)
+    {"name": "r47_d0_5axis_mean160_bf60",
+     "expression": _base5_v2(60, 160),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: mean=180, bf=60
+    {"name": "r47_d0_5axis_mean180_bf60",
+     "expression": _base5_v2(60, 180),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: mean=200, bf=60
+    {"name": "r47_d0_5axis_mean200_bf60",
+     "expression": _base5_v2(60, 200),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: mean=220, bf=60
+    {"name": "r47_d0_5axis_mean220_bf60",
+     "expression": _base5_v2(60, 220),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: mean=252, bf=60, decay=4 (less local smoothing, recover SH)
+    {"name": "r47_d0_5axis_mean252_bf60_d4",
+     "expression": _base5_v2(60, 252),
+     "settings": base_settings_d0(decay=4, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: mean=252, bf=60, decay=12
+    {"name": "r47_d0_5axis_mean252_bf60_d12",
+     "expression": _base5_v2(60, 252),
+     "settings": base_settings_d0(decay=12, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: mean=200, bf=90
+    {"name": "r47_d0_5axis_mean200_bf90",
+     "expression": _base5_v2(90, 200),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: mean=180, bf=120
+    {"name": "r47_d0_5axis_mean180_bf120",
+     "expression": _base5_v2(120, 180),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: mean=200, bf=60, trunc=0.03 (denser signal + tighter cap)
+    {"name": "r47_d0_5axis_mean200_bf60_t003",
+     "expression": _base5_v2(60, 200),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 10: mean=180, bf=60, decay=4
+    {"name": "r47_d0_5axis_mean180_bf60_d4",
+     "expression": _base5_v2(60, 180),
+     "settings": base_settings_d0(decay=4, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3567,6 +3626,8 @@ def main():
         batch = ROUND_45
     elif args.round == 46:
         batch = ROUND_46
+    elif args.round == 47:
+        batch = ROUND_47
     else:
         log.error(f"unknown round {args.round}"); return 2
 
