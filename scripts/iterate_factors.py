@@ -3117,6 +3117,91 @@ ROUND_44 = [
 ]
 
 
+# =====================================================================
+# Round 45: push conc 0.125 -> <=0.1 on R44#3 (P0nwkX8M).
+# Best candidate: P0nwkX8M = 5-axis bf BOTH news (90d), MARKET, decay=8,
+# trunc=0.05. SH=1.53 FIT=1.45 sub-SH=1.18. Only blocker: conc=0.125 (=1/8).
+# Need 0.025 more density. Try: longer backfill windows (120/150),
+# ts_backfill on est_ebit too, alternative wraps. R44 showed dilution by
+# axes makes it WORSE so stay 5-axis.
+# =====================================================================
+def _bf_ebit(window=60):
+    return (f"group_rank(ts_mean(divide(ts_backfill(est_ebit, {window}), cap), 22), "
+            f"subindustry)")
+
+def _bf_iv_skew(window=60):
+    return (f"group_rank(ts_mean(ts_backfill(implied_volatility_mean_skew_180, "
+            f"{window}), 22), subindustry)")
+
+def _bf_iv_ts(window=60):
+    return (f"group_rank(ts_mean(ts_backfill(subtract("
+            f"implied_volatility_mean_skew_30, implied_volatility_mean_skew_360), "
+            f"{window}), 22), subindustry)")
+
+def _base5_bf_both(window=90, ebit_bf=None, iv_bf=None):
+    pe = _bf_pe(window)
+    si = _bf_si(window)
+    ebit = _bf_ebit(ebit_bf) if ebit_bf else D0_EST_EBIT
+    iv_skew = _bf_iv_skew(iv_bf) if iv_bf else D0_IV_SKEW180
+    iv_ts = _bf_iv_ts(iv_bf) if iv_bf else D0_IV_TS_SLOPE
+    return f"add(add(add(add({pe}, {si}), {iv_ts}), {ebit}), {iv_skew})"
+
+ROUND_45 = [
+    # 1: bf news 120, no ebit bf (mid window)
+    {"name": "r45_d0_5axis_bf_both120",
+     "expression": _base5_bf_both(120),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: bf news 150, no ebit bf
+    {"name": "r45_d0_5axis_bf_both150",
+     "expression": _base5_bf_both(150),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: bf news 90 + bf ebit 60
+    {"name": "r45_d0_5axis_bf_news90_ebit60",
+     "expression": _base5_bf_both(90, ebit_bf=60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: bf news 120 + bf ebit 60
+    {"name": "r45_d0_5axis_bf_news120_ebit60",
+     "expression": _base5_bf_both(120, ebit_bf=60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: bf news 120 + bf ALL (ebit+iv 60d)
+    {"name": "r45_d0_5axis_bf_all",
+     "expression": _base5_bf_both(120, ebit_bf=60, iv_bf=60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: bf news 120 + zscore wrap (continuous redistribution)
+    {"name": "r45_d0_5axis_bf120_zscore",
+     "expression": f"zscore({_base5_bf_both(120)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: bf news 120 + normalize wrap
+    {"name": "r45_d0_5axis_bf120_normalize",
+     "expression": f"normalize({_base5_bf_both(120)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: bf news 120 + universe TOP1000 (denser universe)
+    {"name": "r45_d0_5axis_bf120_top1000",
+     "expression": _base5_bf_both(120),
+     "settings": dict(base_settings_d0(decay=8, neutralization="MARKET",
+                                       truncation=0.05),
+                      universe="TOP1000")},
+    # 9: bf news 120 + decay=16 (heavier smoothing)
+    {"name": "r45_d0_5axis_bf120_d16",
+     "expression": _base5_bf_both(120),
+     "settings": base_settings_d0(decay=16, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: bf news 120 + pasteurization=ON
+    {"name": "r45_d0_5axis_bf120_pasteur",
+     "expression": _base5_bf_both(120),
+     "settings": dict(base_settings_d0(decay=8, neutralization="MARKET",
+                                       truncation=0.05),
+                      pasteurization="ON")},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3383,6 +3468,8 @@ def main():
         batch = ROUND_43
     elif args.round == 44:
         batch = ROUND_44
+    elif args.round == 45:
+        batch = ROUND_45
     else:
         log.error(f"unknown round {args.round}"); return 2
 
