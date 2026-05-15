@@ -3356,6 +3356,84 @@ ROUND_47 = [
 ]
 
 
+# =====================================================================
+# Round 48: break 1/8 conc wall via drop-one-axis tests + dense sentiment
+# proxies. R47 confirmed conc=0.125 (=1/8) wall persists with all 5
+# axes regardless of mean/bf windows; SH-vs-conc tradeoff is steep.
+# Two strategies:
+#   A) drop-one-axis (5 sims): identify which axis spikes conc
+#   B) replace sparse news_si with dense socialmedia (cov=1.0):
+#      scl12_sentiment, snt_buzz, snt_value
+# Base: LLnnnoo9 config (mean=200, bf=90, MARKET, decay=8, trunc=0.05)
+# =====================================================================
+def _pe_v3():    return "-group_rank(ts_mean(ts_backfill(news_pe_ratio, 90), 200), subindustry)"
+def _si_v3():    return "group_rank(ts_mean(ts_backfill(news_short_interest, 90), 200), subindustry)"
+def _ivts_v3():  return D0_IV_TS_SLOPE
+def _ebit_v3(): return D0_EST_EBIT
+def _ivskew_v3(): return D0_IV_SKEW180
+
+# Dense sentiment proxies (cov=1.0)
+D0_SENT_DENSE   = "-group_rank(ts_mean(scl12_sentiment, 60), subindustry)"
+D0_SENT_NEG     = "group_rank(ts_mean(snt_value, 60), subindustry)"
+D0_SENT_BUZZ    = "group_rank(ts_mean(snt_buzz, 60), subindustry)"
+
+ROUND_48 = [
+    # 1: drop news_pe (4-axis: si, iv_ts, ebit, ivskew)
+    {"name": "r48_d0_drop_pe",
+     "expression": f"add(add(add({_si_v3()}, {_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: drop news_si (4-axis: pe, iv_ts, ebit, ivskew)
+    {"name": "r48_d0_drop_si",
+     "expression": f"add(add(add({_pe_v3()}, {_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: drop iv_ts (4-axis)
+    {"name": "r48_d0_drop_ivts",
+     "expression": f"add(add(add({_pe_v3()}, {_si_v3()}), {_ebit_v3()}), {_ivskew_v3()})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: drop est_ebit (4-axis)
+    {"name": "r48_d0_drop_ebit",
+     "expression": f"add(add(add({_pe_v3()}, {_si_v3()}), {_ivts_v3()}), {_ivskew_v3()})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: drop iv_skew (4-axis)
+    {"name": "r48_d0_drop_ivskew",
+     "expression": f"add(add(add({_pe_v3()}, {_si_v3()}), {_ivts_v3()}), {_ebit_v3()})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: REPLACE news_si with scl12_sentiment (dense)
+    {"name": "r48_d0_si_to_scl_sent",
+     "expression": (f"add(add(add(add({_pe_v3()}, {D0_SENT_DENSE}), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: REPLACE news_si with snt_value (dense)
+    {"name": "r48_d0_si_to_snt_value",
+     "expression": (f"add(add(add(add({_pe_v3()}, {D0_SENT_NEG}), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: REPLACE news_si with snt_buzz
+    {"name": "r48_d0_si_to_snt_buzz",
+     "expression": (f"add(add(add(add({_pe_v3()}, {D0_SENT_BUZZ}), "
+                    f"{_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: ADD scl12_sentiment as 6th axis (keep all 5 originals)
+    {"name": "r48_d0_5axis_plus_scl_sent",
+     "expression": (f"add({_base5_v2(90, 200)}, {D0_SENT_DENSE})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: ADD snt_buzz as 6th axis
+    {"name": "r48_d0_5axis_plus_snt_buzz",
+     "expression": (f"add({_base5_v2(90, 200)}, {D0_SENT_BUZZ})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3628,6 +3706,8 @@ def main():
         batch = ROUND_46
     elif args.round == 47:
         batch = ROUND_47
+    elif args.round == 48:
+        batch = ROUND_48
     else:
         log.error(f"unknown round {args.round}"); return 2
 
