@@ -81769,5 +81769,47 @@
         ]
       }
     ]
+  },
+  {
+    "id": "QM_NCO_05",
+    "category": "new-high-gate-trade_when",
+    "idea": "Family F with 20-day-new-high gate (no close/open).",
+    "original": "trade_when(high>ts_delay(ts_max(high,20),1),-CoV(milliq),-1)",
+    "expression": "trade_when(high > ts_delay(ts_max(high, 20), 1), -1 * ts_std_dev(mdl77_liquidityriskfactor_milliq, 100) / ts_mean(mdl77_liquidityriskfactor_milliq, 100), -1)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 0,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "simulation",
+    "status": "ERROR",
+    "message": "Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "Ld5Zn7Dw5a9aWQ63TLI0Ck",
+      "type": "REGULAR",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 27,
+        "end": 43,
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      }
+    }
   }
 ]
