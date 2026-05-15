@@ -1,0 +1,290 @@
+[
+  {
+    "variant": "AA_amihud_illiq_rev",
+    "expression": "zscore(ts_decay_linear(reverse(ts_mean(divide(abs(returns), add(multiply(close, volume), 1)), 20)), 30))",
+    "ok": false,
+    "stage": "sim",
+    "error": "WARNING: Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:2,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "BB_gk_range_rev",
+    "expression": "zscore(ts_decay_linear(reverse(ts_mean(signed_power(log(divide(high, low)), 2), 20)), 30))",
+    "ok": true,
+    "alpha_id": "O0nnvAMR",
+    "sharpe": 1.31,
+    "turnover": 0.0526,
+    "fitness": 2.38,
+    "returns": 0.413,
+    "drawdown": 0.729,
+    "longCount": 1999,
+    "shortCount": 1072,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.31
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.38
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0526
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0526
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.57,
+        "value": 0.93
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "CC_skew_returns_rev",
+    "expression": "zscore(ts_decay_linear(reverse(ts_skewness(returns, 20)), 30))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "DD_drawdown60_rev",
+    "expression": "zscore(ts_decay_linear(reverse(divide(subtract(close, ts_max(close, 60)), ts_max(close, 60))), 30))",
+    "ok": false,
+    "stage": "sim",
+    "error": "ERROR: Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "variant": "EE_vol_of_vol_rev",
+    "expression": "zscore(ts_decay_linear(reverse(ts_std_dev(ts_std_dev(returns, 5), 40)), 30))",
+    "ok": true,
+    "alpha_id": "vR550MlG",
+    "sharpe": 0.6,
+    "turnover": 0.0438,
+    "fitness": 0.55,
+    "returns": 0.1036,
+    "drawdown": 0.4481,
+    "longCount": 1938,
+    "shortCount": 1133,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.6
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.55
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0438
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0438
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.26,
+        "value": 0.51
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "FF_rolling_self_sharpe",
+    "expression": "zscore(ts_decay_linear(divide(ts_mean(returns, 20), add(ts_std_dev(returns, 20), 0.001)), 30))",
+    "ok": true,
+    "alpha_id": "N1nnMQOE",
+    "sharpe": -0.22,
+    "turnover": 0.0843,
+    "fitness": -0.11,
+    "returns": -0.0303,
+    "drawdown": 0.341,
+    "longCount": 1523,
+    "shortCount": 1548,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": -0.22
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": -0.11
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0843
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0843
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": -0.1,
+        "value": 0.3
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "GG_price_vwap_gap_rev",
+    "expression": "zscore(ts_decay_linear(reverse(divide(subtract(close, vwap), vwap)), 30))",
+    "ok": true,
+    "alpha_id": "e7nnAZop",
+    "sharpe": 0.03,
+    "turnover": 0.1362,
+    "fitness": 0.0,
+    "returns": 0.0032,
+    "drawdown": 0.4195,
+    "longCount": 1498,
+    "shortCount": 1571,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.03
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1362
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1362
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.01,
+        "value": -0.05
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "variant": "HH_directional_efficiency",
+    "expression": "zscore(ts_decay_linear(multiply(ts_delta(close, 20), divide(abs(ts_delta(close, 20)), add(ts_sum(abs(ts_delta(close, 1)), 20), 0.001))), 30))",
+    "ok": false,
+    "stage": "sim",
+    "error": "WARNING: Incompatible unit for input of \"add\" at index 1, expected \"Unit[TSPrice:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  }
+]
