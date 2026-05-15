@@ -2505,6 +2505,62 @@ ROUND_35 = [
 ]
 
 
+# =====================================================================
+# Round 36: delay=0 QUALITY/PROFITABILITY axes. R32-R35 hit a ~1.12
+# ceiling because every low-TO D0 signal was a collinear "earnings
+# yield" (est_X / cap). R36 builds RATIOS of estimate fields that are
+# structurally orthogonal to earnings-yield:
+#   - forward ROA          est_ebit / est_tot_assets   (profitability)
+#   - gross profitability  est_grossincome / est_tot_assets (Novy-Marx)
+#   - investment/capex     est_capex / est_tot_assets   (asset growth)
+#   - leverage             est_netdebt / est_shequity
+#   - book-to-market       est_bookvalue_ps / close
+#   - SGA efficiency       est_sga / est_grossincome
+#   - cash conversion      est_cashflow_op / est_ebit   (earnings quality)
+#   - goodwill burden      est_tot_goodwill / est_tot_assets
+# Items 1-8 calibrate standalone; 9-10 stack the quality axes onto the
+# best R33 base (tamed-news + IV + est_ebit).
+# =====================================================================
+D0_FWD_ROA    = "group_rank(divide(est_ebit, est_tot_assets), subindustry)"
+D0_GROSS_PROF = "group_rank(divide(est_grossincome, est_tot_assets), subindustry)"
+D0_INVEST     = "-group_rank(divide(est_capex, est_tot_assets), subindustry)"
+D0_LEVERAGE   = "-group_rank(divide(est_netdebt, est_shequity), subindustry)"
+D0_BOOK_MKT   = "group_rank(divide(est_bookvalue_ps, close), subindustry)"
+D0_SGA_EFF    = "-group_rank(divide(est_sga, est_grossincome), subindustry)"
+D0_CASH_CONV  = "group_rank(divide(est_cashflow_op, est_ebit), subindustry)"
+D0_GOODWILL   = "-group_rank(divide(est_tot_goodwill, est_tot_assets), subindustry)"
+
+ROUND_36 = [
+    {"name": "r36_d0_fwd_roa",       "expression": D0_FWD_ROA,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_gross_prof",    "expression": D0_GROSS_PROF,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_investment",    "expression": D0_INVEST,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_leverage",      "expression": D0_LEVERAGE,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_book_market",   "expression": D0_BOOK_MKT,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_sga_efficiency","expression": D0_SGA_EFF,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_cash_conversion","expression": D0_CASH_CONV,
+     "settings": base_settings_d0()},
+    {"name": "r36_d0_goodwill_burden","expression": D0_GOODWILL,
+     "settings": base_settings_d0()},
+    # 9: R33 base + forward ROA + gross profitability (quality stack)
+    {"name": "r36_d0_base_plus_quality",
+     "expression": f"add(add({D0_R33_BASE}, {D0_FWD_ROA}), {D0_GROSS_PROF})",
+     "settings": base_settings_d0(decay=16)},
+    # 10: R33 base + ROA + gross prof + book-to-market (quality + value)
+    {"name": "r36_d0_base_plus_quality_bm",
+     "expression": (
+         f"add(add(add({D0_R33_BASE}, {D0_FWD_ROA}), {D0_GROSS_PROF}), "
+         f"{D0_BOOK_MKT})"
+     ),
+     "settings": base_settings_d0(decay=16)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2753,6 +2809,8 @@ def main():
         batch = ROUND_34
     elif args.round == 35:
         batch = ROUND_35
+    elif args.round == 36:
+        batch = ROUND_36
     else:
         log.error(f"unknown round {args.round}"); return 2
 
