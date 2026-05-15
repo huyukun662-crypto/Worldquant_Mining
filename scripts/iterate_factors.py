@@ -3434,6 +3434,75 @@ ROUND_48 = [
 ]
 
 
+# =====================================================================
+# Round 49: recover SH>=1.5 on news-si-free base (conc-clean).
+# R48 confirmed news_short_interest IS the concentrator. Dropping it
+# (N1nnrM98) gives C_WEIGHT=PASS but SH=1.16. Need +0.4 SH via dense
+# axis additions: invest (R36 0.87), leverage (0.73), book/market (0.72),
+# dividend, scl12_sentiment (dense socialmedia), snt_buzz, etc.
+# Base = 4-axis (bf_pe + iv_ts + est_ebit + iv_skew) at mean=200, bf=90.
+# =====================================================================
+BASE4_NO_SI = f"add(add(add({_pe_v3()}, {_ivts_v3()}), {_ebit_v3()}), {_ivskew_v3()})"
+
+ROUND_49 = [
+    # 1: base + invest (5-axis)
+    {"name": "r49_d0_4ax_plus_invest",
+     "expression": f"add({BASE4_NO_SI}, {D0_INVEST})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base + invest + leverage (6-axis)
+    {"name": "r49_d0_4ax_plus_invest_lev",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_INVEST}), {D0_LEVERAGE_POS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base + invest + leverage + bm (7-axis dense)
+    {"name": "r49_d0_4ax_plus_invest_lev_bm",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {D0_INVEST}), "
+                    f"{D0_LEVERAGE_POS}), {D0_BOOK_MKT})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: base + scl12_sentiment (5-axis with sentiment)
+    {"name": "r49_d0_4ax_plus_sclsent",
+     "expression": f"add({BASE4_NO_SI}, {D0_SENT_DENSE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: base + scl_sent + invest (6-axis)
+    {"name": "r49_d0_4ax_plus_sclsent_invest",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_SENT_DENSE}), {D0_INVEST})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: base + snt_buzz + leverage
+    {"name": "r49_d0_4ax_plus_buzz_lev",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_SENT_BUZZ}), {D0_LEVERAGE_POS})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: base + 4 dense (invest + lev + bm + scl_sent) -- 8-axis
+    {"name": "r49_d0_4ax_plus_4dense",
+     "expression": (f"add(add(add(add({BASE4_NO_SI}, {D0_INVEST}), "
+                    f"{D0_LEVERAGE_POS}), {D0_BOOK_MKT}), {D0_SENT_DENSE})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: base + snt_value (negative sentiment, short-side proxy) + invest
+    {"name": "r49_d0_4ax_plus_sntval_invest",
+     "expression": f"add(add({BASE4_NO_SI}, {D0_SENT_NEG}), {D0_INVEST})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: 4ax + invest + lev + dividend_yield
+    {"name": "r49_d0_4ax_plus_invest_lev_div",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {D0_INVEST}), "
+                    f"{D0_LEVERAGE_POS}), {D0_DIV_YIELD})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: 4ax + 3 dense + IV_skew at different window (30d)
+    {"name": "r49_d0_4ax_plus_invest_lev_bm_alt",
+     "expression": (f"add(add(add(add({BASE4_NO_SI}, {D0_INVEST}), "
+                    f"{D0_LEVERAGE_POS}), {D0_BOOK_MKT}), "
+                    f"group_rank(ts_mean(implied_volatility_mean_skew_30, 22), subindustry))"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3708,6 +3777,8 @@ def main():
         batch = ROUND_47
     elif args.round == 48:
         batch = ROUND_48
+    elif args.round == 49:
+        batch = ROUND_49
     else:
         log.error(f"unknown round {args.round}"); return 2
 
