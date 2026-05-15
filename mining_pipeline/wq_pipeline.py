@@ -49,7 +49,7 @@ VENDOR = REPO / "vendor" / "worldquant-miner"
 # template reuse).
 SETTING_SPACE = {
     "universe":       ["TOP3000", "TOP1000", "TOP500", "TOP200"],
-    "delay":          [1],  # this account has no delay-0 access
+    "delay":          [1],  # overridden by --delay CLI flag; D0 verified available 2026-05
     "decay":          [0, 4, 8, 16, 32, 64],
     "truncation":     [0.01, 0.05, 0.08, 0.10],
     "neutralization": ["NONE", "MARKET", "INDUSTRY", "SUBINDUSTRY", "SECTOR"],
@@ -212,7 +212,13 @@ def main():
     ap.add_argument("--seed", type=int, default=37)
     ap.add_argument("--max-depth", type=int, default=3)
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
+    ap.add_argument("--delay", type=int, choices=[0, 1], default=None,
+                     help="Restrict simulation delay (0 or 1). Default: search both.")
     args = ap.parse_args()
+
+    if args.delay is not None:
+        SETTING_SPACE["delay"] = [args.delay]
+        log.info(f"delay locked to {args.delay} via --delay")
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
