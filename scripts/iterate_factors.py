@@ -2947,6 +2947,89 @@ ROUND_42 = [
 ]
 
 
+# =====================================================================
+# Round 43: tighten ts_backfill window to recover SH >= 1.5.
+# R42 confirmed ts_backfill is the right lever -- it fixed SUB_UNIVERSE_SH
+# (all >= 0.65, most > 1.0) and dropped CONCENTRATED_WEIGHT from 0.167 to
+# 0.125 (one variant hit 0.10). But 252-day backfill over-smoothed and
+# killed SH (1.22-1.40, was 1.5+). R43 uses 60/120-day backfill to find
+# the SH-vs-concentration sweet spot.
+# Best R42: 0mAe6aAq SH=1.40 conc=0.125 sub=0.85 (need SH+0.10, conc-0.025).
+# =====================================================================
+def _bf_pe(window=60):
+    return (f"-group_rank(ts_mean(ts_backfill(news_pe_ratio, {window}), 22), "
+            f"subindustry)")
+
+def _bf_si(window=60):
+    return (f"group_rank(ts_mean(ts_backfill(news_short_interest, {window}), 22), "
+            f"subindustry)")
+
+def _base5_bf(window=60):
+    return (f"add(add(add(add({_bf_pe(window)}, {_bf_si(window)}), "
+            f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})")
+
+ROUND_43 = [
+    # 1: 5-axis bf=60, d=8 MARKET (light backfill)
+    {"name": "r43_d0_5axis_bf60_d8",
+     "expression": _base5_bf(60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: 5-axis bf=120, d=8 MARKET
+    {"name": "r43_d0_5axis_bf120_d8",
+     "expression": _base5_bf(120),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: 5-axis bf=30, d=8 MARKET (very light)
+    {"name": "r43_d0_5axis_bf30_d8",
+     "expression": _base5_bf(30),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: 5-axis bf=60, d=8, trunc=0.03 (denser signal + tighter cap)
+    {"name": "r43_d0_5axis_bf60_d8_t003",
+     "expression": _base5_bf(60),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 5: 5-axis: backfill ONLY pe (60d), si stays direct
+    {"name": "r43_d0_5axis_bf_pe_only",
+     "expression": (
+         f"add(add(add(add({_bf_pe(60)}, {D0_NEWS_SI_POS}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: 5-axis: backfill ONLY si (60d), pe direct
+    {"name": "r43_d0_5axis_bf_si_only",
+     "expression": (
+         f"add(add(add(add({D0_NEWS_PE}, {_bf_si(60)}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: 7-axis bf=60 + book-to-market + leverage (more axes dilute conc)
+    {"name": "r43_d0_7axis_bf60",
+     "expression": (
+         f"add(add({_base5_bf(60)}, {D0_BOOK_MKT}), {D0_LEVERAGE_POS})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: 5-axis bf=60, d=4 (less decay, recover SH)
+    {"name": "r43_d0_5axis_bf60_d4",
+     "expression": _base5_bf(60),
+     "settings": base_settings_d0(decay=4, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: 5-axis bf=60 + winsorize wrap (max conc fix)
+    {"name": "r43_d0_5axis_bf60_winsorize",
+     "expression": f"winsorize({_base5_bf(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: 5-axis bf=120 + d=16 + SUBINDUSTRY (alt path)
+    {"name": "r43_d0_5axis_bf120_subind_d16",
+     "expression": _base5_bf(120),
+     "settings": base_settings_d0(decay=16, neutralization="SUBINDUSTRY",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3209,6 +3292,8 @@ def main():
         batch = ROUND_41
     elif args.round == 42:
         batch = ROUND_42
+    elif args.round == 43:
+        batch = ROUND_43
     else:
         log.error(f"unknown round {args.round}"); return 2
 
