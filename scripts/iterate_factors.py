@@ -3836,6 +3836,73 @@ ROUND_53 = [
 ]
 
 
+# =====================================================================
+# Round 54: STACK reversal with other working dense axes from R53 to
+# break SH 1.40 -> 1.5 ceiling on news-si-free base.
+# R53 lifts: reversal +0.24, scl_buzz +0.09, corr_pv +0.04 (all PASS conc)
+# =====================================================================
+def _reversal_window(w):
+    return f"-group_rank(ts_rank(close, {w}), subindustry)"
+
+ROUND_54 = [
+    # 1: base4 + reversal_22 + scl_buzz (top 2 R53 lifts)
+    {"name": "r54_d0_4ax_rev22_buzz",
+     "expression": f"add(add({BASE4_NO_SI}, {_reversal_window(22)}), {D0_SCL_BUZZ})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base4 + reversal_22 + corr_pv
+    {"name": "r54_d0_4ax_rev22_corrpv",
+     "expression": f"add(add({BASE4_NO_SI}, {_reversal_window(22)}), {D0_CORR_PV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base4 + reversal_22 + scl_buzz + corr_pv (3-stack)
+    {"name": "r54_d0_4ax_rev22_buzz_corr",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {_reversal_window(22)}), "
+                    f"{D0_SCL_BUZZ}), {D0_CORR_PV})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: base4 + reversal_5d (very short)
+    {"name": "r54_d0_4ax_rev5",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(5)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: base4 + reversal_10d
+    {"name": "r54_d0_4ax_rev10",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(10)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: base4 + reversal_60d (longer)
+    {"name": "r54_d0_4ax_rev60",
+     "expression": f"add({BASE4_NO_SI}, {_reversal_window(60)})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: base4 + reversal_22 + ROE + sales (R52 best pair)
+    {"name": "r54_d0_4ax_rev_roe_sales",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {_reversal_window(22)}), "
+                    f"{D0_ROE}), {D0_SALES_CAP})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: base4 + multi-window reversal (5+22+60)
+    {"name": "r54_d0_4ax_rev5_22_60",
+     "expression": (f"add(add(add({BASE4_NO_SI}, {_reversal_window(5)}), "
+                    f"{_reversal_window(22)}), {_reversal_window(60)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: 4ax + reversal + 3 dense (scl_buzz + corr_pv + IV_call60)
+    {"name": "r54_d0_4ax_rev_3dense",
+     "expression": (f"add(add(add(add({BASE4_NO_SI}, {_reversal_window(22)}), "
+                    f"{D0_SCL_BUZZ}), {D0_CORR_PV}), {D0_IV_CALL60})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: 4ax + reversal_22 + reversal_60 (combined windows)
+    {"name": "r54_d0_4ax_rev22_rev60",
+     "expression": (f"add(add({BASE4_NO_SI}, {_reversal_window(22)}), "
+                    f"{_reversal_window(60)})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4120,6 +4187,8 @@ def main():
         batch = ROUND_52
     elif args.round == 53:
         batch = ROUND_53
+    elif args.round == 54:
+        batch = ROUND_54
     else:
         log.error(f"unknown round {args.round}"); return 2
 
