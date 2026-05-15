@@ -4290,6 +4290,68 @@ ROUND_60 = [
 ]
 
 
+# =====================================================================
+# Round 61: combine R60 winners. GrnoPZlx (vR5d+news_pct_120min) SH=1.71
+# FIT=1.46 and XgkKrRzm (vR5d+snt_value) SH=1.64 FIT=1.49. Stack both,
+# add buyback, try decay/trunc tweaks on these new ceilings.
+# =====================================================================
+GRNO_BASE = f"add({VR5D_BASE}, {D0_NEWS_DRIFT})"
+XGKK_BASE = f"add({VR5D_BASE}, {D0_SNT_VAL})"
+
+ROUND_61 = [
+    # 1: vR5d + news_pct_120min + snt_value (stack both R60 winners)
+    {"name": "r61_d0_vr5d_news_snt",
+     "expression": f"add({GRNO_BASE}, {D0_SNT_VAL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: GrnoPZlx + buyback
+    {"name": "r61_d0_grno_plus_buyback",
+     "expression": f"add({GRNO_BASE}, {D0_BUYBACK})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: XgkKrRzm + buyback
+    {"name": "r61_d0_xgkk_plus_buyback",
+     "expression": f"add({XGKK_BASE}, {D0_BUYBACK})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: GrnoPZlx at decay=10
+    {"name": "r61_d0_grno_d10",
+     "expression": GRNO_BASE,
+     "settings": base_settings_d0(decay=10, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: XgkKrRzm at decay=10
+    {"name": "r61_d0_xgkk_d10",
+     "expression": XGKK_BASE,
+     "settings": base_settings_d0(decay=10, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: GrnoPZlx at trunc=0.04
+    {"name": "r61_d0_grno_t004",
+     "expression": GRNO_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 7: XgkKrRzm at trunc=0.04
+    {"name": "r61_d0_xgkk_t004",
+     "expression": XGKK_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.04)},
+    # 8: Combined news_snt + buyback (3 new axes on vR5d)
+    {"name": "r61_d0_vr5d_3new_axes",
+     "expression": f"add(add({GRNO_BASE}, {D0_SNT_VAL}), {D0_BUYBACK})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: GrnoPZlx zscore wrap (re-normalize after add)
+    {"name": "r61_d0_grno_zscore",
+     "expression": f"zscore({GRNO_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: news_pct_120min + snt_value WITHOUT revdev_60 (test if rev needed)
+    {"name": "r61_d0_omn_zs_news_snt",
+     "expression": (f"add(add({OMN_ZSCORE}, {D0_NEWS_DRIFT}), {D0_SNT_VAL})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4588,6 +4650,8 @@ def main():
         batch = ROUND_59
     elif args.round == 60:
         batch = ROUND_60
+    elif args.round == 61:
+        batch = ROUND_61
     else:
         log.error(f"unknown round {args.round}"); return 2
 
