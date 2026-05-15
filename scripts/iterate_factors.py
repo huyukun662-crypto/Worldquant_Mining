@@ -3030,6 +3030,93 @@ ROUND_43 = [
 ]
 
 
+# =====================================================================
+# Round 44: dilute CONCENTRATED_WEIGHT on KPnXpmmg (SH=1.77, conc=0.167).
+# KPnXpmmg uses backfill on news_pe ONLY, leaving sparse news_short_interest
+# to cause 1/6 concentration spikes. R44 strategies:
+#   A. backfill BOTH news fields at moderate window (60/90)
+#   B. add 3 dense axes (book/leverage/invest) to spread positions
+#   C. wrap zscore/winsorize, trunc=0.03
+# =====================================================================
+KPNX_BASE = (
+    f"add(add(add(add({_bf_pe(60)}, {D0_NEWS_SI_POS}), "
+    f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+)
+
+ROUND_44 = [
+    # 1: KPnXpmmg + book + leverage + invest (8-axis, dilute conc)
+    {"name": "r44_d0_kpnx_plus_bm_lev_inv",
+     "expression": (
+         f"add(add(add({KPNX_BASE}, {D0_BOOK_MKT}), "
+         f"{D0_LEVERAGE_POS}), {D0_INVEST})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: KPnXpmmg + 2 dense + zscore wrap
+    {"name": "r44_d0_kpnx_plus_bm_lev_zscore",
+     "expression": (
+         f"zscore(add(add({KPNX_BASE}, {D0_BOOK_MKT}), {D0_LEVERAGE_POS}))"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: KPnXpmmg with backfill on BOTH news fields, bf=90
+    {"name": "r44_d0_5axis_bf_both90",
+     "expression": (
+         f"add(add(add(add({_bf_pe(90)}, {_bf_si(90)}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: same as #3 with trunc=0.03
+    {"name": "r44_d0_5axis_bf_both90_t003",
+     "expression": (
+         f"add(add(add(add({_bf_pe(90)}, {_bf_si(90)}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 5: KPnXpmmg + trunc=0.03 + winsorize wrap (max conc fixes on the SH winner)
+    {"name": "r44_d0_kpnx_winsorize_t003",
+     "expression": f"winsorize({KPNX_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 6: KPnXpmmg + trunc=0.03 alone
+    {"name": "r44_d0_kpnx_t003",
+     "expression": KPNX_BASE,
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+    # 7: KPnXpmmg + zscore wrap (continuous redistribution)
+    {"name": "r44_d0_kpnx_zscore",
+     "expression": f"zscore({KPNX_BASE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: 9-axis: KPnXpmmg + bm + lev + inv + dividend
+    {"name": "r44_d0_kpnx_plus_4dense",
+     "expression": (
+         f"add(add(add(add({KPNX_BASE}, {D0_BOOK_MKT}), "
+         f"{D0_LEVERAGE_POS}), {D0_INVEST}), {D0_DIV_YIELD})"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: 5-axis bf BOTH 60d + zscore wrap (densify + redistribute)
+    {"name": "r44_d0_5axis_bf_both60_zscore",
+     "expression": (
+         f"zscore(add(add(add(add({_bf_pe(60)}, {_bf_si(60)}), "
+         f"{D0_IV_TS_SLOPE}), {D0_EST_EBIT}), {D0_IV_SKEW180}))"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: 8-axis + winsorize + trunc=0.03 (max combinational conc fix)
+    {"name": "r44_d0_8axis_winsorize_t003",
+     "expression": (
+         f"winsorize(add(add(add({KPNX_BASE}, {D0_BOOK_MKT}), "
+         f"{D0_LEVERAGE_POS}), {D0_INVEST}))"
+     ),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.03)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -3294,6 +3381,8 @@ def main():
         batch = ROUND_42
     elif args.round == 43:
         batch = ROUND_43
+    elif args.round == 44:
+        batch = ROUND_44
     else:
         log.error(f"unknown round {args.round}"); return 2
 
