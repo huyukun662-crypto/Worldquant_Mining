@@ -7834,5 +7834,37 @@
     "checks_passed": 4,
     "checks_total": 8,
     "survivor": false
+  },
+  {
+    "name": "r37_d0_full6_sector",
+    "expression": "add(add(add(-group_rank(ts_mean(news_prev_day_ret, 60), subindustry), group_rank(ts_mean(implied_volatility_mean_skew_180, 22), subindustry)), group_rank(ts_mean(divide(est_ebit, cap), 22), subindustry)), add(add(-group_rank(divide(est_capex, est_tot_assets), subindustry), group_rank(divide(est_netdebt, est_shequity), subindustry)), group_rank(divide(est_bookvalue_ps, close), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "SECTOR",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P0nwwxXE",
+    "sharpe": 0.76,
+    "turnover": 0.0449,
+    "fitness": 0.51,
+    "returns": 0.0553,
+    "drawdown": 0.0952,
+    "longCount": 787,
+    "shortCount": 775,
+    "checks_passed": 4,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
