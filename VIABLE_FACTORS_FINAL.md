@@ -1,13 +1,14 @@
 # Final viable factors — delivery
 
-23+ rounds of QuantML-port iteration + OpenAlpha port + 18-round
-obscure-datafield push = **280+ WQ Brain submissions** on USA TOP3000.
+23+ rounds of QuantML-port iteration + OpenAlpha port + tsfresh-style
+shape sweep + delay=0 gate experiments = **320+ WQ Brain submissions**
+on USA TOP3000.
 
 **Gate**: `SH > 1.3` ∧ `turnover < 0.2` ∧ `fitness > 1.0` for Families A–D;
 the obscure-datafield push (Families E & F) was run against a stricter
 `SH > 1.5` gate.
 
-## 14 viable factors — 6 distinct structural families
+## 19 viable factors — 6 distinct structural families
 
 ### Family A — OHLC channel statistics (3 viable members)
 | factor | shape | SH | TO | FIT | ann.ret | alpha_id |
@@ -34,20 +35,29 @@ the obscure-datafield push (Families E & F) was run against a stricter
 | **QM_R23_02F_MKT_t10** | Mean((C − peer_mean)/C, 60) @ MARKET-neut t=0.10 | **1.34** | **0.01** | **1.67** | 20% | `kqn7oJ56` |
 | **QM_R23_02F_MKT_t15** | same expression @ t=0.15 (variant) | **1.37** | **0.01** | **1.83** | 22% | `omnpojdm` |
 
-### Family E — Multiplicative CoV-blend of obscure liquidity-risk fields (NEW — obscure-datafield push)
+### Family E — Multiplicative variance-blend of obscure liquidity-risk fields (NEW — obscure-datafield push)
 
 Built entirely from obscure `mdl77` liquidity-risk model fields (userCount ≤ 34,
 several uc=1 — effectively undiscovered). **Zero overlap with the OHLC-PV
 Families A–D** — uses no price, open, high, low, close, volume or returns.
-Shape = product of two *coefficient-of-variation* signals
-`CoV(x,W) = ts_std_dev(x,W) / ts_mean(x,W)`.
+Shape = product of two normalized-variance signals. Three variance shapes
+have been validated (D19/D21/D22 tsfresh-style sweep):
+
+- `CoV(x,W) = ts_std_dev(x,W) / ts_mean(x,W)` — std-of-level / mean
+- `MAC_norm(x,W) = ts_mean(|delta(x,1)|, W) / ts_mean(x,W)` — mean-abs-change / mean
+- `RMS_dx(x,W) = (ts_mean(delta(x,1)^2, W))^0.5` — root-mean-square of changes
 
 | factor | shape | SH | TO | FIT | alpha_id |
 |--------|-------|---:|---:|---:|----------|
 | **QM_D12_05** | −CoV(milliq,150)·CoV(bap20d,150) | **1.89** | 0.04 | **2.79** | `JjnYx5bO` |
 | **QM_D12_04** | −CoV(milliq,100)·CoV(bap20d,100) @ decay=0 | **1.83** | 0.05 | **2.73** | `JjnY791A` |
+| **QM_D21_01** | −MAC_norm(milliq,100)·MAC_norm(bap20d,100) (tsfresh shape) | **1.83** | 0.06 | **2.46** | `WjN9G1YO` |
 | **QM_D10_05** | −CoV(milliq,100)·CoV(bap20d,100) @ decay=4 | **1.80** | 0.05 | **2.67** | `88O7Q76V` |
 | **QM_D15_05** | −CoV(milliq)·CoV(bap20d)·CoV(cvvolp20d) (triple) | **1.74** | 0.05 | **2.61** | `WjNNXwGO` |
+| **QM_D22_02** | −RMS_dx(milliq,100)·RMS_dx(bap20d,100) (tsfresh shape) | **1.70** | 0.04 | **1.59** | `JjnbxXOE` |
+| **QM_D12_02** | −CoV(milliq,100)·CoV(cvvolp20d,100) | **1.59** | 0.05 | **1.81** | `omnAqegv` |
+| **QM_D21_04** | −MAC(milliq,100)·CoV(bap20d,100) (cross-shape) | **1.57** | 0.04 | **1.87** | `e7nL0WAM` |
+| **QM_D21_02** | −MAC(milliq,150)·MAC(bap20d,150) (unnormalized MAC) | **1.54** | 0.04 | **1.32** | `e7nL0K26` |
 | **QM_D12_02** | −CoV(milliq,100)·CoV(cvvolp20d,100) | **1.59** | 0.05 | **1.81** | `omnAqegv` |
 
 `milliq` (Amihud illiquidity) is the essential component — pairing it with a
@@ -69,11 +79,19 @@ conditional that only fires on certain days. The signal then takes a flat
 | factor | shape | SH | TO | FIT | alpha_id |
 |--------|-------|---:|---:|---:|----------|
 | **QM_D18_05** | trade_when(vol > ts_mean(vol,120), −CoV, −1) @ decay=0 | **1.55** | 0.04 | **1.67** | `KPnnEd7p` |
+| **QM_D0v4_04** | trade_when(snt_buzz > ts_mean(snt_buzz,60), −CoV, −1) @ decay=0 | **1.55** | 0.04 | **1.68** | `j2n1O5KE` |
 | **QM_D18_02** | trade_when(vol > ts_mean(vol,60)·1.5, −CoV, −1) | **1.53** | 0.04 | **1.64** | `0mAA7dLv` |
 
 D17–D18 tuning grid found: stricter volume gates beat looser ones; volume
 window 60 < 120; `returns > 0` gate (SH=1.42) underperformed volume gates;
 self-referential `CoV > rolling-avg(CoV)` gate just missed at SH=1.49.
+
+D0v4 added a third gate variant using the **delay=0 social-media buzz**
+field (`snt_buzz` from the socialmedia category) as the gate condition,
+clearing the gate at SH=1.55 — identical strength to the volume-W120
+champion. Confirms the gate can be any thresholded high-frequency signal,
+not just volume; delay=0 fields work fine in the GATE position even
+though they fail as the base signal (D0/D0v2/D0v3 0/15 baseline).
 
 ---
 
@@ -166,7 +184,49 @@ trade_when(
 Same shape as #13 but gate is `volume > ts_mean(volume, 60) * 1.5` and
 `decay=4`. SH=1.53.
 
-Common across all 14: `instrumentType=EQUITY, region=USA, pasteurization=ON, unitHandling=VERIFY, nanHandling=OFF, language=FASTEXPR, visualization=false, maxTrade=OFF, testPeriod=P0Y0M`.
+### #15 QM_D21_01 — Family E with mean_abs_change shape (tsfresh)
+```
+-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 100)
+   / ts_mean(mdl77_liquidityriskfactor_milliq, 100)
+   * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_bap20d, 1)), 100)
+   / ts_mean(mdl77_liquidityriskfactor_bap20d, 100)
+```
+`universe=TOP3000  delay=1  decay=4  neut=SUBINDUSTRY  trunc=0.05`. SH=1.83.
+
+### #16 QM_D22_02 — Family E with RMS-of-changes shape (tsfresh)
+```
+-1 * power(ts_mean(power(ts_delta(mdl77_liquidityriskfactor_milliq, 1), 2), 100), 0.5)
+   * power(ts_mean(power(ts_delta(mdl77_liquidityriskfactor_bap20d, 1), 2), 100), 0.5)
+```
+`universe=TOP3000  delay=1  decay=4  neut=SUBINDUSTRY  trunc=0.05`. SH=1.70.
+
+### #17 QM_D21_04 — Family E cross-shape blend
+```
+-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 100)
+   * ts_std_dev(mdl77_liquidityriskfactor_bap20d, 100)
+   / ts_mean(mdl77_liquidityriskfactor_bap20d, 100)
+```
+`universe=TOP3000  delay=1  decay=4  neut=SUBINDUSTRY  trunc=0.05`. SH=1.57.
+
+### #18 QM_D21_02 — Family E unnormalized MAC blend @ W150
+```
+-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 150)
+   * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_bap20d, 1)), 150)
+```
+`universe=TOP3000  delay=1  decay=4  neut=SUBINDUSTRY  trunc=0.05`. SH=1.54.
+
+### #19 QM_D0v4_04 — Family F with delay=0 sentiment-buzz gate
+```
+trade_when(
+  snt_buzz > ts_mean(snt_buzz, 60),
+  -1 * ts_std_dev(mdl77_liquidityriskfactor_milliq, 100)
+     / ts_mean   (mdl77_liquidityriskfactor_milliq, 100),
+  -1
+)
+```
+`universe=TOP3000  delay=1  decay=0  neut=SUBINDUSTRY  trunc=0.05`. SH=1.55.
+
+Common across all 19: `instrumentType=EQUITY, region=USA, pasteurization=ON, unitHandling=VERIFY, nanHandling=OFF, language=FASTEXPR, visualization=false, maxTrade=OFF, testPeriod=P0Y0M`.
 
 ---
 
@@ -229,8 +289,9 @@ to minimise correlation with the OHLC-PV Families A–D.
 - `scripts/wq_runner.py` — reusable runner.
 - `scripts/submit_quantml_r{1..23}.py` + `submit_quantml_rN.py` — 23+1 QuantML rounds.
 - `scripts/submit_quantml_{O1,F1,F2}.py` — setting-grid and fundamental rounds.
-- `scripts/submit_quantml_D{1..18}.py` — obscure-datafield push (Families E & F).
-- `WQ_OPENALPHA_RESULTS.json`, `WQ_QUANTML_RESULTS.json` — full submission records (280+ entries).
+- `scripts/submit_quantml_D{1..22}.py` — obscure-datafield push & tsfresh-style shape sweep (Families E & F).
+- `scripts/submit_quantml_D0{,v2,v3,v4}.py` — delay=0 field experiments (sentiment-buzz gate added Family F #3).
+- `WQ_OPENALPHA_RESULTS.json`, `WQ_QUANTML_RESULTS.json` — full submission records (320+ entries).
 - `VIABLE_FACTORS_FINAL.md` — this doc.
 
 ## Reproducing
