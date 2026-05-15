@@ -8019,5 +8019,37 @@
     "status": "ERROR",
     "message": "Operator ts_mean does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
     "survivor": false
+  },
+  {
+    "name": "r38_d0_variance_risk_prem",
+    "expression": "group_rank(ts_mean(subtract(implied_volatility_mean_180, historical_volatility_180), 22), subindustry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "OFF",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "58LavOoo",
+    "sharpe": -0.4,
+    "turnover": 0.0429,
+    "fitness": -0.16,
+    "returns": -0.0195,
+    "drawdown": 0.1881,
+    "longCount": 1456,
+    "shortCount": 1457,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "survivor": false
   }
 ]
