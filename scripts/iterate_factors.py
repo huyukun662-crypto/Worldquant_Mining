@@ -3751,6 +3751,91 @@ ROUND_52 = [
 ]
 
 
+# =====================================================================
+# Round 53: DIVERSE NON-FUNDAMENTAL axes on news-si-free base.
+# R52 (fundamentals) maxed at SH=1.12. R53 tries PV microstructure
+# (vwap/close, volume/adv20, low-vol), specific-tenor option signals
+# (parkinson, IV call/put levels), socialmedia buzz, analyst dense
+# estimates, cross signals (ts_corr).
+# =====================================================================
+# PV microstructure (cov=1.0)
+D0_VWAP_CLOSE   = ("-group_rank(ts_mean(divide(vwap, close), 22), subindustry)")
+D0_LOW_VOL      = ("-group_rank(ts_std_dev(returns, 60), subindustry)")
+D0_REL_VOL      = ("group_rank(ts_mean(divide(volume, adv20), 22), subindustry)")
+D0_REVERSAL     = "-group_rank(ts_rank(close, 22), subindustry)"
+D0_MOMENTUM     = "group_rank(ts_rank(close, 252), subindustry)"
+
+# Option specific tenor (cov 0.70)
+D0_PARK60       = ("-group_rank(ts_mean(parkinson_volatility_60, 22), subindustry)")
+D0_IV_CALL60    = ("group_rank(ts_mean(implied_volatility_call_60, 22), subindustry)")
+D0_IV_PUT60     = ("group_rank(ts_mean(implied_volatility_put_60, 22), subindustry)")
+
+# Socialmedia dense (cov=1.0)
+D0_SCL_BUZZ     = ("group_rank(ts_mean(scl12_buzz, 60), subindustry)")
+D0_SNT_BUZZ_RET = ("group_rank(ts_mean(snt_buzz_ret, 60), subindustry)")
+
+# Analyst dense est field (cov=1.0)
+D0_ANL_EST      = ("group_rank(ts_mean(anl4_dez1afv4_est, 60), subindustry)")
+
+# Cross signal
+D0_CORR_PV      = ("-group_rank(ts_corr(close, volume, 60), subindustry)")
+
+ROUND_53 = [
+    # 1: base4_no_si + vwap/close (microstructure reversal)
+    {"name": "r53_d0_4ax_plus_vwap_close",
+     "expression": f"add({BASE4_NO_SI}, {D0_VWAP_CLOSE})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 2: base4_no_si + low-vol (1-month realized vol)
+    {"name": "r53_d0_4ax_plus_lowvol",
+     "expression": f"add({BASE4_NO_SI}, {D0_LOW_VOL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 3: base4_no_si + parkinson 60 (open-high-low-close vol)
+    {"name": "r53_d0_4ax_plus_park60",
+     "expression": f"add({BASE4_NO_SI}, {D0_PARK60})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 4: base4_no_si + IV call 60 (option level)
+    {"name": "r53_d0_4ax_plus_iv_call60",
+     "expression": f"add({BASE4_NO_SI}, {D0_IV_CALL60})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 5: base4_no_si + scl_buzz (dense socialmedia)
+    {"name": "r53_d0_4ax_plus_scl_buzz",
+     "expression": f"add({BASE4_NO_SI}, {D0_SCL_BUZZ})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 6: base4_no_si + analyst dense est
+    {"name": "r53_d0_4ax_plus_anl_est",
+     "expression": f"add({BASE4_NO_SI}, {D0_ANL_EST})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 7: base4_no_si + reversal (1-mo)
+    {"name": "r53_d0_4ax_plus_reversal",
+     "expression": f"add({BASE4_NO_SI}, {D0_REVERSAL})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 8: base4_no_si + price/volume corr (microstructure)
+    {"name": "r53_d0_4ax_plus_corr_pv",
+     "expression": f"add({BASE4_NO_SI}, {D0_CORR_PV})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 9: 3-axis stack of micro signals (vwap/close + low-vol + park60)
+    {"name": "r53_d0_4ax_plus_3micro",
+     "expression": f"add(add(add({BASE4_NO_SI}, {D0_VWAP_CLOSE}), "
+                   f"{D0_LOW_VOL}), {D0_PARK60})",
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+    # 10: kitchen sink: vwap_close + park60 + anl_est + scl_buzz
+    {"name": "r53_d0_4ax_plus_4nonfund",
+     "expression": (f"add(add(add(add({BASE4_NO_SI}, {D0_VWAP_CLOSE}), "
+                    f"{D0_PARK60}), {D0_ANL_EST}), {D0_SCL_BUZZ})"),
+     "settings": base_settings_d0(decay=8, neutralization="MARKET",
+                                  truncation=0.05)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -4033,6 +4118,8 @@ def main():
         batch = ROUND_51
     elif args.round == 52:
         batch = ROUND_52
+    elif args.round == 53:
+        batch = ROUND_53
     else:
         log.error(f"unknown round {args.round}"); return 2
 
