@@ -38,7 +38,7 @@ TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
 
 CS_OPS = ("rank", "zscore", "scale", "normalize")  # wrappers
 ARITH_OPS = ("add", "subtract", "multiply", "divide")
-ELEMWISE_UNARY = ("log", "abs", "reverse", "sign", "s_log_1p")
+ELEMWISE_UNARY = ("log", "abs", "reverse", "sign")  # s_log_1p inaccessible on this account (2026-05)
 
 WINDOWS_DEFAULT = (3, 5, 10, 20, 40, 60)
 
