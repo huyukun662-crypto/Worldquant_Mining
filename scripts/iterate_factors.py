@@ -2615,6 +2615,59 @@ ROUND_37 = [
 ]
 
 
+# =====================================================================
+# Round 38: delay=0 GENUINELY-NEW axes. R32-R37 (64 sims) showed value
+# and quality D0 fields are all cross-correlated. R38 reaches for
+# mechanically-different signals not yet tried at D0:
+#   - news_short_interest      : short-side crowding (D0 analog of the
+#                                days_to_cover that powered R31's PASS)
+#   - variance risk premium    : IV_mean_180 - HV_180 (option richness)
+#   - IV term-structure slope  : skew_30 - skew_360
+#   - news P/E ratio           : reported earnings multiple (value)
+#   - news dividend yield      : income/value
+#   - news result-vs-index     : post-news return vs SPY (reversal)
+#   - historical-vol low-vol   : close-to-close vol (vs parkinson, R34)
+# Items 1-8 calibrate standalone; 9-10 stack onto the R33 base.
+# =====================================================================
+D0_NEWS_SI    = "-group_rank(ts_mean(news_short_interest, 22), subindustry)"
+D0_NWS_SI     = "-group_rank(ts_mean(nws12_mainz_short_interest, 22), subindustry)"
+D0_VRP        = ("group_rank(ts_mean(subtract(implied_volatility_mean_180, "
+                 "historical_volatility_180), 22), subindustry)")
+D0_IV_TS_SLOPE = ("group_rank(ts_mean(subtract(implied_volatility_mean_skew_30, "
+                  "implied_volatility_mean_skew_360), 22), subindustry)")
+D0_NEWS_PE    = "-group_rank(ts_mean(news_pe_ratio, 22), subindustry)"
+D0_DIV_YIELD  = "group_rank(ts_mean(news_dividend_yield, 22), subindustry)"
+D0_RES_VS_IDX = "-group_rank(ts_mean(nws12_mainz_result_vs_index, 5), subindustry)"
+D0_HV_LOWVOL  = "-group_rank(ts_mean(historical_volatility_60, 22), subindustry)"
+
+ROUND_38 = [
+    {"name": "r38_d0_news_short_interest", "expression": D0_NEWS_SI,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_nws_short_interest",  "expression": D0_NWS_SI,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_variance_risk_prem",  "expression": D0_VRP,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_iv_term_slope",       "expression": D0_IV_TS_SLOPE,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_news_pe_ratio",       "expression": D0_NEWS_PE,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_dividend_yield",      "expression": D0_DIV_YIELD,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_result_vs_index",     "expression": D0_RES_VS_IDX,
+     "settings": base_settings_d0()},
+    {"name": "r38_d0_hist_lowvol",         "expression": D0_HV_LOWVOL,
+     "settings": base_settings_d0()},
+    # 9: R33 base + news short interest (best-guess strongest new axis)
+    {"name": "r38_d0_base_plus_news_si",
+     "expression": f"add({D0_R33_BASE}, {D0_NEWS_SI})",
+     "settings": base_settings_d0(decay=8)},
+    # 10: R33 base + news short interest + VRP
+    {"name": "r38_d0_base_plus_si_vrp",
+     "expression": f"add(add({D0_R33_BASE}, {D0_NEWS_SI}), {D0_VRP})",
+     "settings": base_settings_d0(decay=8)},
+]
+
+
 def _load(p, name):
     spec = importlib.util.spec_from_file_location(name, p)
     mod = importlib.util.module_from_spec(spec)
@@ -2867,6 +2920,8 @@ def main():
         batch = ROUND_36
     elif args.round == 37:
         batch = ROUND_37
+    elif args.round == 38:
+        batch = ROUND_38
     else:
         log.error(f"unknown round {args.round}"); return 2
 
