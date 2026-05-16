@@ -1,0 +1,685 @@
+[
+  {
+    "variant": "R96a_rs_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(ts_mean(add(multiply(log(divide(high, close)), log(divide(high, open))), multiply(log(divide(low, close)), log(divide(low, open)))), 60))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "6XR9Y6dO",
+    "sharpe": 1.22,
+    "turnover": 0.0364,
+    "fitness": 2.06,
+    "returns": 0.3548,
+    "drawdown": 0.6543,
+    "longCount": 1995,
+    "shortCount": 1076,
+    "checks_passed": 6,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.22
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.06
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0364
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0364
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.53,
+        "value": 0.79
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.8603,
+      "9q9o0zme": 0.3493
+    }
+  },
+  {
+    "variant": "R96b_rv_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(ts_std_dev(returns, 60))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "3qERaYAQ",
+    "sharpe": 0.43,
+    "turnover": 0.0298,
+    "fitness": 0.35,
+    "returns": 0.0822,
+    "drawdown": 0.559,
+    "longCount": 1850,
+    "shortCount": 1221,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.43
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.35
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0298
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0298
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.19,
+        "value": 0.37
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.6944,
+      "9q9o0zme": 0.2791
+    }
+  },
+  {
+    "variant": "R96c_yz_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(add(ts_mean(power(log(divide(open, ts_delay(close, 1))), 2), 60), ts_mean(power(log(divide(close, open)), 2), 60)))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "pwnlV5lo",
+    "sharpe": 1.26,
+    "turnover": 0.0436,
+    "fitness": 2.21,
+    "returns": 0.3854,
+    "drawdown": 0.6178,
+    "longCount": 2028,
+    "shortCount": 1043,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.26
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.21
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0436
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0436
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.55,
+        "value": 0.72
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.8651,
+      "9q9o0zme": 0.3514
+    }
+  },
+  {
+    "variant": "R96d_vov_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(ts_std_dev(ts_std_dev(returns, 5), 60))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "0mAEeVWK",
+    "sharpe": 0.61,
+    "turnover": 0.0384,
+    "fitness": 0.56,
+    "returns": 0.1057,
+    "drawdown": 0.4289,
+    "longCount": 1940,
+    "shortCount": 1131,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.61
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.56
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0384
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0384
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.26,
+        "value": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.772,
+      "9q9o0zme": 0.3583
+    }
+  },
+  {
+    "variant": "R96e_park20_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(ts_mean(power(log(divide(high, low)), 2), 20))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "RRN8NkG0",
+    "sharpe": 1.44,
+    "turnover": 0.062,
+    "fitness": 2.66,
+    "returns": 0.4256,
+    "drawdown": 0.7665,
+    "longCount": 1998,
+    "shortCount": 1073,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.44
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.66
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.062
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.062
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.62,
+        "value": 1.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.8745,
+      "9q9o0zme": 0.4302
+    }
+  },
+  {
+    "variant": "R96f_park120_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(ts_mean(power(log(divide(high, low)), 2), 120))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "npn2nQVx",
+    "sharpe": 1.27,
+    "turnover": 0.0312,
+    "fitness": 2.22,
+    "returns": 0.383,
+    "drawdown": 0.7026,
+    "longCount": 1982,
+    "shortCount": 1089,
+    "checks_passed": 7,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.27
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.22
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0312
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0312
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.55,
+        "value": 0.78
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.8143,
+      "9q9o0zme": 0.3373
+    }
+  },
+  {
+    "variant": "R96g_range_linear",
+    "expression": "zscore(ts_decay_linear(zscore(reverse(ts_mean(divide(subtract(high, low), close), 60))), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "GrnLk6eJ",
+    "sharpe": 0.6,
+    "turnover": 0.0246,
+    "fitness": 0.65,
+    "returns": 0.1452,
+    "drawdown": 0.7807,
+    "longCount": 1787,
+    "shortCount": 1284,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.6
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.65
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0246
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0246
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.26,
+        "value": 0.47
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.6343,
+      "9q9o0zme": 0.1994
+    }
+  },
+  {
+    "variant": "R96h_rs_PV6",
+    "expression": "zscore(ts_decay_linear(signed_power(zscore(reverse(ts_mean(add(multiply(log(divide(high, close)), log(divide(high, open))), multiply(log(divide(low, close)), log(divide(low, open)))), 60))), 2), 15))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "VkXPld30",
+    "sharpe": 1.88,
+    "turnover": 0.0705,
+    "fitness": 5.32,
+    "returns": 1.0025,
+    "drawdown": 0.5383,
+    "longCount": 2123,
+    "shortCount": 948,
+    "checks_passed": 6,
+    "checks_total": 8,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.88
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 5.32
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0705
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0705
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2019-02-15",
+        "limit": 0.1,
+        "value": 0.179855
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.81,
+        "value": 1.16
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ],
+    "sc_map": {
+      "A1nnxAdw": 0.9012,
+      "9q9o0zme": 0.4151
+    }
+  }
+]
