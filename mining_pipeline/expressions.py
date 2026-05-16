@@ -33,7 +33,7 @@ FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
           "cap", "sharesout", "adv20")
 
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
-               "ts_std_dev", "ts_returns", "ts_decay_linear")
+               "ts_std_dev", "ts_decay_linear")  # ts_returns inaccessible on this account (2026-05)
 TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
 
 CS_OPS = ("rank", "zscore", "scale", "normalize")  # wrappers
