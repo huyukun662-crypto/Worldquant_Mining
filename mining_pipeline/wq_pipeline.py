@@ -68,8 +68,9 @@ FIXED_SETTINGS = {
 }
 
 # User filter: WQ Brain's official thresholds
-SHARPE_FLOOR = 1.25
+SHARPE_FLOOR = 1.5
 TURNOVER_CEILING = 0.25
+FITNESS_FLOOR = 1.25
 
 
 def _load(p: Path, name: str):
@@ -193,8 +194,14 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
         if not res.ok:
             log.info(f"      [{res.error[:80]}]")
             return -10.0
-        # Penalty if turnover violates user cap
-        score = res.sharpe - (5.0 if res.turnover >= TURNOVER_CEILING else 0.0)
+        # Optimize sharpe but require BOTH turnover and fitness gates.
+        # Heavy penalty when either gate fails so TPE steers away.
+        penalty = 0.0
+        if res.turnover >= TURNOVER_CEILING:
+            penalty += 5.0
+        if res.fitness <= FITNESS_FLOOR:
+            penalty += 2.0
+        score = res.sharpe - penalty
         log.info(f"      WQ_SH={res.sharpe:+.3f} TO={res.turnover:.3f} "
                  f"FIT={res.fitness:+.3f} checks={res.checks_passed}/{res.checks_total}")
         return score
@@ -245,14 +252,15 @@ def main():
 
     # Filter and rank
     survivors = [r for r in all_results if r.ok and r.sharpe > SHARPE_FLOOR
-                  and r.turnover < TURNOVER_CEILING]
+                  and r.turnover < TURNOVER_CEILING
+                  and r.fitness > FITNESS_FLOOR]
     survivors.sort(key=lambda r: r.sharpe, reverse=True)
 
     print()
     print("=" * 110)
     print(f"All trials: {sum(1 for r in all_results if r.ok)}/{len(all_results)} OK")
-    print(f"Survivors  (WQ_SH > {SHARPE_FLOOR} AND TO < {TURNOVER_CEILING}): "
-          f"{len(survivors)}")
+    print(f"Survivors  (WQ_SH > {SHARPE_FLOOR} AND TO < {TURNOVER_CEILING} "
+          f"AND FIT > {FITNESS_FLOOR}): {len(survivors)}")
     print()
     print(f"{'WQ_SH':>7}{'TO':>7}{'FIT':>7}{'checks':>9}  alpha_id   universe   delay  neut  expression")
     for r in survivors[:25]:
