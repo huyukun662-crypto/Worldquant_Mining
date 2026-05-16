@@ -30,23 +30,19 @@ def sc_pass(r):
 def family_key(family: str) -> str:
     """Collapse variants of similar mining families into structural
     buckets so we can diversify properly."""
-    # ROUND-9 buckets (most distinct).
-    # p3 = quantile + signed_power double transform (NEW STRUCTURE).
+    # Round-10 new structural patterns.
+    if family.startswith("p1_iv_call_minus_put_pair"): return "pair_trade_direction"
+    if family.startswith("r1_vol_regime"):             return "vol_regime_gated"
+    # ROUND-9 buckets.
     if family.startswith("p3_quantile_signed_power"):        return "quantile_x_signed_power"
-    # p2 = signed_power applied to iv_x_short rank-sum.
     if family.startswith("p2_signed_power3_iv_x_short"):     return "signed_power_on_ranksum"
-    # p1 / r12 = signed_power on IV alone (single-field amp).
     if family.startswith("p1_signed_power") \
        or family.startswith("r12_signed_power"):             return "signed_power_iv_only"
-    # r5 = signed_power on iv_x_short (older variant).
     if family.startswith("r5_signed_power"):                 return "signed_power_on_ranksum"
-    # quantile families.
     if family.startswith("q1_quantile_insider"):             return "quantile_insider"
     if family.startswith("q") and "quantile" in family:      return "quantile_iv_x_short"
     if family.startswith("r9_quantile"):                     return "quantile_iv_x_short"
-    # x2 = IV-based gate (vs news_pct gate).
     if family.startswith("x2_iv_gated"):                     return "iv_gated"
-    # scale+winsorize.
     if family.startswith("g9") or family.startswith("g9_"):  return "scale_winsorize"
     # Same-template parameterizations (the dominant rank-sum template).
     if family.startswith("iv") and "short" in family:        return "iv_x_short_ranksum"
