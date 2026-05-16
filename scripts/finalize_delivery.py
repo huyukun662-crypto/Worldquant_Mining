@@ -30,6 +30,10 @@ def sc_pass(r):
 def family_key(family: str) -> str:
     """Collapse variants of similar mining families into structural
     buckets so we can diversify properly."""
+    # Round-15 (v14) NEW: GARP + IV (fundamentals + options) stack.
+    if family == "v14_10_garp_plus_iv":                return "garp_iv_stack"
+    # Round-15 pcr_vol (VOLUME-based, different from pcr_oi).
+    if family == "v14_1_pcr_vol_term":                 return "pcr_vol_iv"
     # Round-12 (v11) NEW: 3-way stacks combining round-11 cold signals
     # with the proven IV+short backbone.  Each gets its own bucket since
     # the 3rd signal differs (pcr_curv, pcr_term, HV, news_atr, news_vwap,
