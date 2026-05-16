@@ -45,10 +45,10 @@ def W(core: str, decay: int = 15) -> str:
     return f"zscore(ts_decay_linear({core}, {decay}))"
 
 
-def linear_rev(signal: str) -> str:
-    """outer: zscore(reverse(.)) -- pure linear, no signed_power.
-    This is the R95a winning outer that produced the first gate-pass alpha."""
-    return f"zscore(reverse({signal}))"
+def three_tier(signal: str) -> str:
+    """3-tier canonical from cheat sheet: ts_rank -> group_neutralize -> decay.
+    Completely different from PV (signed_power) and linear (zscore-only) outers."""
+    return f"group_neutralize(ts_rank(reverse({signal}), 60), subindustry)"
 
 
 # the 10 cold cores
@@ -63,18 +63,18 @@ C8  = "ts_corr(rank(volume), rank(returns), 60)"
 C9  = "ts_std_dev(divide(close, vwap), 60)"
 C10 = "divide(adv5, adv60)"
 
-# outer wrapper: zscore(ts_decay_linear(zscore(reverse(core)), 15))
+# outer wrapper: zscore(ts_decay_linear(group_neutralize(ts_rank(reverse(core), 60), subindustry), 15))
 VARIANTS = [
-    {"label": "C1_days_since_high",      "expression": W(linear_rev(C1))},
-    {"label": "C2_days_since_low",       "expression": W(linear_rev(C2))},
-    {"label": "C3_autocorr_1d_rev",      "expression": W(linear_rev(C3))},
-    {"label": "C4_close_vwap_drift",     "expression": W(linear_rev(C4))},
-    {"label": "C5_range_zscore_rev",     "expression": W(linear_rev(C5))},
-    {"label": "C6_slope60_rev",          "expression": W(linear_rev(C6))},
-    {"label": "C7_liquidity_ret_corr",   "expression": W(linear_rev(C7))},
-    {"label": "C8_spearman_VR",          "expression": W(linear_rev(C8))},
-    {"label": "C9_vwap_dispersion",      "expression": W(linear_rev(C9))},
-    {"label": "C10_adv5_over_adv60",     "expression": W(linear_rev(C10))},
+    {"label": "C1_days_since_high",      "expression": W(three_tier(C1))},
+    {"label": "C2_days_since_low",       "expression": W(three_tier(C2))},
+    {"label": "C3_autocorr_1d_rev",      "expression": W(three_tier(C3))},
+    {"label": "C4_close_vwap_drift",     "expression": W(three_tier(C4))},
+    {"label": "C5_range_zscore_rev",     "expression": W(three_tier(C5))},
+    {"label": "C6_slope60_rev",          "expression": W(three_tier(C6))},
+    {"label": "C7_liquidity_ret_corr",   "expression": W(three_tier(C7))},
+    {"label": "C8_spearman_VR",          "expression": W(three_tier(C8))},
+    {"label": "C9_vwap_dispersion",      "expression": W(three_tier(C9))},
+    {"label": "C10_adv5_over_adv60",     "expression": W(three_tier(C10))},
 ]
 for v in VARIANTS:
     v["settings"] = settings()
