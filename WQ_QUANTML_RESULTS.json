@@ -90145,5 +90145,188 @@
         ]
       }
     ]
+  },
+  {
+    "id": "QM_FIX6_J",
+    "category": "MAC*CoV*CoV-capwt",
+    "idea": "J body * sqrt(cap) to lift TOP1000 sub-universe Sharpe.",
+    "original": "winsorize(-MAC*CoV*CoV(HL) * sqrt(cap), 3)",
+    "expression": "winsorize(-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_milliq, 100) * ts_std_dev(mdl77_liquidityriskfactor_bap20d, 100) / ts_mean(mdl77_liquidityriskfactor_bap20d, 100) * ts_std_dev(high - low, 100) / ts_mean(high - low, 100) * power(cap, 0.5), std=3.0)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "simulation",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "1WyRkx8u95jK8LJDT7DiAGW",
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.1,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "winsorize(-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_milliq, 100) * ts_std_dev(mdl77_liquidityriskfactor_bap20d, 100) / ts_mean(mdl77_liquidityriskfactor_bap20d, 100) * ts_std_dev(high - low, 100) / ts_mean(high - low, 100) * power(cap, 0.5), std=3.0)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 0,
+        "end": 314,
+        "type": "UNITS",
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      },
+      "alpha": "kqn3p6jg"
+    }
+  },
+  {
+    "id": "QM_FIX6_L",
+    "category": "4leg-capwt",
+    "idea": "L 4-leg body * sqrt(cap).",
+    "original": "winsorize(-MAC*MAC*CoVHL*CoVvol * sqrt(cap), 3)",
+    "expression": "winsorize(-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_milliq, 100) * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_bap20d, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_bap20d, 100) * ts_std_dev(high - low, 100) / ts_mean(high - low, 100) * ts_std_dev(volume, 100) / ts_mean(volume, 100) * power(cap, 0.5), std=3.0)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "simulation",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "scwKcbT94Ciac7XOPFZRI0",
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.1,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "winsorize(-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_milliq, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_milliq, 100) * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_bap20d, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_bap20d, 100) * ts_std_dev(high - low, 100) / ts_mean(high - low, 100) * ts_std_dev(volume, 100) / ts_mean(volume, 100) * power(cap, 0.5), std=3.0)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 0,
+        "end": 378,
+        "type": "UNITS",
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      },
+      "alpha": "kqn3wdKd"
+    }
+  },
+  {
+    "id": "QM_FIX6_M",
+    "category": "MACbap*CoVHL*CoVvol-capwt",
+    "idea": "M 3-leg body * sqrt(cap).",
+    "original": "winsorize(-MAC(bap)*CoVHL*CoVvol * sqrt(cap), 3)",
+    "expression": "winsorize(-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_bap20d, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_bap20d, 100) * ts_std_dev(high - low, 100) / ts_mean(high - low, 100) * ts_std_dev(volume, 100) / ts_mean(volume, 100) * power(cap, 0.5), std=3.0)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.1,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": false,
+    "stage": "simulation",
+    "status": "WARNING",
+    "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "data": {
+      "id": "31WO4w6Gl5b0aIP18jZP0uOH",
+      "type": "REGULAR",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.1,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false
+      },
+      "regular": "winsorize(-1 * ts_mean(abs(ts_delta(mdl77_liquidityriskfactor_bap20d, 1)), 100) / ts_mean(mdl77_liquidityriskfactor_bap20d, 100) * ts_std_dev(high - low, 100) / ts_mean(high - low, 100) * ts_std_dev(volume, 100) / ts_mean(volume, 100) * power(cap, 0.5), std=3.0)",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"power\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1,CSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+      "location": {
+        "line": 1,
+        "start": 0,
+        "end": 262,
+        "type": "UNITS",
+        "property": "regular"
+      },
+      "links": {
+        "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
+      },
+      "alpha": "pwn628kv"
+    }
   }
 ]
