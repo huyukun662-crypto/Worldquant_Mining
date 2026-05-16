@@ -28,16 +28,21 @@ def sc_pass(r):
 
 
 def family_key(family: str) -> str:
-    """Collapse v3/v4/v5/v6 variants of similar mining families into
-    structural buckets so we can diversify properly."""
-    # All iv_*_short_* variants share the rank(iv)+w*rank(short_borrow)
-    # rank-sum structure with the news_pct gate.
+    """Collapse variants of similar mining families into structural
+    buckets so we can diversify properly."""
+    # Round 8 new operator families - these are STRUCTURALLY distinct
+    # even though they use iv+short fields, because the math is different.
+    if family.startswith("r9_quantile"):       return "quantile_transform"
+    if family.startswith("r5_signed_power") \
+       or family.startswith("r12_signed_power"): return "signed_power_amp"
+    # Same-template parameterizations.
     if family.startswith("iv") and "short" in family:        return "iv_x_short_ranksum"
     if family in ("iv_x_short", "iv_x_short_ranksum"):       return "iv_x_short_ranksum"
     if family.startswith("insider_x_iv"):                    return "insider_x_iv_ranksum"
     if family == "iv_short_insider_lite":                    return "iv_short_insider_3way"
-    if family.startswith("g9"):                              return "scale_winsorize"
+    if family.startswith("g9") or family.startswith("g9_"):  return "scale_winsorize"
     if family.startswith("g"):                               return f"round7_{family}"
+    if family.startswith("r"):                               return f"round8_{family}"
     return family
 
 
