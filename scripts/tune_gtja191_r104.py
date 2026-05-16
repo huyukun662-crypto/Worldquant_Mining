@@ -45,11 +45,9 @@ def W(core: str, decay: int = 15) -> str:
     return f"zscore(ts_decay_linear({core}, {decay}))"
 
 
-def pv25_rev(signal: str) -> str:
-    return f"signed_power(zscore(reverse({signal})), 2.5)"
-
-
 def linear_rev(signal: str) -> str:
+    """outer: zscore(reverse(.)) -- pure linear, no signed_power.
+    This is the R95a winning outer that produced the first gate-pass alpha."""
     return f"zscore(reverse({signal}))"
 
 
@@ -65,17 +63,18 @@ C8  = "ts_corr(rank(volume), rank(returns), 60)"
 C9  = "ts_std_dev(divide(close, vwap), 60)"
 C10 = "divide(adv5, adv60)"
 
+# outer wrapper: zscore(ts_decay_linear(zscore(reverse(core)), 15))
 VARIANTS = [
-    {"label": "C1_days_since_high",      "expression": W(pv25_rev(C1))},
-    {"label": "C2_days_since_low",       "expression": W(pv25_rev(C2))},
-    {"label": "C3_autocorr_1d_rev",      "expression": W(pv25_rev(C3))},
-    {"label": "C4_close_vwap_drift",     "expression": W(pv25_rev(C4))},
-    {"label": "C5_range_zscore_rev",     "expression": W(pv25_rev(C5))},
-    {"label": "C6_slope60_rev",          "expression": W(pv25_rev(C6))},
-    {"label": "C7_liquidity_ret_corr",   "expression": W(pv25_rev(C7))},
-    {"label": "C8_spearman_VR",          "expression": W(pv25_rev(C8))},
-    {"label": "C9_vwap_dispersion",      "expression": W(pv25_rev(C9))},
-    {"label": "C10_adv5_over_adv60",     "expression": W(pv25_rev(C10))},
+    {"label": "C1_days_since_high",      "expression": W(linear_rev(C1))},
+    {"label": "C2_days_since_low",       "expression": W(linear_rev(C2))},
+    {"label": "C3_autocorr_1d_rev",      "expression": W(linear_rev(C3))},
+    {"label": "C4_close_vwap_drift",     "expression": W(linear_rev(C4))},
+    {"label": "C5_range_zscore_rev",     "expression": W(linear_rev(C5))},
+    {"label": "C6_slope60_rev",          "expression": W(linear_rev(C6))},
+    {"label": "C7_liquidity_ret_corr",   "expression": W(linear_rev(C7))},
+    {"label": "C8_spearman_VR",          "expression": W(linear_rev(C8))},
+    {"label": "C9_vwap_dispersion",      "expression": W(linear_rev(C9))},
+    {"label": "C10_adv5_over_adv60",     "expression": W(linear_rev(C10))},
 ]
 for v in VARIANTS:
     v["settings"] = settings()
