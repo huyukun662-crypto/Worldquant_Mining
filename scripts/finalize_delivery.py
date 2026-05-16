@@ -30,6 +30,18 @@ def sc_pass(r):
 def family_key(family: str) -> str:
     """Collapse variants of similar mining families into structural
     buckets so we can diversify properly."""
+    # Round-12 (v11) NEW: 3-way stacks combining round-11 cold signals
+    # with the proven IV+short backbone.  Each gets its own bucket since
+    # the 3rd signal differs (pcr_curv, pcr_term, HV, news_atr, news_vwap,
+    # shortfall).
+    if family == "v11_8_pcr_curv_iv_short_stack":      return "pcr_curv_iv_short_3way"
+    if family == "v11_9_pcr_term_iv_amp":              return "pcr_term_iv_amp"
+    if family == "v11_7_hv_iv_short_stack":            return "hv_iv_short_3way"
+    if family == "v11_10_natr_iv_short_stack":         return "natr_iv_short_3way"
+    if family == "v11_5_vwap_iv_short_stack":          return "vwap_iv_short_3way"
+    if family == "v11_4_shortfall_iv_short_stack":     return "shortfall_iv_short_3way"
+    # Round-11 simple variants.
+    if family.startswith("v10_1_pcr") or family.startswith("v11_1_pcr"): return "pcr_termstructure"
     # Round-10 new structural patterns.
     if family.startswith("p1_iv_call_minus_put_pair"): return "pair_trade_direction"
     if family.startswith("r1_vol_regime"):             return "vol_regime_gated"
