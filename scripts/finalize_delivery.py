@@ -65,13 +65,15 @@ def main():
     eligible.sort(key=lambda r: r["sharpe"], reverse=True)
     print(f"{len(eligible)} strict-deliverable (SH>1.25, TO<0.25, sc OK)")
 
-    # Diversified pick: at most 2 per family bucket, prefer high SH.
+    # Diversified pick: at most CAP per family bucket, prefer high SH.
+    # CAP=1 -> max structural diversity (option B).
+    # CAP=2 -> balanced (default).
+    import os
+    cap = int(os.environ.get("DIVERSITY_CAP", "1"))
     by_bucket: dict[str, list[dict]] = defaultdict(list)
     for r in eligible:
         by_bucket[family_key(r["family"])].append(r)
-
-    picks = []
-    cap = 2
+    picks: list[dict] = []
     while len(picks) < 5 and by_bucket:
         # Take the highest SH still available across all buckets that
         # have not yet hit cap.
