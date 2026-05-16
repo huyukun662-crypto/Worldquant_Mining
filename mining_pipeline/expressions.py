@@ -36,7 +36,7 @@ TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
                "ts_std_dev", "ts_decay_linear")  # ts_returns inaccessible on this account (2026-05)
 TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
 
-CS_OPS = ("rank", "zscore", "scale", "normalize", "binary")  # wrappers; binary added v2
+CS_OPS = ("rank", "zscore", "scale", "normalize")  # binary inaccessible on this account (2026-05)
 ARITH_OPS = ("add", "subtract", "multiply", "divide")
 ELEMWISE_UNARY = ("log", "abs", "reverse", "sign")  # s_log_1p inaccessible on this account (2026-05)
 
@@ -129,7 +129,7 @@ def generate_one(rng: random.Random, max_depth: int = 3) -> str:
     core = _expr(rng, max_depth)
     # v2: pre-wrap with winsorize(_, 4) and/or ts_backfill(_, 5) probabilistically
     if rng.random() < 0.50:
-        core = f"winsorize({core}, 4)"
+        core = f"winsorize({core}, std=4)"
     if rng.random() < 0.30:
         core = f"ts_backfill({core}, 5)"
     out = _wrap(rng, core)
