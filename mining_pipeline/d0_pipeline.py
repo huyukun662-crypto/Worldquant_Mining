@@ -53,11 +53,11 @@ D0_SETTING_SPACE = {
     "neutralization": ["SUBINDUSTRY", "INDUSTRY", "SECTOR", "MARKET"],
     "pasteurization": ["ON"],
     "nanHandling":    ["ON", "OFF"],
-    # IGNORE so that cross-unit arithmetic (e.g. add(eps, sentiment_score))
-    # is silently coerced instead of returning sim-WARNING. Generator picks
-    # fields independently per family; with VERIFY ~15% of expressions die
-    # at unit-check rather than producing a metric.
-    "unitHandling":   ["IGNORE"],
+    # NOTE: WQ Brain rejects unitHandling=IGNORE ("not a valid choice");
+    # only VERIFY is accepted. We accept ~10% cross-unit unit-check
+    # rejections in exchange for being able to submit at all. The
+    # generator pre-winsorizes cores so the most common pattern
+    # `arith(rank(a), rank(b))` is unitless on both sides.
 }
 
 
