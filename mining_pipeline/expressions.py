@@ -194,14 +194,24 @@ import json
 from pathlib import Path
 
 # Field family weights — bias toward families with historically higher fitness.
-# These can be re-weighted by the adaptive loop based on per-round results.
+# Calibrated from constants/d0_field_universe_matrix.json single-field probe:
+# - fundamental + analyst: lowest TO (~0.01) → free for the budget
+# - socialmedia: highest checks-passed (5/8) on a single field
+# - news + raw pv: high TO or noise dominant → demote
+# The adaptive loop reshapes these between rounds.
 DEFAULT_FAMILY_WEIGHTS = {
-    "pv":          0.25,  # 21 matrix fields, well-understood
-    "option":      0.25,  # 64 fields, volatility / IV — strong D0 signal
-    "analyst":     0.20,  # 24 matrix fields, EPS / revenue surprises
-    "news":        0.15,  # 75 matrix fields, intraday news
-    "socialmedia": 0.10,  # 8 fields, sentiment / buzz
-    "fundamental": 0.05,  # 660 fields, slow balance-sheet items
+    "fundamental": 0.25,  # 660 fields, ultra-low TO friendly
+    "socialmedia": 0.20,  # 8 fields, sentiment/buzz; best single-field checks
+    "analyst":     0.20,  # 24 fields, ultra-low TO, EPS/revenue
+    "option":      0.20,  # 64 fields, volatility/IV
+    "news":        0.05,  # 75 fields, but TO blows up
+    "pv":          0.10,  # 21 fields incl. adjfactor noise — filtered below
+}
+
+# Drop non-signal PV fields (adjustment factors, static metadata).
+PV_FIELD_BLOCKLIST = {
+    "adjfactor", "sharesout", "top1000", "top200", "top2000", "top3000",
+    "top500", "topsp500",
 }
 
 # Wrappers proven to control turnover in passing alphas.
@@ -239,7 +249,10 @@ def load_d0_field_pool(union_path: str | Path) -> dict[str, list[str]]:
         if f.get("delay") != 0 or f.get("type") != "MATRIX":
             continue
         cat = f["category"]["id"]
-        pool.setdefault(cat, []).append(f["id"])
+        fid = f["id"]
+        if cat == "pv" and fid in PV_FIELD_BLOCKLIST:
+            continue
+        pool.setdefault(cat, []).append(fid)
     return pool
 
 
