@@ -1,0 +1,1 @@
+R108: 100% cold operator x cold field exploration. Banned: signed_power(zscore(reverse(close/MA60))) + Parkinson/RS/YZ/range vol + vwap_dispersion. Try trade_when, ts_quantile, hump, group_rank, jump_decay, days_from_last_change on cap/sharesout/dividend/HV/IV/snt fields.
