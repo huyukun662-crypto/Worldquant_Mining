@@ -231,8 +231,14 @@ D0_TS_OPS_1ARG = (
     "ts_arg_max", "ts_arg_min", "ts_sum",
 )
 D0_TS_OPS_2ARG = ("ts_corr",)
-D0_ARITH_OPS = ("add", "subtract", "multiply", "divide")
-D0_ELEMWISE_UNARY = ("log", "abs", "sign", "s_log_1p")
+# `divide` is a major source of CONCENTRATED_WEIGHT failures (extreme
+# denominator -> single-name blowup). Keep it but weight it down by
+# repeating the safer arithmetic ops in the choice pool.
+D0_ARITH_OPS = ("add", "subtract", "multiply", "multiply",
+                "subtract", "divide")
+# NOTE: s_log_1p is in the canonical catalog but WQ Brain rejects it at sim
+# time as "inaccessible or unknown operator" on this account. Removed.
+D0_ELEMWISE_UNARY = ("log", "abs", "sign")
 
 D0_WINDOWS = (3, 5, 10, 20, 40, 60, 120)
 
@@ -296,20 +302,23 @@ def _d0_inner(rng: random.Random, depth: int, pool, weights) -> str:
 
 
 def _apply_d0_wrapper(rng: random.Random, core: str, wrapper: str) -> str:
+    """Always pre-winsorize the core to bound extreme single-name weights,
+    then apply the chosen outer wrapper. This is what suppresses
+    CONCENTRATED_WEIGHT failures from `divide`-heavy cores."""
+    safe = f"winsorize({core}, std=4)"
     if wrapper == "rank":
-        return f"rank({core})"
+        return f"rank({safe})"
     if wrapper == "zscore":
-        return f"zscore({core})"
+        return f"zscore({safe})"
     if wrapper == "winsorize_std4":
-        return f"winsorize({core}, std=4)"
+        return f"rank({safe})"  # winsorize-then-rank
     if wrapper == "decay_linear_8":
-        return f"ts_decay_linear(rank({core}), 8)"
+        return f"ts_decay_linear(rank({safe}), 8)"
     if wrapper == "decay_linear_16":
-        return f"ts_decay_linear(rank({core}), 16)"
+        return f"ts_decay_linear(rank({safe}), 16)"
     if wrapper == "trade_when_volgate":
-        # Classic turnover gate from public alpha repos.
-        return f"trade_when(volume > adv20 * 1.2, rank({core}), -1)"
-    return f"rank({core})"
+        return f"trade_when(volume > adv20 * 1.2, rank({safe}), -1)"
+    return f"rank({safe})"
 
 
 def generate_d0(n: int, pool: dict[str, list[str]],
