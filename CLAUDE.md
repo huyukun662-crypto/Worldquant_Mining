@@ -144,6 +144,23 @@ per hour; budget candidates accordingly.
   documented universes × delays (vs the 7,831 the WQ UI advertises;
   the gap lives behind a higher account tier, not a fetch bug).
 
+### Submit Alpha vs Simulation - two distinct quotas
+
+- **`/simulations`** (backtest): ~2-3 concurrent, ~200-500/day. Used by
+  `submit_alpha.py` and `wq_pipeline.py`. Returns IS Sharpe/turnover/etc.
+- **Submit Alpha** (add to user's submitted pool): the *act of clicking
+  "Submit Alpha" in the web UI*. Cap is **1 concurrent submit operation**
+  — while the in-flight submit's IS checks + Self Correlation + Performance
+  Comparison are running (~2-5 min total), the next submit is rejected with
+  "You have reached the limit of concurrent Submit Alpha".
+- **OS checks** on already-submitted alphas (`SHARPE`, `SELF_CORRELATION`,
+  `IS_SHARPE`, `OTHERS` under the `os.checks` block) **stay in PENDING until
+  the active competition closes** (e.g. `IQC2026S1`). PENDING here is
+  normal, not stuck, and **does NOT consume the concurrent Submit slot**.
+
+The script `scripts/submit_alpha.py` calls `/simulations`, not the Submit
+Alpha endpoint, so it never touches the Submit Alpha quota.
+
 ## Local-proxy pipeline invariants (for the triage stage only)
 
 - **IS window**: 2019-01-01 → 2023-12-31 (set in `mining_pipeline/data.py`)
