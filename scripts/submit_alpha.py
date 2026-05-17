@@ -118,6 +118,26 @@ def submit_one(session, expression: str, settings: dict | None = None) -> dict:
     return {"ok": False, "stage": "timeout", "expression": expression}
 
 
+def submit_alpha(session, alpha_id: str) -> dict:
+    """Call POST /alphas/{alpha_id}/submit — pushes a passing alpha into
+    WQ Brain's 30-min PENDING review. Returns dict with status, body,
+    and (on success) the refreshed alpha record.
+    """
+    url = f"https://api.worldquantbrain.com/alphas/{alpha_id}/submit"
+    log.info(f"-> POST {url}")
+    r = session.post(url, timeout=30)
+    log.info(f"   status={r.status_code} body={r.text[:300]}")
+    out = {"alpha_id": alpha_id, "status": r.status_code,
+           "body": r.text[:1000],
+           "ok": r.status_code in (200, 201)}
+    if out["ok"]:
+        ra = session.get(f"https://api.worldquantbrain.com/alphas/{alpha_id}",
+                          timeout=30)
+        if ra.status_code == 200:
+            out["alpha"] = ra.json()
+    return out
+
+
 def main():
     src = sys.argv[1] if len(sys.argv) > 1 else "MINING_REPORT.json"
     if src == "-":

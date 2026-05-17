@@ -56,6 +56,19 @@ SETTING_SPACE = {
     "pasteurization": ["ON", "OFF"],
 }
 
+# D0 (delay=0) setting space. Confirmed available on 2445560398@qq.com via
+# scripts/d0_probe.py (alpha_id 88OPp8z7, 2026-05-17). Narrower than
+# SETTING_SPACE to focus the search on settings that empirically pass
+# WQ Brain checks on community D0 alphas.
+D0_SETTING_SPACE = {
+    "universe":       ["TOP3000", "TOP1000", "TOP500"],
+    "delay":          [0],
+    "decay":          [4, 6, 8, 10, 12, 16],
+    "truncation":     [0.05, 0.08, 0.10],
+    "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR"],
+    "pasteurization": ["ON"],
+}
+
 FIXED_SETTINGS = {
     "instrumentType": "EQUITY",
     "region":         "USA",
@@ -171,9 +184,17 @@ def submit(session, expression: str, settings: dict,
                     settings=full_settings, error="poll-timeout")
 
 
-def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
+def search_one(session, expression: str, n_trials: int, seed: int,
+               setting_space: dict | None = None,
+               on_result=None) -> list[WQResult]:
     """Run optuna trials over (expression-windows, sim-settings) for one
-    base expression. Returns ALL trial results (not just the best)."""
+    base expression. Returns ALL trial results (not just the best).
+
+    `setting_space`: dict like SETTING_SPACE; defaults to SETTING_SPACE.
+    `on_result`: optional callback `(WQResult) -> bool`. If it returns
+    True, the study is stopped early (e.g. when a survivor is found).
+    """
+    space = setting_space if setting_space is not None else SETTING_SPACE
     positions = integer_positions(expression)
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     sampler = optuna.samplers.TPESampler(seed=seed)
@@ -182,7 +203,7 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
 
     def objective(trial: optuna.trial.Trial) -> float:
         # Setting choices
-        settings = {k: trial.suggest_categorical(k, v) for k, v in SETTING_SPACE.items()}
+        settings = {k: trial.suggest_categorical(k, v) for k, v in space.items()}
         # Expression windows
         windows = {p: trial.suggest_int(f"w{p}", 3, 60) for p in positions}
         final = parameterize(expression, windows) if windows else expression
@@ -190,6 +211,12 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
         res = submit(session, final, settings)
         res.optimized = final
         trials_log.append(res)
+        if on_result is not None:
+            try:
+                if on_result(res):
+                    trial.study.stop()
+            except Exception as e:
+                log.warning(f"      on_result callback raised: {e}")
         if not res.ok:
             log.info(f"      [{res.error[:80]}]")
             return -10.0
