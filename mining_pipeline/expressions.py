@@ -225,9 +225,11 @@ D0_WRAPPERS = (
 )
 
 # D0 inner ops (depth > 0). Subset of WQ Brain FASTEXPR with WIDE applicability.
+# WQ Brain D0 verified-rejected ops (this account's FASTEXPR surface):
+#   ts_returns, s_log_1p -> "inaccessible or unknown operator"
 D0_TS_OPS_1ARG = (
     "ts_rank", "ts_zscore", "ts_mean", "ts_std_dev",
-    "ts_delta", "ts_decay_linear", "ts_returns",
+    "ts_delta", "ts_decay_linear",
     "ts_arg_max", "ts_arg_min", "ts_sum",
 )
 D0_TS_OPS_2ARG = ("ts_corr",)
