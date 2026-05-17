@@ -212,18 +212,22 @@ def _save_submission(rec: dict, all_recs: list[dict]):
 
 
 def _is_winner(r: WQResult) -> bool:
+    # D0 thresholds confirmed via WQ Brain /alphas/{id}/is.checks: SH>=2.0,
+    # FIT>=1.3, TO between 0.01 and 0.7. checks_passed counts SELF_CORRELATION
+    # only after WQ finishes computing it (PENDING -> PASS/FAIL async).
     return (
         r.ok
         and r.checks_total > 0
         and r.checks_passed == r.checks_total
-        and r.sharpe >= 1.25
-        and r.turnover < 0.7  # WQ official ceiling for D1; D0 may differ
-        and r.fitness >= 1.0
+        and r.sharpe >= 2.0
+        and r.turnover < 0.7
+        and r.turnover > 0.01
+        and r.fitness >= 1.3
     )
 
 
 def run(rounds: int, per_round: int, trials: int, seed: int,
-        until_pass: bool) -> int:
+        until_pass: bool, max_depth: int = 4) -> int:
     cm_mod = _load_module(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
     if not cm.authenticate(auto_load=True, auto_prompt=False):
@@ -273,6 +277,7 @@ def run(rounds: int, per_round: int, trials: int, seed: int,
         exprs = generate_d0(
             n=per_round, pool=pool,
             seed=seed + 1000 * round_idx,
+            max_depth=max_depth,
             family_weights=family_weights,
             wrapper_weights=wrapper_weights,
         )
@@ -342,9 +347,11 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=37)
     ap.add_argument("--until-pass", action="store_true",
                      help="Loop indefinitely until a winner submits successfully")
+    ap.add_argument("--max-depth", type=int, default=4,
+                     help="Generator max expression depth (default 4, try 5-6 for higher SH)")
     args = ap.parse_args()
     return run(args.rounds, args.per_round, args.trials, args.seed,
-               args.until_pass)
+               args.until_pass, args.max_depth)
 
 
 if __name__ == "__main__":
