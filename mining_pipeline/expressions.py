@@ -177,6 +177,166 @@ def integer_positions(expr: str) -> List[int]:
     return pos
 
 
+# =============================================================================
+# D0 expression generator
+# =============================================================================
+# Generates FASTEXPR strings to submit DIRECTLY to WQ Brain (no local backtest).
+# Field pool is sourced from `constants/data_fields_union_USA.json` filtered to
+# delay=0 + type=MATRIX. The only universe carrying D0 fields is TOP1000.
+#
+# Generator goals (per public-repo evidence for passing WQ Brain submissions):
+#   - turnover-controlling wrappers (trade_when / ts_decay_linear)
+#   - SUBINDUSTRY-friendly cross-sectional ops at the outer layer
+#   - rich field families beyond PV (option, analyst, news, sentiment, fundamental)
+#   - avoid pathological structures (group_neutralize without GROUP fields, etc.)
+
+import json
+from pathlib import Path
+
+# Field family weights — bias toward families with historically higher fitness.
+# These can be re-weighted by the adaptive loop based on per-round results.
+DEFAULT_FAMILY_WEIGHTS = {
+    "pv":          0.25,  # 21 matrix fields, well-understood
+    "option":      0.25,  # 64 fields, volatility / IV — strong D0 signal
+    "analyst":     0.20,  # 24 matrix fields, EPS / revenue surprises
+    "news":        0.15,  # 75 matrix fields, intraday news
+    "socialmedia": 0.10,  # 8 fields, sentiment / buzz
+    "fundamental": 0.05,  # 660 fields, slow balance-sheet items
+}
+
+# Wrappers proven to control turnover in passing alphas.
+D0_WRAPPERS = (
+    "rank",
+    "zscore",
+    "winsorize_std4",          # winsorize(x, std=4)
+    "decay_linear_8",          # ts_decay_linear(x, 8)
+    "decay_linear_16",         # ts_decay_linear(x, 16)
+    "trade_when_volgate",      # trade_when(volume > adv20 * 1.2, x, -1)
+)
+
+# D0 inner ops (depth > 0). Subset of WQ Brain FASTEXPR with WIDE applicability.
+D0_TS_OPS_1ARG = (
+    "ts_rank", "ts_zscore", "ts_mean", "ts_std_dev",
+    "ts_delta", "ts_decay_linear", "ts_returns",
+    "ts_arg_max", "ts_arg_min", "ts_sum",
+)
+D0_TS_OPS_2ARG = ("ts_corr",)
+D0_ARITH_OPS = ("add", "subtract", "multiply", "divide")
+D0_ELEMWISE_UNARY = ("log", "abs", "sign", "s_log_1p")
+
+D0_WINDOWS = (3, 5, 10, 20, 40, 60, 120)
+
+
+def load_d0_field_pool(union_path: str | Path) -> dict[str, list[str]]:
+    """Group D0 MATRIX fields by category. Returns {family: [field_id,...]}.
+
+    Excludes VECTOR (need vec_* wrappers, handled separately) and
+    GROUP/UNIVERSE/SYMBOL types (not usable as expression leaves directly).
+    """
+    fields = json.load(open(union_path))
+    pool: dict[str, list[str]] = {}
+    for f in fields:
+        if f.get("delay") != 0 or f.get("type") != "MATRIX":
+            continue
+        cat = f["category"]["id"]
+        pool.setdefault(cat, []).append(f["id"])
+    return pool
+
+
+def _d0_leaf(rng: random.Random, pool: dict[str, list[str]],
+             weights: dict[str, float]) -> str:
+    """Sample one D0 field, weighted by family."""
+    families = [fam for fam in weights if fam in pool and pool[fam]]
+    w = [weights[fam] for fam in families]
+    fam = rng.choices(families, weights=w, k=1)[0]
+    return rng.choice(pool[fam])
+
+
+def _d0_inner(rng: random.Random, depth: int, pool, weights) -> str:
+    """Generate the core expression (no outer wrapper). depth>=1."""
+    if depth <= 0:
+        return _d0_leaf(rng, pool, weights)
+    r = rng.random()
+    if r < 0.50:
+        op = rng.choice(D0_TS_OPS_1ARG)
+        inner = _d0_inner(rng, depth - 1, pool, weights)
+        d = rng.choice(D0_WINDOWS)
+        return f"{op}({inner}, {d})"
+    if r < 0.62:
+        op = rng.choice(D0_TS_OPS_2ARG)
+        a = _d0_leaf(rng, pool, weights)
+        b = _d0_leaf(rng, pool, weights)
+        while a == b:
+            b = _d0_leaf(rng, pool, weights)
+        d = rng.choice(D0_WINDOWS)
+        return f"{op}({a}, {b}, {d})"
+    if r < 0.85:
+        op = rng.choice(D0_ARITH_OPS)
+        a = _d0_inner(rng, depth - 1, pool, weights)
+        b = _d0_inner(rng, depth - 1, pool, weights)
+        return f"{op}({a}, {b})"
+    if r < 0.95:
+        op = rng.choice(D0_ELEMWISE_UNARY)
+        inner = _d0_inner(rng, depth - 1, pool, weights)
+        return f"{op}({inner})"
+    return _d0_leaf(rng, pool, weights)
+
+
+def _apply_d0_wrapper(rng: random.Random, core: str, wrapper: str) -> str:
+    if wrapper == "rank":
+        return f"rank({core})"
+    if wrapper == "zscore":
+        return f"zscore({core})"
+    if wrapper == "winsorize_std4":
+        return f"winsorize({core}, std=4)"
+    if wrapper == "decay_linear_8":
+        return f"ts_decay_linear(rank({core}), 8)"
+    if wrapper == "decay_linear_16":
+        return f"ts_decay_linear(rank({core}), 16)"
+    if wrapper == "trade_when_volgate":
+        # Classic turnover gate from public alpha repos.
+        return f"trade_when(volume > adv20 * 1.2, rank({core}), -1)"
+    return f"rank({core})"
+
+
+def generate_d0(n: int, pool: dict[str, list[str]],
+                seed: int = 31,
+                max_depth: int = 4,
+                min_depth: int = 2,
+                family_weights: dict[str, float] | None = None,
+                wrapper_weights: dict[str, float] | None = None) -> List[str]:
+    """Generate n unique D0 expressions sampling from the D0 field pool.
+
+    `pool` must come from load_d0_field_pool(...).
+    `family_weights` and `wrapper_weights` let the adaptive loop reshape
+    sampling without touching the generator code.
+    """
+    rng = random.Random(seed)
+    fweights = family_weights or DEFAULT_FAMILY_WEIGHTS
+    if wrapper_weights:
+        wraps = list(wrapper_weights.keys())
+        wws = [wrapper_weights[k] for k in wraps]
+    else:
+        wraps = list(D0_WRAPPERS)
+        wws = [1.0] * len(wraps)
+
+    seen: set[str] = set()
+    out: List[str] = []
+    tries = 0
+    while len(out) < n and tries < n * 50:
+        tries += 1
+        depth = rng.randint(min_depth, max_depth)
+        core = _d0_inner(rng, depth, pool, fweights)
+        wrapper = rng.choices(wraps, weights=wws, k=1)[0]
+        expr = _apply_d0_wrapper(rng, core, wrapper)
+        h = hashlib.md5(expr.encode()).hexdigest()
+        if h in seen:
+            continue
+        seen.add(h)
+        out.append(expr)
+    return out
+
+
 if __name__ == "__main__":
     for e in generate(10, seed=1):
         print(e)
