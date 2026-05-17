@@ -1,0 +1,1 @@
+R109: salvage R108 low-SC leads (tradewhen, grouprank, buyback) + fix R108 errors (hump kwarg, rank(cap)) + new cold ops (last_diff_value, group_zscore) + new cold fields (dividend, IV-put, HV30 solo).
