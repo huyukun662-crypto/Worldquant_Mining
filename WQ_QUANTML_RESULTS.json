@@ -105469,5 +105469,219 @@
         "linkToCommonErrorMessages": "https://support.worldquantbrain.com/hc/en-us/articles/18423410021783--BRAIN-TIPS-Troubleshooting-common-error-messages"
       }
     }
+  },
+  {
+    "id": "QM_PZ13_04",
+    "category": "last-diff-vwap",
+    "idea": "Last actual diff vwap vs 5-day-prior.",
+    "original": "-last_diff_value(vwap, 5)",
+    "expression": "-1 * last_diff_value(vwap, 5)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "LLn9QVae",
+    "alpha": {
+      "id": "LLn9QVae",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "INDUSTRY",
+        "truncation": 0.05,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "-1 * last_diff_value(vwap, 5)",
+        "description": null,
+        "operatorCount": 2
+      },
+      "dateCreated": "2026-05-17T00:15:24-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-05-17T00:15:24-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [
+        {
+          "id": "DATA_USAGE:SINGLE_DATA_SET",
+          "name": "Single Data Set Alpha"
+        }
+      ],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 10942,
+        "bookSize": 20000000,
+        "longCount": 2227,
+        "shortCount": 910,
+        "turnover": 0.0115,
+        "returns": 0.0002,
+        "drawdown": 0.4552,
+        "margin": 3.9e-05,
+        "sharpe": 0.0,
+        "fitness": 0.0,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": 0.0
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": 0.0
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0115
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0115
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "FAIL",
+            "date": "2023-09-22",
+            "limit": 0.1,
+            "value": 0.14236
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.0,
+            "value": 0.14
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S1",
+                "name": "International Quant Championship 2026 Stage 1"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0115,
+    "fitness": 0.0,
+    "returns": 0.0002,
+    "drawdown": 0.4552,
+    "margin": 3.9e-05,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 0.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0115
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0115
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2023-09-22",
+        "limit": 0.1,
+        "value": 0.14236
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.0,
+        "value": 0.14
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S1",
+            "name": "International Quant Championship 2026 Stage 1"
+          }
+        ]
+      }
+    ]
   }
 ]
