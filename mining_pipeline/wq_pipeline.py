@@ -48,12 +48,18 @@ VENDOR = REPO / "vendor" / "worldquant-miner"
 # 中性化等是可以调的". Expressions themselves stay free to mutate (no
 # template reuse).
 SETTING_SPACE = {
-    "universe":       ["TOP3000", "TOP1000", "TOP500", "TOP200"],
-    "delay":          [1],  # this account has no delay-0 access
-    "decay":          [0, 4, 8, 16, 32, 64],
-    "truncation":     [0.01, 0.05, 0.08, 0.10],
-    "neutralization": ["NONE", "MARKET", "INDUSTRY", "SUBINDUSTRY", "SECTOR"],
-    "pasteurization": ["ON", "OFF"],
+    # D0 sweet spot is TOP1000; TOP500 is a tighter alternative. TOP3000
+    # forces truncation=0.01 which trips CONCENTRATED_WEIGHT often.
+    "universe":       ["TOP1000", "TOP500"],
+    "delay":          [0],   # D0 access verified on 2026-05-17 (probe_d0.py)
+    "decay":          [0, 1, 2, 4, 8, 16],
+    # Avoid 0.01 (CONCENTRATED_WEIGHT risk on smaller universes) and >0.10
+    # (signal washes out). Tier of {0.05, 0.08, 0.10} is the D0 sweet spot.
+    "truncation":     [0.05, 0.08, 0.10],
+    # INDUSTRY/SUBINDUSTRY/SECTOR neutralizers are needed at D0 to pass
+    # LOW_SUB_UNIVERSE_SHARPE. NONE/MARKET rarely clear submit checks.
+    "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR"],
+    "pasteurization": ["ON"],
 }
 
 FIXED_SETTINGS = {
@@ -183,8 +189,8 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
     def objective(trial: optuna.trial.Trial) -> float:
         # Setting choices
         settings = {k: trial.suggest_categorical(k, v) for k, v in SETTING_SPACE.items()}
-        # Expression windows
-        windows = {p: trial.suggest_int(f"w{p}", 3, 60) for p in positions}
+        # Expression windows — D0 favors short lookbacks
+        windows = {p: trial.suggest_int(f"w{p}", 3, 30) for p in positions}
         final = parameterize(expression, windows) if windows else expression
         log.info(f"   trial: settings={settings} windows={windows}")
         res = submit(session, final, settings)
@@ -192,11 +198,16 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
         trials_log.append(res)
         if not res.ok:
             log.info(f"      [{res.error[:80]}]")
-            return -10.0
-        # Penalty if turnover violates user cap
-        score = res.sharpe - (5.0 if res.turnover >= TURNOVER_CEILING else 0.0)
+            return -100.0
+        # "Submit-eligible" requires ALL is.checks PASS. Score that hard,
+        # use sharpe as the tie-breaker, and penalize blown turnover.
+        fraction_passed = res.checks_passed / max(res.checks_total, 1)
+        score = res.sharpe + 10.0 * fraction_passed
+        if res.turnover >= 0.70:
+            score -= 5.0
         log.info(f"      WQ_SH={res.sharpe:+.3f} TO={res.turnover:.3f} "
-                 f"FIT={res.fitness:+.3f} checks={res.checks_passed}/{res.checks_total}")
+                 f"FIT={res.fitness:+.3f} checks={res.checks_passed}/{res.checks_total}"
+                 f" score={score:+.3f}")
         return score
 
     study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
