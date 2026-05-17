@@ -43,9 +43,10 @@ SOCIAL_FIELDS = ("scl12_buzz", "scl12_sentiment", "snt_social_value",
                  "snt_social_volume")
 FIELDS = PV_FIELDS + OPTION_FIELDS + NEWS_FIELDS + ANALYST_FIELDS + SOCIAL_FIELDS
 
+# ts_returns and ts_corr also tier-gated on this account.
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
-               "ts_std_dev", "ts_returns", "ts_decay_linear")
-TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
+               "ts_std_dev", "ts_decay_linear")
+TS_OPS_2ARG: tuple[str, ...] = ()
 
 CS_OPS = ("rank", "zscore", "scale", "normalize")  # wrappers
 ARITH_OPS = ("add", "subtract", "multiply", "divide")
@@ -125,10 +126,10 @@ D0_SKELETONS = (
     "ts_decay_linear(ts_zscore(divide(close, vwap), {D}), {D})",
     "rank(ts_delta(divide({F}, {G}), {D}))",
     "ts_decay_linear(rank(divide({F}, {G})), {D})",
-    "rank(ts_corr({F}, {G}, {D}))",
     "scale(ts_mean(ts_decay_linear(divide({F}, {G}), {D}), {D}))",
     "zscore(ts_decay_linear(ts_mean(ts_std_dev({F}, {D}), {D}), {D}))",
     "rank(ts_zscore(ts_delta(reverse({F}), {D}), {D}))",
+    "rank(ts_decay_linear(ts_delta(divide({F}, ts_mean({G}, {D})), {D}), {D}))",
 )
 
 
