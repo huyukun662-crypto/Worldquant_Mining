@@ -40,7 +40,7 @@ sys.path.insert(0, str(REPO))
 
 from mining_pipeline.wq_pipeline import submit as wq_submit, D0_SETTING_SPACE  # noqa: E402
 from mining_pipeline.expressions import integer_positions, parameterize  # noqa: E402
-from mining_pipeline.d0_seeds import SEED_EXPRESSIONS  # noqa: E402
+from mining_pipeline.d0_seeds_v2 import SEED_EXPRESSIONS  # noqa: E402
 
 RESULTS_FILE = REPO / "WQ_D0_SUBMISSION_RESULTS.json"
 
