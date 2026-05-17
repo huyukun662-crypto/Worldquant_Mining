@@ -50,7 +50,7 @@ TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
 
 CS_OPS = ("rank", "zscore", "scale", "normalize")  # wrappers
 ARITH_OPS = ("add", "subtract", "multiply", "divide")
-ELEMWISE_UNARY = ("log", "abs", "reverse", "sign", "s_log_1p")
+ELEMWISE_UNARY = ("log", "abs", "reverse", "sign")  # s_log_1p is tier-gated
 # D0-effective specials. These do not exist in the local NUMPY_OPS dict
 # (they're WQ-Brain-only) but the local evaluator never sees them — only
 # the WQ /simulations endpoint does, which understands FASTEXPR natively.
