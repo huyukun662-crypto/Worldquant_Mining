@@ -44,17 +44,16 @@ SOCIAL_FIELDS = ("scl12_buzz", "scl12_sentiment", "snt_social_value",
 FIELDS = PV_FIELDS + OPTION_FIELDS + NEWS_FIELDS + ANALYST_FIELDS + SOCIAL_FIELDS
 
 TS_OPS_1ARG = ("ts_zscore", "ts_rank", "ts_delta", "ts_mean",
-               "ts_std_dev", "ts_returns", "ts_decay_linear",
-               "ts_arg_max", "ts_arg_min")
+               "ts_std_dev", "ts_returns", "ts_decay_linear")
 TS_OPS_2ARG = ("ts_corr",)  # both args time-series; share a window
 
 CS_OPS = ("rank", "zscore", "scale", "normalize")  # wrappers
 ARITH_OPS = ("add", "subtract", "multiply", "divide")
-ELEMWISE_UNARY = ("log", "abs", "reverse", "sign")  # s_log_1p is tier-gated
-# D0-effective specials. These do not exist in the local NUMPY_OPS dict
-# (they're WQ-Brain-only) but the local evaluator never sees them — only
-# the WQ /simulations endpoint does, which understands FASTEXPR natively.
-SPECIAL_OPS = ("vector_neut", "trade_when", "winsorize", "signed_power")
+# Tier-gated on this account (HTTP 400 "inaccessible or unknown operator"):
+# s_log_1p, vector_neut, trade_when, winsorize, signed_power, ts_arg_max,
+# ts_arg_min — all confirmed gated. Generator stays on the verified subset.
+ELEMWISE_UNARY = ("log", "abs", "reverse", "sign")
+SPECIAL_OPS: tuple[str, ...] = ()
 
 # D0 favors short windows (intraday-ish; long lookbacks just lag the
 # market). The Optuna search in wq_pipeline still refines these.
@@ -86,36 +85,17 @@ def _arith(rng: random.Random, depth: int) -> str:
     return f"{op}({a}, {b})"
 
 
-def _special(rng: random.Random, depth: int) -> str:
-    """Emit a D0-effective special operator call."""
-    op = rng.choice(SPECIAL_OPS)
-    if op == "vector_neut":
-        return f"vector_neut({_expr(rng, depth - 1)}, {_expr(rng, depth - 1)})"
-    if op == "trade_when":
-        # Gate alpha on rising volume; final -1 means do nothing otherwise.
-        cond = f"ts_delta(volume, {rng.choice((1, 2, 3))}) > 0"
-        return f"trade_when({cond}, {_expr(rng, depth - 1)}, -1)"
-    if op == "winsorize":
-        return f"winsorize({_expr(rng, depth - 1)}, std={rng.choice((3, 4))})"
-    if op == "signed_power":
-        e = rng.choice((0.5, 2.0))
-        return f"signed_power({_expr(rng, depth - 1)}, {e})"
-    return _leaf(rng)
-
-
 def _expr(rng: random.Random, depth: int) -> str:
     if depth <= 0:
         return _leaf(rng)
     r = rng.random()
-    if r < 0.45:
+    if r < 0.55:
         return _ts_call(rng, depth)
-    if r < 0.68:
+    if r < 0.80:
         return _arith(rng, depth)
-    if r < 0.82:
+    if r < 0.92:
         inner = _expr(rng, depth - 1)
         return f"{rng.choice(ELEMWISE_UNARY)}({inner})"
-    if r < 0.95:
-        return _special(rng, depth)
     return _leaf(rng)
 
 
@@ -135,11 +115,11 @@ D0_SKELETONS = (
     "rank(ts_rank(divide({F}, close), {D}))",
     "ts_decay_linear(ts_zscore(divide(close, vwap), {D}), {D})",
     "rank(ts_delta(divide({F}, {G}), {D}))",
-    "vector_neut(rank(divide({F}, close)), rank({G}))",
-    "trade_when(ts_delta(volume, 1) > 0, rank(divide({F}, vwap)), -1)",
-    "rank(signed_power(ts_zscore({F}, {D}), 2))",
     "ts_decay_linear(rank(divide({F}, {G})), {D})",
-    "winsorize(rank(ts_corr({F}, {G}, {D})), std=4)",
+    "rank(ts_corr({F}, {G}, {D}))",
+    "scale(ts_mean(ts_decay_linear(divide({F}, {G}), {D}), {D}))",
+    "zscore(ts_decay_linear(ts_mean(ts_std_dev({F}, {D}), {D}), {D}))",
+    "rank(ts_zscore(ts_delta(reverse({F}), {D}), {D}))",
 )
 
 
