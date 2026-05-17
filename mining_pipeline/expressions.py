@@ -79,10 +79,14 @@ def _ts_call(rng: random.Random, depth: int) -> str:
 
 
 def _arith(rng: random.Random, depth: int) -> str:
+    # WQ Brain validates units; add/subtract/multiply across heterogeneous
+    # fields (e.g. price + sentiment) rejects with "Incompatible unit".
+    # Wrap each operand in rank(...) so both sides become dimensionless
+    # cross-sectional ranks, which add/subtract/multiply/divide cleanly.
     op = rng.choice(ARITH_OPS)
     a = _expr(rng, depth - 1)
     b = _expr(rng, depth - 1)
-    return f"{op}({a}, {b})"
+    return f"{op}(rank({a}), rank({b}))"
 
 
 def _expr(rng: random.Random, depth: int) -> str:
@@ -100,10 +104,15 @@ def _expr(rng: random.Random, depth: int) -> str:
 
 
 def _wrap(rng: random.Random, core: str) -> str:
-    # Always wrap final output with a cross-sectional op so the signal is
-    # appropriately scaled for the long-short backtest.
-    wrap = rng.choice(CS_OPS)
-    return f"{wrap}({core})"
+    # Wrap final output with a cross-sectional op for L/S scaling, and
+    # half the time also smooth with ts_decay_linear / ts_mean to keep
+    # turnover within WQ's <0.7 cap (TO is the killer at D0).
+    cs = rng.choice(CS_OPS)
+    if rng.random() < 0.5:
+        smooth = rng.choice(("ts_decay_linear", "ts_mean"))
+        d = rng.choice((5, 8, 10, 15, 20))
+        return f"{cs}({smooth}({core}, {d}))"
+    return f"{cs}({core})"
 
 
 # D0-shaped skeletons — pattern-shaped, NOT value-shaped (no Alpha101
