@@ -25,11 +25,8 @@ def wrap(core):
 
 
 SIGNALS = [
-    # 1. flow-weighted momentum: buy volume * 1-day return
-    wrap("multiply(ts_delta(close, 1), volume)"),
-
-    # 2. vwap deviation (intraday flow vs close)
-    wrap("divide(subtract(close, vwap), vwap)"),
+    # NOTE: signals 1-2 (flow*momentum, vwap deviation) ran in the
+    # first v7 attempt; both <SH=0.5; skipping for the restart.
 
     # 3. intraday range as vol proxy
     wrap("divide(subtract(high, low), close)"),
@@ -58,7 +55,7 @@ SIGNALS = [
 
 
 def main():
-    out_path = REPO / "WQ_D0_V7_SIGNAL_FAMILY_REPORT.json"
+    out_path = REPO / "WQ_D0_V7B_SIGNAL_FAMILY_REPORT.json"
 
     cm_mod = W._load(W.VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
