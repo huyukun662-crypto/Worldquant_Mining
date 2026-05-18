@@ -178,6 +178,23 @@ def main() -> int:
         })
 
     found = {"alpha_id": None}
+    # Avoid re-submitting same expression+settings (WQ returns same alpha_id)
+    seen_alphas: set[str] = set()
+    seen_exprs: dict[str, str] = {}  # (expr|settings_key) -> prior alpha_id
+    if RESULTS_FILE.exists():
+        try:
+            for x in json.loads(RESULTS_FILE.read_text()):
+                if x.get("ok") and x.get("alpha_id"):
+                    seen_alphas.add(x["alpha_id"])
+                s = x.get("settings", {})
+                key = (x.get("expression", ""), s.get("universe"),
+                       s.get("delay"), s.get("decay"),
+                       s.get("truncation"), s.get("neutralization"))
+                if x.get("expression"):
+                    seen_exprs[str(key)] = x.get("alpha_id", "?")
+        except Exception:
+            pass
+    log.info(f"resume: {len(seen_alphas)} prior alpha_ids, {len(seen_exprs)} prior expr-settings skip-list")
 
     def objective(trial: optuna.trial.Trial) -> float:
         sig1_idx = trial.suggest_int("sig1_idx", 0, len(sig_names) - 1)
@@ -207,7 +224,16 @@ def main() -> int:
         log.info(f"t{trial.number}: s1={sig1} s2={sig2 or '-'} s3={sig3 or '-'} "
                  f"w={w1:.2f}/{w2:.2f}/{w3:.2f} N={decay_n} neut_wrap={neut_wrap} | "
                  f"u={universe} dec={decay} tr={truncation} neut={neutralization[:5]}")
+        # Skip if this exact (expr, settings) was already simulated
+        expr_key = str((expr, settings.get("universe"), settings.get("delay"),
+                         settings.get("decay"), settings.get("truncation"),
+                         settings.get("neutralization")))
+        if expr_key in seen_exprs:
+            log.info(f"  (skip — already simulated as {seen_exprs[expr_key]})")
+            return -5.0  # neutral-ish, TPE won't favor
         res = wq_submit(session, expr, settings)
+        if res.ok and res.alpha_id:
+            seen_exprs[expr_key] = res.alpha_id
         rec = {
             "ts": time.time(), "trial": trial.number,
             "params": trial.params, "expression": expr,
@@ -222,7 +248,8 @@ def main() -> int:
         if res.ok:
             log.info(f"  SH={res.sharpe:+.3f} FIT={res.fitness:+.3f} "
                      f"TO={res.turnover:.3f} chk={res.checks_passed}/{res.checks_total} alpha={res.alpha_id}")
-            if res.alpha_id:
+            if res.alpha_id and res.alpha_id not in seen_alphas:
+                seen_alphas.add(res.alpha_id)
                 ra = session.get(
                     f"https://api.worldquantbrain.com/alphas/{res.alpha_id}",
                     timeout=30)
@@ -240,6 +267,8 @@ def main() -> int:
                             found["alpha_id"] = res.alpha_id
                     else:
                         log.info(f"  fails: {fails[:3]}")
+            elif res.alpha_id in seen_alphas:
+                log.info(f"  (skip duplicate alpha {res.alpha_id})")
         else:
             log.info(f"  [{res.error[:120]}]")
 
@@ -252,23 +281,17 @@ def main() -> int:
         check_bonus = (res.checks_passed - 4) * 0.5
         return res.sharpe + 0.1 * res.fitness + check_bonus
 
-    def stop_when_found(study, trial):
-        if found["alpha_id"]:
-            study.stop()
-
+    # Keep mining — each accepted alpha is logged & submitted, the script
+    # only exits when the trial budget is exhausted or on Ctrl-C.
     try:
-        study.optimize(objective, n_trials=args.trials,
-                        callbacks=[stop_when_found], show_progress_bar=False)
+        study.optimize(objective, n_trials=args.trials, show_progress_bar=False)
     except KeyboardInterrupt:
         return 130
 
     print()
     print("=" * 100)
-    if found["alpha_id"]:
-        print(f"SURVIVOR: {found['alpha_id']}")
-        return 0
-    print("NO SURVIVOR.")
-    return 1
+    print(f"DONE — survivors: {found.get('alpha_id')!r} (last one)")
+    return 1  # always rc=1 so wrapper restarts (more trials with new TPE seed)
 
 
 if __name__ == "__main__":
