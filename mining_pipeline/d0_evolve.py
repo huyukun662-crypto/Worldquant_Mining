@@ -88,6 +88,16 @@ SEED_EXPRS = (
     "ts_decay_linear(rank(subtract(divide(add(high, low), 2), close)), 4)",
     # Glazar #28 (fitness 0.99): VWAP decline scaled by recency-of-high
     "divide(divide(subtract(vwap, close), close), max(ts_decay_linear(rank(ts_arg_max(close, 30)), 2), 0.20))",
+    # Tanay (real submission, D1 fitness 2.34, SH 2.27, TO 22.75%, PV-only):
+    # Volume-Spike with Price-Dip Reversal
+    "rank(multiply(divide(volume, divide(ts_sum(volume, 60), 60)), rank(divide(divide(ts_sum(close, 5), 5), close))))",
+    # YHYYDS basic PV strategies (subindustry-grouped microstructure)
+    "group_rank(divide(subtract(close, open), open), subindustry)",            # intraday return
+    "group_rank(divide(subtract(high, low), open), subindustry)",              # H-L range
+    "group_rank(divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1)), subindustry)",  # overnight return
+    "ts_corr(divide(volume, sharesout), abs(returns), 10)",                    # volume-|return| corr
+    "group_rank(divide(subtract(divide(volume, sharesout), ts_mean(divide(volume, sharesout), 20)), ts_std_dev(divide(volume, sharesout), 20)), subindustry)",  # volume z-score
+    "trade_when(greater(volume, ts_mean(volume, 20)), returns, -1)",           # vol-gated returns
 )
 
 
