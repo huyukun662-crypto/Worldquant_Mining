@@ -1,5 +1,24 @@
 [
   {
+    "alpha_id": "blNxvooZ",
+    "sharpe": 2.7,
+    "fitness": 1.9,
+    "turnover": 0.2619,
+    "returns": 0.1292,
+    "drawdown": 0.043,
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "region": "USA"
+    },
+    "expression": "rank((rank((rank((rank(ts_av_diff(ts_backfill(mdl177_2_sensitivityfactor400_chg12msip, 120), 20))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_fangma_rvm_usa_fangma_rvm6, 120), 20))))))) + (-1 * (rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60))))))) + (rank(divide(subtract(vwap, close), close))))",
+    "source_file": "WQ_D1_DIVERSIFY.json"
+  },
+  {
     "alpha_id": "e7n1eoXE",
     "sharpe": 2.19,
     "fitness": 1.81,
@@ -131,6 +150,25 @@
     },
     "expression": "rank((rank((-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))) + (rank((rank(ts_av_diff(ts_backfill(mdl177_2_sensitivityfactor400_chg12msip, 120), 20))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_fangma_rvm_usa_fangma_rvm6, 120), 20))))))))) + (rank((rank((rank(ts_av_diff(ts_backfill(mdl177_2_sensitivityfactor400_chg12msip, 120), 20))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_fangma_rvm_usa_fangma_rvm6, 120), 20))))))) + (-1 * (rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60))))))))",
     "source_file": "WQ_D1_PARETO.json"
+  },
+  {
+    "alpha_id": "wp5N50LY",
+    "sharpe": 2.17,
+    "fitness": 1.42,
+    "turnover": 0.2287,
+    "returns": 0.0982,
+    "drawdown": 0.0509,
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "region": "USA"
+    },
+    "expression": "rank((rank((rank((rank(ts_av_diff(ts_backfill(mdl177_2_sensitivityfactor400_chg12msip, 120), 20))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_fangma_rvm_usa_fangma_rvm6, 120), 20))))))) + (-1 * (rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60))))))) + (rank(divide(ts_backfill(volume, 5), ts_backfill(adv20, 60)))))",
+    "source_file": "WQ_D1_DIVERSIFY.json"
   },
   {
     "alpha_id": "1YoGvOOM",
