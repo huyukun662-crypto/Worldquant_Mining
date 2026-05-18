@@ -31,10 +31,15 @@ import re
 from dataclasses import dataclass, field
 from typing import List, Tuple
 
+from .d0_fields import flat_rare
+
 # ---- D0 hard constraints (per user spec 2026-05-18) -----------------------
-# delay=0; SH>=2.0; FIT>=1.3; PV-only fields; decay 1-5; truncation 0.005-0.02.
+# delay=0; SH>=2.0; FIT>=1.3; PV ∪ rare fields; decay 1-5; truncation 0.005-0.02.
 PV_FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
              "cap", "adv20", "sharesout")
+
+# Cached rare-field pool (loaded lazily, MATRIX-type only, alphaCount<=200).
+_FIELDS_CACHE: List[str] = []
 
 TS_OPS_1ARG = (
     "ts_mean", "ts_std_dev", "ts_zscore", "ts_rank", "ts_delta",
@@ -98,11 +103,30 @@ SEED_EXPRS = (
     "ts_corr(divide(volume, sharesout), abs(returns), 10)",                    # volume-|return| corr
     "group_rank(divide(subtract(divide(volume, sharesout), ts_mean(divide(volume, sharesout), 20)), ts_std_dev(divide(volume, sharesout), 20)), subindustry)",  # volume z-score
     "trade_when(greater(volume, ts_mean(volume, 20)), returns, -1)",           # vol-gated returns
+    # ---- Rare-field structural priors (D0-relaxed pool) ----
+    # v2 empirical winner: IV skew long-window mean-reversion (SH=1.03 once)
+    "normalize(ts_decay_linear(implied_volatility_mean_skew_360, 20))",
+    "normalize(ts_decay_linear(implied_volatility_mean_skew_180, 20))",
+    "normalize(ts_decay_linear(implied_volatility_mean_skew_90, 20))",
+    # IV term-structure carry
+    "rank(divide(subtract(implied_volatility_mean_360, implied_volatility_mean_20), implied_volatility_mean_20))",
+    # Historical vol crowding inversion
+    "rank(multiply(-1, ts_delta(historical_volatility_180, 5)))",
+    "rank(multiply(-1, ts_decay_linear(historical_volatility_60, 5)))",
+    # News-momentum (when there's news, fade direction)
+    "rank(multiply(-1, ts_mean(news_pct_30min, 20)))",
+    # Analyst estimate revision direction
+    "rank(ts_delta(est_eps, 60))",
 )
 
 
 def fields_pool() -> List[str]:
-    return list(PV_FIELDS)
+    """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
+    global _FIELDS_CACHE
+    if not _FIELDS_CACHE:
+        rare = flat_rare(universe="TOP3000", max_alpha_count=200, per_cat=30, seed=7)
+        _FIELDS_CACHE = list(PV_FIELDS) + rare
+    return _FIELDS_CACHE
 
 
 # ---------- expression generation & mutation -------------------------------
