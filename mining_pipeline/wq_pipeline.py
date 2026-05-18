@@ -63,8 +63,11 @@ SETTING_SPACE = {
 D0_SETTING_SPACE = {
     "universe":       ["TOP3000", "TOP1000", "TOP500"],
     "delay":          [0],
-    "decay":          [4, 6, 8, 10, 12, 16],
-    "truncation":     [0.05, 0.08, 0.10],
+    "decay":          [2, 4, 6, 8, 10, 12],
+    # truncation 0.10 lets CONCENTRATED_WEIGHT fail on the snt_value
+    # blend champion (limit/value None means single name > truncation
+    # weight cap). Restrict to 0.05/0.08.
+    "truncation":     [0.05, 0.08],
     "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR"],
     "pasteurization": ["ON"],
 }
