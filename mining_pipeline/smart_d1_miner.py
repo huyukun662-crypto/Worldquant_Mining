@@ -250,8 +250,20 @@ def candidate_pool(pool: dict[str, list[str]], seed: int = 0) -> list[Candidate]
     for fld in pool.get("news", []):
         add(_idiom_ts_zscore(fld, -1, 22),    "ts_zscore_neg", fld, "news", -1, 22)
 
-    rng.shuffle(cands)
-    return cands
+    # Priority: model > analyst > fundamental > socialmedia > news > pv.
+    # Model fields are already-engineered alpha factors so they reach
+    # passing-Sharpe at the highest base rate. Within each category we
+    # shuffle so we don't bias by field order in the pool dict.
+    order = {"model": 0, "analyst": 1, "fundamental": 2,
+             "socialmedia": 3, "news": 4, "pv": 5}
+    by_cat: dict[str, list[Candidate]] = {}
+    for c in cands:
+        by_cat.setdefault(c.field_category, []).append(c)
+    out: list[Candidate] = []
+    for cat in sorted(by_cat, key=lambda k: order.get(k, 99)):
+        rng.shuffle(by_cat[cat])
+        out.extend(by_cat[cat])
+    return out
 
 
 # -----------------------------------------------------------------------
