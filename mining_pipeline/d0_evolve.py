@@ -83,6 +83,11 @@ SEED_EXPRS = (
     # ADV-relative size momentum
     "rank(divide(volume, adv20))",
     "ts_decay_linear(rank(divide(volume, adv20)), 4)",
+    # Glazar #25 (fitness 1.03): mid-price vs close mean-reversion
+    "rank(subtract(divide(add(high, low), 2), close))",
+    "ts_decay_linear(rank(subtract(divide(add(high, low), 2), close)), 4)",
+    # Glazar #28 (fitness 0.99): VWAP decline scaled by recency-of-high
+    "divide(divide(subtract(vwap, close), close), max(ts_decay_linear(rank(ts_arg_max(close, 30)), 2), 0.20))",
 )
 
 

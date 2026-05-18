@@ -247,13 +247,13 @@ def main():
                 "drawdown": getattr(c, "drawdown", 0),
                 "checks_passed": c.checks_passed,
                 "checks_total": c.checks_total, "status": status}
-    with open(csv_all, "w", newline="") as f:
+    with open(csv_all, "w", newline="", encoding="utf-8-sig") as f:
         w_csv = csv.DictWriter(f, fieldnames=fields)
         w_csv.writeheader()
         for c in archive:
             w_csv.writerow(_row(c))
     passed = [c for c in archive if c.passes_submit_gate]
-    with open(csv_path, "w", newline="") as f:
+    with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
         w_csv = csv.DictWriter(f, fieldnames=fields)
         w_csv.writeheader()
         for c in passed:
