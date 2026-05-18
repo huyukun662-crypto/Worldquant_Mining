@@ -83,5 +83,430 @@
     "all_checks_pass": false,
     "alpha_id": "Jjn3oOWW",
     "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_deepvaluefactor_curep, 120), 20)))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_liquidityriskfactor_si_ratio, 120), 20))))))) + (-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "delay": 1,
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05
+    },
+    "tag": "e_base_dflc",
+    "sharpe": 1.24,
+    "turnover": 0.1367,
+    "fitness": 0.85,
+    "returns": 0.0646,
+    "drawdown": 0.0586,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 1.25,
+        "value": 1.24
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.85
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1367
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1367
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.54,
+        "value": 0.31
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S1",
+            "name": "International Quant Championship 2026 Stage 1"
+          }
+        ]
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "all_checks_pass": false,
+    "alpha_id": "d5n9YPMJ",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank((rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_deepvaluefactor_curep, 120), 20)))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_liquidityriskfactor_si_ratio, 120), 20))))))) + (-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))))) + (rank(divide(subtract(vwap, close), close))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "delay": 1,
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05
+    },
+    "tag": "e_dflc_vwap",
+    "sharpe": 1.84,
+    "turnover": 0.2666,
+    "fitness": 1.15,
+    "returns": 0.1039,
+    "drawdown": 0.05,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.84
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 1.15
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2666
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2666
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.8,
+        "value": 0.8
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S1",
+            "name": "International Quant Championship 2026 Stage 1"
+          }
+        ]
+      }
+    ],
+    "checks_passed": 7,
+    "checks_total": 8,
+    "all_checks_pass": true,
+    "alpha_id": "pwnWMgPx",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank((rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_deepvaluefactor_curep, 120), 20)))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_liquidityriskfactor_si_ratio, 120), 20))))))) + (-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))))) + (-rank(ts_sum(returns, 3))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "delay": 1,
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05
+    },
+    "tag": "e_dflc_tsret3",
+    "sharpe": 1.56,
+    "turnover": 0.2344,
+    "fitness": 1.12,
+    "returns": 0.1217,
+    "drawdown": 0.0503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.56
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 1.12
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2344
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2344
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.68,
+        "value": 0.86
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S1",
+            "name": "International Quant Championship 2026 Stage 1"
+          }
+        ]
+      }
+    ],
+    "checks_passed": 7,
+    "checks_total": 8,
+    "all_checks_pass": true,
+    "alpha_id": "xAel2bOW",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank((rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_deepvaluefactor_curep, 120), 20)))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_liquidityriskfactor_si_ratio, 120), 20))))))) + (-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))))) + (rank(divide(volume, adv20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "delay": 1,
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05
+    },
+    "tag": "e_dflc_vol",
+    "sharpe": 1.44,
+    "turnover": 0.2275,
+    "fitness": 0.78,
+    "returns": 0.0669,
+    "drawdown": 0.0624,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.44
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.0,
+        "value": 0.78
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2275
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2275
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.62,
+        "value": 0.59
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S1",
+            "name": "International Quant Championship 2026 Stage 1"
+          }
+        ]
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "all_checks_pass": false,
+    "alpha_id": "d5n93JNX",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank((rank((rank((rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_deepvaluefactor_curep, 120), 20)))) + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_liquidityriskfactor_si_ratio, 120), 20))))))) + (-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))))) + (rank(divide(subtract(vwap, close), close))))) + (-rank(ts_sum(returns, 3))))) + (rank(divide(volume, adv20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "delay": 1,
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "neutralization": "INDUSTRY",
+      "decay": 8,
+      "truncation": 0.05
+    },
+    "tag": "e_full",
+    "sharpe": 1.72,
+    "turnover": 0.3356,
+    "fitness": 1.03,
+    "returns": 0.1192,
+    "drawdown": 0.04,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 1.72
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 1.03
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3356
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3356
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.74,
+        "value": 1.2
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S1",
+            "name": "International Quant Championship 2026 Stage 1"
+          }
+        ]
+      }
+    ],
+    "checks_passed": 7,
+    "checks_total": 8,
+    "all_checks_pass": true,
+    "alpha_id": "mLqK7OXK",
+    "error": ""
   }
 ]
