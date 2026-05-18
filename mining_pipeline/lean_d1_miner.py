@@ -58,36 +58,37 @@ FIXED_SETTINGS = {
 
 
 # Candidates - each is a concise (op-depth <= 2) expression pairing an
-# obscure operator with an obscure field. Naming convention in the
-# `tag` field lets us trace the (operator, field) lineage in results.
+# obscure operator with an obscure field. Argument forms are picked
+# carefully: operators whose 2nd arg is keyword-only (e.g. hump's
+# `hump = 0.01`) get the keyword form; standard-default args (e.g.
+# `winsorize(x, std=4)`) use the positional form vendor templates use.
 CANDIDATES: list[tuple[str, str]] = [
     # (tag, expression)
 
-    # hump - threshold smoothing, reduces turnover without ts_mean lag
+    # hump - keyword-only `hump=` arg; use default by omitting
     ("hump_rel_ret_all",
-     "rank(hump(ts_backfill(rel_ret_all, 60), 0.005))"),
+     "rank(hump(ts_backfill(rel_ret_all, 60)))"),
     ("hump_news_dn",
-     "-rank(hump(ts_backfill(news_mins_4_pct_dn, 60), 0.005))"),
+     "-rank(hump(ts_backfill(news_mins_4_pct_dn, 60)))"),
 
-    # ts_quantile - in-window quantile (different from cross-sectional rank)
+    # ts_quantile - default gaussian driver; just (x, d)
     ("tsquant_news_up",
      "rank(ts_quantile(ts_backfill(news_mins_4_pct_up, 60), 22))"),
     ("tsquant_news_dn",
      "rank(ts_quantile(ts_backfill(news_mins_4_pct_dn, 60), 22))"),
 
-    # ts_target_tvr_decay - auto-tunes decay for a target turnover
-    # (directly attacks our fitness ceiling problem)
+    # ts_target_tvr_decay - auto-tunes decay for target turnover.
+    # All named args -> use keyword form for safety.
     ("ttvr_rel_ret_all",
-     "ts_target_tvr_decay(ts_backfill(rel_ret_all, 60), 0, 1, 0.1)"),
+     "ts_target_tvr_decay(ts_backfill(rel_ret_all, 60), target_tvr=0.1)"),
     ("ttvr_news_20up",
-     "ts_target_tvr_decay(ts_backfill(news_mins_20_pct_up, 60), 0, 1, 0.1)"),
+     "ts_target_tvr_decay(ts_backfill(news_mins_20_pct_up, 60), target_tvr=0.1)"),
 
-    # winsorize - outlier clip, useful for news/sentiment with fat tails
+    # winsorize - positional std arg (vendor templates use this)
     ("wins_news_ton_hi",
      "-rank(winsorize(ts_backfill(news_ton_high, 60), std=3))"),
 
-    # group_zscore - sector-relative, often dominates plain rank for
-    # sparse / cross-sectionally heterogeneous signals
+    # group_zscore - sector-relative
     ("gzs_custretsig",
      "group_zscore(ts_backfill(pv13_custretsig_retsig, 60), sector)"),
     ("gzs_rel_ret",
@@ -97,23 +98,23 @@ CANDIDATES: list[tuple[str, str]] = [
     ("gzs_adjfactor",
      "group_zscore(ts_backfill(adjfactor, 60), sector)"),
 
-    # days_from_last_change - novelty / staleness signal
+    # days_from_last_change - 1 arg
     ("dflc_revere_idx",
      "rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))"),
 
-    # last_diff_value - last differing observation
+    # last_diff_value - 2 args
     ("ldv_rel_num_comp",
      "rank(last_diff_value(ts_backfill(rel_num_comp, 60), 10))"),
 
-    # kth_element - 1st most recent valid value, useful when data is sparse
+    # kth_element - 3 args
     ("kth_news_ton_hi",
      "rank(kth_element(ts_backfill(news_ton_high, 60), 5, 1))"),
 
-    # jump_decay - decay around jumps (sentiment-shock signal)
+    # jump_decay - keyword args for sensitivity/force
     ("jump_news_ton_lo",
-     "rank(jump_decay(ts_backfill(news_ton_low, 60), 5, 0.5, 0.1))"),
+     "rank(jump_decay(ts_backfill(news_ton_low, 60), 5))"),
 
-    # ts_scale - normalize to 0-1 within window
+    # ts_scale - 2 positional, defaults the constant
     ("tsscale_rel_ret",
      "rank(ts_scale(ts_backfill(rel_ret_all, 60), 30))"),
 ]
