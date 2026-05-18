@@ -76,10 +76,14 @@ SCAN_SETTING = {
 }
 
 # Refine phase: variants to sweep around a winning candidate.
+# The scan picks tend to be ts_av_diff(model_field, 20) patterns with
+# TO ~0.14-0.25 and FIT ~0.5-0.7. To push FIT past 1.0 we need to cut
+# turnover (higher decay) while preserving Sharpe (tight truncation and
+# the more granular SUBINDUSTRY neutralization).
 REFINE_UNIVERSES     = ["TOP3000", "TOP1000", "TOP500"]
-REFINE_NEUTRALIZATIONS = ["INDUSTRY", "SUBINDUSTRY", "SECTOR"]
-REFINE_DECAYS        = [0, 4, 8, 16]
-REFINE_TRUNCATIONS   = [0.01, 0.05, 0.08]
+REFINE_NEUTRALIZATIONS = ["SUBINDUSTRY", "INDUSTRY"]
+REFINE_DECAYS        = [8, 16, 32]
+REFINE_TRUNCATIONS   = [0.01, 0.05]
 
 
 # -----------------------------------------------------------------------
