@@ -214,9 +214,24 @@ def propose_variations(point: HistEntry, frontier: list[HistEntry],
             combo = f"rank(({expr}) + ({partner.eff_expression}))"
             out.append((f"combo_{partner.alpha_id[:6]}", combo, s))
 
-    # 4. Hump (low-pass)
+    # 4. Hump (low-pass) - lighter than ts_mean, often retains SH
     if fit_gap > 0:
         out.append(("hump", f"rank(hump(({expr})))", s))
+
+    # 5. Neutralization/universe variants - fix LOW_SUB_UNIVERSE_SHARPE
+    # without smoothing (which kills the signal). Sub-universe Sharpe
+    # is a function of how the signal distributes across cap deciles,
+    # so changing universe or neutralization can lift it.
+    for neu in ("SUBINDUSTRY", "SECTOR", "MARKET"):
+        if neu == s.get("neutralization"):
+            continue
+        sv = dict(s); sv["neutralization"] = neu
+        out.append((f"neu_{neu[:3]}", expr, sv))
+    for uni in ("TOP1000", "TOP500"):
+        if uni == s.get("universe"):
+            continue
+        sv = dict(s); sv["universe"] = uni
+        out.append((f"uni_{uni[3:]}", expr, sv))
 
     return out
 
