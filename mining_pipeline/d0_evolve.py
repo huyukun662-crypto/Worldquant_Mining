@@ -31,9 +31,8 @@ import re
 from dataclasses import dataclass, field
 from typing import List, Tuple
 
-from .d0_fields import flat_rare
-
-# Broad field pool: standard PV ∪ rare D0 fields.
+# ---- D0 hard constraints (per user spec 2026-05-18) -----------------------
+# delay=0; SH>=2.0; FIT>=1.3; PV-only fields; decay 1-5; truncation 0.005-0.02.
 PV_FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns",
              "cap", "adv20", "sharesout")
 
@@ -50,21 +49,45 @@ WINDOWS = (3, 5, 10, 20, 30, 60, 120)
 SETTING_SPACE = {
     "universe":       ["TOP3000", "TOP1000", "TOP500"],
     "delay":          [0],
-    "decay":          [0, 4, 8, 16, 32],
-    "truncation":     [0.01, 0.05, 0.08, 0.10],
-    "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR", "MARKET"],
+    "decay":          [1, 2, 3, 4, 5],
+    "truncation":     [0.005, 0.01, 0.015, 0.02],
+    "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR"],
     "pasteurization": ["ON"],
 }
 
-_FIELDS_CACHE: List[str] = []
+SHARPE_FLOOR = 2.0
+FITNESS_FLOOR = 1.3
+TURNOVER_CEILING = 0.25
+
+# C01-style structural seeds (PV-only, known-good D0 templates).
+# `ts_decay_exp_window` is not in this account's operator catalog
+# (verified against constants/upstream_operatorRAW.json); ts_decay_linear
+# is used as the closest substitute.
+SEED_EXPRS = (
+    # C01: mean-reversion on intraday VWAP gap
+    "ts_decay_linear(rank(divide(subtract(vwap, close), close)), 4)",
+    "ts_decay_linear(rank(divide(subtract(vwap, close), close)), 3)",
+    "ts_decay_linear(rank(divide(subtract(vwap, close), close)), 5)",
+    # 1-day reversal on returns
+    "rank(multiply(-1, returns))",
+    "ts_decay_linear(rank(multiply(-1, returns)), 4)",
+    # Short-window close mean-reversion
+    "ts_decay_linear(rank(multiply(-1, ts_delta(close, 1))), 3)",
+    "ts_decay_linear(rank(multiply(-1, ts_delta(close, 5))), 4)",
+    # Volume-price correlation (illiquidity premium variant)
+    "rank(multiply(-1, ts_corr(close, volume, 20)))",
+    # VWAP - mid-price reversion
+    "ts_decay_linear(rank(divide(subtract(vwap, divide(add(high, low), 2)), close)), 4)",
+    # Intraday range relative to close
+    "rank(divide(subtract(high, low), close))",
+    # ADV-relative size momentum
+    "rank(divide(volume, adv20))",
+    "ts_decay_linear(rank(divide(volume, adv20)), 4)",
+)
 
 
 def fields_pool() -> List[str]:
-    global _FIELDS_CACHE
-    if not _FIELDS_CACHE:
-        rare = flat_rare(universe="TOP3000", max_alpha_count=200, per_cat=30, seed=7)
-        _FIELDS_CACHE = list(PV_FIELDS) + rare
-    return _FIELDS_CACHE
+    return list(PV_FIELDS)
 
 
 # ---------- expression generation & mutation -------------------------------
@@ -249,9 +272,9 @@ class Cand:
     @property
     def passes_submit_gate(self) -> bool:
         return (self.ok
-                and self.sharpe > 1.25
-                and self.turnover < 0.25
-                and self.fitness > 1.0
+                and self.sharpe >= SHARPE_FLOOR
+                and self.turnover < TURNOVER_CEILING
+                and self.fitness >= FITNESS_FLOOR
                 and self.checks_total > 0
                 and self.checks_passed == self.checks_total)
 

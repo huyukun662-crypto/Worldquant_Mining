@@ -146,12 +146,34 @@ def main():
         winners.sort(key=lambda c: c.fitness, reverse=True)
         return winners[0] if winners else None
 
-    # Generation 0: fresh random batch
-    log.info(f"=== gen 0: spawning {args.seed_n} random expressions")
-    gen0 = ev.dedup([ev.random_expr(rng) for _ in range(args.seed_n)])
-    for i, e in enumerate(gen0, 1):
-        s = ev.random_settings(rng)
-        log.info(f"  [gen0 {i}/{len(gen0)}] {e}  | {s}")
+    # Generation 0: SEED_EXPRS (structural priors) + a few fresh randoms.
+    # Each seed is run at TWO setting variants (low-decay vs mid-decay) to
+    # explore the small D0 settings space efficiently.
+    log.info(f"=== gen 0: {len(ev.SEED_EXPRS)} seeds × 2 settings + "
+             f"{args.seed_n} random")
+    gen0: list[tuple[str, dict]] = []
+    for s_expr in ev.SEED_EXPRS:
+        gen0.append((s_expr, {"universe": "TOP3000", "delay": 0, "decay": 4,
+                              "truncation": 0.01,
+                              "neutralization": "SUBINDUSTRY",
+                              "pasteurization": "ON"}))
+        gen0.append((s_expr, {"universe": "TOP3000", "delay": 0, "decay": 1,
+                              "truncation": 0.005,
+                              "neutralization": "INDUSTRY",
+                              "pasteurization": "ON"}))
+    for _ in range(args.seed_n):
+        gen0.append((ev.random_expr(rng), ev.random_settings(rng)))
+    # Dedup
+    seen = set()
+    uniq: list[tuple[str, dict]] = []
+    for e, s in gen0:
+        key = e + json.dumps(s, sort_keys=True)
+        if key in seen: continue
+        seen.add(key); uniq.append((e, s))
+    gen0 = uniq
+    for i, (e, s) in enumerate(gen0, 1):
+        log.info(f"  [gen0 {i}/{len(gen0)}] {e}")
+        log.info(f"         settings={s}")
         c = evaluate(cm.session, e, s)
         archive.append(c)
         save()
@@ -193,6 +215,50 @@ def main():
                     break
             if check_winner():
                 break
+
+    # CSV export (mimics the spec's D0-mined-alphas-{date}.csv shape).
+    import csv, datetime
+    today = datetime.date.today().isoformat()
+    csv_path = REPO / f"D0-mined-alphas-{today}.csv"
+    csv_all = REPO / f"D0-mined-all-{today}.csv"
+    fields = ["alpha_id", "expression", "universe", "delay", "decay",
+              "truncation", "neutralization", "sharpe", "fitness", "turnover",
+              "returns", "drawdown", "checks_passed", "checks_total", "status"]
+    def _row(c):
+        s = c.settings
+        if not c.ok:
+            status = "ERROR"
+        elif c.passes_submit_gate:
+            status = "PASSED"
+        elif c.sharpe < ev.SHARPE_FLOOR:
+            status = "FAILED_LOW_SHARPE"
+        elif c.fitness < ev.FITNESS_FLOOR:
+            status = "FAILED_LOW_FITNESS"
+        elif c.turnover >= ev.TURNOVER_CEILING:
+            status = "FAILED_HIGH_TURNOVER"
+        else:
+            status = "FAILED_CHECKS"
+        return {"alpha_id": c.alpha_id, "expression": c.expression,
+                "universe": s.get("universe"), "delay": s.get("delay"),
+                "decay": s.get("decay"), "truncation": s.get("truncation"),
+                "neutralization": s.get("neutralization"),
+                "sharpe": c.sharpe, "fitness": c.fitness,
+                "turnover": c.turnover, "returns": getattr(c, "returns", 0),
+                "drawdown": getattr(c, "drawdown", 0),
+                "checks_passed": c.checks_passed,
+                "checks_total": c.checks_total, "status": status}
+    with open(csv_all, "w", newline="") as f:
+        w_csv = csv.DictWriter(f, fieldnames=fields)
+        w_csv.writeheader()
+        for c in archive:
+            w_csv.writerow(_row(c))
+    passed = [c for c in archive if c.passes_submit_gate]
+    with open(csv_path, "w", newline="") as f:
+        w_csv = csv.DictWriter(f, fieldnames=fields)
+        w_csv.writeheader()
+        for c in passed:
+            w_csv.writerow(_row(c))
+    log.info(f"wrote {csv_path} ({len(passed)} PASSED) and {csv_all} ({len(archive)} total)")
 
     w = check_winner()
     print("=" * 110)
