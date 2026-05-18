@@ -43,10 +43,10 @@ CHAMPIONS = {
         "+ (rank(divide(subtract(vwap, close), close))))"
     ),
     "B_N1nK7RPw": (
-        # SH 2.57 FIT 1.88
-        "rank((rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_sensitivityfactor400_ttmocfev, 120), 20)))))"
-        " + ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_relativevaluemodel_ttmfcfp, 120), 20))))))) "
-        "+ (-1 * (rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60))))))) "
+        # SH 2.57 FIT 1.88 (exact expression from WQ Brain alpha record)
+        "rank((rank((rank((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_sensitivityfactor400_ttmocfev, 120), 20)))) "
+        "+ ((-1 * (rank(ts_av_diff(ts_backfill(mdl177_2_relativevaluemodel_ttmfcfp, 120), 20))))))) "
+        "+ (-rank(days_from_last_change(ts_backfill(pv13_revere_index_value, 60)))))) "
         "+ (rank(divide(subtract(vwap, close), close))))"
     ),
     "C_2rvGjMd5": (
