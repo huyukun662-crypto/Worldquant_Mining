@@ -128,7 +128,11 @@ def submit(session, expression: str, settings: dict,
     t0 = time.time()
     while time.time() - t0 < poll_timeout_s:
         time.sleep(poll_interval_s)
-        rp = session.get(progress_url, timeout=30)
+        try:
+            rp = session.get(progress_url, timeout=30)
+        except Exception as ex:
+            log.info(f"   poll GET error ({type(ex).__name__}); retrying")
+            continue
         if rp.status_code == 429:
             time.sleep(30); continue
         if rp.status_code != 200:
@@ -137,8 +141,14 @@ def submit(session, expression: str, settings: dict,
         st = data.get("status", "")
         if st == "COMPLETE":
             alpha_id = data.get("alpha")
-            ra = session.get(f"https://api.worldquantbrain.com/alphas/{alpha_id}",
-                              timeout=30)
+            try:
+                ra = session.get(f"https://api.worldquantbrain.com/alphas/{alpha_id}",
+                                  timeout=30)
+            except Exception as ex:
+                return WQResult(ok=False, expression=expression,
+                                optimized=expression, settings=full_settings,
+                                alpha_id=alpha_id or "",
+                                error=f"alpha-get-exception: {type(ex).__name__}")
             if ra.status_code != 200:
                 return WQResult(ok=False, expression=expression,
                                 optimized=expression, settings=full_settings,
