@@ -114,7 +114,7 @@ def _a042(n1, n2, n3):
 
 def _a046(n1, n2, n3):
     return (f"if_else((ts_delay(close, {n1}) - ts_delay(close, {n2})) / {n1} "
-            f"- (ts_delay(close, 0) - ts_delay(close, {n1})) / {n1} > 0.25, "
+            f"- (close - ts_delay(close, {n1})) / {n1} > 0.25, "
             f"-1, 1) * (close - ts_delay(close, 1))")
 
 
