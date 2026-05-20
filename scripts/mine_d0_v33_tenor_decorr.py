@@ -30,7 +30,7 @@ from mining_pipeline.wq_pipeline import submit as wq_submit  # noqa: E402
 
 RESULTS_FILE = REPO / "WQ_D0_V33_RESULTS.json"
 SELF_CORR_PENDING_OK = {"SELF_CORRELATION"}
-SELF_CORR_MAX = 0.68   # submission gate is 0.70; keep margin
+SELF_CORR_MAX = 0.69   # WQ submission cutoff is 0.70; 0.01 measurement margin
 
 FIXED_SETTINGS = {
     "instrumentType":"EQUITY","region":"USA","language":"FASTEXPR","unitHandling":"VERIFY",
