@@ -81,19 +81,23 @@ def evaluate_pass(alpha_json):
     return len(fails)==0, fails
 
 
-def self_corr_max(session, alpha_id, tries=8):
+def self_corr_max(session, alpha_id, tries=20, wait=8):
+    """Poll /correlations/self. The endpoint computes asynchronously: the first
+    GET triggers computation and returns empty; later GETs return data once ready.
+    Returns max correlation, or None if it never populates (caller must NOT treat
+    None as decorrelated)."""
     url = f"https://api.worldquantbrain.com/alphas/{alpha_id}/correlations/self"
     for _ in range(tries):
         try:
             r = session.get(url, timeout=30)
         except Exception:
-            time.sleep(5); continue
+            time.sleep(wait); continue
         if r.status_code == 200 and r.text.strip():
             try:
                 return r.json().get("max")
             except Exception:
-                return None
-        time.sleep(5)
+                pass
+        time.sleep(wait)
     return None
 
 
@@ -119,15 +123,19 @@ def main():
     sampler = optuna.samplers.TPESampler(seed=args.seed, n_startup_trials=20)
     study = optuna.create_study(direction="maximize", sampler=sampler)
 
-    # Seed: every tenor x group at the proven v31 weights/params
+    # Seed: sweep tenors across the decorrelation levers (neutralization + universe).
+    # At INDUSTRY/TOP3000 only skew_20 dropped below 0.70 — the far tenors need a
+    # different neut/universe to shift their PnL away from the existing _60 family.
+    lever_combos = [("SUBINDUSTRY", "TOP3000"), ("MARKET", "TOP3000"),
+                    ("SECTOR", "TOP3000"), ("INDUSTRY", "TOP1000")]
     for t in TENORS:
-        for g in ["sector", "industry"]:
+        for neut, uni in lever_combos:
             study.enqueue_trial({
-                "tenor": t, "group": g,
+                "tenor": t, "group": "sector",
                 "w1": 1.80, "w2": 0.90, "w3": 0.40,
                 "decay_n": 30, "gate_p": 0.12, "wins_std": 4,
                 "decay": 12, "truncation": 0.05,
-                "neut": "INDUSTRY", "universe": "TOP3000",
+                "neut": neut, "universe": uni,
             })
 
     seen_alphas = set(); seen_exprs = {}
@@ -153,7 +161,7 @@ def main():
         wins_std = trial.suggest_int("wins_std", 3, 5)
         decay = trial.suggest_categorical("decay", [8, 10, 12])
         truncation = trial.suggest_categorical("truncation", [0.05, 0.08])
-        neut = trial.suggest_categorical("neut", ["INDUSTRY", "SUBINDUSTRY", "SECTOR"])
+        neut = trial.suggest_categorical("neut", ["INDUSTRY", "SUBINDUSTRY", "SECTOR", "MARKET"])
         universe = trial.suggest_categorical("universe", ["TOP3000", "TOP1000"])
 
         settings = dict(FIXED_SETTINGS, universe=universe, decay=decay,
@@ -191,15 +199,19 @@ def main():
                 if ra.status_code == 200:
                     passed, fails = evaluate_pass(ra.json())
                     rec["all_pass"] = passed; rec["failure_reasons"] = fails
-                    decorrelated = (self_corr is None) or (self_corr < SELF_CORR_MAX)
+                    # require a MEASURED correlation below threshold; never treat
+                    # an unmeasurable (None) correlation as decorrelated.
+                    decorrelated = (self_corr is not None) and (self_corr < SELF_CORR_MAX)
                     if passed and decorrelated:
-                        log.info(f"  *** PASSED + DECORRELATED (corr={self_corr}) — submitting ***")
+                        log.info(f"  *** PASSED + DECORRELATED (corr={self_corr:.4f}) — submitting ***")
                         sub = attempt_submit(session, res.alpha_id)
                         rec["submit_response"] = sub
                         if sub.get("ok"):
-                            log.info(f"  *** SUBMIT ACCEPTED: {res.alpha_id} ***")
-                    elif passed and not decorrelated:
-                        log.info(f"  passed IS but self_corr={self_corr} >= {SELF_CORR_MAX} — NOT submitting")
+                            log.info(f"  *** SUBMIT POSTED: {res.alpha_id} (verify ACTIVE) ***")
+                    elif passed and self_corr is None:
+                        log.info(f"  passed IS but self_corr unmeasured — NOT submitting")
+                    elif passed:
+                        log.info(f"  passed IS but self_corr={self_corr:.4f} >= {SELF_CORR_MAX} — NOT submitting")
                     else:
                         log.info(f"  fails: {fails[:3]}")
         else:
