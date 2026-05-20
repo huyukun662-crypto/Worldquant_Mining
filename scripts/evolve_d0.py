@@ -40,6 +40,12 @@ log = logging.getLogger("evolve-d0")
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
 
+# Signature over the settings keys that actually change a simulation, so a
+# (bare-settings) child matches an (FIXED_SETTINGS-merged) archive entry.
+_SIG_KEYS = ("universe", "delay", "decay", "truncation", "neutralization")
+def _sig(expr, s):
+    return expr + "|" + "|".join(f"{k}={s.get(k)}" for k in _SIG_KEYS)
+
 
 def _result_to_cand(r: wp.WQResult) -> ev.Cand:
     return ev.Cand(expression=r.expression, settings=dict(r.settings),
@@ -163,14 +169,24 @@ def main():
                               "pasteurization": "ON"}))
     for _ in range(args.seed_n):
         gen0.append((ev.random_expr(rng), ev.random_settings(rng)))
-    # Dedup
+
+    # Skip gen-0 entries already evaluated in the seeded archive — a restart
+    # should jump straight to fresh work instead of re-simulating cached seeds.
+    archive_sigs = {_sig(c.expression, c.settings) for c in archive}
     seen = set()
     uniq: list[tuple[str, dict]] = []
+    skipped = 0
     for e, s in gen0:
-        key = e + json.dumps(s, sort_keys=True)
-        if key in seen: continue
-        seen.add(key); uniq.append((e, s))
+        key = _sig(e, s)
+        if key in seen:
+            continue
+        seen.add(key)
+        if key in archive_sigs:
+            skipped += 1
+            continue
+        uniq.append((e, s))
     gen0 = uniq
+    log.info(f"gen 0: {len(gen0)} fresh (skipped {skipped} already in archive)")
     for i, (e, s) in enumerate(gen0, 1):
         log.info(f"  [gen0 {i}/{len(gen0)}] {e}")
         log.info(f"         settings={s}")
@@ -198,11 +214,14 @@ def main():
                     children.append((expr, sett))
             for _ in range(args.rand):
                 children.append((ev.random_expr(rng), ev.random_settings(rng)))
-            # Dedup vs archive
-            seen = {c.expression + json.dumps(c.settings, sort_keys=True)
-                    for c in archive}
-            children = [(e, s) for (e, s) in children
-                        if (e + json.dumps(s, sort_keys=True)) not in seen]
+            # Dedup vs archive (and within this generation's children)
+            seen = {_sig(c.expression, c.settings) for c in archive}
+            uniq_children = []
+            for e, s in children:
+                k = _sig(e, s)
+                if k in seen: continue
+                seen.add(k); uniq_children.append((e, s))
+            children = uniq_children
             log.info(f"   {len(children)} unique children to evaluate")
             for i, (e, s) in enumerate(children, 1):
                 log.info(f"   [g{g} {i}/{len(children)}] {e}")
