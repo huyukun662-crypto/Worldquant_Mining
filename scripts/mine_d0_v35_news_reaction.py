@@ -76,7 +76,10 @@ def signal_expr(name, bf):
     if name == "ls_hint":                # platform's own long/short advantage flag
         return _bf("news_ls", bf)
     if name == "eps_surprise":           # EPS printed in release vs consensus
-        return f"({_bf('news_eps_actual', bf)} / {_bf('est_epsr', 250)} - 1)"
+        # ratio only (no "- 1"): news_eps_actual/est_epsr keeps a residual unit
+        # under VERIFY, so subtracting a dimensionless 1 is rejected; group_zscore
+        # strips scale regardless.
+        return f"({_bf('news_eps_actual', bf)} / {_bf('est_epsr', 250)})"
     raise ValueError(name)
 
 
