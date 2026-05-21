@@ -159,8 +159,10 @@ def main():
              f"{args.seed_n} random")
     gen0: list[tuple[str, dict]] = []
     for s_expr in ev.SEED_EXPRS:
+        # Setting A: the SH=1.97/6-of-8 winning combo (trunc=0.02 clears
+        # CONCENTRATED_WEIGHT + LOW_SUB_UNIVERSE_SHARPE).
         gen0.append((s_expr, {"universe": "TOP3000", "delay": 0, "decay": 4,
-                              "truncation": 0.01,
+                              "truncation": 0.02,
                               "neutralization": "SUBINDUSTRY",
                               "pasteurization": "ON"}))
         gen0.append((s_expr, {"universe": "TOP3000", "delay": 0, "decay": 1,

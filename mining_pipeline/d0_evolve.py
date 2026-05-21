@@ -149,6 +149,22 @@ SEED_EXPRS = (
     "normalize(ts_decay_linear(subtract(implied_volatility_call_360, implied_volatility_put_360), 20))",
 )
 
+# Targeted grid around the SH=1.97, 6/8-check winner (2026-05-21):
+#   zscore(ts_mean(IV_call_360 - IV_put_360, 10))  SUBINDUSTRY decay=4 trunc=0.02
+# zscore/scale wrap + trunc>=0.02 clears CONCENTRATED_WEIGHT and
+# LOW_SUB_UNIVERSE_SHARPE; only LOW_SHARPE (1.97 vs 2.0) remains. Sweep
+# maturity × window × wrap to nudge SH past 2.0 while keeping 6/8.
+def _callput_grid():
+    out = []
+    for M in (180, 270, 360, 720):
+        for W in (5, 8, 10, 12, 15, 20):
+            spread = f"subtract(implied_volatility_call_{M}, implied_volatility_put_{M})"
+            out.append(f"zscore(ts_mean({spread}, {W}))")
+            out.append(f"scale(ts_mean({spread}, {W}))")
+    return tuple(out)
+
+SEED_EXPRS = SEED_EXPRS + _callput_grid()
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
