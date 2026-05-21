@@ -140,6 +140,13 @@ SEED_EXPRS = (
     "group_neutralize(multiply(-1, ts_corr(high, volume, 20)), sector)",
     # Call-IV momentum vs realized vol divergence
     "rank(subtract(ts_zscore(implied_volatility_call_30, 20), ts_zscore(historical_volatility_30, 20)))",
+    # Call-Put IV spread (INVERSE of put-call: gen-0 showed put-call gives
+    # strong NEGATIVE SH at low TO, so call-put is the positive-SH direction)
+    "ts_decay_linear(rank(subtract(implied_volatility_call_360, implied_volatility_put_360)), 10)",
+    "ts_decay_linear(rank(subtract(implied_volatility_call_180, implied_volatility_put_180)), 10)",
+    "rank(subtract(implied_volatility_call_180, implied_volatility_put_180))",
+    "winsorize(ts_mean(subtract(implied_volatility_call_360, implied_volatility_put_360), 10), std=4)",
+    "normalize(ts_decay_linear(subtract(implied_volatility_call_360, implied_volatility_put_360), 20))",
 )
 
 
