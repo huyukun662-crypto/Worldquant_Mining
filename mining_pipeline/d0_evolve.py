@@ -216,6 +216,45 @@ NEWOPS_SEEDS = (
 )
 SEED_EXPRS = NEWOPS_SEEDS + SEED_EXPRS  # new ops FIRST so gen-0 runs them early
 
+# ==== NEW DOMAIN (2026-05-21): value / quality / investment anomalies ====
+# Fundamental ratios vs market cap (cap = full coverage). Quarterly-updating
+# fundamentals -> naturally low turnover (good for D0). group_zscore over
+# subindustry handles the ~0.50 coverage and clears sub-universe / weight
+# checks (the wrap that worked for call-put). decay smooths the step updates.
+VALUE_QUALITY_SEEDS = (
+    # --- Value (yield to price / EV) ---
+    "group_zscore(divide(ebit, enterprise_value), subindustry)",            # Greenblatt earnings yield
+    "group_zscore(divide(ebitda, enterprise_value), subindustry)",
+    "group_zscore(divide(cashflow, cap), subindustry)",                     # cashflow yield
+    "group_zscore(divide(sales, cap), subindustry)",                        # sales-to-price
+    "group_zscore(divide(fnd6_seq, cap), subindustry)",                     # book-to-market
+    "group_zscore(divide(retained_earnings, cap), subindustry)",
+    "group_zscore(divide(income, cap), subindustry)",                       # earnings yield
+    # --- Quality (profitability / leverage) ---
+    "group_zscore(return_assets, subindustry)",                             # ROA
+    "group_zscore(divide(ebit, assets), subindustry)",                      # Greenblatt ROC
+    "group_zscore(divide(income, fnd6_seq), subindustry)",                  # ROE
+    "group_zscore(current_ratio, subindustry)",                             # liquidity
+    "group_zscore(multiply(-1, divide(debt, fnd6_seq)), subindustry)",      # low leverage
+    "group_zscore(divide(cash, assets), subindustry)",                      # cash holding
+    # --- Investment / accruals (conservative = positive) ---
+    "group_zscore(multiply(-1, ts_delta(assets, 60)), subindustry)",        # asset-growth anomaly
+    "group_zscore(multiply(-1, divide(capex, assets)), subindustry)",       # low capex
+    "group_zscore(multiply(-1, sales_growth), subindustry)",
+    "group_zscore(multiply(-1, divide(capex, cashflow)), subindustry)",
+    # --- Yield ---
+    "group_zscore(divide(fnd6_dvc, cap), subindustry)",                     # dividend yield
+    # --- decay-smoothed value (lower turnover) ---
+    "group_zscore(ts_mean(divide(ebit, enterprise_value), 20), subindustry)",
+    "group_zscore(ts_mean(divide(cashflow, cap), 20), subindustry)",
+    "rank(divide(ebit, enterprise_value))",
+    "rank(divide(fnd6_seq, cap))",
+    # --- composite value+quality (magic formula) ---
+    "group_zscore(add(divide(ebit, enterprise_value), divide(ebit, assets)), subindustry)",
+    "group_zscore(subtract(divide(income, cap), divide(debt, fnd6_seq)), subindustry)",
+)
+SEED_EXPRS = VALUE_QUALITY_SEEDS + SEED_EXPRS  # value/quality FIRST this round
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
