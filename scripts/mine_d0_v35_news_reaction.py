@@ -83,8 +83,11 @@ def signal_expr(name, bf):
     raise ValueError(name)
 
 
-SIGNALS = ["abret", "net_react", "excursion", "react_speed",
-           "vol_expand", "ls_hint", "eps_surprise"]
+# Pruned to the signals that cleared SH>0.3 in base-config smoke tests
+# (eps_surprise@sign-1=1.05, ls_hint=0.52, abret=0.31). The rest
+# (net_react, excursion, react_speed, vol_expand) were <=0.12 — dropped so
+# the trial budget concentrates on the productive family.
+SIGNALS = ["eps_surprise", "ls_hint", "abret"]
 
 
 def _load(p, name):
