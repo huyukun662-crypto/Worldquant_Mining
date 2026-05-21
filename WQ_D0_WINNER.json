@@ -1,35 +1,63 @@
 {
-  "alpha_id": "zq5lA5nO",
-  "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 8))",
-  "settings": {
-    "instrumentType": "EQUITY",
+  "gate": "D0 strict: SH>=2.0 AND FIT>=1.3 AND TO<0.25 AND all IS checks PASS (self-corr pending submit)",
+  "count": 5,
+  "common_settings": {
     "region": "USA",
-    "language": "FASTEXPR",
     "universe": "TOP3000",
     "delay": 0,
-    "decay": 3,
-    "truncation": 0.015,
     "neutralization": "SUBINDUSTRY",
     "pasteurization": "ON"
   },
-  "is_metrics": {
-    "sharpe": 2.19,
-    "fitness": 2.66,
-    "turnover": 0.1394,
-    "returns": 0.2055,
-    "drawdown": 0.123
-  },
-  "checks": {
-    "LOW_SHARPE": "PASS",
-    "LOW_FITNESS": "PASS",
-    "LOW_TURNOVER": "PASS",
-    "HIGH_TURNOVER": "PASS",
-    "CONCENTRATED_WEIGHT": "PASS",
-    "LOW_SUB_UNIVERSE_SHARPE": "PASS",
-    "MATCHES_COMPETITION": "PASS",
-    "SELF_CORRELATION": "PENDING"
-  },
-  "gate": "D0 strict: SH>=2.0 AND FIT>=1.3 AND TO<0.25 AND all IS checks PASS",
-  "status": "ALL_DATA_SIDE_CHECKS_PASS (self-correlation pending submit)",
-  "note": "Call-Put IV spread (180d): bullish option-market skew predicts positive next-day returns. NOT submitted per user instruction."
+  "alphas": [
+    {
+      "alpha_id": "mLqEdxY1",
+      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 8))",
+      "decay": 4,
+      "truncation": 0.015,
+      "sharpe": 2.19,
+      "turnover": 0.13,
+      "fitness": 2.75,
+      "checks": "7/8"
+    },
+    {
+      "alpha_id": "qMnQ5OAv",
+      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 8))",
+      "decay": 3,
+      "truncation": 0.02,
+      "sharpe": 2.19,
+      "turnover": 0.1402,
+      "fitness": 2.7,
+      "checks": "7/8"
+    },
+    {
+      "alpha_id": "XgkdVjJ5",
+      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 8))",
+      "decay": 3,
+      "truncation": 0.025,
+      "sharpe": 2.17,
+      "turnover": 0.141,
+      "fitness": 2.69,
+      "checks": "7/8"
+    },
+    {
+      "alpha_id": "zq5lA5nO",
+      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 8))",
+      "decay": 3,
+      "truncation": 0.015,
+      "sharpe": 2.19,
+      "turnover": 0.1394,
+      "fitness": 2.66,
+      "checks": "7/8"
+    },
+    {
+      "alpha_id": "d5d2ZZav",
+      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 5))",
+      "decay": 4,
+      "truncation": 0.02,
+      "sharpe": 2.15,
+      "turnover": 0.1765,
+      "fitness": 2.36,
+      "checks": "7/8"
+    }
+  ]
 }
