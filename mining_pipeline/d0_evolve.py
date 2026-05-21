@@ -117,6 +117,29 @@ SEED_EXPRS = (
     "rank(multiply(-1, ts_mean(news_pct_30min, 20)))",
     # Analyst estimate revision direction
     "rank(ts_delta(est_eps, 60))",
+    # ==== NEW DIRECTION (2026-05-20): sentiment / put-call / group / event ====
+    # Social-media sentiment reversal & momentum (snt_/scl12_ barely mined)
+    "rank(multiply(-1, ts_delta(scl12_sentiment, 5)))",
+    "group_rank(scl12_sentiment, subindustry)",
+    "rank(ts_mean(snt_social_value, 20))",
+    "rank(multiply(-1, ts_corr(scl12_sentiment, returns, 20)))",
+    "rank(divide(subtract(snt_social_volume, ts_mean(snt_social_volume, 20)), ts_std_dev(snt_social_volume, 20)))",
+    "rank(multiply(-1, ts_delta(scl12_buzz, 5)))",
+    "rank(ts_zscore(snt_buzz_ret, 20))",
+    # Buzz-gated price reversal (event-conditional via trade_when)
+    "trade_when(greater(scl12_buzz, ts_mean(scl12_buzz, 20)), multiply(-1, returns), -1)",
+    "trade_when(greater(snt_social_volume, ts_mean(snt_social_volume, 20)), multiply(-1, ts_delta(close, 1)), -1)",
+    # Put-Call IV spread (fear gauge — distinct from IV skew)
+    "rank(subtract(implied_volatility_put_60, implied_volatility_call_60))",
+    "rank(subtract(implied_volatility_put_180, implied_volatility_call_180))",
+    "rank(multiply(-1, ts_delta(subtract(implied_volatility_put_180, implied_volatility_call_180), 5)))",
+    "ts_decay_linear(rank(subtract(implied_volatility_put_360, implied_volatility_call_360)), 10)",
+    # Group-neutralized PV reversal (cross-sectional structure, new angle)
+    "group_neutralize(rank(multiply(-1, ts_delta(close, 5))), subindustry)",
+    "group_rank(multiply(-1, ts_corr(high, volume, 20)), subindustry)",
+    "group_neutralize(multiply(-1, ts_corr(high, volume, 20)), sector)",
+    # Call-IV momentum vs realized vol divergence
+    "rank(subtract(ts_zscore(implied_volatility_call_30, 20), ts_zscore(historical_volatility_30, 20)))",
 )
 
 
