@@ -45,10 +45,13 @@ TS_OPS_1ARG = (
     "ts_mean", "ts_std_dev", "ts_zscore", "ts_rank", "ts_delta",
     "ts_decay_linear", "ts_arg_max", "ts_arg_min", "ts_quantile",
     "ts_av_diff", "ts_scale", "ts_product",
+    # new (2026-05-21): unexplored time-series ops
+    "ts_max", "ts_min", "jump_decay", "last_diff_value", "ts_backfill",
 )
 TS_OPS_2ARG = ("ts_corr", "ts_covariance")
-CS_WRAPS = ("rank", "zscore", "winsorize", "normalize", "quantile", "scale")
-UNARY = ("hump", "signed_power", "abs", "sign")
+CS_WRAPS = ("rank", "zscore", "winsorize", "normalize", "quantile", "scale",
+            "group_zscore_si", "group_scale_si", "scale_down")  # group_* take subindustry
+UNARY = ("hump", "signed_power", "abs", "sign", "sqrt", "inverse", "reverse")
 WINDOWS = (3, 5, 10, 20, 30, 60, 120)
 
 SETTING_SPACE = {
@@ -165,6 +168,54 @@ def _callput_grid():
 
 SEED_EXPRS = SEED_EXPRS + _callput_grid()
 
+# ==== NEW STRUCTURES & OPERATORS (2026-05-21): unexplored ops ====
+# ts_regression (residual/beta), group_zscore/group_scale, vector_neut,
+# kth_element, jump_decay, ts_max/ts_min range, days_from_last_change,
+# sqrt/inverse transforms, bucket. Mix of PV + proven rare fields.
+NEWOPS_SEEDS = (
+    # ts_regression residual: idiosyncratic move of price vs vwap / volume
+    "ts_regression(close, vwap, 20, lag=0, rettype=0)",
+    "ts_regression(returns, ts_delta(volume, 1), 60, lag=0, rettype=0)",
+    # IV vs realized-vol regression residual (vol risk premium, rare-field)
+    "ts_regression(implied_volatility_call_180, historical_volatility_180, 60, lag=0, rettype=0)",
+    # group_zscore — group-relative normalization (new vs group_rank)
+    "group_zscore(multiply(-1, ts_delta(close, 5)), subindustry)",
+    "group_zscore(divide(volume, adv20), subindustry)",
+    "group_zscore(multiply(-1, ts_corr(high, volume, 20)), subindustry)",
+    "group_zscore(subtract(implied_volatility_call_180, implied_volatility_put_180), subindustry)",
+    # group_scale
+    "group_scale(multiply(-1, ts_delta(close, 5)), subindustry)",
+    # vector_neut — neutralize signal A against signal B
+    "vector_neut(rank(multiply(-1, ts_delta(close, 5))), rank(volume))",
+    "vector_neut(rank(subtract(implied_volatility_call_180, implied_volatility_put_180)), rank(historical_volatility_180))",
+    # range / extremes
+    "rank(divide(subtract(ts_max(close, 20), close), subtract(ts_max(close, 20), ts_min(close, 20))))",
+    "rank(multiply(-1, divide(subtract(close, ts_min(close, 20)), subtract(ts_max(close, 20), ts_min(close, 20)))))",
+    # kth_element timing
+    "rank(divide(subtract(close, kth_element(close, 10, 1)), close))",
+    # jump_decay — jump-aware smoothing of returns
+    "rank(multiply(-1, jump_decay(returns, 20)))",
+    "group_zscore(jump_decay(subtract(implied_volatility_call_180, implied_volatility_put_180), 10), subindustry)",
+    # days_from_last_change — information staleness
+    "rank(multiply(-1, days_from_last_change(close)))",
+    # signed sqrt momentum
+    "multiply(sign(ts_delta(close, 5)), sqrt(abs(ts_delta(close, 5))))",
+    # inverse low-vol premium
+    "rank(inverse(ts_std_dev(returns, 20)))",
+    # bucket discretization of reversal
+    "group_zscore(bucket(rank(multiply(-1, ts_delta(close, 5))), range=\"0,1,0.1\"), subindustry)",
+    # last_diff_value momentum
+    "rank(divide(subtract(close, last_diff_value(close, 20)), close))",
+    # ts_backfill on sparse IV then group_zscore (handle 70% coverage)
+    "group_zscore(ts_backfill(subtract(implied_volatility_call_180, implied_volatility_put_180), 5), subindustry)",
+    # reverse + decay
+    "ts_decay_linear(reverse(ts_delta(close, 5)), 5)",
+    # IV-RV spread (vol risk premium) group-normalized
+    "group_zscore(subtract(implied_volatility_call_180, historical_volatility_180), subindustry)",
+    "group_zscore(subtract(implied_volatility_mean_60, historical_volatility_60), subindustry)",
+)
+SEED_EXPRS = NEWOPS_SEEDS + SEED_EXPRS  # new ops FIRST so gen-0 runs them early
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
@@ -205,6 +256,10 @@ def _wrap(rng: random.Random, core: str) -> str:
         return f"winsorize({core}, std=4)"
     if w == "quantile":
         return f"quantile({core}, driver=\"gaussian\")"
+    if w == "group_zscore_si":
+        return f"group_zscore({core}, subindustry)"
+    if w == "group_scale_si":
+        return f"group_scale({core}, subindustry)"
     return f"{w}({core})"
 
 
