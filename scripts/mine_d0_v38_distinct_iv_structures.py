@@ -44,7 +44,11 @@ FIXED_SETTINGS = {
 }
 
 GROUPS = ["sector", "industry", "subindustry"]
-STRUCTS = ["ivhv_gap", "ivhv_ratio", "term_slope", "skew_slope", "skew_delta", "skew_norm"]
+# hvnorm_smooth is the WINNER: skew/HV, smoothed by ts_mean(sm). The HV denominator
+# decorrelates from the user's (call-put)-level alpha (corr ~0.62), and smoothing
+# lifts SH to >2.0 WITHOUT raising corr (unlike (call+put)-normalisation). The other
+# structures stayed correlated or weak in smoke tests.
+STRUCTS = ["hvnorm_smooth", "skew_norm", "ivhv_ratio", "skew_slope"]
 SHORT_TERMS = [10, 20, 30]
 LONG_TERMS = [90, 120, 150, 180]
 SINGLE_TERMS = [10, 20, 30, 60, 90, 120]   # avoid 180 plain-skew neighbourhood
@@ -58,8 +62,12 @@ def _skew(t):
     return f"(implied_volatility_call_{t} - implied_volatility_put_{t})"
 
 
-def core_signal(struct, g, t_s, t_l, t_1, delta_k, ivbf):
+def core_signal(struct, g, t_s, t_l, t_1, delta_k, ivbf, sm):
     """Return the structure core already in group_zscore space (VERIFY-safe)."""
+    if struct == "hvnorm_smooth":
+        # WINNER: ts_mean-smoothed skew normalised by historical vol
+        r = f"((implied_volatility_call_{t_1} - implied_volatility_put_{t_1}) / historical_volatility_{t_1})"
+        return f"group_zscore(ts_mean({r}, {sm}), {g})"
     if struct == "ivhv_gap":
         a = f"group_zscore({_bf(f'implied_volatility_call_{t_1}', ivbf)}, {g})"
         b = f"group_zscore({_bf(f'historical_volatility_{t_1}', ivbf)}, {g})"
@@ -87,8 +95,8 @@ def eps_ratio(bf):
     return f"({_bf('news_eps_actual', bf)} / {_bf('est_epsr', 250)})"
 
 
-def build_expression(struct, g, t_s, t_l, t_1, delta_k, ivbf, wA, we, wl, nbf, decay_n, wins_std):
-    legs = [f"{wA:.3f} * {core_signal(struct, g, t_s, t_l, t_1, delta_k, ivbf)}"]
+def build_expression(struct, g, t_s, t_l, t_1, delta_k, ivbf, sm, wA, we, wl, nbf, decay_n, wins_std):
+    legs = [f"{wA:.3f} * {core_signal(struct, g, t_s, t_l, t_1, delta_k, ivbf, sm)}"]
     if we > 0.01:
         legs.append(f"{we:.3f} * group_zscore((-1 * {eps_ratio(nbf)}), {g})")
     if wl > 0.01:
@@ -156,19 +164,18 @@ def main():
     sampler = optuna.samplers.TPESampler(seed=args.seed, n_startup_trials=30)
     study = optuna.create_study(direction="maximize", sampler=sampler)
 
-    base = {"group":"sector","t_s":30,"t_l":180,"t_1":30,"delta_k":20,"ivbf":20,
+    base = {"group":"sector","t_s":30,"t_l":180,"t_1":60,"delta_k":20,"ivbf":20,"sm":40,
             "wA":1.0,"we":0.0,"wl":0.0,"nbf":250,"decay_n":4,"wins_std":4,
             "decay":4,"truncation":0.02,"neut":"SUBINDUSTRY","universe":"TOP3000"}
-    # one clean seed per structure (truncation/decay/neut mirror the user's strong config)
-    study.enqueue_trial({**base, "struct":"ivhv_gap",   "t_1":30})
-    study.enqueue_trial({**base, "struct":"ivhv_ratio", "t_1":30})
-    study.enqueue_trial({**base, "struct":"skew_slope", "t_s":30, "t_l":180})
-    study.enqueue_trial({**base, "struct":"term_slope", "t_s":30, "t_l":180})
-    study.enqueue_trial({**base, "struct":"skew_delta", "t_1":30, "delta_k":20})
-    study.enqueue_trial({**base, "struct":"skew_norm",  "t_1":30})
-    # a couple with a light news decorrelator already mixed in
-    study.enqueue_trial({**base, "struct":"ivhv_gap",   "t_1":60, "we":0.30, "wl":0.20})
-    study.enqueue_trial({**base, "struct":"skew_slope", "t_s":20, "t_l":150, "we":0.30})
+    # seed the proven hvnorm_smooth survivors (SH 2.07-2.22, corr 0.61-0.63), then explore
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":60, "sm":40})  # Wj9MwEEG SH2.22
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":60, "sm":30})  # A1k9JYnw SH2.15
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":30, "sm":40})  # xARqwplb SH2.07
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":60, "sm":40, "truncation":0.05})
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":90, "sm":40})
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":60, "sm":40, "neut":"INDUSTRY"})
+    study.enqueue_trial({**base, "struct":"hvnorm_smooth", "t_1":60, "sm":40, "group":"industry"})
+    study.enqueue_trial({**base, "struct":"skew_norm",     "t_1":30, "sm":1})
 
     seen_alphas = set(); seen_exprs = {}
     if RESULTS_FILE.exists():
@@ -192,6 +199,7 @@ def main():
         t_1 = trial.suggest_categorical("t_1", SINGLE_TERMS)
         delta_k = trial.suggest_categorical("delta_k", [5, 10, 20, 40])
         ivbf = trial.suggest_categorical("ivbf", [5, 20, 60])
+        sm = trial.suggest_categorical("sm", [1, 12, 20, 30, 40, 60])
         wA = trial.suggest_float("wA", 0.80, 2.50)
         we = trial.suggest_float("we", 0.00, 1.20)
         wl = trial.suggest_float("wl", 0.00, 1.20)
@@ -205,9 +213,9 @@ def main():
 
         settings = dict(FIXED_SETTINGS, universe=universe, decay=decay,
                         truncation=truncation, neutralization=neut)
-        expr = build_expression(struct, g, t_s, t_l, t_1, delta_k, ivbf,
+        expr = build_expression(struct, g, t_s, t_l, t_1, delta_k, ivbf, sm,
                                 wA, we, wl, nbf, decay_n, wins_std)
-        log.info(f"t{trial.number}: {struct}/{g} ts={t_s} tl={t_l} t1={t_1} dk={delta_k} "
+        log.info(f"t{trial.number}: {struct}/{g} ts={t_s} tl={t_l} t1={t_1} sm={sm} dk={delta_k} "
                  f"ivbf={ivbf} wA={wA:.2f} we={we:.2f} wl={wl:.2f} N={decay_n} "
                  f"tr={truncation} dec={decay} neut={neut} uni={universe}")
         ekey = str((expr, universe, decay, truncation, neut))
