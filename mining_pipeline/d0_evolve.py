@@ -255,6 +255,41 @@ VALUE_QUALITY_SEEDS = (
 )
 SEED_EXPRS = VALUE_QUALITY_SEEDS + SEED_EXPRS  # value/quality FIRST this round
 
+# ==== NEW DOMAIN (2026-05-21 #2): VECTOR fields via vec_* operators ====
+# 330 VECTOR fields never touched (need vec_sum/vec_avg/vec_max/vec_min to
+# collapse to MATRIX). Analyst estimate vectors anl4_*_est/_preest have
+# coverage=1.00 (solves sub-universe). Social buzz vector reproduces
+# Glazar #2 (vec_sum(buzzvec) -> SH 1.94 D1). News vectors nws12_* cov 0.97.
+VECTOR_SEEDS = (
+    # --- Analyst revision (est - preest), FULL coverage ---
+    "group_zscore(subtract(vec_avg(anl4_dez1afv4_est), vec_avg(anl4_dez1afv4_preest)), subindustry)",
+    "group_zscore(subtract(vec_avg(anl4_dez1qfv4_est), vec_avg(anl4_dez1qfv4_preest)), subindustry)",
+    "group_zscore(subtract(vec_avg(anl4_dez1basicafv4_est), vec_avg(anl4_dez1basicafv4_preest)), subindustry)",
+    "rank(subtract(vec_avg(anl4_dez1afv4_est), vec_avg(anl4_dez1afv4_preest)))",
+    "ts_decay_linear(rank(subtract(vec_avg(anl4_dez1qfv4_est), vec_avg(anl4_dez1qfv4_preest))), 10)",
+    # estimate level
+    "group_zscore(vec_avg(anl4_dez1afv4_est), subindustry)",
+    "group_zscore(vec_sum(anl4_dez1qfv4_est), subindustry)",
+    # estimate dispersion (disagreement anomaly)
+    "group_zscore(subtract(vec_max(anl4_dez1afv4_est), vec_min(anl4_dez1afv4_est)), subindustry)",
+    "rank(multiply(-1, subtract(vec_max(anl4_dez1qfv4_est), vec_min(anl4_dez1qfv4_est))))",
+    # --- Social buzz/sentiment vectors (Glazar #2) ---
+    "ts_av_diff(vec_sum(scl12_buzzvec), 60)",
+    "group_zscore(vec_sum(scl12_sentvec), subindustry)",
+    "rank(multiply(-1, ts_delta(vec_avg(scl12_sentvec), 5)))",
+    "ts_decay_linear(rank(vec_sum(scl12_buzzvec)), 10)",
+    "group_zscore(vec_avg(scl12_typevec), subindustry)",
+    # --- News vectors (cov 0.97) ---
+    "group_zscore(vec_avg(nws12_mainz_01s), subindustry)",
+    "rank(multiply(-1, ts_delta(vec_sum(nws12_mainz_01s), 5)))",
+    "group_zscore(subtract(vec_max(nws12_mainz_01l), vec_min(nws12_mainz_01l)), subindustry)",
+    "ts_decay_linear(rank(vec_avg(nws12_mainz_01p)), 10)",
+    # combined: analyst revision smoothed
+    "group_zscore(ts_mean(subtract(vec_avg(anl4_dez1afv4_est), vec_avg(anl4_dez1afv4_preest)), 20), subindustry)",
+    "zscore(ts_mean(subtract(vec_avg(anl4_dez1qfv4_est), vec_avg(anl4_dez1qfv4_preest)), 20))",
+)
+SEED_EXPRS = VECTOR_SEEDS + SEED_EXPRS  # VECTOR domain FIRST this round
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
