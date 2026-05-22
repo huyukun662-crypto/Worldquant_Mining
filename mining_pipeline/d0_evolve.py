@@ -328,6 +328,41 @@ COMBO_TERM_SEEDS = (
 )
 SEED_EXPRS = COMBO_TERM_SEEDS + SEED_EXPRS  # combos/term-structure FIRST
 
+# ==== NEW DIRECTION (2026-05-22 #2): different operator/structure, low corr ====
+# SH>=2.0 essentially only comes from the call-put IV signal, so to get a
+# LOW-CORRELATION full-pass we keep that signal source but change the
+# OPERATOR/transform (ts_rank, ts_regression residual, ts_zscore, bucket,
+# quantile, signed_power, hump). A different transform reorders the cross
+# section -> lower self-correlation with the zscore(ts_mean(...)) family.
+def _cp2(M): return f"subtract(implied_volatility_call_{M}, implied_volatility_put_{M})"
+DECORR_SEEDS = (
+    # ts_rank — rank-based timing (nonlinear vs ts_mean)
+    "group_zscore(ts_rank(" + _cp2(180) + ", 60), subindustry)",
+    "group_zscore(ts_rank(" + _cp2(360) + ", 120), subindustry)",
+    "zscore(ts_rank(" + _cp2(180) + ", 250))",
+    "ts_decay_linear(group_zscore(ts_rank(" + _cp2(180) + ", 120), subindustry), 10)",
+    # ts_zscore — time-series standardization (vs cross-sectional)
+    "group_zscore(ts_zscore(" + _cp2(180) + ", 60), subindustry)",
+    "rank(ts_zscore(" + _cp2(360) + ", 120))",
+    # ts_regression residual — skew vs realized vol (idiosyncratic skew)
+    "group_zscore(ts_regression(" + _cp2(180) + ", historical_volatility_180, 120, lag=0, rettype=0), subindustry)",
+    "group_zscore(ts_regression(" + _cp2(360) + ", implied_volatility_mean_360, 120, lag=0, rettype=0), subindustry)",
+    # bucket / quantile — discretized signal
+    "group_zscore(bucket(rank(ts_mean(" + _cp2(180) + ", 20)), range=\"0,1,0.05\"), subindustry)",
+    "quantile(ts_mean(" + _cp2(180) + ", 20), driver=\"uniform\")",
+    # signed_power / hump — nonlinear transforms
+    "group_zscore(signed_power(ts_mean(" + _cp2(180) + ", 20), 0.5), subindustry)",
+    "group_zscore(hump(ts_mean(" + _cp2(180) + ", 20), 0.01), subindustry)",
+    # ts_decay then ts_rank (double transform)
+    "group_zscore(ts_rank(ts_decay_linear(" + _cp2(180) + ", 10), 60), subindustry)",
+    # last_diff_value of skew (event-style)
+    "group_zscore(last_diff_value(" + _cp2(180) + ", 20), subindustry)",
+    # non-option idiosyncratic-returns attempts (different operator, may be low SH)
+    "group_zscore(ts_regression(returns, ts_mean(returns, 20), 60, lag=0, rettype=0), subindustry)",
+    "group_zscore(ts_rank(divide(sales, cap), 250), subindustry)",
+)
+SEED_EXPRS = DECORR_SEEDS + SEED_EXPRS  # decorrelation seeds FIRST
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
