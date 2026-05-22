@@ -1,6 +1,7 @@
 {
   "gate": "D0 strict: SH>=2.0, FIT>=1.3, TO<0.25, all IS checks PASS (self-corr pending)",
-  "total_full_pass": 53,
+  "total_full_pass": 60,
+  "distinct_structures": 8,
   "common_settings": {
     "region": "USA",
     "universe": "TOP3000",
@@ -8,9 +9,7 @@
     "neutralization": "SUBINDUSTRY",
     "pasteurization": "ON"
   },
-  "recommended_pure": "P0vJomRx",
-  "recommended_combo": "GrkavdPP",
-  "top_pure": [
+  "best_per_structure": [
     {
       "alpha_id": "P0vJomRx",
       "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20))",
@@ -32,38 +31,6 @@
       "checks": "7/8"
     },
     {
-      "alpha_id": "lerLMaG2",
-      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 15))",
-      "decay": 4,
-      "truncation": 0.02,
-      "sharpe": 2.3,
-      "turnover": 0.0897,
-      "fitness": 3.12,
-      "checks": "7/8"
-    },
-    {
-      "alpha_id": "1YJqNnmJ",
-      "expression": "scale(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 15))",
-      "decay": 4,
-      "truncation": 0.02,
-      "sharpe": 2.3,
-      "turnover": 0.0897,
-      "fitness": 3.12,
-      "checks": "7/8"
-    },
-    {
-      "alpha_id": "A1kRvg1Y",
-      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 12))",
-      "decay": 4,
-      "truncation": 0.02,
-      "sharpe": 2.21,
-      "turnover": 0.1025,
-      "fitness": 2.92,
-      "checks": "7/8"
-    }
-  ],
-  "top_combo": [
-    {
       "alpha_id": "GrkavdPP",
       "expression": "add(multiply(2, zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20))), group_zscore(divide(sales, cap), subindustry))",
       "decay": 4,
@@ -84,6 +51,26 @@
       "checks": "7/8"
     },
     {
+      "alpha_id": "RRd3kqva",
+      "expression": "zscore(multiply(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20), rank(volume)))",
+      "decay": 4,
+      "truncation": 0.02,
+      "sharpe": 2.02,
+      "turnover": 0.0982,
+      "fitness": 2.8,
+      "checks": "7/8"
+    },
+    {
+      "alpha_id": "mLZ3rVOW",
+      "expression": "add(add(zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20)), group_zscore(divide(sales, cap), subindustry)), rank(multiply(-1, ts_corr(high, volume, 20))))",
+      "decay": 4,
+      "truncation": 0.02,
+      "sharpe": 2.08,
+      "turnover": 0.0775,
+      "fitness": 2.62,
+      "checks": "7/8"
+    },
+    {
       "alpha_id": "j21EEbx9",
       "expression": "add(zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20)), group_zscore(divide(sales, cap), subindustry))",
       "decay": 4,
@@ -94,14 +81,14 @@
       "checks": "7/8"
     },
     {
-      "alpha_id": "E5k7AnpK",
-      "expression": "add(multiply(2, zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20))), group_zscore(divide(sales, cap), subindustry))",
-      "decay": 1,
-      "truncation": 0.005,
-      "sharpe": 2.09,
-      "turnover": 0.0795,
-      "fitness": 2.54,
-      "checks": "7/8"
+      "alpha_id": "A1kZ858g",
+      "expression": "group_zscore(signed_power(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20), 0.5), subindustry)",
+      "decay": 4,
+      "truncation": 0.02,
+      "sharpe": 2.01,
+      "turnover": 0.0791,
+      "fitness": 1.66,
+      "checks": "6/8"
     }
   ]
 }
