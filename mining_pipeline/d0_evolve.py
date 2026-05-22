@@ -290,6 +290,44 @@ VECTOR_SEEDS = (
 )
 SEED_EXPRS = VECTOR_SEEDS + SEED_EXPRS  # VECTOR domain FIRST this round
 
+# ==== NEW DIRECTION (2026-05-22): multi-leg combos + IV term-structure ====
+# Single families plateau at SH=2.36. Combine uncorrelated families
+# (call-put IV momentum + fundamental value + PV reversal) for
+# diversification beyond the ceiling and lower self-correlation. Plus
+# never-tried IV term-structure slope (same option type across maturities)
+# and skew MOMENTUM (ts_delta of the spread vs the ts_mean level).
+def _cp(M): return f"subtract(implied_volatility_call_{M}, implied_volatility_put_{M})"
+COMBO_TERM_SEEDS = (
+    # --- Multi-leg: call-put IV momentum + fundamental value ---
+    "add(zscore(ts_mean(" + _cp(180) + ", 20)), group_zscore(divide(sales, cap), subindustry))",
+    "add(zscore(ts_mean(" + _cp(270) + ", 20)), group_zscore(divide(ebit, enterprise_value), subindustry))",
+    "add(zscore(ts_mean(" + _cp(180) + ", 20)), group_zscore(divide(fnd6_seq, cap), subindustry))",
+    # --- Multi-leg: call-put IV + PV reversal (uncorrelated) ---
+    "add(zscore(ts_mean(" + _cp(180) + ", 20)), rank(multiply(-1, ts_corr(high, volume, 20))))",
+    "add(zscore(ts_mean(" + _cp(270) + ", 20)), rank(multiply(-1, ts_delta(close, 5))))",
+    # --- Weighted blends (2:1 IV:value) ---
+    "add(multiply(2, zscore(ts_mean(" + _cp(180) + ", 20))), group_zscore(divide(sales, cap), subindustry))",
+    # --- IV term-structure slope (same type across maturities) ---
+    "zscore(ts_mean(subtract(implied_volatility_call_30, implied_volatility_call_360), 20))",
+    "zscore(ts_mean(subtract(implied_volatility_put_30, implied_volatility_put_360), 20))",
+    "group_zscore(ts_mean(subtract(implied_volatility_call_60, implied_volatility_call_720), 20), subindustry)",
+    "zscore(ts_mean(divide(implied_volatility_call_30, implied_volatility_call_360), 20))",
+    "zscore(ts_mean(subtract(implied_volatility_mean_30, implied_volatility_mean_360), 20))",
+    # --- Skew MOMENTUM (change in spread, not level) ---
+    "zscore(ts_delta(" + _cp(180) + ", 20))",
+    "group_zscore(ts_delta(" + _cp(360) + ", 60), subindustry)",
+    "zscore(ts_mean(ts_delta(" + _cp(180) + ", 5), 20))",
+    "rank(multiply(-1, ts_delta(" + _cp(180) + ", 20)))",
+    # --- IV x PV interaction ---
+    "zscore(multiply(ts_mean(" + _cp(180) + ", 20), rank(volume)))",
+    "group_zscore(multiply(ts_mean(" + _cp(180) + ", 20), sign(returns)), subindustry)",
+    # --- Triple-leg composite ---
+    "add(add(zscore(ts_mean(" + _cp(180) + ", 20)), group_zscore(divide(sales, cap), subindustry)), rank(multiply(-1, ts_corr(high, volume, 20))))",
+    # --- call-put skew vs term-structure combo ---
+    "add(zscore(ts_mean(" + _cp(180) + ", 20)), zscore(ts_mean(subtract(implied_volatility_call_30, implied_volatility_call_360), 20)))",
+)
+SEED_EXPRS = COMBO_TERM_SEEDS + SEED_EXPRS  # combos/term-structure FIRST
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
