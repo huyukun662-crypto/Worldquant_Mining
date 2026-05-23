@@ -68,5 +68,24 @@
       "expression": "zscore(multiply(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20), rank(volume)))"
     }
   ],
-  "note": "3 of 4 attempts submitted ACTIVE. QPEXXXaQ passed self-correlation where RRd3kqva failed: dividing by historical_volatility (risk-premium ratio) + sector grouping decorrelates more than volume-multiply."
+  "note": "3 of 4 attempts submitted ACTIVE. QPEXXXaQ passed self-correlation where RRd3kqva failed: dividing by historical_volatility (risk-premium ratio) + sector grouping decorrelates more than volume-multiply.",
+  "round2_conclusion": {
+    "goal": "find more uncorrelated D0 factors vs the 3 ACTIVE",
+    "result": "EXHAUSTED at 3 \u2014 every SH>=2.0 signal is IV-derived and correlates >0.7 with the submitted set",
+    "rejected_4th": [
+      {
+        "alpha_id": "RRd3kqva",
+        "self_corr": 0.94,
+        "struct": "skew x volume"
+      },
+      {
+        "alpha_id": "KPka2Qpk",
+        "self_corr": 0.8528,
+        "struct": "30d VRP ratio + INDUSTRY"
+      }
+    ],
+    "unavailable": "vector_neut operator (account tier)",
+    "non_iv_ceiling": "value/quality/PV composites cap at SH~0.7-1.26; realized-vol momentum SH=-0.45",
+    "recommendation": "switch dimension (D1 with 7831 fields, or new region) for genuinely uncorrelated additions"
+  }
 }
