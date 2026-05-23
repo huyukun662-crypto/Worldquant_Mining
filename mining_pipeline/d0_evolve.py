@@ -363,6 +363,45 @@ DECORR_SEEDS = (
 )
 SEED_EXPRS = DECORR_SEEDS + SEED_EXPRS  # decorrelation seeds FIRST
 
+# ==== ROUND 2 (2026-05-22): low-correlation vs 3 submitted alphas ====
+# Submitted: O0oEYx97 zscore(ts_mean(call-put_180,30)); j21EEbx9
+# add(skew,value); QPEXXXaQ winsorize(...(call-put/hist_vol_60)...).
+# Lesson: changing the signal's NATURE (ratio / orthogonalization)
+# decorrelates; weighting/multiplying does not. So: vol-risk-premium
+# ratios at OTHER maturities, IV term-structure ratios, vector_neut
+# orthogonalization, and pure non-IV multi-factor composites.
+def _cpr(M):  # (call-put)/realized-vol risk-premium ratio at maturity M
+    return f"divide(subtract(implied_volatility_call_{M}, implied_volatility_put_{M}), historical_volatility_{M})"
+ROUND2_SEEDS = (
+    # --- Vol-risk-premium ratio at maturities other than 60 (QPEXXXaQ was 60) ---
+    "winsorize(ts_decay_linear(group_zscore(ts_mean(" + _cpr(30) + ", 40), sector), 4), std=4)",
+    "winsorize(ts_decay_linear(group_zscore(ts_mean(" + _cpr(90) + ", 40), sector), 4), std=4)",
+    "winsorize(ts_decay_linear(group_zscore(ts_mean(" + _cpr(180) + ", 40), sector), 4), std=4)",
+    "winsorize(ts_decay_linear(group_zscore(ts_mean(" + _cpr(360) + ", 40), sector), 4), std=4)",
+    "group_zscore(ts_mean(" + _cpr(90) + ", 60), industry)",
+    "group_zscore(ts_mean(" + _cpr(180) + ", 60), industry)",
+    # --- mean-IV vs realized (different numerator) ---
+    "group_zscore(ts_mean(divide(implied_volatility_mean_90, historical_volatility_90), 40), sector)",
+    "group_zscore(ts_mean(divide(implied_volatility_mean_180, historical_volatility_180), 40), industry)",
+    # --- IV term-structure ratio (call_short / call_long), normalized ---
+    "group_zscore(ts_mean(divide(implied_volatility_call_30, implied_volatility_call_360), 20), sector)",
+    "group_zscore(ts_mean(divide(implied_volatility_put_30, implied_volatility_put_360), 20), industry)",
+    "winsorize(ts_decay_linear(group_zscore(ts_mean(divide(implied_volatility_call_60, implied_volatility_call_720), 40), sector), 4), std=4)",
+    # --- vector_neut orthogonalization (decorrelate by construction) ---
+    "vector_neut(zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20)), rank(close))",
+    "vector_neut(group_zscore(ts_mean(" + _cpr(180) + ", 40), sector), rank(volume))",
+    "vector_neut(zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20)), group_zscore(divide(sales, cap), subindustry))",
+    # --- pure NON-IV multi-factor composites (no call-put core at all) ---
+    "add(add(group_zscore(divide(sales, cap), subindustry), group_zscore(divide(ebit, enterprise_value), subindustry)), group_zscore(return_assets, subindustry))",
+    "add(group_zscore(divide(sales, cap), subindustry), rank(multiply(-1, ts_corr(high, volume, 20))))",
+    "add(add(group_zscore(divide(cashflow, cap), subindustry), rank(multiply(-1, ts_delta(close, 5)))), group_zscore(current_ratio, subindustry))",
+    "group_zscore(ts_mean(divide(ebit, enterprise_value), 40), industry)",
+    # --- realized-vol momentum (pure option, no skew) ---
+    "group_zscore(multiply(-1, ts_delta(historical_volatility_60, 20)), sector)",
+    "winsorize(ts_decay_linear(group_zscore(multiply(-1, ts_mean(historical_volatility_90, 40)), industry), 4), std=4)",
+)
+SEED_EXPRS = ROUND2_SEEDS + SEED_EXPRS  # round-2 decorrelation FIRST
+
 
 def fields_pool() -> List[str]:
     """PV (10) ∪ rare D0 fields (MATRIX, alphaCount<=200, ~76 ids)."""
