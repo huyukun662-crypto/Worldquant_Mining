@@ -39,6 +39,26 @@
         "turnover": 0.049,
         "fitness": 2.49
       }
+    },
+    {
+      "alpha_id": "QPEXXXaQ",
+      "status": "ACTIVE",
+      "grade": "GOOD",
+      "expression": "winsorize(ts_decay_linear(group_zscore(ts_mean(divide(subtract(implied_volatility_call_60, implied_volatility_put_60), historical_volatility_60), 40), sector), 4), std=4)",
+      "settings": {
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 4,
+        "truncation": 0.02,
+        "neutralization": "SUBINDUSTRY",
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 2.22,
+        "turnover": 0.067,
+        "fitness": 2.09
+      },
+      "note": "user-supplied; vol-risk-premium ratio (call-put IV / hist_vol) + sector group_zscore decorrelated below 0.7 self-corr vs the other two -> PASSED"
     }
   ],
   "rejected": [
@@ -48,5 +68,5 @@
       "expression": "zscore(multiply(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20), rank(volume)))"
     }
   ],
-  "note": "2 of 3 submitted ACTIVE. j21EEbx9 (value leg) decorrelated below 0.7 vs O0oEYx97; RRd3kqva (IV*volume) stayed at 0.94. A 3rd uncorrelated submit needs a non-call-put SH>=2.0 signal, which the search did not find (value caps ~1.26, PV ~1.14)."
+  "note": "3 of 4 attempts submitted ACTIVE. QPEXXXaQ passed self-correlation where RRd3kqva failed: dividing by historical_volatility (risk-premium ratio) + sector grouping decorrelates more than volume-multiply."
 }
