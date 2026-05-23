@@ -1,0 +1,52 @@
+{
+  "submitted_at": "2026-05-22",
+  "account": "huyukun662@gmail.com",
+  "submitted_active": [
+    {
+      "alpha_id": "O0oEYx97",
+      "status": "ACTIVE",
+      "grade": "SPECTACULAR",
+      "expression": "zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 30))",
+      "settings": {
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 4,
+        "truncation": 0.02,
+        "neutralization": "INDUSTRY",
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 2.42,
+        "turnover": 0.058,
+        "fitness": 3.55
+      }
+    },
+    {
+      "alpha_id": "j21EEbx9",
+      "status": "ACTIVE",
+      "grade": "GOOD",
+      "expression": "add(zscore(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20)), group_zscore(divide(sales, cap), subindustry))",
+      "settings": {
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 4,
+        "truncation": 0.02,
+        "neutralization": "SUBINDUSTRY",
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 2.01,
+        "turnover": 0.049,
+        "fitness": 2.49
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "alpha_id": "RRd3kqva",
+      "reason": "SELF_CORRELATION 0.9368 > 0.7 (too correlated with the two submitted IV alphas)",
+      "expression": "zscore(multiply(ts_mean(subtract(implied_volatility_call_180, implied_volatility_put_180), 20), rank(volume)))"
+    }
+  ],
+  "note": "2 of 3 submitted ACTIVE. j21EEbx9 (value leg) decorrelated below 0.7 vs O0oEYx97; RRd3kqva (IV*volume) stayed at 0.94. A 3rd uncorrelated submit needs a non-call-put SH>=2.0 signal, which the search did not find (value caps ~1.26, PV ~1.14)."
+}
