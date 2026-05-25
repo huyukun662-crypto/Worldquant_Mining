@@ -1,0 +1,80 @@
+# Stage 2 / Agent 2 — Hypothesis Architect
+# Single mechanism, single execution model, declared evaluation thresholds.
+
+session_id: 20260510_volume_dispersion_reversal
+created_utc: 2026-05-10T17:40:00Z
+coordinator: claude-opus-4-7
+target_count: 4   # number of survivors the user asked for
+
+mechanism:
+  name: volume_dispersion_reversal
+  one_paragraph: |
+    Cross-section names whose dollar-volume becomes unusually concentrated
+    over a 10-40 day window AND whose price has extended in the same
+    direction tend to mean-revert over the next 5-20 days. Concentrated
+    volume reflects retail-flow exhaustion and informed-flow distribution;
+    the price extension is the symptom, the dispersion is the leading
+    indicator.
+  causal_chain:
+    - 1: A few high-volume days dominate the window (volume CV rises).
+    - 2: Those days are typically late-stage trend extensions where retail piles in.
+    - 3: Informed flow takes the other side; supply/demand imbalance peaks.
+    - 4: Price extension overshoots fair value and fades over 5-20 days.
+    - 5: Cross-section rank of (-1) * (volume_CV * price_extension) sorts the reversal opportunity.
+
+regime:
+  market: USA
+  universe_target: TOP3000   # WQ Brain submission target
+  universe_local: 251 large/midcap (yfinance proxy)
+  horizon_days: [5, 10, 20]   # decay smoothing and reversal horizon
+  risk_premium_source: liquidity-provision / overreaction
+  failure_conditions:
+    - factor decays sharply outside the 5-20d horizon
+    - long leg dominated by penny / illiquid names (handled by truncation=0.08)
+    - signal collapses under INDUSTRY neutralization (would imply pure sector beta)
+
+execution_model:
+  delay: 1                    # WQ Brain default; this account has no delay-0
+  target_shift: -2            # = -(1 + delay)
+  feature_time_annotation: |
+    Every expression consumes close[t], open[t], high[t], low[t],
+    volume[t], vwap[t], returns[t], adv20[t]. Earliest realistic
+    execution is close[t+1]. Local backtest lags positions by 1 day
+    (mining_pipeline/backtest.py:60) so target_shift = -2 is honored
+    when measured between formation date and 1-bar-forward return.
+
+evaluation_targets:
+  # These are the LOCAL TRIAGE gates. WQ Brain authoritative gates
+  # apply to /alphas/{id}.is — same numeric thresholds, different harness.
+  is_sharpe_floor: 1.25
+  is_turnover_ceiling: 0.25
+  os_sharpe_floor_relative: 1.0    # OS_SH >= IS_SH
+  fitness_floor: 1.0                # WQ fitness ~= sharpe * sqrt(returns/turnover)
+
+neutralization_candidates:
+  # Tested at WQ submission time; not in local backtest.
+  - INDUSTRY      # primary recommendation; preserves cross-section dispersion
+  - SUBINDUSTRY   # sharper but smaller groups; risk of dispersion collapse
+  - SECTOR        # lighter neutralization; falls back here if INDUSTRY kills signal
+
+setting_axes:
+  # Optuna search space for the WQ submission stage.
+  decay: [0, 4, 8, 16]            # smaller end of grid; mechanism is already smoothed
+  truncation: [0.05, 0.08, 0.10]  # default WQ recommendation
+  pasteurization: [ON]            # OFF flips the sign of TO behavior unpredictably
+
+operator_budget:
+  max_distinct_ops_per_expr: 6
+  max_depth: 4
+  required_wrapper: rank | zscore | scale
+
+candidate_count: 8   # Builder MUST emit exactly 8 (Rule of 8)
+
+handoff_to_builder:
+  hard_constraints:
+    - one mechanism only (volume_dispersion_reversal)
+    - 8 distinct implementations
+    - prefer multiply(close, volume) or ts_mean(volume, d) over adv20
+    - every expression wrapped in rank | zscore | scale
+    - turnover-suppression via ts_decay_linear or long ts_mean windows
+    - feature variables annotated as time-t inputs
