@@ -259,6 +259,16 @@ BATCHES = {
         ("illiq_stack", S4, {"decay":0, "universe":"ILLIQUID_MINVOL1M", "neutralization":"SUBINDUSTRY"}),
         ("t200_rev5",   "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "universe":"TOP200", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Untested signal source: social-media sentiment (full coverage). Probe
+    # strength + 5-leg stack (value+rec+cust+vwap+sentiment) toward SH 2.
+    "social_probe": [
+        ("sent_scl",  "quantile(ts_backfill(scl12_sentiment, 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("sent_z",    "quantile(ts_backfill(snt_social_value, 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("sent_mom",  "quantile(ts_delta(ts_backfill(scl12_sentiment, 5), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("buzz_mom",  "quantile(ts_delta(ts_backfill(scl12_buzz, 5), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_sent",  f"add({VAL}, quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("stack5",    f"add({S4}, quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
