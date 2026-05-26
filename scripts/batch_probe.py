@@ -379,6 +379,17 @@ BATCHES = {
         ("rec_d10",   "quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("val_cust_d",f"add({VAL}, quantile(ts_backfill(rel_ret_cust, 5)))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Decisive mainstream batch (cold constraint lifted): decay-magic on
+    # sentiment level; rec_chg (1.40 single best non-IV) on liquid universes
+    # to pass sub-universe; stack decay sweep to tame the 1.93 maxstack.
+    "newsig_probe4": [
+        ("sent_d20",   "quantile(ts_backfill(scl12_sentiment, 5))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_t200",   RECRAW, {"decay":5, "universe":"TOP200", "neutralization":"SUBINDUSTRY"}),
+        ("val_rec_t1k", f"add({VAL}, {RECRAW})", {"decay":5, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
+        ("s4_d6",      S4, {"decay":6, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("maxstack_d8", f"add(add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1)), quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":8, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("maxstack_t1k", f"add(add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1)), quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":8, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
