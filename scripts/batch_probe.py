@@ -39,6 +39,9 @@ NEWS3 = [_newsrev(f) for f in ("news_pct_60min", "news_max_up_ret", "news_indx_p
 PEAD = "quantile(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120))"
 CUSTREV = _relrev("rel_ret_cust")
 VAL_REL = f"add({VAL}, {CUSTREV})"
+RECRAW = "quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))"
+VWAPREV = "quantile(divide(subtract(vwap, close), close))"
+S4 = f"add(add(add({VAL}, {RECRAW}), {CUSTREV}), {VWAPREV})"
 
 BATCHES = {
     "news_probe": [
@@ -226,6 +229,16 @@ BATCHES = {
         ("stack4_d4",  "add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("stack4_2val","add(add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("rec_cust_vw","add(add(quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
+    # Final push: maximize SH of the 4-signal stack via turnover-control ops,
+    # weighting, universe, neutralization. STACK4 base = value+rec+cust+vwap.
+    "refine16": [
+        ("s4_ttvr03", f"ts_target_tvr_decay({S4}, 0.3)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("s4_hump",   f"hump({S4}, hump=0.05)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("s4_none",   S4, {"decay":0, "universe":"TOP3000", "neutralization":"NONE"}),
+        ("s4_t500",   S4, {"decay":0, "universe":"TOP500", "neutralization":"SUBINDUSTRY"}),
+        ("s4_recheavy", f"add({S4}, quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("s4_mkt",    S4, {"decay":0, "universe":"TOP3000", "neutralization":"MARKET"}),
     ],
 }
 
