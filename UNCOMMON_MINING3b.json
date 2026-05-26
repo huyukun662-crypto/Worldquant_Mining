@@ -1,0 +1,158 @@
+[
+  {
+    "ok": false,
+    "expr": "reverse(rank(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_call_90, 5))))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 15,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.1
+    },
+    "error": "submit-429:{\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "expr": "reverse(rank(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_call_90, 5))))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "error": "submit-429:{\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": true,
+    "expr": "reverse(rank(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5))))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 12,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "kqQKRaMk",
+    "sharpe": 2.02,
+    "fitness": 1.26,
+    "turnover": 0.2382,
+    "returns": 0.0925,
+    "drawdown": 0.049,
+    "margin": 0.000776,
+    "longCount": 1624,
+    "shortCount": 1268,
+    "checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": false,
+    "expr": "hump(reverse(zscore(ts_decay_linear(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5)), 15))), 0.02)",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "error": "sim-ERROR:Invalid number of inputs : 2, should be exactly 1 input(s). <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  {
+    "ok": true,
+    "expr": "reverse(rank(divide(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_call_30, 5))))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "np3WkVEE",
+    "sharpe": 2.25,
+    "fitness": 1.21,
+    "turnover": 0.2845,
+    "returns": 0.0822,
+    "drawdown": 0.0399,
+    "margin": 0.000578,
+    "longCount": 1537,
+    "shortCount": 1287,
+    "checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "group_neutralize(reverse(rank(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5)))), subindustry)",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 12,
+      "neutralization": "MARKET",
+      "truncation": 0.08
+    },
+    "alpha_id": "kqQKRA0g",
+    "sharpe": 2.04,
+    "fitness": 1.21,
+    "turnover": 0.2412,
+    "returns": 0.0844,
+    "drawdown": 0.0431,
+    "margin": 0.0007,
+    "longCount": 1584,
+    "shortCount": 1311,
+    "checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(add(zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5))), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_30, 5), 60))), 15)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "Wj9gK1Jd",
+    "sharpe": 2.33,
+    "fitness": 2.32,
+    "turnover": 0.1814,
+    "returns": 0.1802,
+    "drawdown": 0.0635,
+    "margin": 0.001987,
+    "longCount": 1644,
+    "shortCount": 1177,
+    "checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  }
+]
