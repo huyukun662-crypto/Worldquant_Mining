@@ -346,6 +346,17 @@ BATCHES = {
         ("cps2_val",  f"add(add(quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5)), quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("cps_d25",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":25, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # cps_d20 sub-universe fix sweep #2 (user: fix sub-universe & submit). Boost
+    # coverage on smaller names: longer backfill fills more stocks; value blend
+    # lifts broad sub-universe Sharpe; multi-maturity + group ops for robustness.
+    "opt_probe4": [
+        ("cps_bf22",  "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_bf44",  "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 44))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_valeq", f"add(quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22)), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_val2",  f"add(quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22)), add({VAL}, {VAL}))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_mlt22", "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 22))", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("cps_grp",   "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
     # DIFFERENT TYPE (user vetoed IV call-put spread). news12 short interest =
     # classic positioning anomaly (Boehmer-Jones-Zhang: high SI -> low returns),
     # low-TO, orthogonal to value/IV. Plus dividend yield, range z, prev-day rev.
