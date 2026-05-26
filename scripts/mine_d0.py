@@ -142,6 +142,8 @@ def submit_one(session, expression: str, override: dict) -> dict:
                 checks = isb.get("checks") or []
                 subuni = next((c.get("value") for c in checks
                                if c.get("name") == "LOW_SUB_UNIVERSE_SHARPE"), None)
+                concwt = next((c for c in checks
+                               if c.get("name") == "CONCENTRATED_WEIGHT"), {})
                 return {
                     "ok": True, "alpha_id": aid, "expression": expression,
                     "settings": settings,
@@ -151,6 +153,8 @@ def submit_one(session, expression: str, override: dict) -> dict:
                     "longCount": isb.get("longCount"),
                     "shortCount": isb.get("shortCount"),
                     "sub_universe_sharpe": subuni,
+                    "conc_wt": concwt.get("value"),
+                    "conc_wt_pass": concwt.get("result") == "PASS",
                     "checks_pass": sum(1 for c in checks if c.get("result") == "PASS"),
                     "checks_total": len(checks),
                 }
