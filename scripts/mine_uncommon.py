@@ -79,7 +79,9 @@ def submit_and_poll(session, expr, settings, timeout=600, interval=5):
             "settings": {**FIXED, **settings},
             "regular": expr}
     r = None
-    for _ in range(5):
+    # Be patient on 429: concurrent-sim slots can stay full for minutes when
+    # abandoned sims are draining. Wait up to ~10 min for a free slot.
+    for _ in range(40):
         r = _req("POST", session, "https://api.worldquantbrain.com/simulations",
                  json=body)
         if r is None:
