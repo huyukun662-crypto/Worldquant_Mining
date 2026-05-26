@@ -19,6 +19,22 @@ def wrap_subind_reversal(field, n=22):
     return f"group_neutralize(-winsorize(ts_backfill({field}, {n}), std=4), subindustry)"
 
 
+# --- ensemble builders (stack orthogonal cold D0 signals for high Sharpe) ---
+def _addall(parts):
+    expr = parts[0]
+    for p in parts[1:]:
+        expr = f"add({expr}, {p})"
+    return expr
+
+VAL = "quantile(ts_backfill(divide(est_ebitda, cap), 120))"
+def _relrev(f, s=5):
+    return f"multiply(quantile(ts_mean(ts_backfill({f}, 120), {s})), -1)"
+def _newsrev(f, n=22):
+    return f"multiply(quantile(ts_backfill({f}, {n})), -1)"
+
+REL4 = [_relrev(f) for f in ("rel_ret_cust", "rel_ret_comp", "rel_ret_part", "rel_ret_all")]
+NEWS3 = [_newsrev(f) for f in ("news_pct_60min", "news_max_up_ret", "news_indx_perf")]
+
 BATCHES = {
     "news_probe": [
         ("pe_value",   "group_neutralize(-winsorize(ts_backfill(news_pe_ratio, 250), std=4), subindustry)", {"decay":6}),
@@ -106,6 +122,16 @@ BATCHES = {
         ("v11_d20", "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("v21_d6",  "add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":6, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("v11_hump","hump(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), hump=0.004)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
+    # Target SH>2: stack orthogonal cold D0 signals. Accept higher turnover
+    # (submit only needs TO<0.7). value + 4 supply-chain reversals + 3 news.
+    "refine7": [
+        ("rel4_only",   _addall(REL4), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("news3_only",  _addall(NEWS3), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rel4",    _addall([VAL] + REL4), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_news3",   _addall([VAL] + NEWS3), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rel4_news3",  _addall(REL4 + NEWS3), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("mega",        _addall([VAL] + REL4 + NEWS3), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
 }
 
