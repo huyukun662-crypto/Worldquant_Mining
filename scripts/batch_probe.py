@@ -250,6 +250,15 @@ BATCHES = {
         ("glb_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"GLB", "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("ind_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"IND", "universe":"TOP500", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Account is USA-only. ILLIQUID universe: stronger reversal/value anomalies.
+    "illiq_probe": [
+        ("illiq_rev5",  "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "universe":"ILLIQUID_MINVOL1M", "neutralization":"SUBINDUSTRY"}),
+        ("illiq_rev1",  "multiply(quantile(returns), -1)", {"decay":0, "universe":"ILLIQUID_MINVOL1M", "neutralization":"SUBINDUSTRY"}),
+        ("illiq_value", "quantile(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":0, "universe":"ILLIQUID_MINVOL1M", "neutralization":"SUBINDUSTRY"}),
+        ("illiq_vwap",  "quantile(divide(subtract(vwap, close), close))", {"decay":0, "universe":"ILLIQUID_MINVOL1M", "neutralization":"SUBINDUSTRY"}),
+        ("illiq_stack", S4, {"decay":0, "universe":"ILLIQUID_MINVOL1M", "neutralization":"SUBINDUSTRY"}),
+        ("t200_rev5",   "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "universe":"TOP200", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
