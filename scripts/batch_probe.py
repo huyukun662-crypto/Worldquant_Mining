@@ -357,6 +357,17 @@ BATCHES = {
         ("range_z",   "multiply(quantile(ts_backfill(news_range_stddev, 5)), -1)", {"decay":5, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("si_val",    f"add(multiply(quantile(ts_backfill(news_short_interest, 22)), -1), {VAL})", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Different types again: PEAD (earnings-surprise drift), news-reaction L/S
+    # signal (nws12 sl), post-news relative move, analyst EPS revision. Apply
+    # decay to tame noise like the cps trick (technique, not the vetoed signal).
+    "newsig_probe2": [
+        ("pead",      "quantile(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("pead_d20",  "quantile(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("newssl",    "quantile(ts_backfill(vec_avg(nws12_mainz_sl), 10))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("resvsidx",  "quantile(ts_backfill(vec_avg(nws12_mainz_result_vs_index), 10))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("epsrev",    "quantile(ts_backfill(divide(ts_delta(est_epsr, 66), close), 120))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("pead_val",  f"add(quantile(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120)), {VAL})", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
