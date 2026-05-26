@@ -312,6 +312,18 @@ BATCHES = {
         ("netmargin","quantile(ts_backfill(divide(fnd6_ni, revenue), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("invgrow",  "multiply(rank(divide(ts_delta(ts_backfill(fnd6_invt, 60), 250), ts_backfill(assets, 60))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # NEW dataset: option8 (implied volatility). Documented cross-sectional
+    # return predictors: call-put IV spread (Cremers-Weinbaum +), IV skew
+    # (Xing-Zhang-Zhao -), vol risk premium IV/RV, low-IV anomaly (Ang +).
+    # Signs flipped post-hoc if SH negative (|SH| = signal strength).
+    "opt_probe1": [
+        ("cpspread", "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ivskew",   "multiply(quantile(ts_backfill(implied_volatility_mean_skew_30, 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("volrp",    "multiply(quantile(ts_backfill(divide(implied_volatility_mean_30, historical_volatility_30), 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ivterm",   "quantile(ts_backfill(subtract(implied_volatility_mean_360, implied_volatility_mean_30), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("lowiv",    "multiply(rank(ts_backfill(implied_volatility_mean_60, 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ivchg",    "multiply(quantile(ts_delta(ts_backfill(implied_volatility_mean_30, 5), 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
