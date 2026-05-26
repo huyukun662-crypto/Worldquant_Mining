@@ -240,6 +240,16 @@ BATCHES = {
         ("s4_recheavy", f"add({S4}, quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("s4_mkt",    S4, {"decay":0, "universe":"TOP3000", "neutralization":"MARKET"}),
     ],
+    # REGION lever: short-term reversal is very strong in retail/inefficient
+    # markets (CHN/ASI/IND). delay=0. High vol -> high returns -> fitness ok.
+    "region_probe": [
+        ("chn_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"CHN", "universe":"TOP2000U", "neutralization":"SUBINDUSTRY"}),
+        ("chn_rev1", "multiply(quantile(returns), -1)", {"decay":0, "region":"CHN", "universe":"TOP2000U", "neutralization":"SUBINDUSTRY"}),
+        ("asi_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"ASI", "universe":"MINVOL1M", "neutralization":"SUBINDUSTRY"}),
+        ("eur_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"EUR", "universe":"TOP2500", "neutralization":"SUBINDUSTRY"}),
+        ("glb_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"GLB", "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ind_rev5", "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "region":"IND", "universe":"TOP500", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
