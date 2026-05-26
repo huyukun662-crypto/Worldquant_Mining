@@ -99,6 +99,10 @@ def submit_and_poll(session, expr, settings, timeout=600, interval=5):
     if not loc:
         return {"ok": False, "expr": expr, "settings": settings,
                 "error": "no-location"}
+    # WQ returns the progress URL as http://host:443/... -- polling that raw
+    # yields HTTP 400 ("plain HTTP sent to HTTPS port") and the sim is never
+    # read to COMPLETE, leaving a zombie that clogs the concurrent-sim quota.
+    loc = loc.replace("http://", "https://").replace(":443", "")
     t0 = time.time()
     while time.time() - t0 < timeout:
         time.sleep(interval)
