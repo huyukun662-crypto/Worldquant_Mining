@@ -206,6 +206,16 @@ BATCHES = {
         ("bee_earn", "quantile(ts_backfill(vec_avg(nws18_bee), 22))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("qcm_conf", "quantile(ts_backfill(vec_avg(nws18_qcm), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # rec_chg (analyst rec change) = SH 1.4 but TO 1.43. Tame turnover by
+    # accumulating net rec change over a window, then stack with value+cust.
+    "refine14": [
+        ("rec_mean60",   "quantile(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 10), 60))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_sum120",   "quantile(ts_sum(ts_backfill(vec_avg(nws18_ghc_lna), 5), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_decay30",  "quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))", {"decay":30, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rec",      f"add({VAL}, quantile(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 10), 60)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rec_cust", f"add(add({VAL}, quantile(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 10), 60))), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_cust",     f"add(quantile(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 10), 60)), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
