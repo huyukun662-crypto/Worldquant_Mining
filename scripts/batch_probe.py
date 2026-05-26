@@ -300,6 +300,18 @@ BATCHES = {
         ("vmom_rec", f"add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), rank(divide(ts_delay(close, 21), ts_delay(close, 252)))), {RECRAW})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("vmom_cust",f"add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), rank(divide(ts_delay(close, 21), ts_delay(close, 252)))), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Hunt for low-TO signals ORTHOGONAL to value, to stack toward SH>=2 while
+    # keeping turnover low (fitness only binds when TO high). Classic anomalies
+    # untested so far: low-vol (BAB), shareholder yield, cash-based operating
+    # profitability (Ball 2016), long-term reversal, net margin, inventory growth.
+    "fund_probe1": [
+        ("lowvol",   "multiply(rank(ts_std_dev(returns, 120)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("payout",   "quantile(ts_backfill(divide(fnd6_dvt, cap), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cashprof", "quantile(ts_backfill(divide(subtract(subtract(revenue, cogs), sga_expense), assets), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ltrev",    "multiply(rank(divide(ts_delay(close, 21), ts_delay(close, 750))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("netmargin","quantile(ts_backfill(divide(fnd6_ni, revenue), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("invgrow",  "multiply(rank(divide(ts_delta(ts_backfill(fnd6_invt, 60), 250), ts_backfill(assets, 60))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
