@@ -1,0 +1,36 @@
+[
+  {
+    "ok": true,
+    "alpha_id": "A1kwq1gR",
+    "expression": "add(multiply(if_else(is_nan(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry)), group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), multiply(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry), 3)), 2), multiply(group_zscore(ts_delta(close, 3), subindustry), -1))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "sharpe": 2.15,
+    "turnover": 0.2366,
+    "fitness": 1.33,
+    "returns": 0.091,
+    "drawdown": 0.0458,
+    "margin": 0.000769,
+    "longCount": 1298,
+    "shortCount": 1465,
+    "sub_universe_sharpe": 1.31,
+    "conc_wt": null,
+    "conc_wt_pass": true,
+    "checks_pass": 7,
+    "checks_total": 8
+  }
+]
