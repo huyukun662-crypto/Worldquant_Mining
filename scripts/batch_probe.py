@@ -324,6 +324,17 @@ BATCHES = {
         ("lowiv",    "multiply(rank(ts_backfill(implied_volatility_mean_60, 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("ivchg",    "multiply(quantile(ts_delta(ts_backfill(implied_volatility_mean_30, 5), 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # cpspread (call-put IV spread) hit SH 1.55 but TO 1.01. It is strong AND
+    # orthogonal to value (option-implied vs fundamental). Tame turnover via
+    # smoothing/decay, then stack with value toward SH>=2 at TO<0.7.
+    "opt_probe2": [
+        ("cps_sm10",  "quantile(ts_mean(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 10), 10))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_d20",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_60",    "quantile(ts_mean(ts_backfill(subtract(implied_volatility_call_60, implied_volatility_put_60), 10), 10))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_cps",   f"add({VAL}, quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_cps_sm",f"add({VAL}, quantile(ts_mean(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 10), 10)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_cps_d20",f"add({VAL}, quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5)))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
