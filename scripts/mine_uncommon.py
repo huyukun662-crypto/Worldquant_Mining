@@ -61,16 +61,35 @@ def _load(p, name):
     return m
 
 
+def _req(method, session, url, **kw):
+    """Resilient request: retries on network exceptions, returns None on
+    persistent failure (caller decides what to do)."""
+    kw.setdefault("timeout", 30)
+    for attempt in range(4):
+        try:
+            return session.request(method, url, **kw)
+        except Exception as e:  # ConnectionError / ReadTimeout / etc.
+            log.info(f"   net-retry {attempt+1}/4 {method} {url[-30:]}: {str(e)[:60]}")
+            time.sleep(2 ** attempt)
+    return None
+
+
 def submit_and_poll(session, expr, settings, timeout=420, interval=4):
     body = {"type": "REGULAR",
             "settings": {**FIXED, **settings},
             "regular": expr}
+    r = None
     for _ in range(5):
-        r = session.post("https://api.worldquantbrain.com/simulations",
-                         json=body, timeout=30)
+        r = _req("POST", session, "https://api.worldquantbrain.com/simulations",
+                 json=body)
+        if r is None:
+            time.sleep(10); continue
         if r.status_code == 429:
             time.sleep(float(r.headers.get("Retry-After") or 15)); continue
         break
+    if r is None:
+        return {"ok": False, "expr": expr, "settings": settings,
+                "error": "submit-network-failure"}
     if r.status_code != 201:
         return {"ok": False, "expr": expr, "settings": settings,
                 "error": f"submit-{r.status_code}:{r.text[:160]}"}
@@ -81,20 +100,25 @@ def submit_and_poll(session, expr, settings, timeout=420, interval=4):
     t0 = time.time()
     while time.time() - t0 < timeout:
         time.sleep(interval)
-        rp = session.get(loc, timeout=30)
+        rp = _req("GET", session, loc)
+        if rp is None:
+            continue
         if rp.status_code == 429:
             time.sleep(20); continue
         if rp.status_code != 200:
             continue
-        d = rp.json()
+        try:
+            d = rp.json()
+        except Exception:
+            continue
         st = d.get("status", "")
         if st == "COMPLETE":
             aid = d.get("alpha")
-            ra = session.get(f"https://api.worldquantbrain.com/alphas/{aid}",
-                             timeout=30)
-            if ra.status_code != 200:
+            ra = _req("GET", session, f"https://api.worldquantbrain.com/alphas/{aid}")
+            if ra is None or ra.status_code != 200:
+                code = ra.status_code if ra is not None else "net"
                 return {"ok": False, "expr": expr, "settings": settings,
-                        "error": f"alpha-get-{ra.status_code}", "alpha_id": aid}
+                        "error": f"alpha-get-{code}", "alpha_id": aid}
             a = ra.json(); isb = a.get("is") or {}
             checks = isb.get("checks") or []
             cd = {c.get("name"): c.get("result") for c in checks}
@@ -125,7 +149,9 @@ def self_correlation(session, alpha_id, timeout=120):
     url = f"https://api.worldquantbrain.com/alphas/{alpha_id}/correlations/self"
     t0 = time.time()
     while time.time() - t0 < timeout:
-        r = session.get(url, timeout=30)
+        r = _req("GET", session, url)
+        if r is None:
+            time.sleep(3); continue
         ra = r.headers.get("Retry-After")
         if r.status_code == 200 and not ra:
             d = r.json()
@@ -175,7 +201,12 @@ def main():
     with ThreadPoolExecutor(max_workers=args.workers) as ex:
         futs = {ex.submit(work, c): c for c in cands}
         for fut in as_completed(futs):
-            res = fut.result()
+            try:
+                res = fut.result()
+            except Exception as e:
+                c = futs[fut]
+                res = {"ok": False, "expr": c["expr"], "settings": c["settings"],
+                       "error": f"worker-exc:{str(e)[:80]}"}
             results.append(res)
             json.dump(results, open(out_path, "w"), indent=2)
             if res.get("ok"):
