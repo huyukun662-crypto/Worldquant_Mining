@@ -96,6 +96,17 @@ BATCHES = {
         ("val_rel_31",   "add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("val_rel_21s22","add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 22)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # val_rel_11 (equal weight) has best raw SH 1.38 but TO 0.45. Use the
+    # decay setting to cut turnover below 0.25 while keeping SH > 1.25; lower
+    # turnover also lifts fitness. V11 = the equal-weight value+reversal combo.
+    "refine6": [
+        ("v11_d6",  "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":6, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("v11_d10", "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("v11_d15", "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":15, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("v11_d20", "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("v21_d6",  "add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":6, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("v11_hump","hump(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), hump=0.004)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
