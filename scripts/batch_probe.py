@@ -186,6 +186,16 @@ BATCHES = {
         ("val_vwaprev",f"add({VAL_REL}, quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("vwap_rev_t1k","quantile(divide(subtract(vwap, close), close))", {"decay":0, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # fundamental6 actuals: classic LOW-turnover quality/value factors. EV is
+    # a real field -> EBITDA/EV unit-safe. Stack orthogonal legs (pass fitness).
+    "refine12": [
+        ("ev_ebitda",   "quantile(ts_backfill(divide(ebitda, enterprise_value), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cfo_assets",  "quantile(ts_backfill(divide(cashflow_op, assets), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ebit_assets", "quantile(ts_backfill(divide(ebit, assets), 250))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("accruals",    "multiply(quantile(ts_backfill(divide(subtract(ebitda, cashflow_op), assets), 250)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("asset_grow",  "multiply(quantile(ts_backfill(divide(ts_delta(assets, 250), assets), 250)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ev_cfo_acc",  "add(add(quantile(ts_backfill(divide(ebitda, enterprise_value), 250)), quantile(ts_backfill(divide(cashflow_op, assets), 250))), multiply(quantile(ts_backfill(divide(subtract(ebitda, cashflow_op), assets), 250)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
