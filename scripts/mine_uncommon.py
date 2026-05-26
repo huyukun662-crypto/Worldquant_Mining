@@ -176,6 +176,8 @@ def main():
     ap.add_argument("--out", default="UNCOMMON_MINING.json")
     ap.add_argument("--candidates", default="candidates.json",
                     help="JSON list of {expr, settings} to simulate")
+    ap.add_argument("--poll-timeout", type=int, default=600,
+                    help="Seconds to poll a single simulation before giving up")
     args = ap.parse_args()
 
     # Auth with retry: the container clock skews intermittently, breaking TLS
@@ -212,7 +214,7 @@ def main():
             results = []
 
     def work(c):
-        return submit_and_poll(s, c["expr"], c["settings"])
+        return submit_and_poll(s, c["expr"], c["settings"], timeout=args.poll_timeout)
 
     with ThreadPoolExecutor(max_workers=args.workers) as ex:
         futs = {ex.submit(work, c): c for c in cands}
