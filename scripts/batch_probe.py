@@ -196,6 +196,16 @@ BATCHES = {
         ("asset_grow",  "multiply(quantile(ts_backfill(divide(ts_delta(assets, 250), assets), 250)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("ev_cfo_acc",  "add(add(quantile(ts_backfill(divide(ebitda, enterprise_value), 250)), quantile(ts_backfill(divide(cashflow_op, assets), 250))), multiply(quantile(ts_backfill(divide(subtract(ebitda, cashflow_op), assets), 250)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Ravenpack news18 VECTOR sentiment + analyst-rec-change (vec_avg = cold
+    # operator). News sentiment / rec revisions are classic strong signals.
+    "refine13": [
+        ("qep_sent", "quantile(ts_backfill(vec_avg(nws18_qep), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ssc_sent", "quantile(ts_backfill(vec_avg(nws18_ssc), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_chg",  "quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("nip",      "quantile(ts_backfill(vec_avg(nws18_nip), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("bee_earn", "quantile(ts_backfill(vec_avg(nws18_bee), 22))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("qcm_conf", "quantile(ts_backfill(vec_avg(nws18_qcm), 5))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
