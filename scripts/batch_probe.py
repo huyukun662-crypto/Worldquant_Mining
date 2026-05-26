@@ -335,6 +335,17 @@ BATCHES = {
         ("val_cps_sm",f"add({VAL}, quantile(ts_mean(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 10), 10)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("val_cps_d20",f"add({VAL}, quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5)))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # cps_d20 = SH 2.12 / FIT 1.48 / TO 0.21, fails ONLY LOW_SUB_UNIVERSE_SHARPE
+    # (option data sparse on small caps -> signal concentrated). Fix sub-universe
+    # sharpe via neutralization/universe/multi-maturity robustness + value blend.
+    "opt_probe3": [
+        ("cps_ind",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("cps_mkt",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("cps_t1k",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":20, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_multi", "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps2_val",  f"add(add(quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5)), quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cps_d25",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":25, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
