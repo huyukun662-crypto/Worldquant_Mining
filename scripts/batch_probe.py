@@ -65,6 +65,16 @@ BATCHES = {
         ("ev_sector",     "quantile(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SECTOR"}),
         ("comp_ev_cap",   "add(quantile(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Lift SH 1.09 -> >1.25. EV via unitHandling=IGNORE; truncation/window/
+    # time-series valuation knobs. base = quantile EBITDA-yield, decay=0.
+    "refine3": [
+        ("ev_ignore",   "quantile(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY", "unitHandling":"IGNORE"}),
+        ("ev_rank_ig",  "rank(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY", "unitHandling":"IGNORE"}),
+        ("eby_trunc02", "quantile(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY", "truncation":0.02}),
+        ("eby_trunc15", "quantile(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY", "truncation":0.15}),
+        ("eby_w60",     "quantile(ts_backfill(divide(est_ebitda, cap), 60))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eby_tsrank",  "ts_rank(ts_backfill(divide(est_ebitda, cap), 120), 250)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
