@@ -133,6 +133,24 @@ BATCHES = {
         ("rel4_news3",  _addall(REL4 + NEWS3), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("mega",        _addall([VAL] + REL4 + NEWS3), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Clean full-pass target: LOW-turnover value > SH 1.25. Tight earnings-yield
+    # composite (correlated legs -> noise reduction), neutralization + window.
+    "refine8": [
+        ("yield4_avg",  _addall(["quantile(ts_backfill(divide(est_ebitda, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_ebit, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_netprofit, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_ptp, cap), 120))"]), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_market",  VAL, {"decay":0, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("val_sector",  VAL, {"decay":0, "universe":"TOP3000", "neutralization":"SECTOR"}),
+        ("netprofit_y", "quantile(ts_backfill(divide(est_netprofit, cap), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_multiwin",_addall(["quantile(ts_backfill(divide(est_ebitda, cap), 60))",
+                                 "quantile(ts_backfill(divide(est_ebitda, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_ebitda, cap), 250))"]), {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("yield4_sec",  _addall(["quantile(ts_backfill(divide(est_ebitda, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_ebit, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_netprofit, cap), 120))",
+                                 "quantile(ts_backfill(divide(est_ptp, cap), 120))"]), {"decay":0, "universe":"TOP3000", "neutralization":"SECTOR"}),
+    ],
 }
 
 
