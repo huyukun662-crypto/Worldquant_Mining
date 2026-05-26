@@ -45,6 +45,16 @@ BATCHES = {
         ("eps_revis",   "winsorize(ts_backfill(divide(ts_delta(est_epsr, 66), close), 120), std=4)", {"decay":4}),
         ("ebitda_yield","winsorize(ts_backfill(divide(est_ebitda, cap), 120), std=4)", {"decay":4}),
     ],
+    # Refine the winner: forward EBITDA-yield (est_ebitda/cap). Raw winsorize
+    # failed CONCENTRATED_WEIGHT + sub-universe; rank/zscore even out weights.
+    "refine1": [
+        ("eby_rank_t3_si",  "rank(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eby_zsc_t3_si",   "zscore(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eby_rank_t1_si",  "rank(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":4, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
+        ("eby_rank_t3_ind", "rank(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("eby_quant_t3_si", "quantile(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("comp_eby_fcf",    "add(rank(ts_backfill(divide(est_ebitda, cap), 120)), rank(ts_backfill(divide(est_fcf_ps, close), 120)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
