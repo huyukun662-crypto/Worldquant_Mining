@@ -346,6 +346,17 @@ BATCHES = {
         ("cps2_val",  f"add(add(quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5)), quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("cps_d25",   "quantile(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5))", {"decay":25, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # DIFFERENT TYPE (user vetoed IV call-put spread). news12 short interest =
+    # classic positioning anomaly (Boehmer-Jones-Zhang: high SI -> low returns),
+    # low-TO, orthogonal to value/IV. Plus dividend yield, range z, prev-day rev.
+    "newsig_probe1": [
+        ("shortint",  "multiply(quantile(ts_backfill(news_short_interest, 22)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_d20",    "multiply(quantile(ts_backfill(news_short_interest, 22)), -1)", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_chg",    "multiply(quantile(ts_delta(ts_backfill(news_short_interest, 22), 66)), -1)", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("dy_val",    "quantile(ts_backfill(news_dividend_yield, 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("range_z",   "multiply(quantile(ts_backfill(news_range_stddev, 5)), -1)", {"decay":5, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_val",    f"add(multiply(quantile(ts_backfill(news_short_interest, 22)), -1), {VAL})", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
