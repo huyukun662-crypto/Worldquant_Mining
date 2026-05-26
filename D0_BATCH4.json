@@ -382,5 +382,58 @@
     "sub_universe_sharpe": 1.51,
     "checks_pass": 5,
     "checks_total": 8
+  },
+  {
+    "ok": true,
+    "alpha_id": "3qzA39kN",
+    "expression": "group_zscore(ts_mean(ts_backfill(news_short_interest, 30), 22), subindustry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "sharpe": 0.89,
+    "turnover": 0.0524,
+    "fitness": 0.78,
+    "returns": 0.0953,
+    "drawdown": 0.1301,
+    "margin": 0.003639,
+    "longCount": 418,
+    "shortCount": 711,
+    "sub_universe_sharpe": 1.27,
+    "checks_pass": 4,
+    "checks_total": 8
+  },
+  {
+    "ok": false,
+    "stage": "timeout",
+    "expression": "group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 30), subindustry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
   }
 ]
