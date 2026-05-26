@@ -45,6 +45,7 @@ def list_fields(session, dataset_id, delay, universe="TOP3000"):
     while True:
         r = get(session, f"{BASE}/data-fields",
                 {"region": "USA", "delay": delay, "universe": universe,
+                 "instrumentType": "EQUITY",
                  "dataset.id": dataset_id, "limit": 50, "offset": offset})
         if r.status_code != 200:
             print(f"data-fields {dataset_id} -> {r.status_code} {r.text[:160]}")
