@@ -1,0 +1,147 @@
+{
+  "id": "Wj9gK1Jd",
+  "type": "REGULAR",
+  "author": "DH58557",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 4,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "maxTrade": "OFF",
+    "maxPosition": "OFF",
+    "language": "FASTEXPR",
+    "visualization": false,
+    "startDate": "2019-01-01",
+    "endDate": "2023-12-31"
+  },
+  "regular": {
+    "code": "reverse(zscore(ts_decay_linear(add(zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5))), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_30, 5), 60))), 15)))",
+    "description": null,
+    "operatorCount": 11
+  },
+  "dateCreated": "2026-05-26T04:10:20-04:00",
+  "dateSubmitted": "2026-05-26T05:33:30-04:00",
+  "dateModified": "2026-05-26T04:10:21-04:00",
+  "name": null,
+  "favorite": false,
+  "hidden": false,
+  "color": null,
+  "category": null,
+  "tags": [],
+  "classifications": [
+    {
+      "id": "REGULAR:REGULAR",
+      "name": "Regular Alpha"
+    }
+  ],
+  "grade": "EXCELLENT",
+  "stage": "OS",
+  "status": "ACTIVE",
+  "is": {
+    "pnl": 8918124,
+    "bookSize": 20000000,
+    "longCount": 1644,
+    "shortCount": 1177,
+    "turnover": 0.1814,
+    "returns": 0.1802,
+    "drawdown": 0.0635,
+    "margin": 0.001987,
+    "sharpe": 2.33,
+    "fitness": 2.32,
+    "startDate": "2019-01-01",
+    "selfCorrelation": 0.2127,
+    "prodCorrelation": 0.0,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "limit": 1.25,
+        "value": 2.33
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.0,
+        "value": 2.32
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1814
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1814
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 1.01,
+        "value": 1.03
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          }
+        ]
+      }
+    ]
+  },
+  "os": {
+    "startDate": "2024-01-01",
+    "osISSharpeRatio": null,
+    "preCloseSharpeRatio": null,
+    "checks": [
+      {
+        "name": "SHARPE",
+        "result": "PENDING"
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "IS_SHARPE",
+        "result": "PENDING"
+      },
+      {
+        "name": "OTHERS",
+        "result": "PENDING"
+      }
+    ]
+  },
+  "train": null,
+  "test": null,
+  "prod": null,
+  "competitions": [
+    {
+      "id": "challenge",
+      "name": "Challenge"
+    }
+  ],
+  "themes": [],
+  "pyramids": null,
+  "pyramidThemes": {
+    "effective": 0,
+    "pyramids": null
+  },
+  "team": null,
+  "origin": "PLATFORM"
+}
