@@ -1,0 +1,72 @@
+[
+ {
+  "expr": "reverse(zscore(ts_decay_linear(ts_backfill(pv13_custretsig_retsig, 10), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(ts_backfill(pv13_custretsig_retsig, 10), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 20,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(ts_mean(ts_backfill(pv13_custretsig_retsig, 10), 10), 10)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(rank(ts_mean(ts_backfill(pv13_custretsig_retsig, 10), 20)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(ts_backfill(pv13_custretsig_retsig, 10), 20)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(ts_backfill(pv13_custretsig_retsig, 10), 20)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.1
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(ts_mean(ts_backfill(pv13_custretsig_retsig, 10), 20), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 16,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]
