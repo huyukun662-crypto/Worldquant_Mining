@@ -216,6 +216,17 @@ BATCHES = {
         ("val_rec_cust", f"add(add({VAL}, quantile(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 10), 60))), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("rec_cust",     f"add(quantile(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 10), 60)), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Last push: stack RAW strong signals (don't tame). High turnover but high
+    # returns -> may pass fitness>=1.3 if SH>=2. legs: value + raw rec_chg(+1.4)
+    # + cust-reversal(+0.83) + vwap-reversal(+0.76), correct signs.
+    "refine15": [
+        ("stack4_raw", "add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("stack3_nvw", "add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_vwap",   "add(quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22)), quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("stack4_d4",  "add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("stack4_2val","add(add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_cust_vw","add(add(quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)), quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
