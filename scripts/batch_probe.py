@@ -390,6 +390,17 @@ BATCHES = {
         ("maxstack_d8", f"add(add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1)), quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":8, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("maxstack_t1k", f"add(add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1)), quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":8, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Operator-engineering (per user's example structure): apply
+    # winsorize(ts_decay_linear(group_zscore(ts_mean(BASE,40), sector),4),std=4)
+    # to mainstream NON-IV bases. Sector-relative + smoothed + decayed.
+    "newsig_probe5": [
+        ("eng_val",  "winsorize(ts_decay_linear(group_zscore(ts_mean(ts_backfill(divide(est_ebitda, cap), 60), 40), sector), 4), std=4)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eng_ey",   "winsorize(ts_decay_linear(group_zscore(ts_mean(ts_backfill(divide(est_epsr, close), 60), 40), sector), 4), std=4)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eng_rev",  "multiply(winsorize(ts_decay_linear(group_zscore(ts_mean(returns, 40), sector), 4), std=4), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eng_cfo",  "winsorize(ts_decay_linear(group_zscore(ts_mean(ts_backfill(divide(cashflow_op, assets), 60), 40), sector), 4), std=4)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eng_vwap", "multiply(winsorize(ts_decay_linear(group_zscore(ts_mean(divide(subtract(vwap, close), close), 40), sector), 4), std=4), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eng_recz", "winsorize(ts_decay_linear(group_zscore(ts_mean(ts_backfill(vec_avg(nws18_ghc_lna), 22), 40), sector), 4), std=4)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
