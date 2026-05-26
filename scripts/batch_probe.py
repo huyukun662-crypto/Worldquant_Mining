@@ -35,6 +35,11 @@ def _newsrev(f, n=22):
 REL4 = [_relrev(f) for f in ("rel_ret_cust", "rel_ret_comp", "rel_ret_part", "rel_ret_all")]
 NEWS3 = [_newsrev(f) for f in ("news_pct_60min", "news_max_up_ret", "news_indx_perf")]
 
+# Earnings surprise (PEAD): (actual EPS - consensus EPS) / price, persisted.
+PEAD = "quantile(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120))"
+CUSTREV = _relrev("rel_ret_cust")
+VAL_REL = f"add({VAL}, {CUSTREV})"
+
 BATCHES = {
     "news_probe": [
         ("pe_value",   "group_neutralize(-winsorize(ts_backfill(news_pe_ratio, 250), std=4), subindustry)", {"decay":6}),
@@ -150,6 +155,16 @@ BATCHES = {
                                  "quantile(ts_backfill(divide(est_ebit, cap), 120))",
                                  "quantile(ts_backfill(divide(est_netprofit, cap), 120))",
                                  "quantile(ts_backfill(divide(est_ptp, cap), 120))"]), {"decay":0, "universe":"TOP3000", "neutralization":"SECTOR"}),
+    ],
+    # PEAD (earnings surprise) is strong, orthogonal to value & reversal, low
+    # turnover. Stack value + cust-reversal + PEAD toward SH 2.0.
+    "refine9": [
+        ("pead",          PEAD, {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("pead_actual",   "quantile(ts_backfill(divide(news_eps_actual, close), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_pead",      f"add({VAL}, {PEAD})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_cust_pead", f"add({VAL_REL}, {PEAD})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vcp_2val",      f"add(add({VAL}, {VAL_REL}), {PEAD})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("news_ls",       "quantile(ts_backfill(news_ls, 22))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
 }
 
