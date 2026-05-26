@@ -176,6 +176,16 @@ BATCHES = {
         ("vc_rev5_pead",  f"add(add({VAL_REL}, multiply(quantile(ts_mean(returns, 5)), -1)), subtract(quantile(ts_backfill(news_eps_actual, 120)), quantile(ts_backfill(est_epsr, 120))))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("rev5_t500",     "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "universe":"TOP500", "neutralization":"SUBINDUSTRY"}),
     ],
+    # D0's strongest signal class: intraday reversal (close vs vwap). Find a
+    # high-SH leg, then stack with the cold value+cust anchor toward 2.0.
+    "refine11": [
+        ("vwap_rev",   "quantile(divide(subtract(vwap, close), close))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vwap_rev_d2","quantile(ts_mean(divide(subtract(vwap, close), close), 2))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cc_rev1",    "multiply(quantile(returns), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("hl_pos",     "multiply(quantile(divide(subtract(close, low), subtract(high, low))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_vwaprev",f"add({VAL_REL}, quantile(divide(subtract(vwap, close), close)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vwap_rev_t1k","quantile(divide(subtract(vwap, close), close))", {"decay":0, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
