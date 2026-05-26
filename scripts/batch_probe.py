@@ -85,6 +85,17 @@ BATCHES = {
         ("val_ptp",      "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ptp, cap), 120)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("val_smooth",   "ts_mean(quantile(ts_backfill(divide(est_ebitda, cap), 120)), 10)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Orthogonal leg: supply-chain customer-return REVERSAL (pv13, cold).
+    # Value-weighted combos keep turnover < 0.25 while the low-correlation
+    # reversal lifts Sharpe past 1.25.
+    "refine5": [
+        ("rel_rev_s5",   "multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rel_rev_s22",  "multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 22)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rel_11",   "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rel_21",   "add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rel_31",   "add(add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_rel_21s22","add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(quantile(ts_mean(ts_backfill(rel_ret_cust, 120), 22)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
