@@ -1,0 +1,22 @@
+[
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(implied_volatility_mean_skew_60, 5)), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_60, 5), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(subtract(ts_backfill(implied_volatility_mean_30,5), historical_volatility_30)), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_30, 5), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]
