@@ -368,6 +368,17 @@ BATCHES = {
         ("epsrev",    "quantile(ts_backfill(divide(ts_delta(est_epsr, 66), close), 120))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("pead_val",  f"add(quantile(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120)), {VAL})", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Apply the decay-magic (smoothing a noisy-but-persistent signal, as in the
+    # cps win) to NON-IV mainstream signals: supply-chain lead-lag (Cohen-
+    # Frazzini, pv13 rel_ret_*), rank-based PEAD (units-safe), rec_chg low decay.
+    "newsig_probe3": [
+        ("peadrank",  "subtract(rank(ts_backfill(news_eps_actual, 90)), rank(ts_backfill(est_epsr, 90)))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cust_d20",  "quantile(ts_backfill(rel_ret_cust, 5))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("comp_d20",  "quantile(ts_backfill(rel_ret_comp, 5))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("all_d20",   "quantile(ts_backfill(rel_ret_all, 5))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec_d10",   "quantile(ts_backfill(vec_avg(nws18_ghc_lna), 22))", {"decay":10, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_cust_d",f"add({VAL}, quantile(ts_backfill(rel_ret_cust, 5)))", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
