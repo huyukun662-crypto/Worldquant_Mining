@@ -357,6 +357,17 @@ BATCHES = {
         ("cps_mlt22", "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 22))", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
         ("cps_grp",   "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # cps_multi (3-maturity, SH 2.18) is the strongest base but fails sub-univ
+    # under SUBINDUSTRY. Pair the strong base with sub-univ fixes: MARKET /
+    # INDUSTRY neutralization + value blend, to clear BOTH SH>=2 and sub-univ.
+    "opt_probe5": [
+        ("mlt_mkt",  "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5))", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("mlt_ind",  "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5))", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("mlt_val",  f"add(quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5)), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("mlt_mkt_v",f"add(quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5)), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("mlt_grp",  "group_zscore(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5), industry)", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("mlt_d15",  "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5))", {"decay":15, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+    ],
     # DIFFERENT TYPE (user vetoed IV call-put spread). news12 short interest =
     # classic positioning anomaly (Boehmer-Jones-Zhang: high SI -> low returns),
     # low-TO, orthogonal to value/IV. Plus dividend yield, range z, prev-day rev.
