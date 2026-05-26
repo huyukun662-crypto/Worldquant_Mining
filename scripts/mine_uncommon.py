@@ -178,10 +178,17 @@ def main():
                     help="JSON list of {expr, settings} to simulate")
     args = ap.parse_args()
 
-    cm = _load(VENDOR / "core" / "credential_manager.py", "cm").CredentialManager(
-        base_path=str(REPO))
-    if not cm.authenticate(auto_load=True, auto_prompt=False):
-        log.error("auth failed"); return 2
+    # Auth with retry: the container clock skews intermittently, breaking TLS
+    # cert validation ("certificate is not yet valid"); retry past those windows.
+    cm = None
+    for attempt in range(12):
+        cm = _load(VENDOR / "core" / "credential_manager.py", "cm").CredentialManager(
+            base_path=str(REPO))
+        if cm.authenticate(auto_load=True, auto_prompt=False):
+            break
+        log.info(f"auth retry {attempt+1}/12 (clock skew?)"); time.sleep(10)
+    else:
+        log.error("auth failed after retries"); return 2
     log.info(f"auth ok as {cm.credentials.username}")
     s = cm.session
 
