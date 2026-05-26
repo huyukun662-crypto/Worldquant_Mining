@@ -269,6 +269,16 @@ BATCHES = {
         ("val_sent",  f"add({VAL}, quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("stack5",    f"add({S4}, quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Cold constraint lifted: engineer a STRONG D0 reversal leg (residual /
+    # liquidity / volume-scaled), aim >1.2, then stack toward SH>=2.
+    "free_probe1": [
+        ("zrev_mkt",  "multiply(ts_zscore(returns, 5), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("liqrev",    "multiply(rank(ts_mean(divide(returns, adv20), 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("volscale",  "multiply(rank(multiply(ts_mean(returns, 5), ts_std_dev(returns, 20))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("cvrev",     "multiply(rank(ts_corr(returns, volume, 10)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vwap_dev",  "multiply(rank(divide(subtract(close, vwap), vwap)), -1)", {"decay":0, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
+        ("ovnight",   "multiply(rank(divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
