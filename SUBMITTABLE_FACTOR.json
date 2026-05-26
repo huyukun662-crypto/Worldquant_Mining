@@ -120,5 +120,64 @@
       "zscore",
       "reverse"
     ]
+  },
+  {
+    "alpha_id": "1YJ76QmW",
+    "submittable": true,
+    "status_note": "confirmed via check; NOT yet submitted",
+    "expression": "reverse(zscore(ts_decay_linear(add(add(zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5))), zscore(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_call_90, 5)))), zscore(divide(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5)))), 6)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 2,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "maxTrade": "OFF",
+      "maxPosition": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "startDate": "2019-01-01",
+      "endDate": "2023-12-31"
+    },
+    "is_metrics": {
+      "sharpe": 1.25,
+      "fitness": 1.28,
+      "turnover": 0.1371,
+      "returns": 0.1442,
+      "drawdown": 0.158
+    },
+    "is_checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    },
+    "self_correlation_check": {
+      "max_corr": 0.3114,
+      "records": 4,
+      "limit": 0.7,
+      "result": "PASS",
+      "vs": "includes submitted Wj9gK1Jd"
+    },
+    "uncommon_fields": [
+      "implied_volatility_put/call_60/90/180 (option8)"
+    ],
+    "uncommon_operators": [
+      "ts_backfill",
+      "ts_decay_linear",
+      "divide",
+      "zscore",
+      "reverse"
+    ],
+    "note": "3-horizon put/call IV blend on TOP500; no ts_regression so completes fast; low corr (0.31) with submitted Wj9gK1Jd despite same IV family"
   }
 ]
