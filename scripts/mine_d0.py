@@ -60,7 +60,7 @@ BASE_SETTINGS = {
 
 POLL_TIMEOUT_S = 420
 POLL_INTERVAL_S = 5
-MAX_CONCURRENT = 3
+MAX_CONCURRENT = 2
 _throttle = threading.Semaphore(MAX_CONCURRENT)
 
 
@@ -97,12 +97,12 @@ def submit_one(session, expression: str, override: dict) -> dict:
     body = {"type": "REGULAR", "settings": settings, "regular": expression}
 
     with _throttle:
-        # POST with 429 backoff
-        for attempt in range(6):
+        # POST with 429 backoff (concurrent-limit aware)
+        for attempt in range(15):
             r = session.post("https://api.worldquantbrain.com/simulations",
                              json=body, timeout=30)
             if r.status_code == 429:
-                wait = float(r.headers.get("Retry-After") or 20)
+                wait = float(r.headers.get("Retry-After") or (15 + 5 * attempt))
                 time.sleep(wait)
                 continue
             if r.status_code == 201:
