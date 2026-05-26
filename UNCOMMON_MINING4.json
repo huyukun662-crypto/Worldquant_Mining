@@ -46,5 +46,29 @@
       "truncation": 0.08
     },
     "error": "timeout"
+  },
+  {
+    "ok": false,
+    "expr": "zscore(ts_decay_linear(add(zscore(ts_av_diff(ts_backfill(scl12_sentiment, 10), 10)), zscore(ts_regression(returns, ts_av_diff(ts_backfill(scl12_sentiment, 10), 10), 45))), 15))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "error": "timeout"
+  },
+  {
+    "ok": false,
+    "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_av_diff(ts_backfill(scl12_sentiment, 10), 10)), zscore(ts_regression(returns, ts_av_diff(ts_backfill(scl12_sentiment, 10), 10), 45))), 15)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "error": "timeout"
   }
 ]
