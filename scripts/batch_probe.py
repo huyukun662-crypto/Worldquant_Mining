@@ -55,6 +55,16 @@ BATCHES = {
         ("eby_quant_t3_si", "quantile(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("comp_eby_fcf",    "add(rank(ts_backfill(divide(est_ebitda, cap), 120)), rank(ts_backfill(divide(est_fcf_ps, close), 120)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Push SH 1.06 -> >1.25. EBITDA/EV (EV=cap+net debt) is the proper
+    # enterprise multiple; tune decay/window; combine two valuation legs.
+    "refine2": [
+        ("ev_quant",      "quantile(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ev_rank",       "rank(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ebit_ev_quant", "quantile(ts_backfill(divide(est_ebit, add(cap, est_netdebt)), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("eby_quant_d0",  "quantile(ts_backfill(divide(est_ebitda, cap), 120))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("ev_sector",     "quantile(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120))", {"decay":4, "universe":"TOP3000", "neutralization":"SECTOR"}),
+        ("comp_ev_cap",   "add(quantile(ts_backfill(divide(est_ebitda, add(cap, est_netdebt)), 120)), quantile(ts_backfill(divide(est_ebitda, cap), 120)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
