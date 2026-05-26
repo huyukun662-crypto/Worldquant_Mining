@@ -1,0 +1,30 @@
+{
+  "summary": "D0 cold-field (non-option) mining, account huyukun662@gmail.com. 20 batches / ~150 WQ simulations. The IQC2026S2 submit gate requires SH>2.0 AND FIT>1.3 AND CONCENTRATED_WEIGHT-pass simultaneously. A fundamental tradeoff blocks all cold non-IV D0 signals.",
+  "key_finding": "The only signal reaching SH 2.0 is the news_short_interest short-squeeze factor, but it is sparse (~1050/3000 names) so it FAILS CONCENTRATED_WEIGHT. Filling the book to pass concentration necessarily dilutes weight, capping SH at ~1.86 / FIT ~1.1. Dense cold fields (sentiment/news/Ravenpack) naturally pass concentration but cap at SH ~1.0.",
+  "candidates": [
+    {
+      "label": "BEST SHARPE (fails only CONCENTRATED_WEIGHT)",
+      "alpha_id": "P0v16OeM",
+      "expression": "group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), sector)",
+      "settings": {"delay": 0, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "truncation": 0.01, "decay": 4, "pasteurization": "ON"},
+      "checks": {"LOW_SHARPE": "PASS (2.00>=2.0)", "LOW_FITNESS": "PASS (3.13)", "LOW_TURNOVER": "PASS (0.065)", "HIGH_TURNOVER": "PASS", "CONCENTRATED_WEIGHT": "FAIL (0.5 vs 0.1; only ~1050 names traded)", "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.86)", "SELF_CORRELATION": "PENDING", "MATCHES_COMPETITION": "PASS"}
+    },
+    {
+      "label": "BEST CONCENTRATED_WEIGHT-PASS (full book; fails competition SH/FIT limits, likely passes a REGULAR non-competition submit)",
+      "alpha_id": "Wj9pEMeN",
+      "expression": "add(add(if_else(is_nan(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry)), group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), multiply(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry), 3)), multiply(group_zscore(ts_mean(ts_backfill(rel_ret_all, 5), 22), subindustry), 2)), group_zscore(reverse(ts_mean(ts_backfill(news_pe_ratio, 22), 22)), sector))",
+      "settings": {"delay": 0, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "truncation": 0.05, "decay": 4, "pasteurization": "ON"},
+      "checks": {"LOW_SHARPE": "FAIL at competition 2.0 (value 1.86; >1.25 regular)", "LOW_FITNESS": "FAIL at competition 1.3 (value 1.10; >1.0 regular)", "LOW_TURNOVER": "PASS (0.202)", "HIGH_TURNOVER": "PASS", "CONCENTRATED_WEIGHT": "PASS", "LOW_SUB_UNIVERSE_SHARPE": "PASS (0.99)", "SELF_CORRELATION": "PENDING", "MATCHES_COMPETITION": "PASS"}
+    }
+  ],
+  "cold_dimensions_explored": {
+    "news_short_interest": "SH 2.0 concentrated (best); short-squeeze, userCount 6",
+    "news_pct_90min": "post-news drift, dense, SH ~1.05",
+    "news_pe_ratio": "value (cheap=long), SH 0.64, very low turnover",
+    "rel_ret_all/comp (pv13)": "peer lead-lag, sub-universe 0.9, SH 0.3-0.44",
+    "snt_value/scl12 (socialmedia)": "dense sentiment, SH ~0.3-0.4",
+    "nws18 Ravenpack (ssc/nip/qep/ghc_lna)": "dense premium sentiment, SH <=0.42 (ghc_lna rev 0.88)",
+    "analyst4 est_* revisions": "weak, SH ~0",
+    "news_ls": "dense L/S indicator, SH ~0.4"
+  }
+}
