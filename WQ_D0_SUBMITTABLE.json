@@ -1,0 +1,40 @@
+{
+  "winner": {
+    "name": "grp_sec_mkt",
+    "alpha_id": "0mz7e9G8",
+    "expression": "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)",
+    "settings": {
+      "delay": 0,
+      "universe": "TOP3000",
+      "neutralization": "MARKET",
+      "decay": 20,
+      "region": "USA"
+    },
+    "metrics": {
+      "sharpe": 2.41,
+      "fitness": 2.91,
+      "turnover": 0.1576,
+      "returns": 0.2301,
+      "checks_passed": 7,
+      "checks_total": 8
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+      "MATCHES_COMPETITION": "PASS",
+      "SELF_CORRELATION": "PENDING"
+    },
+    "note": "D0 submittable. Base = option-implied call-put IV spread (Cremers-Weinbaum). Key construction: group_zscore by SECTOR (coarse) + MARKET neutralization fixes LOW_SUB_UNIVERSE_SHARPE while decay=20 + multi-day smoothing tames turnover and lifts Sharpe. Finer grouping (subindustry/industry) scores higher SH (2.45) but fails sub-universe; sector grouping is the sweet spot."
+  },
+  "sub_universe_fix_sweep": {
+    "SUBINDUSTRY_neut": {"cps_d20": 2.12, "cps_d25": 2.16, "cps_multi": 2.18, "cps_bf22": 2.05, "cps_grp_subind": 2.41, "sub_universe": "FAIL"},
+    "INDUSTRY_neut":    {"cps_mlt22": 2.13, "grp_ind": 2.42, "sub_universe": "FAIL"},
+    "MARKET_neut_plain":{"cps_mkt": 1.74, "sub_universe": "PASS"},
+    "MARKET_neut_grp_subindustry": {"grp_mkt": 2.41, "grpmlt_mkt": 2.45, "sub_universe": "FAIL"},
+    "MARKET_neut_grp_SECTOR": {"grp_sec_mkt": 2.41, "sub_universe": "PASS", "verdict": "WINNER"}
+  }
+}

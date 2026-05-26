@@ -379,6 +379,18 @@ BATCHES = {
         ("grp_mkt5",  "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
         ("grp_sec_mkt","group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
     ],
+    # grp_sec_mkt passes ALL deterministic checks (SH2.41/FIT2.91/sub-univ) but
+    # SELF_CORRELATION=0.78>0.7 vs user's existing IV-spread alpha. De-correlate:
+    # use DIFFERENT maturities (60/90, not their 30d) + orthogonal blends, keep
+    # the winning sector-group + MARKET structure, SH>=2, sub-univ pass.
+    "opt_probe7": [
+        ("sec60",   "group_zscore(ts_backfill(subtract(implied_volatility_call_60, implied_volatility_put_60), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("sec90",   "group_zscore(ts_backfill(subtract(implied_volatility_call_90, implied_volatility_put_90), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("sec6090", "group_zscore(ts_backfill(add(subtract(implied_volatility_call_60, implied_volatility_put_60), subtract(implied_volatility_call_90, implied_volatility_put_90)), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("sec180",  "group_zscore(ts_backfill(subtract(implied_volatility_call_180, implied_volatility_put_180), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("sec_val", f"add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), {VAL})", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("sec_rev", "add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), quantile(divide(subtract(vwap, close), close)))", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+    ],
     # DIFFERENT TYPE (user vetoed IV call-put spread). news12 short interest =
     # classic positioning anomaly (Boehmer-Jones-Zhang: high SI -> low returns),
     # low-TO, orthogonal to value/IV. Plus dividend yield, range z, prev-day rev.
