@@ -74,7 +74,7 @@ def _req(method, session, url, **kw):
     return None
 
 
-def submit_and_poll(session, expr, settings, timeout=420, interval=4):
+def submit_and_poll(session, expr, settings, timeout=600, interval=5):
     body = {"type": "REGULAR",
             "settings": {**FIXED, **settings},
             "regular": expr}
@@ -188,10 +188,13 @@ def main():
     if out_path.exists():
         try:
             results = json.load(open(out_path))
-            done = {(r["expr"], json.dumps(r["settings"], sort_keys=True)) for r in results}
+            # Only treat OK results as done; retry prior errors (e.g. timeouts).
+            done = {(r["expr"], json.dumps(r["settings"], sort_keys=True))
+                    for r in results if r.get("ok")}
+            results = [r for r in results if r.get("ok")]
             cands = [c for c in cands
                      if (c["expr"], json.dumps(c["settings"], sort_keys=True)) not in done]
-            log.info(f"resume: {len(results)} done, {len(cands)} remaining")
+            log.info(f"resume: {len(results)} ok kept, {len(cands)} to (re)run")
         except Exception:
             results = []
 
