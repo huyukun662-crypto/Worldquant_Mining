@@ -368,6 +368,17 @@ BATCHES = {
         ("mlt_grp",  "group_zscore(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5), industry)", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
         ("mlt_d15",  "quantile(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 5))", {"decay":15, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
     ],
+    # cps_grp (group_zscore base) = SH 2.41, highest. Only MARKET neut clears
+    # sub-universe (costs ~0.4 SH). 2.41 base has headroom: grp+MARKET should
+    # land near/above 2.0 AND pass sub-universe. Also try grp multi-maturity.
+    "opt_probe6": [
+        ("grp_mkt",   "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("grp_ind",   "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("grpmlt_mkt","group_zscore(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 22), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("grpmlt_ind","group_zscore(ts_backfill(add(add(subtract(implied_volatility_call_30, implied_volatility_put_30), subtract(implied_volatility_call_60, implied_volatility_put_60)), subtract(implied_volatility_call_90, implied_volatility_put_90)), 22), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"INDUSTRY"}),
+        ("grp_mkt5",  "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 5), subindustry)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("grp_sec_mkt","group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+    ],
     # DIFFERENT TYPE (user vetoed IV call-put spread). news12 short interest =
     # classic positioning anomaly (Boehmer-Jones-Zhang: high SI -> low returns),
     # low-TO, orthogonal to value/IV. Plus dividend yield, range z, prev-day rev.
