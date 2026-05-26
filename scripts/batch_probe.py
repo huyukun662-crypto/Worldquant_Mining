@@ -166,6 +166,16 @@ BATCHES = {
         ("vcp_2val",      f"add(add({VAL}, {VAL_REL}), {PEAD})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("news_ls",       "quantile(ts_backfill(news_ls, 22))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Add a strong short-term reversal leg to reach SH>=2.0 (submit bar).
+    # cold operators (quantile/ts_mean/ts_zscore) on returns; cold value anchor.
+    "refine10": [
+        ("rev5",          "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rev1z",         "multiply(ts_zscore(returns, 5), 1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("pead_rd",       "subtract(quantile(ts_backfill(news_eps_actual, 120)), quantile(ts_backfill(est_epsr, 120)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_cust_rev5", f"add({VAL_REL}, multiply(quantile(ts_mean(returns, 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vc_rev5_pead",  f"add(add({VAL_REL}, multiply(quantile(ts_mean(returns, 5)), -1)), subtract(quantile(ts_backfill(news_eps_actual, 120)), quantile(ts_backfill(est_epsr, 120))))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rev5_t500",     "multiply(quantile(ts_mean(returns, 5)), -1)", {"decay":0, "universe":"TOP500", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
