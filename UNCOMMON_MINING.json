@@ -508,5 +508,215 @@
       "SELF_CORRELATION": "PENDING",
       "MATCHES_COMPETITION": "PASS"
     }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(ts_quantile(historical_volatility_30, 120), 5)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "QPEQXn5p",
+    "sharpe": -0.11,
+    "fitness": -0.02,
+    "turnover": 0.1419,
+    "returns": -0.0055,
+    "drawdown": 0.0979,
+    "margin": -7.8e-05,
+    "longCount": 1464,
+    "shortCount": 1413,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "FAIL",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(ts_mean(ts_backfill(snt_value, 5), 5), 5)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "akoOvKjv",
+    "sharpe": -0.58,
+    "fitness": -0.24,
+    "turnover": 0.246,
+    "returns": -0.0419,
+    "drawdown": 0.3654,
+    "margin": -0.000341,
+    "longCount": 1085,
+    "shortCount": 1862,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "FAIL",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(rank(ts_av_diff(ts_backfill(scl12_sentiment, 10), 10)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "zqOWp2rR",
+    "sharpe": -0.12,
+    "fitness": -0.01,
+    "turnover": 0.5117,
+    "returns": -0.003,
+    "drawdown": 0.0541,
+    "margin": -1.2e-05,
+    "longCount": 1398,
+    "shortCount": 1534,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "zscore(ts_decay_linear(multiply(ts_backfill(scl12_sentiment, 5), ts_backfill(scl12_buzz, 5)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "A1k3KXRW",
+    "sharpe": -0.92,
+    "fitness": -0.76,
+    "turnover": 0.254,
+    "returns": -0.1725,
+    "drawdown": 0.9224,
+    "margin": -0.001358,
+    "longCount": 899,
+    "shortCount": 1986,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "FAIL",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "zscore(ts_decay_linear(add(reverse(zscore(ts_backfill(implied_volatility_mean_skew_30, 10))), reverse(zscore(subtract(ts_backfill(implied_volatility_mean_30, 5), historical_volatility_30)))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "58MvVnYz",
+    "sharpe": -0.52,
+    "fitness": -0.28,
+    "turnover": 0.1589,
+    "returns": -0.0455,
+    "drawdown": 0.2935,
+    "margin": -0.000573,
+    "longCount": 1376,
+    "shortCount": 1376,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "FAIL",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(implied_volatility_mean_skew_30, 10)), zscore(subtract(ts_backfill(implied_volatility_mean_30, 5), historical_volatility_30))), 10)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "6XzEb3gO",
+    "sharpe": -0.52,
+    "fitness": -0.28,
+    "turnover": 0.1589,
+    "returns": -0.0455,
+    "drawdown": 0.2935,
+    "margin": -0.000573,
+    "longCount": 1376,
+    "shortCount": 1376,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "FAIL",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(rank(signed_power(ts_av_diff(ts_backfill(implied_volatility_mean_skew_30, 10), 20), 0.5)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "LLkRxX5M",
+    "sharpe": 0.66,
+    "fitness": 0.13,
+    "turnover": 0.4665,
+    "returns": 0.0184,
+    "drawdown": 0.0414,
+    "margin": 7.9e-05,
+    "longCount": 1377,
+    "shortCount": 1395,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
   }
 ]
