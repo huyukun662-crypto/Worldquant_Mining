@@ -153,6 +153,10 @@
       "LOW_SUB_UNIVERSE_SHARPE": "PASS",
       "SELF_CORRELATION": "PENDING",
       "MATCHES_COMPETITION": "PASS"
+    },
+    "self_corr": {
+      "max_corr": 0.2127,
+      "n": 3
     }
   },
   {
@@ -243,6 +247,10 @@
       "LOW_SUB_UNIVERSE_SHARPE": "PASS",
       "SELF_CORRELATION": "PENDING",
       "MATCHES_COMPETITION": "PASS"
+    },
+    "self_corr": {
+      "max_corr": 0.2094,
+      "n": 3
     }
   },
   {
@@ -333,6 +341,40 @@
       "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
       "SELF_CORRELATION": "PENDING",
       "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(add(zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5))), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_30, 5), 60))), 15)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "d5dQg7XX",
+    "sharpe": 2.29,
+    "fitness": 2.43,
+    "turnover": 0.1763,
+    "returns": 0.1993,
+    "drawdown": 0.0704,
+    "margin": 0.002261,
+    "longCount": 1782,
+    "shortCount": 1107,
+    "checks": {
+      "LOW_SHARPE": "PASS",
+      "LOW_FITNESS": "PASS",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    },
+    "self_corr": {
+      "max_corr": 0.21,
+      "n": 3
     }
   }
 ]
