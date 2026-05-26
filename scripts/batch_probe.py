@@ -279,6 +279,27 @@ BATCHES = {
         ("vwap_dev",  "multiply(rank(divide(subtract(close, vwap), vwap)), -1)", {"decay":0, "universe":"TOP1000", "neutralization":"SUBINDUSTRY"}),
         ("ovnight",   "multiply(rank(divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), -1)", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
     ],
+    # Kitchen-sink: combine all distinct signals + multi-horizon reversal,
+    # rec-dominant weighting, toward SH>=2.
+    "free_probe2": [
+        ("mhrev",    "add(add(multiply(rank(returns), -1), multiply(rank(ts_mean(returns, 5)), -1)), rank(ts_mean(returns, 21)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("rec3_vc",  f"add(add(add({RECRAW}, {RECRAW}), add({RECRAW}, {VAL})), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("maxstack", f"add(add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1)), quantile(ts_backfill(scl12_sentiment, 5)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("max_mh",   f"add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), add(add(multiply(rank(returns), -1), multiply(rank(ts_mean(returns, 5)), -1)), rank(ts_mean(returns, 21))))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("max_grp",  f"add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1))", {"decay":0, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("max_d2",   f"add(add(add({VAL}, add({RECRAW}, {RECRAW})), {CUSTREV}), multiply(rank(ts_mean(divide(returns, adv20), 5)), -1))", {"decay":2, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
+    # NEW low-turnover signal: cross-sectional momentum (12-1m). Orthogonal to
+    # value & reversal, slow -> low turnover (fitness-friendly). Build low-TO
+    # multifactor value+momentum(+quality) for high SH that PASSES fitness.
+    "free_probe3": [
+        ("mom12",    "rank(divide(ts_delay(close, 21), ts_delay(close, 252)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("mom6",     "rank(divide(ts_delay(close, 21), ts_delay(close, 126)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_mom",  "add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), rank(divide(ts_delay(close, 21), ts_delay(close, 252))))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("val_mom_q","add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), rank(divide(ts_delay(close, 21), ts_delay(close, 252)))), quantile(ts_backfill(divide(cashflow_op, assets), 250)))", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vmom_rec", f"add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), rank(divide(ts_delay(close, 21), ts_delay(close, 252)))), {RECRAW})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("vmom_cust",f"add(add(quantile(ts_backfill(divide(est_ebitda, cap), 120)), rank(divide(ts_delay(close, 21), ts_delay(close, 252)))), {CUSTREV})", {"decay":0, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
 }
 
 
