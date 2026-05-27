@@ -156,6 +156,18 @@ BATCHES = {
     # probe31: ANALYST ESTIMATE-REVISION MOMENTUM (non-IV informed forward-looking signal).
     # ts_delta of backfilled consensus (EPS/net-profit/EBIT) over a quarter, scaled by price/cap.
     # Upward revisions predict positive returns - one of the most robust documented anomalies.
+    # probe32: NEW non-IV mechanisms (user: try 1 more). George-Hwang 52-week-high proximity
+    # (close/ts_max(high,252), anchoring - strong untested pure-price anomaly) + INDUSTRY variant,
+    # idiosyncratic (industry-neut) 12-1 momentum, fundamental momentum (ROA YoY accel),
+    # multi-mechanism composite (value+quality+trend), value+52w-high fusion.
+    "newfam_probe32": [
+        ("high52", "group_zscore(divide(close, ts_max(high, 252)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("high52_ind", "group_zscore(divide(close, ts_max(high, 252)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("idio_mom", "group_zscore(divide(ts_delay(close, 21), ts_delay(close, 252)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("fund_mom", "group_zscore(ts_delta(ts_backfill(return_assets, 20), 252), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("multi_comp", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), group_zscore(divide(close, ts_max(high, 252)), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_high52", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(close, ts_max(high, 252)), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe31": [
         ("eps_rev", "group_zscore(divide(ts_delta(ts_backfill(est_epsr, 20), 63), close), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("np_rev", "group_zscore(divide(ts_delta(ts_backfill(est_netprofit, 20), 63), cap), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
