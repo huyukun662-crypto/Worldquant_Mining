@@ -200,6 +200,16 @@ BATCHES = {
     # Pushing the 1.88 mega toward 2.0.
     # probe48: push the 2.22 non-IV mega higher - reversal weight 2.5/3x, decay 3/5, reversal
     # window 3/10. Find the best config above 2.22.
+    # probe49: SIMPLE regularized DISTINCT alphas (user: 8-factor mega risks overfit). 1-2 component,
+    # winsorize(std=4) regularization to clip outliers. Economically clean, robust, low-overfit.
+    "newfam_probe49": [
+        ("s_val", "group_zscore(winsorize(ts_backfill(divide(est_ebitda, cap), 120), std=4), market)", {'delay': 0, 'decay': 5, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("s_rev", "multiply(group_zscore(winsorize(ts_rank(close, 5), std=4), subindustry), -1)", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("s_val_rev", "add(group_zscore(winsorize(ts_backfill(divide(est_ebitda, cap), 120), std=4), market), multiply(group_zscore(winsorize(ts_rank(close, 5), std=4), subindustry), -1))", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("s_val_q", "add(group_zscore(winsorize(ts_backfill(divide(est_ebitda, cap), 120), std=4), market), group_zscore(winsorize(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), std=4), market))", {'delay': 0, 'decay': 5, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("s_val_pv", "add(group_zscore(winsorize(ts_backfill(divide(est_ebitda, cap), 120), std=4), market), multiply(group_zscore(winsorize(ts_corr(close, volume, 20), std=4), market), -1))", {'delay': 0, 'decay': 5, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("s_q_rev", "add(group_zscore(winsorize(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), std=4), market), multiply(group_zscore(winsorize(ts_rank(close, 5), std=4), subindustry), -1))", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe48": [
         ("m_rw25_d4", "add(add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5)), group_zscore(snt_social_value, market)), group_zscore(ts_backfill(news_indx_perf, 20), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
         ("m_rw3_d4", "add(add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 3)), group_zscore(snt_social_value, market)), group_zscore(ts_backfill(news_indx_perf, 20), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
