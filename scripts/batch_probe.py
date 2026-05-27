@@ -137,6 +137,18 @@ BATCHES = {
     # lending fields (act_util/fee/dtc) are even accepted at delay=0; plus densest d0 short-
     # interest constructions (news_short_interest cov0.86, nws12 main/pre-market SI vectors)
     # with the same plain group_zscore form that scored 2.84 at delay=1.
+    # probe26: DELAY=0 NEW quality/earnings-quality factors (user: keep grinding d0). Sloan
+    # accruals (CFO-NI, low=good earnings quality), ROA, ROE, cash-flow yield, gross
+    # profitability (Novy-Marx GP/assets), and orthogonal quality composite. ts_backfill 120 to
+    # densify quarterly fundamentals (cov~0.5) for concentration. Documented strong anomalies.
+    "newfam_probe26": [
+        ("d0_accruals", "group_zscore(divide(subtract(ts_backfill(cashflow_op, 120), ts_backfill(income, 120)), ts_backfill(est_tot_assets, 120)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_roa", "group_zscore(ts_backfill(return_assets, 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_roe", "group_zscore(ts_backfill(return_equity, 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_cfoyield", "group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_gp_assets", "group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_qualstack", "add(add(add(group_zscore(divide(subtract(ts_backfill(cashflow_op, 120), ts_backfill(income, 120)), ts_backfill(est_tot_assets, 120)), market), group_zscore(ts_backfill(return_assets, 120), market)), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe25": [
         ("d0_util", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("d0_fee", "group_zscore(mdl177_5shortsentimentfactor_benchmark_fee, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
