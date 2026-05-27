@@ -590,5 +590,86 @@
       }
     },
     "note": "IV60 skew, gate 55th, exp3. SH 2.14 FIT 2.54."
+  },
+  {
+    "ok": true,
+    "alpha_id": "GrkeA0xG",
+    "delay": 1,
+    "expression": "-group_rank(ts_backfill(ts_corr(ts_delay(fnd6_txfo,1), ts_delay(implied_volatility_call_90,1), 10), 60), market)",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 4,
+      "truncation": 0.02,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 1.59,
+        "turnover": 0.0551,
+        "fitness": 1.98,
+        "self_corr": null,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.59
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.98
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0551
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0551
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.69,
+            "value": 1.06
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "FIXED user alpha (txfo x IV90 corr). Original FAILed WEIGHT_CONCENTRATION (50%>10%). Fix: ts_backfill(corr,60) coverage + MARKET neut (spreads weight across whole universe vs concentrating in tiny subindustry groups) + truncation 0.02. SH 1.90->1.59 but WC now PASS, FIT 1.98, 7/8 checks. self_corr pending (sibling variants ~0.19). delay=1."
   }
 ]
