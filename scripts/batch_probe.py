@@ -141,6 +141,17 @@ BATCHES = {
     # accruals (CFO-NI, low=good earnings quality), ROA, ROE, cash-flow yield, gross
     # profitability (Novy-Marx GP/assets), and orthogonal quality composite. ts_backfill 120 to
     # densify quarterly fundamentals (cov~0.5) for concentration. Documented strong anomalies.
+    # probe27: DELAY=0 remaining untested dense families. Low-volatility anomaly (historical/
+    # parkinson vol, long low-vol = top documented factor), RavenPack social sentiment (snt cov=1.0,
+    # scl12), competitor lead-lag (rel_ret_comp). Last structurally-new d0 datasets.
+    "newfam_probe27": [
+        ("d0_lowvol", "multiply(group_zscore(historical_volatility_120, market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_lowvol_pk", "multiply(group_zscore(parkinson_volatility_120, market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_snt_val", "group_zscore(snt_value, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_snt_sval", "group_zscore(snt_social_value, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_scl_sent", "group_zscore(scl12_sentiment, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_rel_comp", "group_zscore(rel_ret_comp, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe26": [
         ("d0_accruals", "group_zscore(divide(subtract(ts_backfill(cashflow_op, 120), ts_backfill(income, 120)), ts_backfill(est_tot_assets, 120)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("d0_roa", "group_zscore(ts_backfill(return_assets, 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
