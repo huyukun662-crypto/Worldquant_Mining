@@ -106,6 +106,16 @@ BATCHES = {
     # dense earnings yield, and a pure-dense orthogonal stack. All MATRIX -> pass concentration.
     # probe14: classic fundamental anomalies - net share issuance (dense sharesout),
     # asset growth, gross profitability (Novy-Marx), and value-quality stacks.
+    # probe15: universe sweep on short interest - smaller (more liquid) universes have denser
+    # SI coverage, may pass CONCENTRATED_WEIGHT where TOP3000 fails. Settings are search space.
+    "newfam_probe15": [
+        ("si_top1000", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP1000', 'neutralization': 'MARKET'}),
+        ("si_top500", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP500', 'neutralization': 'MARKET'}),
+        ("si_top200", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP200', 'neutralization': 'MARKET'}),
+        ("si_t1k_ind", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP1000', 'neutralization': 'INDUSTRY'}),
+        ("si_t1k_mkt", "group_zscore(ts_backfill(news_short_interest, 66), market)", {'decay': 6, 'universe': 'TOP1000', 'neutralization': 'MARKET'}),
+        ("si_t500_sub", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP500', 'neutralization': 'SUBINDUSTRY'}),
+    ],
     "newfam_probe14": [
         ("issuance", "multiply(group_zscore(ts_delta(sharesout, 250), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("assetgrow", "multiply(group_zscore(divide(ts_delta(ts_backfill(assets, 60), 250), ts_backfill(assets, 60)), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
