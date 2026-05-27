@@ -752,5 +752,248 @@
       }
     },
     "note": "ALT fix for txfo x IV90 (cleaner dense construction). Backfill INPUTS to daily + long 90d corr window (spans quarterly fundamental update -> dense corr for all names) + MARKET neut. SH 1.49 FIT 1.62 TO 0.062 WC=PASS self_corr=0.43, 7/8. delay=1."
+  },
+  {
+    "ok": true,
+    "alpha_id": "O0ox7Kgg",
+    "delay": 1,
+    "expression": "signed_power(-1.0*group_rank(ts_zscore(close,20),subindustry)+0.5*group_rank(divide(ts_backfill(capex,250),ts_backfill(assets,250)),subindustry)+0.3*group_rank(divide(ts_backfill(bookvalue_ps,250),close),subindustry)+0.5*group_rank(divide(ts_backfill(sales,250)-ts_backfill(cogs,250),ts_backfill(assets,250)),subindustry),3)",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 12,
+      "truncation": 0.1,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 1.39,
+        "turnover": 0.1314,
+        "fitness": 1.11,
+        "self_corr": null,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.39
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.11
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.1314
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.1314
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.6,
+            "value": 0.95
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "NON-OPTION submittable (pure pv+fundamental). BEST FIT non-option: amplified quality-heavy composite. SH 1.39 FIT 1.11. z-score reversal + capex + book/price value + gross-profitability quality, MARKET neut. delay=1."
+  },
+  {
+    "ok": true,
+    "alpha_id": "kqQZPM6L",
+    "delay": 1,
+    "expression": "-1.0*group_rank(ts_zscore(close,20),subindustry)+0.5*group_rank(divide(ts_backfill(capex,250),ts_backfill(assets,250)),subindustry)+0.5*group_rank(divide(ts_backfill(bookvalue_ps,250),close),subindustry)+0.5*group_rank(divide(ts_backfill(sales,250)-ts_backfill(cogs,250),ts_backfill(assets,250)),subindustry)",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 8,
+      "truncation": 0.12,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 1.42,
+        "turnover": 0.1624,
+        "fitness": 1.07,
+        "self_corr": null,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.42
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.07
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.1624
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.1624
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.61,
+            "value": 1.06
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "NON-OPTION submittable (pure pv+fundamental). HIGHEST SH non-option: value+quality heavy. SH 1.42 FIT 1.07. z-score reversal + capex + book/price value + gross-profitability quality, MARKET neut. delay=1."
+  },
+  {
+    "ok": true,
+    "alpha_id": "ZYrKp150",
+    "delay": 1,
+    "expression": "-1.0*group_rank(ts_zscore(close,20),subindustry)+0.5*group_rank(divide(ts_backfill(capex,250),ts_backfill(assets,250)),subindustry)+0.3*group_rank(divide(ts_backfill(bookvalue_ps,250),close),subindustry)+0.5*group_rank(divide(ts_backfill(sales,250)-ts_backfill(cogs,250),ts_backfill(assets,250)),subindustry)",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 12,
+      "truncation": 0.1,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 1.37,
+        "turnover": 0.135,
+        "fitness": 1.07,
+        "self_corr": null,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.37
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.07
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.135
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.135
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.59,
+            "value": 0.99
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "NON-OPTION submittable (pure pv+fundamental). Quality-heavy composite. SH 1.37 FIT 1.07 self_corr 0.53. z-score reversal + capex + book/price value + gross-profitability quality, MARKET neut. delay=1."
   }
 ]
