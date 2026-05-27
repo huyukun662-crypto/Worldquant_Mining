@@ -147,6 +147,17 @@ BATCHES = {
     # probe28: DELAY=0 OPTION-IMPLIED signals (user: appropriately blend options, stay d0).
     # IV skew (crash premium), put-call IV spread (directional demand), IV term structure,
     # variance risk premium (IV-realized), IV level, + value x put-call blend. Dense cov~0.69.
+    # probe29: refine option signal to pass ALL gates. Flip put-call spread (+1.6 raw -1.6),
+    # try INDUSTRY neut / TOP500 / decay20 for sub-universe robustness, and correct-sign
+    # value+option fusion (value carries sub-universe breadth, option adds strength).
+    "newfam_probe29": [
+        ("pc_flip", "multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("pc_flip_ind", "multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("pc_flip_t500", "multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP500', 'neutralization': 'MARKET'}),
+        ("val_pc", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_pc_skew", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)), group_zscore(ts_backfill(implied_volatility_mean_skew_30, 5), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("pc_flip_dec20", "multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)", {'delay': 0, 'decay': 20, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe28": [
         ("iv_skew", "group_zscore(ts_backfill(implied_volatility_mean_skew_30, 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("pc_spread", "group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
