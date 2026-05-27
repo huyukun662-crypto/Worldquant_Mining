@@ -150,6 +150,17 @@ BATCHES = {
     # probe29: refine option signal to pass ALL gates. Flip put-call spread (+1.6 raw -1.6),
     # try INDUSTRY neut / TOP500 / decay20 for sub-universe robustness, and correct-sign
     # value+option fusion (value carries sub-universe breadth, option adds strength).
+    # probe30: NON-IV signals re-tested under INDUSTRY/SUBINDUSTRY neut (the lever that lifted
+    # the IV signal 1.6->2.28). Value, short-interest anomaly (high SI underperforms, flipped),
+    # CF yield, gross profitability, value+quality composite. Seeking a 2nd SH>=2 non-IV factor.
+    "newfam_probe30": [
+        ("val_ind", "group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("val_subind", "group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("si_ind", "multiply(group_zscore(ts_backfill(news_short_interest, 20), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("cfoy_ind", "group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("gp_ind", "group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("valqual_ind", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+    ],
     "newfam_probe29": [
         ("pc_flip", "multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("pc_flip_ind", "multiply(group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
