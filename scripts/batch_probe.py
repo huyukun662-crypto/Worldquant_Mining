@@ -125,6 +125,18 @@ BATCHES = {
     # probe22: DELAY=1 dense (cov=1.0) composite model factors - non-option. Pre-built factor
     # signals (earnings momentum, analyst momentum/surprise/price/value composites, deep value,
     # PEAD abnormal return, EBITDA/EV, earnings yield). Dense -> pass concentration; uncrowded.
+    # probe23: DELAY=1 dense (cov=1.0) SHORT-SENTIMENT / securities-lending factors - non-option.
+    # Borrow fee, utilization, days-to-cover, demand/supply (squeeze), short interest. SI was
+    # SH 1.6 but SPARSE (failed breadth) at delay=0; these are cov=1.0 dense -> strong + pass
+    # concentration. ss_stack = combined short-pressure composite. Sign read from SH (flip if neg).
+    "newfam_probe23": [
+        ("ss_fee", "group_zscore(mdl177_5shortsentimentfactor_benchmark_fee, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_util", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_dtc", "group_zscore(mdl177_5shortsentimentfactor_days_to_cover, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_dmdsup", "group_zscore(mdl177_5shortsentimentfactor_dmd_supply, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_shtint", "group_zscore(mdl177_5shortsentimentfactor_sht_int, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_stack", "add(add(add(add(group_zscore(mdl177_5shortsentimentfactor_benchmark_fee, market), group_zscore(mdl177_5shortsentimentfactor_act_util, market)), group_zscore(mdl177_5shortsentimentfactor_days_to_cover, market)), group_zscore(mdl177_5shortsentimentfactor_dmd_supply, market)), group_zscore(mdl177_5shortsentimentfactor_sht_int, market))", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe22": [
         ("emm_comp", "group_zscore(mdl177_emmcomposite_emm_composite, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("qma_comp", "group_zscore(mdl177_momemtumanalystmodel_qma_composite, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
