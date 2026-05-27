@@ -153,6 +153,17 @@ BATCHES = {
     # probe30: NON-IV signals re-tested under INDUSTRY/SUBINDUSTRY neut (the lever that lifted
     # the IV signal 1.6->2.28). Value, short-interest anomaly (high SI underperforms, flipped),
     # CF yield, gross profitability, value+quality composite. Seeking a 2nd SH>=2 non-IV factor.
+    # probe31: ANALYST ESTIMATE-REVISION MOMENTUM (non-IV informed forward-looking signal).
+    # ts_delta of backfilled consensus (EPS/net-profit/EBIT) over a quarter, scaled by price/cap.
+    # Upward revisions predict positive returns - one of the most robust documented anomalies.
+    "newfam_probe31": [
+        ("eps_rev", "group_zscore(divide(ts_delta(ts_backfill(est_epsr, 20), 63), close), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("np_rev", "group_zscore(divide(ts_delta(ts_backfill(est_netprofit, 20), 63), cap), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ebit_rev", "group_zscore(divide(ts_delta(ts_backfill(est_ebit, 20), 63), cap), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("eps_rev_ind", "group_zscore(divide(ts_delta(ts_backfill(est_epsr, 20), 63), close), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("rev_comp", "add(group_zscore(divide(ts_delta(ts_backfill(est_epsr, 20), 63), close), market), group_zscore(divide(ts_delta(ts_backfill(est_netprofit, 20), 63), cap), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("eps_rev_126", "group_zscore(divide(ts_delta(ts_backfill(est_epsr, 20), 126), close), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe30": [
         ("val_ind", "group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
         ("val_subind", "group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
