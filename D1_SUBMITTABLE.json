@@ -1,0 +1,32 @@
+{
+  "summary": "SECOND submittable factor (competition-passing, independent). delay=1, non-short-interest. Passes all 8 IQC2026S2 gates incl SELF_CORRELATION 0.567 (vs submitted pool: 3 IV alphas + 9qJ7V2GK) and MATCHES_COMPETITION.",
+  "alpha_id": "Xg1ork2b",
+  "expression": "add(add(add(add(multiply(group_zscore(ts_delta(close, 5), subindustry), -1.3), multiply(group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), 1.8)), multiply(group_zscore(ts_mean(ts_backfill(news_pct_120min, 5), 10), subindustry), 1)), multiply(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), 1)), multiply(group_zscore(ts_mean(ts_backfill(vec_avg(nws18_qcm), 22), 22), subindustry), -1.3))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 4,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.05,
+    "pasteurization": "ON",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "language": "FASTEXPR",
+    "visualization": false,
+    "maxTrade": "OFF",
+    "testPeriod": "P0Y0M"
+  },
+  "check": {
+    "LOW_SHARPE": "PASS 1.92>1.25",
+    "LOW_FITNESS": "PASS 1.07>1.0",
+    "TURNOVER": "PASS 0.255",
+    "CONCENTRATED_WEIGHT": "PASS",
+    "LOW_SUB_UNIVERSE_SHARPE": "PASS 1.21>0.83",
+    "SELF_CORRELATION": "PASS 0.567<0.7",
+    "MATCHES_COMPETITION": "PASS"
+  },
+  "composition": "5d price reversal + news post-event drift (90min+120min) + forward earnings-yield (est_epsr/close) + Ravenpack news sentiment (vec_avg nws18_qcm), delay=1. Independent of the D0 short-interest factor 9qJ7V2GK.",
+  "note": "FIT margin thin (1.07 vs 1.0). Submittable as-is; can be strengthened."
+}
