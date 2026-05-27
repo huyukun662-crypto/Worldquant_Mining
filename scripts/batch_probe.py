@@ -115,6 +115,14 @@ BATCHES = {
     # at a clean all-checks-pass non-option D0 factor; also probes true LOW_SHARPE bar.
     # probe18: VALUE COMPOSITE - average multiple est_* value ratios (FCF/CFO/EBITDA/EBIT/book/
     # sales yield) to reduce noise and lift value above single-ratio ~1.07. All dense -> pass conc.
+    # probe19: rescue short interest via NaN-fill densification onto dense value base.
+    # add(value_dense, fill(SI,0)) -> value provides breadth, SI tilts where present.
+    "newfam_probe19": [
+        ("si_nanmask", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), nan_mask(group_zscore(ts_backfill(news_short_interest, 66), market), 0))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_replace", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), replace(group_zscore(ts_backfill(news_short_interest, 66), market), nan, 0))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_tonan", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), to_nan(group_zscore(ts_backfill(news_short_interest, 66), market), 0, true))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_si_2x", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market)), nan_mask(group_zscore(ts_backfill(news_short_interest, 66), market), 0))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe18": [
         ("val_fcf", "group_zscore(ts_backfill(divide(est_fcf, cap), 120), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("val_cfo", "group_zscore(ts_backfill(divide(est_cashflow_op, cap), 120), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
