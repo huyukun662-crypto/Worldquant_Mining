@@ -100,6 +100,16 @@ BATCHES = {
         ("anl_breadth_sub", "group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), subindustry)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
         ("anl_combo", "add(group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), market), group_zscore(divide(subtract(ts_backfill(anl4_basicconqf_pu, 66), ts_backfill(anl4_basicconqf_down, 66)), add(ts_backfill(anl4_basicconqf_numest, 66), 1)), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
     ],
+    # probe12: economic-link / supply-chain momentum (Cohen-Frazzini customer momentum).
+    # rel_ret_cust/comp/part/all = avg returns of linked firms. MATRIX -> dense -> pass concentration.
+    "newfam_probe12": [
+        ("cust22", "group_zscore(ts_mean(rel_ret_cust, 22), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("comp22", "group_zscore(ts_mean(rel_ret_comp, 22), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("part22", "group_zscore(ts_mean(rel_ret_part, 22), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("all22", "group_zscore(ts_mean(rel_ret_all, 22), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("cust5", "group_zscore(ts_mean(rel_ret_cust, 5), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("link_combo", "add(add(group_zscore(ts_mean(rel_ret_cust, 22), market), group_zscore(ts_mean(rel_ret_part, 22), market)), group_zscore(ts_mean(rel_ret_all, 22), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe8": [
         ("si_gbz", "rank(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), market), market, 250))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("si_gbz_d2", "rank(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), market), market, 250))", {'decay': 2, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
