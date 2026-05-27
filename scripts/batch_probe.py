@@ -70,6 +70,25 @@ BATCHES = {
     # CONCENTRATED_WEIGHT (every name positioned). Individually test slow/medium
     # anomalies to find strong (|SH|>0.8) + mutually orthogonal ones to stack.
     # probe7: (A) group_backfill densify sparse short interest; (B) dense reversal maximization
+    # probe8: unit-fixed group_backfill densification (zscore strips units) to rescue
+    # the strong-but-sparse news short interest into a concentration-passing alpha
+    # probe9: analyst estimate-revision signals (D0 analyst4) - revision breadth (pu-down)/numest,
+    # EPS revision (est-preest), dispersion. Strong anomaly, slow-updating (low TO), broad coverage.
+    "newfam_probe9": [
+        ("anl_breadth_af", "group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_breadth_qf", "group_zscore(divide(subtract(ts_backfill(anl4_basicconqf_pu, 66), ts_backfill(anl4_basicconqf_down, 66)), add(ts_backfill(anl4_basicconqf_numest, 66), 1)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_rev_eps", "group_zscore(divide(subtract(ts_backfill(anl4_dez1afv4_est, 66), ts_backfill(anl4_dez1afv4_preest, 66)), add(abs(ts_backfill(anl4_dez1afv4_preest, 66)), 0.01)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_disp", "group_zscore(multiply(divide(subtract(ts_backfill(anl4_basicconaf_high, 66), ts_backfill(anl4_basicconaf_low, 66)), add(abs(ts_backfill(anl4_basicconaf_mean, 66)), 0.01)), -1), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_breadth_sub", "group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), subindustry)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("anl_combo", "add(group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), market), group_zscore(divide(subtract(ts_backfill(anl4_basicconqf_pu, 66), ts_backfill(anl4_basicconqf_down, 66)), add(ts_backfill(anl4_basicconqf_numest, 66), 1)), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
+    "newfam_probe8": [
+        ("si_gbz", "rank(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), market), market, 250))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_gbz_d2", "rank(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), market), market, 250))", {'decay': 2, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_gbz_sec", "rank(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), sector), sector, 250))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_gbz_rev", "add(rank(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), market), market, 250)), quantile(divide(subtract(vwap, close), close)))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_gbz_w", "winsorize(group_backfill(group_zscore(ts_backfill(news_short_interest, 66), market), market, 250), std=3)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe7": [
         ("si_gb", "rank(group_zscore(group_backfill(ts_backfill(news_short_interest, 66), market, 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("si_gb_sub", "rank(group_zscore(group_backfill(ts_backfill(news_short_interest, 66), subindustry, 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),

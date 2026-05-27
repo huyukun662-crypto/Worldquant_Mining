@@ -1,0 +1,206 @@
+{
+  "si_gb": {
+    "expr": "rank(group_zscore(group_backfill(ts_backfill(news_short_interest, 66), market, 120), market))",
+    "error": "Incompatible unit for input of \"group_backfill\" at index 0, expected \"Unit[]\", found \"Unit[TSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "rev_r": {
+    "expr": "quantile(divide(subtract(vwap, close), close))",
+    "alpha_id": "GrkLjzLG",
+    "metrics": {
+      "sharpe": 0.68,
+      "turnover": 0.5633,
+      "fitness": 0.28,
+      "returns": 0.0957,
+      "drawdown": 0.2288,
+      "margin": 0.00034,
+      "longCount": 1538,
+      "shortCount": 1594,
+      "checks": {
+        "LOW_SHARPE": "FAIL",
+        "LOW_FITNESS": "FAIL",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "FAIL",
+          "limit": 2.0,
+          "value": 0.68
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "FAIL",
+          "limit": 1.3,
+          "value": 0.28
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.5633
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.5633
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "FAIL",
+          "limit": 0.29,
+          "value": 0.25
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "si_gb_sub": {
+    "expr": "rank(group_zscore(group_backfill(ts_backfill(news_short_interest, 66), subindustry, 120), market))",
+    "error": "Incompatible unit for input of \"group_backfill\" at index 0, expected \"Unit[]\", found \"Unit[TSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "rev5": {
+    "expr": "group_zscore(multiply(ts_returns(close, 5), -1), subindustry)",
+    "error": "Attempted to use inaccessible or unknown operator \"ts_returns\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "rev_stack": {
+    "expr": "add(add(quantile(divide(subtract(vwap, close), close)), group_zscore(multiply(ts_returns(close, 5), -1), subindustry)), group_zscore(multiply(ts_returns(close, 10), -1), subindustry))",
+    "error": "Attempted to use inaccessible or unknown operator \"ts_returns\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "rev_r_d20": {
+    "expr": "quantile(divide(subtract(vwap, close), close))",
+    "alpha_id": "Xg1nZd0l",
+    "metrics": {
+      "sharpe": 0.55,
+      "turnover": 0.4022,
+      "fitness": 0.2,
+      "returns": 0.0534,
+      "drawdown": 0.1683,
+      "margin": 0.000265,
+      "longCount": 1509,
+      "shortCount": 1555,
+      "checks": {
+        "LOW_SHARPE": "FAIL",
+        "LOW_FITNESS": "FAIL",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "FAIL",
+          "limit": 2.0,
+          "value": 0.55
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "FAIL",
+          "limit": 1.3,
+          "value": 0.2
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.4022
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.4022
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "FAIL",
+          "limit": 0.24,
+          "value": -0.03
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 20,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  }
+}
