@@ -1,0 +1,26 @@
+{
+  "anl_breadth_qf": {
+    "expr": "group_zscore(divide(subtract(ts_backfill(anl4_basicconqf_pu, 66), ts_backfill(anl4_basicconqf_down, 66)), add(ts_backfill(anl4_basicconqf_numest, 66), 1)), market)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_rev_eps": {
+    "expr": "group_zscore(divide(subtract(ts_backfill(anl4_dez1afv4_est, 66), ts_backfill(anl4_dez1afv4_preest, 66)), add(abs(ts_backfill(anl4_dez1afv4_preest, 66)), 0.01)), market)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_breadth_af": {
+    "expr": "group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), market)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_breadth_sub": {
+    "expr": "group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), subindustry)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_combo": {
+    "expr": "add(group_zscore(divide(subtract(ts_backfill(anl4_basicconaf_pu, 66), ts_backfill(anl4_basicconaf_down, 66)), add(ts_backfill(anl4_basicconaf_numest, 66), 1)), market), group_zscore(divide(subtract(ts_backfill(anl4_basicconqf_pu, 66), ts_backfill(anl4_basicconqf_down, 66)), add(ts_backfill(anl4_basicconqf_numest, 66), 1)), market))",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_disp": {
+    "expr": "group_zscore(multiply(divide(subtract(ts_backfill(anl4_basicconaf_high, 66), ts_backfill(anl4_basicconaf_low, 66)), add(abs(ts_backfill(anl4_basicconaf_mean, 66)), 0.01)), -1), market)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  }
+}
