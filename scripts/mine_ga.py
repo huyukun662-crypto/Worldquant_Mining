@@ -59,7 +59,8 @@ POOL = [("SI",SI),("DR90",DR90),("DR120",DR120),("PERAT",PERAT),("REV5",REV5),
         ("REVS",REVS),("RPQ",RPQ),("RPG",RPG),("PEER",PEER),("PEERC",PEERC),
         ("SOCS",SOCS),("SOCB",SOCB)]
 NPOOL = len(POOL)
-WEIGHTS = [-2,-1.5,-1,-0.7,0.7,1,1.5,2]
+NAME2IDX = {n:i for i,(n,_) in enumerate(POOL)}
+WEIGHTS = [-2,-1.5,-1.3,-1,-0.7,-0.5,-0.3,0.3,0.5,0.7,1,1.3,1.5,1.8,2]
 
 SETTINGS = {"instrumentType":"EQUITY","region":"USA","universe":"TOP3000","delay":0,
             "decay":4,"neutralization":"SUBINDUSTRY","truncation":0.05,
@@ -148,9 +149,21 @@ def crossover(a,b):
     if len(child)<2: child=rand_genome()
     return child
 
-POP=8; GENS=6; ELITE=2
-random.seed(20)
-pop=[rand_genome() for _ in range(POP)]
+def G(**kw):  # build genome from signal names
+    return {NAME2IDX[k]:v for k,v in kw.items()}
+
+# seed population with known-good non-SI optimum + light-SI boundary variants + orthogonal-heavy
+SEEDS = [
+    G(REV5=-1.3, DR90=1.8, DR120=1, EY=1, RPQ=-1.3),               # 1.95 non-SI optimum
+    G(REV5=-1.5, DR90=1.5, EY=1.3, RPQ=-1.3, VOL=-0.5),            # +vol orthogonal
+    G(SI=0.3, REV5=-1.3, DR90=1.8, DR120=1, EY=1, RPQ=-1.3),       # light-SI (corr headroom test)
+    G(SI=0.5, REV5=-1.3, DR90=1.5, EY=1, RPQ=-1.3, ROA=0.7, PEER=-0.5),  # SI + extra orthogonal
+    G(REV5=-1.3, DR90=1.5, DR120=1, EY=1, RPQ=-1, RPG=-0.7, ROA=0.5),    # orthogonal-heavy
+    G(SI=0.3, REV5=-1, DR90=1.5, EY=1, RPQ=-1, ROA=0.7, EBITA=-0.5, PEER=-0.5),
+]
+POP=10; GENS=8; ELITE=3
+random.seed(42)
+pop=SEEDS + [rand_genome() for _ in range(POP-len(SEEDS))]
 hist=[]; best=None
 for gen in range(GENS):
     with ThreadPoolExecutor(max_workers=M.MAX_CONCURRENT) as ex:
