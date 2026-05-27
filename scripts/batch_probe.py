@@ -104,6 +104,16 @@ BATCHES = {
     # rel_ret_cust/comp/part/all = avg returns of linked firms. MATRIX -> dense -> pass concentration.
     # probe13: news volume/volatility shocks (attention/informed flow), volume-scaled reversal,
     # dense earnings yield, and a pure-dense orthogonal stack. All MATRIX -> pass concentration.
+    # probe14: classic fundamental anomalies - net share issuance (dense sharesout),
+    # asset growth, gross profitability (Novy-Marx), and value-quality stacks.
+    "newfam_probe14": [
+        ("issuance", "multiply(group_zscore(ts_delta(sharesout, 250), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("assetgrow", "multiply(group_zscore(divide(ts_delta(ts_backfill(assets, 60), 250), ts_backfill(assets, 60)), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("grossprof", "group_zscore(divide(subtract(revenue, cogs), ts_backfill(assets, 60)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_iss", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_delta(sharesout, 250), market), -1))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_iss_gp", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_delta(sharesout, 250), market), -1)), group_zscore(divide(subtract(revenue, cogs), ts_backfill(assets, 60)), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("quality_stack", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_delta(sharesout, 250), market), -1)), group_zscore(divide(subtract(revenue, cogs), ts_backfill(assets, 60)), market)), multiply(group_zscore(divide(ts_delta(ts_backfill(assets, 60), 250), ts_backfill(assets, 60)), market), -1))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe13": [
         ("volz", "group_zscore(news_vol_stddev, market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("rangez", "group_zscore(news_range_stddev, market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
