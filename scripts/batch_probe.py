@@ -113,6 +113,16 @@ BATCHES = {
     # probe17: carefully-constructed PURE-DENSE multi-factor stack (value+issuance+LTrev+rev+
     # grossprof+assetgrowth), all group_zscore equal-vol, all concentration-passing. Best shot
     # at a clean all-checks-pass non-option D0 factor; also probes true LOW_SHARPE bar.
+    # probe18: VALUE COMPOSITE - average multiple est_* value ratios (FCF/CFO/EBITDA/EBIT/book/
+    # sales yield) to reduce noise and lift value above single-ratio ~1.07. All dense -> pass conc.
+    "newfam_probe18": [
+        ("val_fcf", "group_zscore(ts_backfill(divide(est_fcf, cap), 120), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_cfo", "group_zscore(ts_backfill(divide(est_cashflow_op, cap), 120), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_book", "group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_comp4", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_backfill(divide(est_fcf, cap), 120), market)), group_zscore(ts_backfill(divide(est_cashflow_op, cap), 120), market)), group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_comp6", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_backfill(divide(est_fcf, cap), 120), market)), group_zscore(ts_backfill(divide(est_cashflow_op, cap), 120), market)), group_zscore(ts_backfill(divide(est_ebit, cap), 120), market)), group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), market)), group_zscore(ts_backfill(divide(revenue, cap), 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_comp4_sub", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_backfill(divide(est_fcf, cap), 120), market)), group_zscore(ts_backfill(divide(est_cashflow_op, cap), 120), market)), group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+    ],
     "newfam_probe17": [
         ("dense6", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_delta(sharesout, 250), market), -1)), multiply(group_zscore(divide(ts_delay(close, 21), ts_delay(close, 750)), market), -1)), group_zscore(divide(subtract(vwap, close), close), market)), group_zscore(divide(subtract(revenue, cogs), ts_backfill(assets, 60)), market)), multiply(group_zscore(divide(ts_delta(ts_backfill(assets, 60), 250), ts_backfill(assets, 60)), market), -1))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("dense4", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_delta(sharesout, 250), market), -1)), multiply(group_zscore(divide(ts_delay(close, 21), ts_delay(close, 750)), market), -1)), group_zscore(divide(subtract(vwap, close), close), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
