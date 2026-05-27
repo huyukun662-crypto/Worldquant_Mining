@@ -120,6 +120,16 @@ BATCHES = {
     # probe20: dense MATRIX news-reaction signals (~0.97 coverage -> pass concentration):
     # overnight gap reversal, relative-to-index, dividend yield, dataset L/S, prev-day reversal,
     # news-reaction magnitude. Genuinely new signal family.
+    # probe21: structurally-different time-series alphas (ts_zscore mean-reversion, MA-ratio,
+    # ts_rank volume, ts_ir) + multiplicative value x quality interaction. All dense.
+    "newfam_probe21": [
+        ("ts_z_rev", "multiply(group_zscore(ts_zscore(close, 120), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ma_ratio", "group_zscore(divide(ts_mean(close, 10), ts_mean(close, 120)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("vol_rank", "group_zscore(ts_rank(volume, 120), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ts_ir_ret", "multiply(group_zscore(ts_ir(returns, 120), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_x_qual", "group_zscore(multiply(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(subtract(revenue, cogs), ts_backfill(assets, 60)), market)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_lowvol", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_std_dev(returns, 120), market), -1))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe20": [
         ("gap_rev", "multiply(group_zscore(ts_backfill(news_open_gap, 5), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("relidx", "group_zscore(ts_backfill(news_indx_perf, 5), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
