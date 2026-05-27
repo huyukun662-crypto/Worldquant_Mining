@@ -49,6 +49,18 @@ BATCHES = {
     # by SECTOR + MARKET neut + decay20 + ts_backfill -- to forward-looking
     # non-option signals: analyst revisions, short interest, insider sentiment,
     # news sentiment, quality. Reversal-blend the strongest to lift Sharpe.
+    # NON-OPTION winner hunt: short interest (news_short_interest) is the
+    # strongest clean non-option signal (|SH| 1.56, slow, low TO) but fails
+    # CONCENTRATED_WEIGHT + sub-universe raw. winsorize fixes concentration,
+    # longer backfill fixes coverage, orthogonal value+reversal blends lift SH.
+    "newfam_probe2": [
+        ("si_w",   "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {"decay":10, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("si_v",   "add(winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4), quantile(ts_backfill(divide(est_ebitda, cap), 120)))", {"decay":10, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("si_r",   "add(winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4), quantile(divide(subtract(vwap, close), close)))", {"decay":10, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("si_vr",  "add(add(winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4), quantile(ts_backfill(divide(est_ebitda, cap), 120))), quantile(divide(subtract(vwap, close), close)))", {"decay":10, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("si_v2r", "add(add(add(winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4), quantile(ts_backfill(divide(est_ebitda, cap), 120))), quantile(divide(subtract(vwap, close), close))), quantile(divide(subtract(vwap, close), close)))", {"decay":10, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("si_sub", "add(winsorize(group_zscore(ts_backfill(news_short_interest, 66), subindustry), std=4), quantile(ts_backfill(divide(est_ebitda, cap), 120)))", {"decay":10, "universe":"TOP3000", "neutralization":"MARKET"}),
+    ],
     "newfam_probe1": [
         ("anlrev",   "group_zscore(ts_backfill(net_num_revisions_fy1, 66), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
         ("anlrank",  "group_zscore(ts_backfill(analyst_revision_rank_derivative, 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
