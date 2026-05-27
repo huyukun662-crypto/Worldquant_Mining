@@ -82,7 +82,7 @@ def parse_line(line: str):
         for tok in rest.split():
             if "=" in tok:
                 k, v = tok.split("=", 1)
-                if k in ("decay",):
+                if k in ("decay", "delay"):
                     v = int(v)
                 elif k in ("truncation",):
                     v = float(v)
