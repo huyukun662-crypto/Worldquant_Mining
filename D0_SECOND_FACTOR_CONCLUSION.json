@@ -1,19 +1,22 @@
 {
-  "question": "After submitting 9qJ7V2GK, can a SECOND submittable D0 factor be found (non-IV, SH>=2.0, FIT>=1.3, self-corr<0.7 vs submitted pool)?",
-  "verdict": "NO -- structurally impossible. Proven across ~30 simulation batches covering all 11 D0 datasets.",
-  "deadlock_logic": [
-    "D0 competition bar is SH>=2.0 (verified via /check: LOW_SHARPE limit=2.0).",
-    "Only news_short_interest (LEVEL) reaches SH 2.0 densely; every other single signal caps <=1.33.",
-    "Therefore any SH>=2.0 D0 factor is short-interest-dominated.",
-    "All short-interest-dominated factors correlate 0.80-0.997 with the submitted 9qJ7V2GK (measured on daily PnL).",
-    "Every NON-short-interest path caps below 2.0: pure PV 1.28, PV+fundamental 1.53, multi-source 1.79, +Ravenpack sentiment 1.90 (best non-SI), social 0.60, SI-change 1.21.",
-    "Adding more weak orthogonal sources dilutes rather than helps (no-SI-max fell to 1.29).",
-    "=> (passes 2.0 bar) AND (independent of 9qJ7V2GK) cannot both hold at D0."
-  ],
-  "best_independent_non_SI_factor": {
-    "alpha_id": "6XzeNExY",
-    "metrics": "SH 1.90 / FIT 1.14 / TO 0.279 / CONCENTRATED_WEIGHT PASS",
-    "composition": "price 5d reversal + news post-event drift + forward earnings-yield + Ravenpack news sentiment (vec_avg nws18_qcm). Genuinely independent of short-interest, non-IV. FAILS only the D0 SH-2.0 and FIT-1.3 gates."
+  "question": "Second submittable D0 factor (non-IV, independent <0.7 vs submitted 9qJ7V2GK)?",
+  "verdict": "An INDEPENDENT non-short-interest D0 factor exists (corr 0.51 vs 9qJ7V2GK) but caps at SH 1.95 / FIT 1.11 -- just short of the D0 competition bar (SH>=2.0, FIT>=1.3). The independence problem is solved; the metric bar is the blocker.",
+  "best_independent_second_factor": {
+    "alpha_id": "JjbvAKQA",
+    "metrics": "SH 1.95 / FIT 1.11 / TO 0.249 / CONCENTRATED_WEIGHT PASS / sub 1.13",
+    "corr_vs_submitted_9qJ7V2GK": 0.51,
+    "composition": "price 5d reversal + news post-event drift (90min & 120min) + forward earnings-yield + Ravenpack news sentiment (vec_avg nws18_qcm). Non-short-interest, non-IV.",
+    "gap": "needs +0.05 SH and +0.19 FIT to clear the D0 gate"
   },
-  "implication": "The single submittable D0 factor (9qJ7V2GK) is already submitted; it occupies the only competition-grade D0 slot. To add MORE independent submittable factors requires relaxing a constraint: (a) delay=1 -- verified MATCHES_COMPETITION with a much easier bar (SH>1.25, FIT>1.0), under which 6XzeNExY and many model77/fundamental/PV factors would pass and be independent; (b) options/IV; or (c) a different region. All of these were excluded by the user (D0-only, no-IV)."
+  "optimization_trajectory_nonSI": [
+    "pure PV 1.28",
+    "+fundamental 1.53",
+    "+news drift 1.79",
+    "+Ravenpack 1.90",
+    "+drift-heavy 1.93",
+    "+more drift/decay 1.95 (plateau)"
+  ],
+  "why_FIT_capped": "Non-SI composites lack a high-fitness backbone. short_interest standalone has FIT ~3.1 (concentrated); no non-IV/non-SI signal provides comparable returns-per-turnover, so non-SI FIT caps ~1.16 < 1.3.",
+  "decisive_point": "This exact independent factor PASSES at delay=1 (verified MATCHES_COMPETITION; D1 bar is SH>1.25 FIT>1.0). The D0-only constraint (2.0/1.3 bar) is the sole reason a second independent factor is not submittable. Relaxing to delay=1 would immediately yield multiple independent submittable factors (this one + model77/fundamental/PV families).",
+  "batches_run": "~33 simulation batches across all 11 D0 datasets"
 }
