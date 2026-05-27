@@ -69,6 +69,15 @@ BATCHES = {
     # DENSE-ONLY probe: 100%% price/volume coverage -> guaranteed to pass
     # CONCENTRATED_WEIGHT (every name positioned). Individually test slow/medium
     # anomalies to find strong (|SH|>0.8) + mutually orthogonal ones to stack.
+    # probe7: (A) group_backfill densify sparse short interest; (B) dense reversal maximization
+    "newfam_probe7": [
+        ("si_gb", "rank(group_zscore(group_backfill(ts_backfill(news_short_interest, 66), market, 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("si_gb_sub", "rank(group_zscore(group_backfill(ts_backfill(news_short_interest, 66), subindustry, 120), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("rev_r", "quantile(divide(subtract(vwap, close), close))", {'decay': 10, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("rev5", "group_zscore(multiply(ts_returns(close, 5), -1), subindustry)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("rev_stack", "add(add(quantile(divide(subtract(vwap, close), close)), group_zscore(multiply(ts_returns(close, 5), -1), subindustry)), group_zscore(multiply(ts_returns(close, 10), -1), subindustry))", {'decay': 10, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("rev_r_d20", "quantile(divide(subtract(vwap, close), close))", {'decay': 20, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+    ],
     "newfam_probe6": [
         ("overnight", "rank(ts_mean(subtract(divide(open, ts_delay(close, 1)), 1), 60))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
         ("w52r", "rank(ts_rank(close, 252))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
