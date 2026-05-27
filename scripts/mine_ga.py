@@ -100,7 +100,10 @@ print(f"[ref] 9qJ7V2GK pnl pts={len(REFD)}", flush=True)
 def evaluate(genome):
     expr=render(genome)
     if expr is None: return {"fit":-99,"expr":None}
-    res=M.submit_one(S, expr, dict(SETTINGS))
+    try:
+        res=M.submit_one(S, expr, dict(SETTINGS))
+    except Exception as e:
+        return {"fit":-40,"expr":expr,"err":f"net:{type(e).__name__}"}
     if not res.get("ok") or res.get("sharpe") is None:
         return {"fit":-50,"expr":expr,"err":res.get("message") or res.get("stage")}
     sh=res["sharpe"]; ft=res["fitness"]; to=res["turnover"]; cw=res.get("conc_wt_pass")
