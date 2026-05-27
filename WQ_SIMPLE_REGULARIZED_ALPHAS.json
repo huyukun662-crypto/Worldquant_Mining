@@ -1,0 +1,41 @@
+{
+  "note": "Simple regularized (winsorize std=4) distinct alphas - robust, low-overfit complements to the mega. All pass structural gates (5/8); below the 2.0 competition bar but useful as low-correlation pool diversifiers.",
+  "alphas": [
+    {
+      "name": "s_val_rev",
+      "id": "MPkG1Jgk",
+      "sharpe": 1.31,
+      "turnover": 0.55,
+      "expr": "value + reversal (winsorized, 2-factor)"
+    },
+    {
+      "name": "s_q_rev",
+      "id": "P0vG2veL",
+      "sharpe": 1.29,
+      "turnover": 0.47,
+      "expr": "gross-profit + reversal"
+    },
+    {
+      "name": "s_rev",
+      "id": "A1kGNZxw",
+      "sharpe": 1.14,
+      "turnover": 0.61,
+      "expr": "pure subindustry reversal"
+    },
+    {
+      "name": "s_val_pv",
+      "id": "zqON8oeO",
+      "sharpe": 1.01,
+      "turnover": 0.17,
+      "expr": "value + pv-correlation"
+    },
+    {
+      "name": "s_val",
+      "id": "LLkGNWPa",
+      "sharpe": 0.91,
+      "turnover": 0.019,
+      "expr": "pure value (EBITDA/cap), winsorized - very clean/low-turnover"
+    }
+  ],
+  "tradeoff": "Simple 1-2 factor regularized alphas cap ~1.3 (robust, won't overfit). Reaching 2.0 requires the diversified ~8-factor mega (higher overfit risk). A 4-factor middle-ground (e.g. value+cfo+pvcorr+gp = 1.31) balances robustness and Sharpe."
+}
