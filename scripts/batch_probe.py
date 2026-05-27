@@ -184,6 +184,16 @@ BATCHES = {
     # signals), 30-day horizon. All INDUSTRY-neut (the lever). Maximize robust SH>=2.
     # probe41: GOAL=non-IV SH>=2 via NEW operator structures (never tried: trade_when conditional
     # trading, winsorize, rank, multiplicative interaction). Applied to the 1.31-1.34 basket.
+    # probe42: SHORT-TERM REVERSAL - untapped HIGH-Sharpe non-IV family (docs SH 2-4). 1/5-day
+    # price reversal, SUBINDUSTRY/INDUSTRY neut (peer-relative = strongest), low decay, vol-scaled.
+    "newfam_probe42": [
+        ("rev5_sub", "multiply(group_zscore(divide(subtract(close, ts_delay(close, 5)), ts_delay(close, 5)), market), -1)", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("rev5_ind", "multiply(group_zscore(divide(subtract(close, ts_delay(close, 5)), ts_delay(close, 5)), market), -1)", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("revsum5_sub", "multiply(group_zscore(ts_sum(returns, 5), market), -1)", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("rev1_sub", "multiply(group_zscore(returns, market), -1)", {'delay': 0, 'decay': 2, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("revrank5_sub", "multiply(group_zscore(ts_rank(close, 5), market), -1)", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("rev_volsc_sub", "multiply(group_zscore(divide(ts_sum(returns, 5), historical_volatility_20), market), -1)", {'delay': 0, 'decay': 4, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+    ],
     "newfam_probe41": [
         ("bask_winsor4", "group_zscore(winsorize(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), std=4), market)", {'delay': 0, 'decay': 12, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("bask_rank", "group_zscore(rank(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market))), market)", {'delay': 0, 'decay': 12, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
