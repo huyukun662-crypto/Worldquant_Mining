@@ -160,6 +160,17 @@ BATCHES = {
     # (close/ts_max(high,252), anchoring - strong untested pure-price anomaly) + INDUSTRY variant,
     # idiosyncratic (industry-neut) 12-1 momentum, fundamental momentum (ROA YoY accel),
     # multi-mechanism composite (value+quality+trend), value+52w-high fusion.
+    # probe33: George-Hwang 52-week-high proximity via ts_rank(close,252) (ts_max inaccessible).
+    # High rank = near 52w high = anchoring continuation. MARKET/INDUSTRY/SUBINDUSTRY neut,
+    # value+trend fusion, multi-mechanism composite, decay20 variant.
+    "newfam_probe33": [
+        ("high52r", "group_zscore(ts_rank(close, 252), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("high52r_ind", "group_zscore(ts_rank(close, 252), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("high52r_sub", "group_zscore(ts_rank(close, 252), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("val_high52r", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_rank(close, 252), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("multi_comp_r", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), group_zscore(ts_rank(close, 252), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("high52r_dec20", "group_zscore(ts_rank(close, 252), market)", {'delay': 0, 'decay': 20, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe32": [
         ("high52", "group_zscore(divide(close, ts_max(high, 252)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("high52_ind", "group_zscore(divide(close, ts_max(high, 252)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
