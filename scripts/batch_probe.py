@@ -102,6 +102,16 @@ BATCHES = {
     ],
     # probe12: economic-link / supply-chain momentum (Cohen-Frazzini customer momentum).
     # rel_ret_cust/comp/part/all = avg returns of linked firms. MATRIX -> dense -> pass concentration.
+    # probe13: news volume/volatility shocks (attention/informed flow), volume-scaled reversal,
+    # dense earnings yield, and a pure-dense orthogonal stack. All MATRIX -> pass concentration.
+    "newfam_probe13": [
+        ("volz", "group_zscore(news_vol_stddev, market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("rangez", "group_zscore(news_range_stddev, market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("vol_rev", "multiply(quantile(divide(subtract(vwap, close), close)), rank(news_ratio_vol))", {'decay': 10, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("revz", "group_zscore(divide(subtract(vwap, close), close), market)", {'decay': 10, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("earnyld", "group_zscore(divide(fnd6_epsfx, close), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("dense3", "add(add(group_zscore(divide(subtract(vwap, close), close), market), group_zscore(ts_mean(rel_ret_comp, 22), market)), multiply(group_zscore(news_vol_stddev, market), -1))", {'decay': 8, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe12": [
         ("cust22", "group_zscore(ts_mean(rel_ret_cust, 22), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("comp22", "group_zscore(ts_mean(rel_ret_comp, 22), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
