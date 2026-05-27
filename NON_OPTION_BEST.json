@@ -1,0 +1,27 @@
+[
+ {
+  "label": "best_non_option_value_composite",
+  "sharpe": 0.85,
+  "fitness": 0.64,
+  "turnover": 0.0998,
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "FAIL",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "expr": "zscore(ts_decay_linear(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_total, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  },
+  "note": "Value/anti-growth from model16 fscore fields. SH caps ~0.85 < 1.25 submission floor. Strong non-option datasets (model77 PEAD 3222 fields, sentiment1 analyst) are LOCKED on this account tier (Invalid data field)."
+ }
+]
