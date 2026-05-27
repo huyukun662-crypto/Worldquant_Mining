@@ -75,6 +75,15 @@ BATCHES = {
     # probe9: analyst estimate-revision signals (D0 analyst4) - revision breadth (pu-down)/numest,
     # EPS revision (est-preest), dispersion. Strong anomaly, slow-updating (low TO), broad coverage.
     # probe10: analyst revision signals WITHOUT ts_backfill (event-type fields persist natively)
+    # probe11: analyst revision signals with vec_avg (VECTOR fields reduced to scalar)
+    "newfam_probe11": [
+        ("anl_breadth_af", "group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_breadth_qf", "group_zscore(divide(subtract(vec_avg(anl4_basicconqf_pu), vec_avg(anl4_basicconqf_down)), add(vec_avg(anl4_basicconqf_numest), 1)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_rev_eps", "group_zscore(divide(subtract(vec_avg(anl4_dez1afv4_est), vec_avg(anl4_dez1afv4_preest)), add(abs(vec_avg(anl4_dez1afv4_preest)), 0.01)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_disp", "group_zscore(multiply(divide(subtract(vec_avg(anl4_basicconaf_high), vec_avg(anl4_basicconaf_low)), add(abs(vec_avg(anl4_basicconaf_mean)), 0.01)), -1), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_combo", "add(group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market), group_zscore(divide(subtract(vec_avg(anl4_basicconqf_pu), vec_avg(anl4_basicconqf_down)), add(vec_avg(anl4_basicconqf_numest), 1)), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("anl_rev_breadth", "add(group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market), group_zscore(divide(subtract(vec_avg(anl4_dez1afv4_est), vec_avg(anl4_dez1afv4_preest)), add(abs(vec_avg(anl4_dez1afv4_preest)), 0.01)), market))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe10": [
         ("anl_breadth_af", "group_zscore(divide(subtract(anl4_basicconaf_pu, anl4_basicconaf_down), add(anl4_basicconaf_numest, 1)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("anl_breadth_qf", "group_zscore(divide(subtract(anl4_basicconqf_pu, anl4_basicconqf_down), add(anl4_basicconqf_numest, 1)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
