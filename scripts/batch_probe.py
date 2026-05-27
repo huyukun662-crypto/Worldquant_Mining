@@ -172,6 +172,17 @@ BATCHES = {
     # probe36: COMPLEX structural forms (user: mine freely, no IV/D1). Not single-field z-scores -
     # price-volume correlation divergence (ts_corr), reversion to VWAP, vol-of-vol premium,
     # intraday up/down asymmetry, Amihud illiquidity premium, + INDUSTRY pv-corr.
+    # probe37: DELIVERABLE multi-factor non-option basket (user chose A). Equal-weight z-scores of
+    # value (est_ebitda/cap), cfo-yield (cashflow_op/cap), pv-correlation (-ts_corr(close,volume)).
+    # Test MARKET/INDUSTRY neut, hybrid (pv-corr industry-relative internally), value-tilt, V+P drop-cfo.
+    "newfam_probe37": [
+        ("basket3_mkt", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("basket3_ind", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("basket_hybrid", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), industry), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("basket_VP", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_corr(close, volume, 20), market), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("basket_Vtilt", "add(add(multiply(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), 2), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("basket_VPi", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(group_zscore(ts_corr(close, volume, 20), industry), -1))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe36": [
         ("pv_corr", "group_zscore(ts_corr(close, volume, 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("vwap_rev", "multiply(group_zscore(divide(subtract(close, vwap), vwap), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
