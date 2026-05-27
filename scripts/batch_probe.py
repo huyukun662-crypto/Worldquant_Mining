@@ -66,6 +66,17 @@ BATCHES = {
     # signal ordering (IC). Anchor = short interest (strongest D0 non-option
     # slow signal, |SH| 1.66) stacked with orthogonal dense slow signals
     # (value, long-term reversal, 52-week-high proximity / George-Hwang).
+    # DENSE-ONLY probe: 100%% price/volume coverage -> guaranteed to pass
+    # CONCENTRATED_WEIGHT (every name positioned). Individually test slow/medium
+    # anomalies to find strong (|SH|>0.8) + mutually orthogonal ones to stack.
+    "newfam_probe6": [
+        ("overnight", "rank(ts_mean(subtract(divide(open, ts_delay(close, 1)), 1), 60))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("w52r", "rank(ts_rank(close, 252))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("amihud", "rank(ts_mean(divide(abs(returns), add(volume, 1)), 60))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("pvcorr", "rank(ts_corr(close, volume, 60))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("idiovol", "rank(ts_std_dev(returns, 120))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("skew", "rank(ts_skewness(returns, 60))", {"decay":6, "universe":"TOP3000", "neutralization":"MARKET"}),
+    ],
     "newfam_probe5": [
         ("si_rank",    "rank(group_zscore(ts_backfill(news_short_interest, 66), sector))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("si_rank_mkt","rank(group_zscore(ts_backfill(news_short_interest, 66), sector))", {"decay":4, "universe":"TOP3000", "neutralization":"MARKET"}),
