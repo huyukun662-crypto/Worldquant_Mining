@@ -29,6 +29,8 @@ session doesn't have to rediscover them.
 │   ├── screen.py            # initial filter SH > 1.25 AND TO < 0.25
 │   ├── search.py            # Bayes (optuna) + grid HP search
 │   └── pipeline.py          # end-to-end orchestrator
+│   ├── wq_client.py         # WQ auth + CONCURRENT /simulations + disk cache
+│   └── ga_miner.py          # GENETIC-ALGORITHM D0 miner (WQ-as-evaluator)
 ├── tests/test_catalogs.py   # 12 sanity tests for canonical catalogs
 ├── vendor/worldquant-miner/ # vendored upstream (shu476891497-hash)
 └── cache/ohlcv.pkl          # cached 251-ticker × 1848-day OHLCV panel
@@ -161,6 +163,22 @@ per hour; budget candidates accordingly.
 The script `scripts/submit_alpha.py` calls `/simulations`, not the Submit
 Alpha endpoint, so it never touches the Submit Alpha quota.
 
+### Biometric / Persona auth gate (CRITICAL for any WQ run)
+
+Some accounts are biometric-gated. `POST /authentication` then returns
+`401 {"inquiry":"inq_..."}` with header `www-authenticate: persona` and a
+`location: /authentication/persona?inquiry=...` pointing at a hosted
+withpersona.com **face-scan** flow. That flow needs a live webcam in a
+browser and **cannot** be completed headlessly in a CI / cloud session.
+
+After a browser login + face-scan on platform.worldquantbrain.com the
+server keeps a grace window (~4h — the auth cookie's `exp`, with
+`amr:["pwd","face"]`) during which programmatic basic-auth `POST
+/authentication` returns `201` directly. **Run the miner inside that
+window.** `mining_pipeline/wq_client.py` detects the gate and raises
+`BiometricRequired` with instructions; `ga_miner.py` exits with code 3.
+The vendored upstream miner has NO workaround for this.
+
 ## Local-proxy pipeline invariants (for the triage stage only)
 
 - **IS window**: 2019-01-01 → 2023-12-31 (set in `mining_pipeline/data.py`)
@@ -189,6 +207,14 @@ python -m mining_pipeline.pipeline --n 400 --backend bayes --trials 20 --seed 19
 
 # canonical mining: generate locally, submit to WQ, rank by WQ SH
 python -m mining_pipeline.wq_pipeline --n 30
+
+# GENETIC-ALGORITHM D0 miner (delay=0, no IV fields, WQ Brain = evaluator).
+# Needs only `requests`; evolves typed expression trees, submits each genome
+# to WQ /simulations (up to --max-concurrent in flight), ranks by WQ IS Sharpe,
+# and writes submittable survivors (all IS checks PASS, TO < ceiling) to
+# GA_MINING_REPORT.json. Offline GA-mechanics smoke test: --evaluator local
+# (requires numpy/pandas + OHLCV cache).
+python -m mining_pipeline.ga_miner --pop 24 --gens 8 --max-ops 6 --seed 7
 
 # submit a specific MINING_REPORT.json's factors to WQ Brain
 python scripts/submit_alpha.py MINING_REPORT.json
