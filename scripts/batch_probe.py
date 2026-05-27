@@ -209,6 +209,17 @@ BATCHES = {
     # probe52: NEW distinct simple economic alpha, regularized (winsorize). Net-issuance anomaly
     # (buybacks outperform, issuance underperforms - Daniel-Titman), asset-growth/CMA investment
     # factor, low-vol/BAB. All orthogonal to the value/reversal/sentiment mega. 1-factor simple.
+    # probe53: net-issuance regularized via RANK (spreads lumpy weights -> fixes concentration).
+    # Economic: buybacks (share-count down) outperform, dilution underperforms. Simple 1-field,
+    # distinct from the value/reversal mega. Neutralization + densify variants.
+    "newfam_probe53": [
+        ("iss_rank", "multiply(group_zscore(rank(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252))), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("iss_rank_ind", "multiply(group_zscore(rank(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252))), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'INDUSTRY'}),
+        ("iss_rank_sub", "multiply(group_zscore(rank(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252))), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY'}),
+        ("iss_rank_d10", "multiply(group_zscore(rank(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252))), market), -1)", {'delay': 0, 'decay': 10, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("iss_bf_rank", "multiply(group_zscore(rank(ts_backfill(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 20)), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("iss_rank_t1000", "multiply(group_zscore(rank(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252))), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP1000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe52": [
         ("iss", "multiply(group_zscore(winsorize(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), std=4), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
         ("iss_ind", "multiply(group_zscore(winsorize(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), std=4), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'INDUSTRY'}),
