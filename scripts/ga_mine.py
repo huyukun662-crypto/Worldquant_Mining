@@ -171,7 +171,17 @@ def main():
             return cache[key]
         settings = {"delay": 0, "decay": g["decay"], "universe": "TOP3000",
                     "neutralization": g["neut"], "truncation": 0.08}
-        r = simulate(session, expr, settings, verbose=False)
+        r = None
+        for _try in range(3):
+            try:
+                r = simulate(session, expr, settings, verbose=False)
+                break
+            except Exception as e:  # transient network (ReadTimeout etc.) - retry, don't kill GA
+                print(f"   sim exception (try {_try}): {type(e).__name__}", flush=True)
+        if r is None:
+            res = (-9.0, {"err": "net"}, None)
+            cache[key] = res
+            return res
         if not r.get("ok"):
             res = (-9.0, {"err": r.get("stage") or r.get("status")}, None)
         else:
