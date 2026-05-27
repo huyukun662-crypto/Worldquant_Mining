@@ -1,0 +1,22 @@
+{
+  "question": "Can pure price-volume (量价) factors -- no options, no news/short-interest, no fundamentals -- reach submit grade at D0 USA TOP3000?",
+  "verdict": "NO. Pure PV caps at SH ~1.3 / FIT ~0.66 across 24 candidates in 3 batches. Passes CONCENTRATED_WEIGHT/turnover/sub-universe (dense by nature) but FAILS both regular (FIT>1.0) and competition (SH>2.0, FIT>1.3) gates. FITNESS is the binding constraint: PV reversal's inherent turnover caps FIT ~0.66 even when decayed.",
+  "best_pure_pv": {
+    "alpha_id": "A1k7Rl9W",
+    "expression": "add(multiply(group_zscore(ts_delta(close, 5), subindustry), -1.5), multiply(group_zscore(ts_std_dev(returns, 20), subindustry), -1))",
+    "sharpe": 1.28, "fitness": 0.66, "turnover": 0.397, "conc_weight": "PASS",
+    "note": "5-day reversal + low-volatility, subindustry-neutralized. Best of all pure-PV composites; still below grade."
+  },
+  "signals_tested": {
+    "reversal_1d_3d_5d_10d": "SH 1.2-1.33, high turnover -> FIT 0.45-0.66",
+    "low_volatility": "SH ~1.0 standalone",
+    "volume_trend": "SH <0.7",
+    "vwap_reversion": "SH 0.79, TO 0.83 (very high)",
+    "gap_open_close": "SH 0.37",
+    "high_low_range": "SH 0.04",
+    "ts_rank_position": "SH 1.03",
+    "decayed_reversal": "SH 1.23, TO 0.31 -> FIT 0.66 (turnover lowered but FIT still capped)"
+  },
+  "why": "D0 USA TOP3000 = large/mega-cap, highly efficient. Pure price-volume signals are weak and dominated by turnover cost. A submit-grade factor needs an orthogonal information backbone (short-interest squeeze, fundamentals, analyst, news, or options). In P0vp2jpx the price reversal IS the PV component; news_short_interest supplies the SH 2.0 / FIT 3+ backbone.",
+  "implication": "If the deliverable must be a SUBMITTABLE factor, pure 量价 will not get there at D0 USA. Options: (a) PV + fundamentals/value hybrid (non-option), (b) accept P0vp2jpx (PV reversal + short-interest), (c) PV in a less-efficient universe/region."
+}
