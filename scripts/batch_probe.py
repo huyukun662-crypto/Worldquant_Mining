@@ -144,6 +144,17 @@ BATCHES = {
     # probe27: DELAY=0 remaining untested dense families. Low-volatility anomaly (historical/
     # parkinson vol, long low-vol = top documented factor), RavenPack social sentiment (snt cov=1.0,
     # scl12), competitor lead-lag (rel_ret_comp). Last structurally-new d0 datasets.
+    # probe28: DELAY=0 OPTION-IMPLIED signals (user: appropriately blend options, stay d0).
+    # IV skew (crash premium), put-call IV spread (directional demand), IV term structure,
+    # variance risk premium (IV-realized), IV level, + value x put-call blend. Dense cov~0.69.
+    "newfam_probe28": [
+        ("iv_skew", "group_zscore(ts_backfill(implied_volatility_mean_skew_30, 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("pc_spread", "group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("iv_term", "group_zscore(ts_backfill(subtract(implied_volatility_mean_30, implied_volatility_mean_360), 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("iv_vrp", "group_zscore(subtract(ts_backfill(implied_volatility_mean_60, 5), historical_volatility_60), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("iv_level", "group_zscore(ts_backfill(implied_volatility_mean_60, 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("val_pc_blend", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_backfill(divide(subtract(implied_volatility_put_60, implied_volatility_call_60), implied_volatility_mean_60), 5), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe27": [
         ("d0_lowvol", "multiply(group_zscore(historical_volatility_120, market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("d0_lowvol_pk", "multiply(group_zscore(parkinson_volatility_120, market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
