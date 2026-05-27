@@ -129,6 +129,18 @@ BATCHES = {
     # Borrow fee, utilization, days-to-cover, demand/supply (squeeze), short interest. SI was
     # SH 1.6 but SPARSE (failed breadth) at delay=0; these are cov=1.0 dense -> strong + pass
     # concentration. ss_stack = combined short-pressure composite. Sign read from SH (flip if neg).
+    # probe24: validate the ss_util breakthrough. Re-run dtc/dmdsup (hit concurrency cap),
+    # robustness variants of act_util (INDUSTRY / SUBINDUSTRY neut, tight truncation 0.03 to
+    # test if the 2.84 SH survives risk controls / is not just meme-squeeze concentration),
+    # plus inventory-concentration family field.
+    "newfam_probe24": [
+        ("ss_dtc", "group_zscore(mdl177_5shortsentimentfactor_days_to_cover, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_dmdsup", "group_zscore(mdl177_5shortsentimentfactor_dmd_supply, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ss_util_ind", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("ss_util_sub", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'SUBINDUSTRY'}),
+        ("ss_util_t03", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET', 'truncation': 0.03}),
+        ("ss_invconc", "group_zscore(mdl177_5shortsentimentfactor_inv_conc, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe23": [
         ("ss_fee", "group_zscore(mdl177_5shortsentimentfactor_benchmark_fee, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("ss_util", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
