@@ -61,6 +61,19 @@ BATCHES = {
     # and rank/quantile-normalized (uniform weights -> no concentration). Low
     # turnover by construction; orthogonal slow signals (short interest, value,
     # long-term reversal, cash profitability, investment growth) stack Sharpe.
+    # CONCENTRATION FIX: outermost rank() forces uniform bounded weights ->
+    # passes CONCENTRATED_WEIGHT regardless of field coverage, while preserving
+    # signal ordering (IC). Anchor = short interest (strongest D0 non-option
+    # slow signal, |SH| 1.66) stacked with orthogonal dense slow signals
+    # (value, long-term reversal, 52-week-high proximity / George-Hwang).
+    "newfam_probe5": [
+        ("si_rank",    "rank(group_zscore(ts_backfill(news_short_interest, 66), sector))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_rank_mkt","rank(group_zscore(ts_backfill(news_short_interest, 66), sector))", {"decay":4, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("w52_only",   "rank(group_zscore(divide(close, ts_max(high, 252)), sector))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_w52",     "rank(add(group_zscore(ts_backfill(news_short_interest, 66), sector), group_zscore(divide(close, ts_max(high, 252)), sector)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_val_lt",  "rank(add(add(group_zscore(ts_backfill(news_short_interest, 66), sector), group_zscore(ts_backfill(divide(est_ebitda, cap), 120), sector)), group_zscore(multiply(divide(ts_delay(close, 21), ts_delay(close, 750)), -1), sector)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+        ("si_all4",    "rank(add(add(add(group_zscore(ts_backfill(news_short_interest, 66), sector), group_zscore(ts_backfill(divide(est_ebitda, cap), 120), sector)), group_zscore(multiply(divide(ts_delay(close, 21), ts_delay(close, 750)), -1), sector)), group_zscore(divide(close, ts_max(high, 252)), sector)))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
+    ],
     "newfam_probe4": [
         ("slow5",     "add(add(add(add(rank(ts_backfill(news_short_interest, 66)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(rank(divide(ts_delay(close, 21), ts_delay(close, 750))), -1)), quantile(ts_backfill(divide(subtract(subtract(revenue, cogs), sga_expense), assets), 250))), multiply(rank(divide(ts_delta(ts_backfill(fnd6_invt, 60), 250), ts_backfill(assets, 60))), -1))", {"decay":4, "universe":"TOP3000", "neutralization":"SUBINDUSTRY"}),
         ("slow5_mkt", "add(add(add(add(rank(ts_backfill(news_short_interest, 66)), quantile(ts_backfill(divide(est_ebitda, cap), 120))), multiply(rank(divide(ts_delay(close, 21), ts_delay(close, 750))), -1)), quantile(ts_backfill(divide(subtract(subtract(revenue, cogs), sga_expense), assets), 250))), multiply(rank(divide(ts_delta(ts_backfill(fnd6_invt, 60), 250), ts_backfill(assets, 60))), -1))", {"decay":4, "universe":"TOP3000", "neutralization":"MARKET"}),
