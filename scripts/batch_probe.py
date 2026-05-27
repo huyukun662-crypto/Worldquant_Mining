@@ -163,6 +163,17 @@ BATCHES = {
     # probe33: George-Hwang 52-week-high proximity via ts_rank(close,252) (ts_max inaccessible).
     # High rank = near 52w high = anchoring continuation. MARKET/INDUSTRY/SUBINDUSTRY neut,
     # value+trend fusion, multi-mechanism composite, decay20 variant.
+    # probe34: NEWS-EVENT signals (news12, cov~0.97, untested non-option family). PEAD/SUE
+    # (news_eps_actual - est_epsr consensus = earnings surprise -> drift, top-tier anomaly),
+    # news-day price-reaction drift, abnormal return vs SPY, volume/attention shock, + INDUSTRY.
+    "newfam_probe34": [
+        ("eps_surprise", "group_zscore(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 60), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("eps_surprise_ind", "group_zscore(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 60), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("news_react30", "group_zscore(ts_backfill(news_pct_30min, 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("news_idxperf", "group_zscore(ts_backfill(news_indx_perf, 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("news_volshock", "group_zscore(ts_backfill(news_vol_stddev, 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("news_react_ind", "group_zscore(ts_backfill(news_pct_30min, 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+    ],
     "newfam_probe33": [
         ("high52r", "group_zscore(ts_rank(close, 252), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("high52r_ind", "group_zscore(ts_rank(close, 252), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
