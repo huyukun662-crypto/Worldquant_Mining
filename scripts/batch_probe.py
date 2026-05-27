@@ -166,6 +166,17 @@ BATCHES = {
     # probe34: NEWS-EVENT signals (news12, cov~0.97, untested non-option family). PEAD/SUE
     # (news_eps_actual - est_epsr consensus = earnings surprise -> drift, top-tier anomaly),
     # news-day price-reaction drift, abnormal return vs SPY, volume/attention shock, + INDUSTRY.
+    # probe35: PEAD/SUE rebuilt unitless (eps_surprise errored on units). Percent surprise
+    # divide(news_eps_actual, est_epsr consensus), standardized surprise (zscore-diff), surprise+
+    # price-confirmation drift, earnings yield via news_pe_ratio. + INDUSTRY variants.
+    "newfam_probe35": [
+        ("sue_ratio", "group_zscore(ts_backfill(divide(news_eps_actual, est_epsr), 90), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("sue_ratio_ind", "group_zscore(ts_backfill(divide(news_eps_actual, est_epsr), 90), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("sue_zdiff", "group_zscore(subtract(group_zscore(ts_backfill(news_eps_actual,90),market), group_zscore(ts_backfill(est_epsr,90),market)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("sue_zdiff_ind", "group_zscore(subtract(group_zscore(ts_backfill(news_eps_actual,90),market), group_zscore(ts_backfill(est_epsr,90),market)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+        ("sue_drift", "add(group_zscore(ts_backfill(divide(news_eps_actual, est_epsr), 90), market), group_zscore(ts_backfill(news_pct_30min, 20), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("earn_yield", "group_zscore(divide(1, ts_backfill(news_pe_ratio, 5)), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe34": [
         ("eps_surprise", "group_zscore(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 60), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("eps_surprise_ind", "group_zscore(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 60), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
