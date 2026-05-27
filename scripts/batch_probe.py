@@ -133,6 +133,18 @@ BATCHES = {
     # robustness variants of act_util (INDUSTRY / SUBINDUSTRY neut, tight truncation 0.03 to
     # test if the 2.84 SH survives risk controls / is not just meme-squeeze concentration),
     # plus inventory-concentration family field.
+    # probe25: DELAY=0 short/lending hunt (user requires d0). Test whether the delay=1 winning
+    # lending fields (act_util/fee/dtc) are even accepted at delay=0; plus densest d0 short-
+    # interest constructions (news_short_interest cov0.86, nws12 main/pre-market SI vectors)
+    # with the same plain group_zscore form that scored 2.84 at delay=1.
+    "newfam_probe25": [
+        ("d0_util", "group_zscore(mdl177_5shortsentimentfactor_act_util, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_fee", "group_zscore(mdl177_5shortsentimentfactor_benchmark_fee, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_dtc", "group_zscore(mdl177_5shortsentimentfactor_days_to_cover, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_si_news", "group_zscore(news_short_interest, market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_si_vec", "group_zscore(vec_avg(nws12_mainz_short_interest), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("d0_si_pre", "group_zscore(vec_avg(nws12_prez_short_interest), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe24": [
         ("ss_dtc", "group_zscore(mdl177_5shortsentimentfactor_days_to_cover, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("ss_dmdsup", "group_zscore(mdl177_5shortsentimentfactor_dmd_supply, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
