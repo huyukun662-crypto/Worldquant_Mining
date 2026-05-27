@@ -122,6 +122,19 @@ BATCHES = {
     # news-reaction magnitude. Genuinely new signal family.
     # probe21: structurally-different time-series alphas (ts_zscore mean-reversion, MA-ratio,
     # ts_rank volume, ts_ir) + multiplicative value x quality interaction. All dense.
+    # probe22: DELAY=1 dense (cov=1.0) composite model factors - non-option. Pre-built factor
+    # signals (earnings momentum, analyst momentum/surprise/price/value composites, deep value,
+    # PEAD abnormal return, EBITDA/EV, earnings yield). Dense -> pass concentration; uncrowded.
+    "newfam_probe22": [
+        ("emm_comp", "group_zscore(mdl177_emmcomposite_emm_composite, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("qma_comp", "group_zscore(mdl177_momemtumanalystmodel_qma_composite, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("qsa_comp", "group_zscore(mdl177_surpriseanalystmodel_qsa_composite, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("qpa_comp", "group_zscore(mdl177_priceanalystmodel_qpa_composite_alt, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("dvm_comp", "group_zscore(mdl177_vra2_dvm_composite, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("abr_pead", "group_zscore(mdl177_pricemomentumfactor_abr, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("ebitdaev", "group_zscore(mdl177_2_deepvaluefactor_ebitdaev, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("estep", "group_zscore(mdl177_relativevaluemodel_fc_estep, market)", {'delay': 1, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe21": [
         ("ts_z_rev", "multiply(group_zscore(ts_zscore(close, 120), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("ma_ratio", "group_zscore(divide(ts_mean(close, 10), ts_mean(close, 120)), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
