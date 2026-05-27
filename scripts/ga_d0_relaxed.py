@@ -124,12 +124,36 @@ def main():
     if not cm.authenticate(auto_load=True,auto_prompt=False): return 2
     log.info(f"auth {cm.credentials.username}  GAv3(relaxed/pairing/uncorr) seed={seed} pop={POP} gens={GENS}")
     out=REPO/"WQ_GA_D0_RELAXED.json"; cache={}; hall=[]
+    # resume: reload previously-evaluated genomes so a crash doesn't lose progress
+    if out.exists():
+        try:
+            prev=json.load(open(out))
+            for r in prev.get("hall",[]):
+                if r.get("hash"): cache[r["hash"]]=r; hall.append(r)
+            hall.sort(key=lambda x:x["fit"],reverse=True)
+            log.info(f"resumed {len(cache)} cached evaluations from {out.name}")
+        except Exception as e: log.warning(f"resume failed: {e}")
     def evaluate(g,label=""):
         h=ghash(g)
         if h in cache: return cache[h]
-        expr=render(g); r=submit(cm.session,f"gas_{h}",expr,settings(g))
-        if r.ok:
-            sc,_,_=fetch_self_corr(cm.session,r.alpha_id,timeout_s=90); r.self_corr=sc
+        expr=render(g)
+        # robust to flaky WQ network (SSL/ReadTimeout/conn errors): retry then skip
+        r=None
+        for attempt in range(3):
+            try:
+                r=submit(cm.session,f"gas_{h}",expr,settings(g))
+                if r.ok:
+                    try: sc,_,_=fetch_self_corr(cm.session,r.alpha_id,timeout_s=90); r.self_corr=sc
+                    except Exception as e: log.warning(f"   [{h}] self_corr net-err: {str(e)[:60]}"); r.self_corr=None
+                break
+            except Exception as e:
+                log.warning(f"   [{h}] submit net-err (try {attempt+1}/3): {str(e)[:70]}")
+                import time as _t; _t.sleep(20)
+        if r is None:   # persistent network failure: skip WITHOUT caching (retry in later gen)
+            return {"hash":h,"label":label,"expr":expr,"settings":settings(g),"genome":g,
+                    "fit":-9.0,"submit_ok":False,"complexity":complexity(g),"ok":False,
+                    "sharpe":None,"turnover":None,"fitness":None,"self_corr":None,
+                    "alpha_id":None,"fails":[],"err":"net-skip"}
         fit,ok=fitness(r,g)
         rec={"hash":h,"label":label,"expr":expr,"settings":settings(g),"genome":g,
              "fit":fit,"submit_ok":ok,"complexity":complexity(g),"ok":r.ok,
@@ -158,10 +182,9 @@ def main():
     pop+=[rand_genome() for _ in range(max(0,POP-len(pop)))]
     pop=pop[:max(POP,len(SEEDS))]
     for gen in range(2,GENS+1):
-        scored=[(cache[ghash(g)]["fit"] if ghash(g) in cache else evaluate(g)["fit"], g) for g in pop]
-        scored=[(cache[ghash(g)]["fit"],g) for g in pop]
+        scored=[(evaluate(g)["fit"], g) for g in pop]   # evaluate() is cache-aware + net-robust
         scored.sort(key=lambda x:x[0],reverse=True)
-        b=cache[ghash(scored[0][1])]
+        b=cache.get(ghash(scored[0][1])) or evaluate(scored[0][1])
         log.info(f"   gen{gen-1} best fit={scored[0][0]:+.3f} SH={b['sharpe']} sc={b['self_corr']} cx={b['complexity']:.1f} [{b['hash']}] {b.get('label','')}")
         log.info(f"=== generation {gen}/{GENS} ===")
         elite=[g for _,g in scored[:3]]; newpop=list(elite)
