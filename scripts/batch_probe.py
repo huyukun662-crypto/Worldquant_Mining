@@ -169,6 +169,17 @@ BATCHES = {
     # probe35: PEAD/SUE rebuilt unitless (eps_surprise errored on units). Percent surprise
     # divide(news_eps_actual, est_epsr consensus), standardized surprise (zscore-diff), surprise+
     # price-confirmation drift, earnings yield via news_pe_ratio. + INDUSTRY variants.
+    # probe36: COMPLEX structural forms (user: mine freely, no IV/D1). Not single-field z-scores -
+    # price-volume correlation divergence (ts_corr), reversion to VWAP, vol-of-vol premium,
+    # intraday up/down asymmetry, Amihud illiquidity premium, + INDUSTRY pv-corr.
+    "newfam_probe36": [
+        ("pv_corr", "group_zscore(ts_corr(close, volume, 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("vwap_rev", "multiply(group_zscore(divide(subtract(close, vwap), vwap), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("volofvol", "multiply(group_zscore(ts_std_dev(historical_volatility_20, 60), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("range_skew", "group_zscore(ts_backfill(divide(subtract(news_max_up_amt, news_max_dn_amt), close), 5), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("amihud", "group_zscore(ts_mean(divide(abs(returns), volume), 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("pv_corr_ind", "group_zscore(ts_corr(close, volume, 20), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
+    ],
     "newfam_probe35": [
         ("sue_ratio", "group_zscore(ts_backfill(divide(news_eps_actual, est_epsr), 90), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("sue_ratio_ind", "group_zscore(ts_backfill(divide(news_eps_actual, est_epsr), 90), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'neutralization': 'INDUSTRY'}),
