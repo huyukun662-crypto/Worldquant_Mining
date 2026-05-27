@@ -117,6 +117,17 @@ BATCHES = {
     # sales yield) to reduce noise and lift value above single-ratio ~1.07. All dense -> pass conc.
     # probe19: rescue short interest via NaN-fill densification onto dense value base.
     # add(value_dense, fill(SI,0)) -> value provides breadth, SI tilts where present.
+    # probe20: dense MATRIX news-reaction signals (~0.97 coverage -> pass concentration):
+    # overnight gap reversal, relative-to-index, dividend yield, dataset L/S, prev-day reversal,
+    # news-reaction magnitude. Genuinely new signal family.
+    "newfam_probe20": [
+        ("gap_rev", "multiply(group_zscore(ts_backfill(news_open_gap, 5), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("relidx", "group_zscore(ts_backfill(news_indx_perf, 5), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("divyield", "group_zscore(ts_backfill(news_dividend_yield, 60), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("newsls", "group_zscore(ts_backfill(news_ls, 5), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("prevret_rev", "multiply(group_zscore(ts_backfill(news_prev_day_ret, 5), market), -1)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+        ("newsreact", "group_zscore(ts_backfill(add(news_max_up_ret, news_max_dn_ret), 5), market)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe19": [
         ("si_nanmask", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), nan_mask(group_zscore(ts_backfill(news_short_interest, 66), market), 0))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
         ("si_replace", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), replace(group_zscore(ts_backfill(news_short_interest, 66), market), nan, 0))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET'}),
