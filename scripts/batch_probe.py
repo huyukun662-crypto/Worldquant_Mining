@@ -44,6 +44,19 @@ VWAPREV = "quantile(divide(subtract(vwap, close), close))"
 S4 = f"add(add(add({VAL}, {RECRAW}), {CUSTREV}), {VWAPREV})"
 
 BATCHES = {
+    # NON-OPTION families (user: mine factors other than the option IV-spread).
+    # Apply the winning structure that cracked the option factor -- group_zscore
+    # by SECTOR + MARKET neut + decay20 + ts_backfill -- to forward-looking
+    # non-option signals: analyst revisions, short interest, insider sentiment,
+    # news sentiment, quality. Reversal-blend the strongest to lift Sharpe.
+    "newfam_probe1": [
+        ("anlrev",   "group_zscore(ts_backfill(net_num_revisions_fy1, 66), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("anlrank",  "group_zscore(ts_backfill(analyst_revision_rank_derivative, 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("shortint", "multiply(group_zscore(ts_backfill(news_short_interest, 22), sector), -1)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("insider",  "group_zscore(ts_backfill(rp_ess_insider, 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("peg",      "multiply(group_zscore(ts_backfill(inverse_peg_ratio_2, 120), sector), 1)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+        ("news_grp", "group_zscore(ts_backfill(vec_avg(nws18_ghc_lna), 22), sector)", {"decay":20, "universe":"TOP3000", "neutralization":"MARKET"}),
+    ],
     "news_probe": [
         ("pe_value",   "group_neutralize(-winsorize(ts_backfill(news_pe_ratio, 250), std=4), subindustry)", {"decay":6}),
         ("vol_shock",  "group_neutralize(-winsorize(ts_backfill(news_vol_stddev, 22), std=4), subindustry)", {"decay":6}),
