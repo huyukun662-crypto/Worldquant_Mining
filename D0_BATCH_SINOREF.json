@@ -236,5 +236,39 @@
     "conc_wt_pass": true,
     "checks_pass": 5,
     "checks_total": 8
+  },
+  {
+    "ok": true,
+    "alpha_id": "YPQgv5R6",
+    "expression": "add(add(add(multiply(if_else(is_nan(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry)), group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), multiply(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry), 3)), 3.5), multiply(group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), 1.2)), multiply(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), 1.2)), multiply(group_zscore(ts_std_dev(returns, 20), subindustry), -1))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "sharpe": 1.53,
+    "turnover": 0.1778,
+    "fitness": 1.09,
+    "returns": 0.0902,
+    "drawdown": 0.0675,
+    "margin": 0.001015,
+    "longCount": 1246,
+    "shortCount": 1297,
+    "sub_universe_sharpe": 1.14,
+    "conc_wt": null,
+    "conc_wt_pass": true,
+    "checks_pass": 5,
+    "checks_total": 8
   }
 ]
