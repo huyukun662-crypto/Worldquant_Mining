@@ -108,6 +108,16 @@ BATCHES = {
     # asset growth, gross profitability (Novy-Marx), and value-quality stacks.
     # probe15: universe sweep on short interest - smaller (more liquid) universes have denser
     # SI coverage, may pass CONCENTRATED_WEIGHT where TOP3000 fails. Settings are search space.
+    # probe16: tight truncation sweep to cap single-name weight and clear CONCENTRATED_WEIGHT
+    # on short interest (si_top500 was SH 1.46 FIT 2.17, only failing conc + low_sharpe).
+    "newfam_probe16": [
+        ("si500_tr02", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP500', 'neutralization': 'MARKET', 'truncation': 0.02}),
+        ("si500_tr01", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP500', 'neutralization': 'MARKET', 'truncation': 0.01}),
+        ("si500_tr03", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP500', 'neutralization': 'MARKET', 'truncation': 0.03}),
+        ("si3k_tr01", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET', 'truncation': 0.01}),
+        ("si3k_tr005", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET', 'truncation': 0.005}),
+        ("sir3k_tr01", "add(winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4), quantile(divide(subtract(vwap, close), close)))", {'decay': 6, 'universe': 'TOP3000', 'neutralization': 'MARKET', 'truncation': 0.01}),
+    ],
     "newfam_probe15": [
         ("si_top1000", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP1000', 'neutralization': 'MARKET'}),
         ("si_top500", "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)", {'decay': 6, 'universe': 'TOP500', 'neutralization': 'MARKET'}),
