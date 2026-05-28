@@ -218,6 +218,24 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe57: SIMPLE + ECONOMIC + SUBMITTABLE hunt. 1-2 academic anomalies, short
+    # expression, clear interpretation. Pair classic anomalies (value/quality/BAB)
+    # with short-term reversal (the strongest single-signal engine from earlier probes)
+    # at 2x weight to push SH past the 2.0 LOW_SHARPE limit while staying simple.
+    "newfam_probe57": [
+        # 1-leg: short-term reversal alone, subindustry-neutral (Jegadeesh 1990)
+        ("rev_subind_d4", "multiply(group_zscore(ts_rank(close, 5), subindustry), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY', 'decay': 4}),
+        # 2-leg: value (E/EV) + 2x short reversal (HML + STR)
+        ("val_x_rev2", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 2-leg: quality (GP/A, Novy-Marx 2013) + 2x short reversal
+        ("qual_x_rev2", "add(group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 2-leg: low-vol/BAB (Frazzini-Pedersen) + 2x short reversal
+        ("bab_x_rev2", "add(multiply(group_zscore(rank(historical_volatility_120), market), -1), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 2-leg: value + quality (Fama-French 5 fundamentals only, no PV)
+        ("val_x_qual", "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # value + quality + 2x reversal (3-leg, but each leg is a single classic anomaly)
+        ("val_qual_rev2", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+    ],
     # probe56: autonomous iteration toward submittable - enhance the 2.22 mega with orthogonal
     # net-issuance + accruals (raise SH and dilute concentration/self-corr). Verify 8/8 after.
     "newfam_probe56": [
