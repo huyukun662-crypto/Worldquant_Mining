@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe79: stack buzz_drift (1.63) with various DENSE 3rd legs to push past 2.0.
+    # Each 3rd leg is high-coverage (cov 0.95+), distinct signal type.
+    "newfam_probe79": [
+        # rel_ret_all - supply-chain peer return (Cohen-Frazzini), 42 users
+        ("bd_relret", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(rel_ret_all, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # news_pct_30min - faster window drift (continuation/reversal direction unknown)
+        ("bd_pct30", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(news_pct_30min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # news_post_vwap / close - relative post-session VWAP (post-news drift proxy)
+        ("bd_postvwap", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(divide(news_post_vwap, close), 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # news_vol_stddev - abnormal volume zscore on news day
+        ("bd_volz", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(news_vol_stddev, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # news_high_exc_stddev - standardized high move (Sharpe-like)
+        ("bd_hiexc", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(news_high_exc_stddev, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # news_max_up_amt - panic up magnitude (positive reversal)
+        ("bd_maxup", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(ts_backfill(news_max_up_amt, 22), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe78: stack buzz_drift (1.63, sentiment+news) with NEW orthogonal
     # quality signals from probe77. asset_turn (0.93) is slow + orthogonal,
     # sloan_wc (0.82) is accrual quality. Test 3-leg and 4-leg combinations
