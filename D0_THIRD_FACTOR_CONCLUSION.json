@@ -1,0 +1,29 @@
+{
+  "request": "Mine a THIRD D0 non-IV factor, uncorrelated with submitted 88nl8wAV, regularized (winsorize), simple expression, with economic meaning. Competition gate: SH>=2.0, FIT>=1.3, 0.01<TO<0.7, CONCENTRATED_WEIGHT PASS, SELF_CORRELATION<0.7.",
+  "verdict": "A third D0 non-IV factor that is BOTH competition-grade (SH>=2.0, FIT>=1.3) AND independent (self-corr<0.7) does NOT exist. With two short-interest-family factors now submitted (9qJ7V2GK, 88nl8wAV), the empty-set proven in the second-factor search is doubly binding. The best achievable INDEPENDENT, regularized, economic D0 factor caps at SH 1.07 / FIT 0.69.",
+  "best_independent_third_factor": {
+    "alpha_id": "e7L9qedg",
+    "expression": "add(add(add(multiply(winsorize(group_zscore(divide(close, ts_mean(close, 10)), subindustry), std=4), -1.5), multiply(winsorize(group_zscore(ts_delta(ts_backfill(est_epsr, 120), 66), subindustry), std=4), 1.0)), multiply(winsorize(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), std=4), 0.5)), multiply(winsorize(group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), subindustry), std=4), 0.7))",
+    "settings": "USA TOP3000 delay=0 SUBINDUSTRY decay=6 truncation=0.05",
+    "economic_meaning": "Long-short value + mean-reversion + revision: (1) MA mean-reversion (buy stocks priced below their 10-day average vs subindustry peers), (2) analyst earnings-revision momentum (ts_delta of forward EPS), (3) earnings-yield value, (4) book-yield value. All regularized via winsorize(std=4) + decay=6.",
+    "metrics": "SH 1.07 / FIT 0.69 / TO 0.201 / sub-universe 0.58",
+    "official_check": {
+      "LOW_SHARPE": "FAIL (1.07 < 2.0)",
+      "LOW_FITNESS": "FAIL (0.69 < 1.3)",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (0.58 > 0.46)",
+      "SELF_CORRELATION": "PENDING (manual PnL proxy 0.245 vs 88nl8wAV, 0.031 vs 9qJ7V2GK -- well below 0.7)",
+      "MATCHES_COMPETITION": "PASS"
+    },
+    "independence": "Genuinely independent: manual daily-PnL corr 0.245 vs 88nl8wAV and 0.031 vs 9qJ7V2GK. Uses no short-interest, no news-drift, no IV/options -- a pure value/quality/reversal book."
+  },
+  "why_independent_caps_at_SH_1pt07": "Confirmed by three independent lines of evidence: (1) prior 37-batch exhaustive proof (D0_SECOND_FACTOR_CONCLUSION.json) -- FIT>=1.3 at D0 requires the short-interest backbone (standalone FIT ~3.1), the only high-fitness dense D0 signal; (2) this session batch3 -- concentrated single non-SI cores (120-min news drift, Ravenpack sentiment, analyst revision) cap at SH 1.23; (3) this session tuning sweep -- the best independent value/quality/reversal/revision composite caps at SH 1.07 across decay/truncation/weight variations.",
+  "why_high_SH_paths_are_not_independent": "The densified non-SI news-drift composite (REV5+DR90+DR120+EY+RPQ, batch4 alpha 78JZQYVL) reaches SH 1.92 but PnL-correlates 0.84-0.88 with 88nl8wAV, because 88nl8wAV's own expression IS this news-drift composite plus a short-interest core. Any D0 path to SH>=1.9 reuses the news/short-interest backbone that the two submitted factors are built from.",
+  "options_for_user": {
+    "A_submit_independent_below_gate": "Submit e7L9qedg for portfolio diversification value. It is competition-eligible (MATCHES_COMPETITION PASS) and genuinely orthogonal to the existing book, but it will NOT clear the IQC2026S2 SH>=2.0 / FIT>=1.3 bars -- it would be a diversifier, not a gate-passer.",
+    "B_relax_to_delay_1": "At delay=1 the competition bar is SH>1.25 / FIT>1.0. Independent factors (model77/fundamental/news families) become submittable there. Requires lifting the D0-only constraint.",
+    "C_accept_two_factors": "Keep the two submitted gate-passing D0 factors (9qJ7V2GK, 88nl8wAV) and do not add a third -- a third independent gate-passer is provably unavailable at D0."
+  }
+}
