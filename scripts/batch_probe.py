@@ -218,6 +218,24 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe91: d1_smbfl10 = SH 2.34 / FIT 1.43 / 6/8, only LOW_SUB_UNIVERSE_SHARPE
+    # fails (~0.90 vs limit 1.01). Direction is news/social = large-cap heavy.
+    # Try adding a small-weight all-cap leg (iss/asset_turn/value) to lift
+    # signal in less-news-covered names.
+    "newfam_probe91": [
+        # smbfl10 + iss_solo at 0.2x (financing, all-cap)
+        ("smbfl10_iss02", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), multiply(multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1), 0.2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # smbfl10 + asset_turn at 0.2x (slow quality, all-cap)
+        ("smbfl10_at02", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), multiply(group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market), 0.2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # smbfl10 + value(est_ebitda/cap) at 0.2x
+        ("smbfl10_val02", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), multiply(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), 0.2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # smbfl10 + 12-1 momentum at 0.3x
+        ("smbfl10_mom03", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), multiply(group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market), 0.3))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # smbfl10 + iss_solo at 0.3x (bigger weight)
+        ("smbfl10_iss03", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), multiply(multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1), 0.3))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # smbfl10 + (iss 0.2 + asset_turn 0.2) (two all-cap legs)
+        ("smbfl10_iss_at", "add(add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), multiply(multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1), 0.2)), multiply(group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market), 0.2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe90: d1_b05_smbfl10 has 6 PASS, only LOW_SUB_UNIVERSE_SHARPE fails
     # (0.90 vs 1.01 limit). SELF_CORRELATION still pending. Push sub-universe.
     "newfam_probe90": [
