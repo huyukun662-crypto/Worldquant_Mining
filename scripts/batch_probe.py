@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe87: dbf_d1 SH 2.30 crossed 2.0 but TO 0.73 fails HIGH_TURNOVER (0.7).
+    # Need to slow it just enough to drop TO < 0.7 while keeping SH > 2.0.
+    # FIT also needs lift (1.13 -> 1.3).
+    "newfam_probe87": [
+        # decay 1 + truncation 0.05 (truncation reduces TO)
+        ("d1_t05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 1}),
+        # decay 1 + truncation 0.04
+        ("d1_t04", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.04, 'neutralization': 'MARKET', 'decay': 1}),
+        # decay 1 + ts_decay_linear(3) on drift only
+        ("d1_smdrift", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 3), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # decay 1 + ts_decay_linear(3) on bfl only
+        ("d1_smbfl", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 3), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # decay 1 + bfl 0.5x weight (less buzz contribution, lower TO)
+        ("d1_bfl05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # decay 2 + ts_decay_linear(2) on drift (smooth from decay 2)
+        ("d2_smdrift", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 2), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+    ],
     # probe86: BREAKTHROUGH - decay 2 gives drift_bfl SH 1.96 (FIT 1.00).
     # bfl 1.5x weight gave +0.05. Combining decay 2 + bfl 1.5x should cross 2.0.
     "newfam_probe86": [
