@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe86: BREAKTHROUGH - decay 2 gives drift_bfl SH 1.96 (FIT 1.00).
+    # bfl 1.5x weight gave +0.05. Combining decay 2 + bfl 1.5x should cross 2.0.
+    "newfam_probe86": [
+        # decay 2 + bfl 1.5x weight (most promising combo)
+        ("dbf_d2_b15", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 1.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+        # decay 2 + bfl 2x
+        ("dbf_d2_b2", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+        # decay 1 (no decay, raw)
+        ("dbf_d1", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # decay 3 (intermediate)
+        ("dbf_d3", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 3}),
+        # decay 2 + drift 1.5x (boost drift instead of bfl)
+        ("dbf_d2_dr15", "add(multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 1.5), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+        # decay 2 + truncation 0.05
+        ("dbf_d2_t05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 2}),
+    ],
     # probe85: drift_bfl = 1.78 is the new ceiling. Try bfl weight variations
     # and different drift-window bases (60min, 30min) paired with bfl.
     "newfam_probe85": [
