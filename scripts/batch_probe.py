@@ -218,6 +218,24 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe58: push the 3-leg val_qual_rev2 (1.60) toward the 2.0 LOW_SHARPE limit:
+    # heavier reversal weight, deeper decay, sub-industry whole-expression neut,
+    # and add ONE more classic academic leg (net-issuance Pontiff-Woodgate or
+    # asset-growth CMA). Stays "simple" - 3-4 named anomalies, no PV exotica.
+    "newfam_probe58": [
+        # val + qual + 2.5x reversal (mega's optimal reversal weight, single STR leg)
+        ("vqr25", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # val + qual + 3x reversal (max weight that the mega survived 8/8 at)
+        ("vqr3", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 3))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # val + qual + 2.5x reversal at decay 6 (smoother, lower TO)
+        ("vqr25_d6", "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg: + net-issuance (Pontiff-Woodgate / Daniel-Titman, signed_power 0.5)
+        ("vqr2_iss", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 4-leg: + asset-growth (CMA, Fama-French 5 conservative-minus-aggressive)
+        ("vqr2_cma", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=4), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 4-leg: + CFO-yield (cashflow_op/cap, cash-quality leg) at 2.5x reversal
+        ("vqcr25", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+    ],
     # probe57: SIMPLE + ECONOMIC + SUBMITTABLE hunt. 1-2 academic anomalies, short
     # expression, clear interpretation. Pair classic anomalies (value/quality/BAB)
     # with short-term reversal (the strongest single-signal engine from earlier probes)
