@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe96: 35+ probes plateau at 6/8 (SUB blocked). Last-chance output
+    # transforms: ts_mean wrapper, quantile, winsorize before zscore.
+    "newfam_probe96": [
+        # winsorize drift INPUT before zscore (kill outlier days)
+        ("smbfl10_winsdr", "add(group_zscore(winsorize(ts_backfill(news_pct_120min, 22), std=4), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # winsorize std=2 on drift
+        ("smbfl10_winsdr2", "add(group_zscore(winsorize(ts_backfill(news_pct_120min, 22), std=2), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # ts_mean(alpha, 3) wrapper (smooth output)
+        ("smbfl10_tsmean3", "ts_mean(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), 3)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # zscore wrapper around whole alpha
+        ("smbfl10_zwrap", "zscore(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # winsorize ALL legs at std=2
+        ("smbfl10_wins_all", "add(group_zscore(winsorize(ts_backfill(news_pct_120min, 22), std=2), market), multiply(group_zscore(winsorize(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), std=2), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # winsorize FINAL alpha output (clamp positions)
+        ("smbfl10_wins_out", "winsorize(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5)), std=2)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe95: 30+ probes plateau at 6/8 (SUB blocked). Try hybrid/last-chance
     # ideas: NaN-handling=OFF, smaller-universe direct, group_neutralize wrap.
     "newfam_probe95": [
