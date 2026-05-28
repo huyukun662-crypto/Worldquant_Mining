@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe75: snt_buzz at SH 1.04 / cov 1.0 is the find. Tune it and stack
+    # with drift120 (SH 0.98, also cov 1.0). Both dense -> no concentration
+    # risk by construction. If they're orthogonal stacking should clear 2.0
+    # for a true SIMPLE + 8/8 alpha.
+    "newfam_probe75": [
+        # snt_buzz tuned: decay 4 vs 10 vs 6 baseline
+        ("buzz_d4", "group_zscore(ts_backfill(snt_buzz, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        ("buzz_d10", "group_zscore(ts_backfill(snt_buzz, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 10}),
+        # snt_buzz + drift120 (both dense, both ~1.0 standalone)
+        ("buzz_drift", "add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: snt_buzz + drift120 + scl12_buzz (additional sentiment leg)
+        ("buzz_drift_scl", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(scl12_buzz, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_buzz + drift120 + maxdn_rev (news panic reversal as 3rd leg)
+        ("buzz_drift_maxdn", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(ts_backfill(news_max_dn_ret, 22), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_buzz at SUBINDUSTRY neut (different neutralization)
+        ("buzz_sub", "group_zscore(ts_backfill(snt_buzz, 22), subindustry)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY', 'decay': 6}),
+    ],
     # probe74: socialmedia + fundamental deep dive. 5 unused socialmedia fields
     # ALL at coverage 1.0 (no possible concentration issue!), with high alphaCount.
     # Plus unused fundamentals tapping ACCOUNTING quality (deferred tax, SBC
