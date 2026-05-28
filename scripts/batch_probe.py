@@ -218,6 +218,21 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe61: PIVOT - the val/qual/CFO/PV-corr/short-reversal/news direction
+    # registers -1,066 on Performance Comparison (alpha correlated with already-
+    # submitted portfolio). Switch to ORTHOGONAL risk premia: behavioral
+    # anchoring (52-week-high), lottery/MAX, medium-term momentum (opposite
+    # sign from short reversal), industry momentum, PEAD earnings surprise,
+    # short-interest. Each candidate is a SINGLE clean academic anomaly so
+    # we can see standalone strength + how distinct each is from the prior pool.
+    "newfam_probe61": [
+        ("hi52w_anchor", "group_zscore(divide(close, ts_max(high, 252)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        ("max_lottery", "multiply(group_zscore(rank(ts_max(returns, 22)), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        ("mom_12_1", "group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        ("ind_mom_6m", "group_zscore(group_mean(divide(close, ts_delay(close, 126)), 1, subindustry), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        ("pead_su", "group_zscore(ts_backfill(divide(subtract(news_eps_actual, est_epsr), close), 120), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        ("short_int", "multiply(group_zscore(ts_backfill(news_short_interest, 22), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe60: 5-leg vqcr_pv_r2_d6 plateaued at SH 1.83 / FIT 1.27. To cross 2.0
     # while staying simple, try (a) the cheapest 6th academic leg - investor
     # sentiment (Baker-Wurgler 2006) OR news drift (Tetlock 2007) - and
