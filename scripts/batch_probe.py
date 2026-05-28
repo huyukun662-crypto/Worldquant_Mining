@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe81: buzz_drift_bfl = 1.70 (4-buzz family stack), 0.30 from 2.0.
+    # Push 4-leg buzz family + drift + add more buzz/sentiment cousins.
+    "newfam_probe81": [
+        # 4-leg: buzz + drift + buzz_bfl + scl_sentiment
+        ("b4_scl_sent", "add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(scl12_sentiment, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg: buzz + drift + buzz_bfl + snt_value
+        ("b4_sntval", "add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(snt_value, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg: buzz + drift + buzz_bfl + snt_social_value (proven sentiment leg from prior)
+        ("b4_socval", "add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(snt_social_value, market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg: buzz + drift120 + buzz_bfl + drift90 (multi-window news drift)
+        ("b4_d90", "add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(news_pct_90min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 5-leg: full social+news family
+        ("b5_full", "add(add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(snt_social_value, market)), group_zscore(ts_backfill(news_indx_perf, 20), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz + drift + buzz_bfl at 1.5x (boost bfl)
+        ("b3_bfl15", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 1.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe80: buzz_drift = 1.63 is a local max - no 3rd leg helps. Try
     # untested cov-1.0 fields solo (snt_buzz_bfl, scl12_buzz solo) and
     # weight/decay rebalancing of the buzz_drift stack.
