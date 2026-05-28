@@ -39,7 +39,8 @@ def render_ratio(t):
 def render_tsop(x,op,w):
     return {"id":x,"zscore":f"ts_zscore({x},{w})","mean":f"ts_mean({x},{w})",
             "delta":f"ts_delta({x},{w})","std":f"ts_std_dev({x},{w})",
-            "sum":f"ts_sum({x},{w})","rank":f"ts_rank({x},{w})"}[op]
+            "sum":f"ts_sum({x},{w})","rank":f"ts_rank({x},{w})",
+            "decay":f"ts_decay_linear({x},{w})"}[op]
 def render_group(x,g):
     return {"gr_sub":f"group_rank({x},subindustry)","gr_mkt":f"group_rank({x},market)",
             "rank":f"rank({x})"}[g]
@@ -134,9 +135,14 @@ def main():
             log.info(f"resumed {len(cache)} cached evaluations from {out.name}")
         except Exception as e: log.warning(f"resume failed: {e}")
     def evaluate(g,label=""):
-        h=ghash(g)
+        try: h=ghash(g); expr=render(g)
+        except Exception as e:   # invalid genome render -> kill it, never crash the GA
+            log.warning(f"   render-err (bad genome): {str(e)[:60]}")
+            return {"hash":"badgen","label":label,"expr":"","settings":{},"genome":g,
+                    "fit":-9.0,"submit_ok":False,"complexity":99,"ok":False,
+                    "sharpe":None,"turnover":None,"fitness":None,"self_corr":None,
+                    "alpha_id":None,"fails":[],"err":"render-err"}
         if h in cache: return cache[h]
-        expr=render(g)
         # robust to flaky WQ network (SSL/ReadTimeout/conn errors): retry then skip
         r=None
         for attempt in range(3):
