@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe89: All d1 variants stuck at SH 2.32 / FIT 1.18-1.20 / SUB ~0.98.
+    # FIT formula penalizes TO; lower TO would lift FIT. Try smoother inputs:
+    # longer ts_backfill, ts_decay_linear wrappers, more decay - keep SH > 2.
+    "newfam_probe89": [
+        # d1 + bfl 0.5x + ts_backfill 60 (smoother backfilled input)
+        ("d1_b05_bf60", "add(group_zscore(ts_backfill(news_pct_120min, 60), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 60), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + ts_decay_linear(5) on drift to smooth
+        ("d1_b05_smdr5", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 5), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + ts_decay_linear(5) on bfl
+        ("d1_b05_smbfl5", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 5), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + ts_decay_linear(5) on both
+        ("d1_b05_sm5both", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 5), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 5), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + ts_decay_linear(3) on both (less smoothing)
+        ("d1_b05_sm3both", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 3), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 3), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + ts_decay_linear(10) on bfl only (smooth slower leg)
+        ("d1_b05_smbfl10", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe88: d1_bfl05 = SH 2.32, FIT 1.20, TO 0.58 - CONCENTRATED_WEIGHT now
     # PASSES! 2 fails: FIT 1.20 < 1.30 and LOW_SUB_UNIVERSE_SHARPE 0.98 < 1.0
     # (razor close). Try neut variations + bfl weight fine-tuning.
