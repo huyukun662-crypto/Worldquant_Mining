@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe63: si_pos_rk standalone = SH 1.82 / FIT 2.47 / TO 0.086. To clear 2.0
+    # without re-overlap, either (a) tune si alone via decay/neut/window, or
+    # (b) pair with a SECOND strong orthogonal signal. Try analyst-revision
+    # breadth (anl4) as a cold orthogonal cousin (event-driven info), insider
+    # net activity (oth_insider), and asset growth (CMA, fnd6) - all distinct
+    # from value/quality/short-reversal direction AND from short_int itself.
+    "newfam_probe63": [
+        # Tune si alone: faster decay (4) - capture fresh short-interest changes
+        ("si_d4", "group_zscore(rank(ts_backfill(news_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # Tune si alone: deeper decay (10) - smoother turnover, persistent edge
+        ("si_d10", "group_zscore(rank(ts_backfill(news_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 10}),
+        # Tune si alone: INDUSTRY neutralization (short-side anomaly is industry-clustered)
+        ("si_ind", "group_zscore(rank(ts_backfill(news_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'INDUSTRY', 'decay': 6}),
+        # 2-leg: si + analyst-revision breadth (anl4 - cold, orthogonal, info-driven)
+        ("si_anl_breadth", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 2-leg: si + asset growth (CMA, Fama-French 5 conservative-minus-aggressive, inverted)
+        ("si_cma", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=4), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 2-leg: si + 12-1 momentum at 3x weight (boost the weak leg's contribution)
+        ("si_3xmom", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market), 3))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe62: short_int flipped sign was SH -1.46 + FIT -2.37 in probe61, meaning
     # the POSITIVE-sign version yields SH +1.46 / FIT +2.37 standalone (already
     # near LOW_FITNESS pass). On this account high short interest = high return
