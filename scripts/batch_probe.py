@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe72: last-chance attacks on si concentration. (a) Extreme truncation
+    # 0.02-0.04 to externally cap each position. With truncation=0.02 even 50
+    # names at 2% each = H-index 0.02, well below 0.10 limit. SH should
+    # degrade but may keep > 2.0. (b) Use vec_avg() on event-typed alt SI
+    # field nws12_mainz_short_interest which has slightly different temporal
+    # coverage (cov 0.8636 vs 0.8623); might not have the 2021-05-05 spike.
+    "newfam_probe72": [
+        # si_qntl + truncation 0.02 (extreme cap, very conservative)
+        ("si_qntl_t02", "group_zscore(quantile(ts_backfill(news_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.02, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + truncation 0.03
+        ("si_qntl_t03", "group_zscore(quantile(ts_backfill(news_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.03, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_cma + truncation 0.02
+        ("si_cma_t02", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.02, 'neutralization': 'MARKET', 'decay': 6}),
+        # vec_avg of mainz SI (event-typed alt field)
+        ("si_mainz_vec", "group_zscore(quantile(ts_backfill(vec_avg(nws12_mainz_short_interest), 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # vec_avg of prez SI (pre-market)
+        ("si_prez_vec", "group_zscore(quantile(ts_backfill(vec_avg(nws12_prez_short_interest), 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # SUM of news_si + vec_avg(mainz) - max temporal coverage densification
+        ("si_combo_dense", "group_zscore(quantile(add(ts_backfill(news_short_interest, 22), ts_backfill(vec_avg(nws12_mainz_short_interest), 22))), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe71: pivot AGAIN - news_short_interest direction structurally blocked
     # (CONCENTRATED_WEIGHT 0.25 on 2021-05-05 won't move below 0.10). New
     # direction: "growth/financing/momentum stack" - explicit POLAR OPPOSITE
