@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe60: 5-leg vqcr_pv_r2_d6 plateaued at SH 1.83 / FIT 1.27. To cross 2.0
+    # while staying simple, try (a) the cheapest 6th academic leg - investor
+    # sentiment (Baker-Wurgler 2006) OR news drift (Tetlock 2007) - and
+    # (b) structural levers: smaller universe (TOP1000), tighter truncation,
+    # deeper decay. Find the SMALLEST set of academic legs that hits 8/8.
+    "newfam_probe60": [
+        # 6-leg: + investor sentiment (Baker-Wurgler social-value)
+        ("vqcr_pv_snt", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(snt_social_value, market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 6-leg: + news drift (Tetlock 2007 news under-reaction)
+        ("vqcr_pv_news", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_backfill(news_indx_perf, 20), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 5-leg on TOP1000 (smaller, denser universe)
+        ("vqcr_pv_t1000", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP1000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 5-leg with tighter truncation 0.05 (more conviction concentration)
+        ("vqcr_pv_t05", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 6}),
+        # 5-leg with decay 8 (smoother turnover, extract lagged signal)
+        ("vqcr_pv_d8", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 8}),
+        # 5-leg SUBINDUSTRY whole-expression neutralization (vs MARKET)
+        ("vqcr_pv_sub", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY', 'decay': 6}),
+    ],
     # probe59: extend vqcr25 (1.81, 4-leg) with one more academic anomaly to clear 2.0.
     # Strongest addition is price-volume corr (Amihud-style illiquidity reversal,
     # Brennan-Subrahmanyam): high price-volume comovement = informed buying =
