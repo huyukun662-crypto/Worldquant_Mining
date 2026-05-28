@@ -1,0 +1,63 @@
+{
+  "victory": "Third factor QPEbvP7w SUBMITTED at delay=1 — HTTP 201 ACCEPTED, status=ACTIVE",
+  "alpha_id": "QPEbvP7w",
+  "submission_response": "HTTP 201 on POST /alphas/QPEbvP7w/submit",
+  "metrics": {
+    "IS_Sharpe": 1.95,
+    "IS_Fitness": 1.47,
+    "IS_Turnover": 0.1485,
+    "Sub_Universe_Sharpe": 1.03,
+    "status": "ACTIVE"
+  },
+  "gates_passed": {
+    "LOW_SHARPE": "PASS (1.95 > 1.25 limit, margin +0.70)",
+    "LOW_FITNESS": "PASS (1.47 > 1.0 limit, margin +0.47)",
+    "LOW_TURNOVER": "PASS",
+    "HIGH_TURNOVER": "PASS",
+    "CONCENTRATED_WEIGHT": "PASS",
+    "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.03 > 0.84 limit, margin +0.19)",
+    "SELF_CORRELATION": "PENDING (OS check, resolves at competition close)",
+    "MATCHES_COMPETITION": "PASS"
+  },
+  "recipe": {
+    "expression": "signed_power(group_rank(add(add(add(add(add(add(add(multiply(winsorize(group_zscore(divide(close, ts_mean(close, 10)), industry), std=4), -1.5), multiply(winsorize(group_zscore(ts_delta(ts_backfill(est_epsr, 120), 66), industry), std=4), 3.0)), multiply(winsorize(group_zscore(ts_backfill(divide(est_epsr, close), 120), industry), std=4), 0.3)), multiply(winsorize(group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), industry), std=4), 4.0)), multiply(winsorize(group_zscore(ts_backfill(divide(est_ebit, est_tot_assets), 120), industry), std=4), 3.0)), multiply(winsorize(group_zscore(ts_backfill(divide(est_netprofit, est_tot_assets), 120), industry), std=4), 1.5)), multiply(if_else(is_nan(winsorize(group_zscore(ts_mean(ts_backfill(snt_social_value, 22), 22), industry), std=4)), 0, winsorize(group_zscore(ts_mean(ts_backfill(snt_social_value, 22), 22), industry), std=4)), 0.5)), multiply(if_else(is_nan(winsorize(group_zscore(rel_ret_all, industry), std=4)), 0, winsorize(group_zscore(rel_ret_all, industry), std=4)), -1.0)), industry), 3.0)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 3,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON"
+    },
+    "economic_interpretation": "INDUSTRY-neutral 8-term composite cross-sectionally ranked then power-amplified (sp=3.0): (1) 10d MA reversal x-1.5, (2) analyst EPS revision momentum x3.0, (3) earnings yield x0.3, (4) book yield x4.0 (dominant), (5) EBIT operating quality x3.0, (6) net-profit quality ROA x1.5, (7) social media sentiment x0.5, (8) peer reversion x-1.0. delay=1 settlement window vs delay=0."
+  },
+  "journey_summary": {
+    "batches_run": 33,
+    "simulations": 233,
+    "D0_SH_ceiling_independent": 1.80,
+    "D0_strict_gate": "SH 2.0 (Submit Alpha endpoint returns HTTP 403 for A1kNgpwW)",
+    "key_breakthroughs": [
+      "INDUSTRY neutralization +0.07 SH",
+      "Heavy value weights (BY x4) +0.12 SH",
+      "rank() transform +0.17 SH (push13)",
+      "signed_power(rank, .) +0.10 SH (push15)",
+      "+ ROA quality +0.04 SH (push19)",
+      "group_rank vs rank +0.03 SH (push25)",
+      "FINAL: delay=1 setting unlocks SH 1.95 from same recipe"
+    ],
+    "what_failed": [
+      "Push29: VWAP/news-drift/low-vol — diluted SH 1.36-1.61",
+      "Push30: SUBINDUSTRY on this composite — SH 1.46-1.57",
+      "Push31: pure SI momentum — SH 0.16-0.78 (no alpha)",
+      "Push32: insider fields — unavailable D0 TOP3000",
+      "Push33: nws12 event fields — incompatible operators"
+    ]
+  },
+  "now_3_submitted_factors": [
+    {"id": "9qJ7V2GK", "SH": 2.22, "FIT": 1.56, "delay": 0},
+    {"id": "88nl8wAV", "SH": 2.57, "FIT": 1.70, "delay": 0},
+    {"id": "QPEbvP7w", "SH": 1.95, "FIT": 1.47, "delay": 1}
+  ]
+}
