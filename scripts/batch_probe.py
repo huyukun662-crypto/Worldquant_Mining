@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe66: si concentration spike on 2021-05-05 is STRUCTURAL - news_short_interest
+    # has thin coverage on that single date, no transform of si fixes it. Need a
+    # DENSE filler leg (full PV coverage) to dilute concentration on the bad date.
+    # Candidates: Bali (2011) skewness reversal, ts_kurtosis lottery reversal -
+    # PV-dense, behavioral, orthogonal to prior value/quality/news direction.
+    # Best probe65: si_qntl SH 2.24 / FIT 3.61 - take it as the base.
+    "newfam_probe66": [
+        # si_qntl + Bali skewness reversal (dense, behavioral lottery anomaly)
+        ("si_qntl_skew", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(ts_skewness(returns, 22), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + Bali kurtosis reversal (fat-tail proxy)
+        ("si_qntl_kurt", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(ts_kurtosis(returns, 22), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + Bali skew + CMA (3-leg, both orthogonal, dense skew filler)
+        ("si_skew_cma", "add(add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(ts_skewness(returns, 22), market), -1)), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + dense ts_zscore(returns,60) filler at 0.5x (cheap dense leg just for concentration)
+        ("si_qntl_zret", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(ts_zscore(returns, 60), market), -0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Skewness reversal SOLO (test how strong this leg is on its own)
+        ("skew_solo", "multiply(group_zscore(ts_skewness(returns, 22), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Kurtosis reversal SOLO (compare strength vs skewness)
+        ("kurt_solo", "multiply(group_zscore(ts_kurtosis(returns, 22), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe65: root cause = even si_pos_rk standalone fails CONCENTRATED_WEIGHT
     # on 2021-05-05 (0.132 > 0.1 limit). The spike is in the short_interest
     # field on that date, not from CMA. Fix the si leg itself: smooth
