@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe84: drift_bfl (drift120 + snt_buzz_bfl) = SH 1.78 - removing snt_buzz
+    # LIFTED. bfl is the orthogonal social signal. Push with various dense 3rd legs.
+    "newfam_probe84": [
+        # drift_bfl + drift90 (multi-window)
+        ("dbf_d90", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(news_pct_90min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl + rel_ret_all (supply-chain peer)
+        ("dbf_relret", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(rel_ret_all, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl + news_high_exc_stddev (Sharpe-like)
+        ("dbf_hiexc", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(news_high_exc_stddev, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl + news_post_vwap/close
+        ("dbf_postvwap", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(divide(news_post_vwap, close), 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl + ts_corr(close,volume,20) inverted (PV illiquidity reversal)
+        ("dbf_pvcorr", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl + drift120 at 1.5x weight (boost dominant leg)
+        ("dbf_drift15", "add(multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 1.5), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe83: bbd_buzz05 SH 1.75 - lowering buzz weight LIFTED SH. drift
     # is the dominant leg. Push further by reducing buzz/bfl weights and
     # exploring drift-dominated stacks.
