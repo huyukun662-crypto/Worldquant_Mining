@@ -215,6 +215,17 @@ BATCHES = {
     # probe54: SOFTER regularization on net-issuance (raw 1.01 conc-fail, full-rank 0.52). signed_power
     # (sqrt/cube-root tail shrink) and aggressive winsorize (std 1/1.5/2) - retain more strength
     # while passing concentration. Find best SH that clears CONCENTRATED_WEIGHT.
+    # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
+    # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
+    # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    "newfam_probe55": [
+        ("accruals", "group_zscore(winsorize(divide(subtract(ts_backfill(cashflow_op,120), ts_backfill(income,120)), ts_backfill(est_tot_assets,120)), std=4), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("accruals_rk", "group_zscore(rank(divide(subtract(ts_backfill(cashflow_op,120), ts_backfill(income,120)), ts_backfill(est_tot_assets,120))), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("accr_ind", "group_zscore(winsorize(divide(subtract(ts_backfill(cashflow_op,120), ts_backfill(income,120)), ts_backfill(est_tot_assets,120)), std=4), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'INDUSTRY'}),
+        ("div_yield", "group_zscore(winsorize(divide(ts_backfill(dividend, 120), cap), std=4), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("earn_yield", "group_zscore(winsorize(divide(ts_backfill(income, 120), cap), std=4), market)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+        ("accr_div", "add(group_zscore(winsorize(divide(subtract(ts_backfill(cashflow_op,120), ts_backfill(income,120)), ts_backfill(est_tot_assets,120)), std=4), market), group_zscore(winsorize(divide(ts_backfill(dividend, 120), cap), std=4), market))", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
+    ],
     "newfam_probe54": [
         ("iss_sp05", "multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
         ("iss_sp03", "multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.3), market), -1)", {'delay': 0, 'decay': 6, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET'}),
