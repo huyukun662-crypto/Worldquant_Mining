@@ -1,0 +1,34 @@
+{
+  "summary": "SECOND submittable competition-grade D0 factor, found via genetic algorithm. delay=0, non-IV. Passes ALL 8 IQC2026S2 gates via official /check including SELF_CORRELATION 0.481 (<0.7, vs submitted pool incl 9qJ7V2GK) and MATCHES_COMPETITION. STRONGER than 9qJ7V2GK (SH 2.57 vs 2.22, FIT 1.70 vs 1.56).",
+  "alpha_id": "88nl8wAV",
+  "expression": "add(add(add(add(multiply(if_else(is_nan(group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry)), group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), group_zscore(ts_mean(ts_backfill(news_short_interest, 22), 22), subindustry)), 2.5), multiply(group_zscore(ts_mean(ts_backfill(news_pct_90min, 5), 10), subindustry), 1.5)), multiply(group_zscore(ts_delta(close, 5), subindustry), -1.3)), multiply(if_else(is_nan(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry)), 0, group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry)), 1)), multiply(group_zscore(ts_mean(ts_backfill(vec_avg(nws18_qcm), 22), 22), subindustry), -1.3))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 0,
+    "decay": 4,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.05,
+    "pasteurization": "ON",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "language": "FASTEXPR",
+    "visualization": false,
+    "maxTrade": "OFF",
+    "testPeriod": "P0Y0M"
+  },
+  "check_official": {
+    "LOW_SHARPE": "PASS 2.57>2.0",
+    "LOW_FITNESS": "PASS 1.70>1.3",
+    "LOW_TURNOVER": "PASS 0.236",
+    "HIGH_TURNOVER": "PASS 0.236<0.7",
+    "CONCENTRATED_WEIGHT": "PASS",
+    "LOW_SUB_UNIVERSE_SHARPE": "PASS 1.51>1.11",
+    "SELF_CORRELATION": "PASS 0.481<0.7",
+    "MATCHES_COMPETITION": "PASS"
+  },
+  "discovery": "GA evolved pw8Nvpjb (SI diluted by 10 orthogonal signals -> SH1.99/FIT2.16 but CONC-fail because add() propagates NaN -> book=sparse intersection). Densified: if_else-fill short_interest NaN with news drift + fill earnings-yield NaN with 0, dropped sparse pe/peer/social -> full book -> CONC PASS while SH/FIT rose to 2.57/1.70.",
+  "composition": "densified short_interest (x2.5, NaN-filled with news drift) + news post-event drift (x1.5) + 5d price reversal (x-1.3) + forward earnings-yield (NaN-filled) + Ravenpack news sentiment (x-1.3). delay=0, SUBINDUSTRY, decay4, trunc0.05. Non-IV.",
+  "note": "Manual daily-PnL-diff corr proxy gave 0.803, but WQ OFFICIAL SELF_CORRELATION (authoritative gate) = 0.481 PASS. The official check is the submittability authority."
+}

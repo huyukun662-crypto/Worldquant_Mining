@@ -77,12 +77,11 @@ def main():
         with open(slice_path, "w") as f:
             json.dump(fields, f)
         log.info(f"slice saved: {slice_path} ({len(fields)} fields)")
+        # Union by distinct field id - keep the first slice's record. Earlier
+        # versions keyed by (id, region, universe, delay) which retained
+        # duplicates of the same field across slices and inflated the count.
         for fld in fields:
-            key = (fld.get("id"),
-                   fld.get("region"),
-                   fld.get("universe"),
-                   fld.get("delay"))
-            union[key] = fld
+            union.setdefault(fld.get("id"), fld)
 
     union_fields = list(union.values())
     out_path = cache_dir / f"data_fields_union_USA.json"
