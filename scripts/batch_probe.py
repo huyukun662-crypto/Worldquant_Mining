@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe77: TWO parallel attacks. (a) tune buzz_drift with rank/quantile/
+    # zscore transforms to look for hidden SH lift; (b) NEW fundamental quality
+    # ratios that the prior pool didn't touch: operating margin (Novy-Marx
+    # cousin), asset turnover (Dupont), accrual (Sloan), SGA leverage. All
+    # academic anomalies, all distinct from value/quality direction in mega.
+    "newfam_probe77": [
+        # buzz_drift with both legs rank-transformed
+        ("bd_rank", "add(group_zscore(rank(ts_backfill(snt_buzz, 22)), market), group_zscore(rank(ts_backfill(news_pct_120min, 22)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift with quantile transforms (uniform-bounded)
+        ("bd_qntl", "add(group_zscore(quantile(ts_backfill(snt_buzz, 22)), market), group_zscore(quantile(ts_backfill(news_pct_120min, 22)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift with ts_zscore (60d) - mean-revert each signal
+        ("bd_tszsc", "add(group_zscore(ts_zscore(ts_backfill(snt_buzz, 22), 60), market), group_zscore(ts_zscore(ts_backfill(news_pct_120min, 22), 60), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Operating margin (oibdp/revt) - Novy-Marx-like quality but on operating, not gross
+        ("op_margin", "group_zscore(rank(ts_backfill(divide(fnd6_oibdp, fnd6_revt), 120)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Asset turnover (revt/at) - Dupont efficiency
+        ("asset_turn", "group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Sloan accrual via fnd6 (working capital change vs total assets)
+        ("sloan_wc", "multiply(group_zscore(rank(ts_backfill(divide(subtract(subtract(fnd6_act, fnd6_lct), ts_delay(subtract(fnd6_act, fnd6_lct), 252)), fnd6_at), 120)), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe76: buzz_drift = 1.63 (2-leg). Need 3rd dense orthogonal leg to push
     # past 2.0. mom_12_1 (0.28) is opposite to STR in prior pool, explicitly
     # orthogonal. iss_solo (1.01, signed_power 0.5 net-issuance) is different
