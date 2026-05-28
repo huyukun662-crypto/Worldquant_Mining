@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe82: 3-leg buzz_drift_bfl = 1.70 capped. Try structural variations:
+    # weight rebalance, asymmetric decay, truncation/universe/neutralization.
+    "newfam_probe82": [
+        # buzz_drift_bfl + drift at 2x weight (lift dense news signal)
+        ("bbd_drift2x", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 2)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift_bfl + tighter truncation 0.05
+        ("bbd_t05", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift_bfl + decay 10
+        ("bbd_d10", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 10}),
+        # buzz_drift_bfl + SECTOR neutralization
+        ("bbd_sector", "add(add(group_zscore(ts_backfill(snt_buzz, 22), sector), group_zscore(ts_backfill(news_pct_120min, 22), sector)), group_zscore(ts_backfill(snt_buzz_bfl, 22), sector))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SECTOR', 'decay': 6}),
+        # buzz_drift_bfl on TOP1000 (less noise)
+        ("bbd_t1000", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP1000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift_bfl + buzz at 0.5x (let drift dominate)
+        ("bbd_buzz05", "add(add(multiply(group_zscore(ts_backfill(snt_buzz, 22), market), 0.5), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe81: buzz_drift_bfl = 1.70 (4-buzz family stack), 0.30 from 2.0.
     # Push 4-leg buzz family + drift + add more buzz/sentiment cousins.
     "newfam_probe81": [
