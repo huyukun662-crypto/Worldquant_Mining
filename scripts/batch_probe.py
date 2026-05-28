@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe97: SUB blocked at ~37% of overall SH for dense-only stacks.
+    # New idea: take Grkdm5wZ 6-leg mega structure (val+GP+CFO+PVcorr+STR+news)
+    # which passed 8/8 originally, and SWAP the news leg for snt_buzz_bfl
+    # (different risk source). Keeps multi-leg structure (good SUB coverage)
+    # but reduces overlap with original portfolio.
+    "newfam_probe97": [
+        # Grkdm5wZ structure + snt_buzz_bfl instead of news_indx_perf
+        ("mega_buzz", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Same as above + smoothing on buzz
+        ("mega_buzz_sm", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Grkdm5wZ structure with BOTH news AND buzz_bfl added (7-leg)
+        ("mega_both", "add(add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_backfill(news_indx_perf, 20), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Replace news_indx_perf with news_pct_120min in original mega
+        ("mega_pct120", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Drop value+quality from mega, keep PV+reversal+news+buzz (4-leg)
+        ("mega_lite", "add(add(add(multiply(group_zscore(ts_corr(close, volume, 20), market), -1), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # mega_buzz_sm at decay 4 (faster)
+        ("mega_buzz_sm_d4", "add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2)), group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+    ],
     # probe96: 35+ probes plateau at 6/8 (SUB blocked). Last-chance output
     # transforms: ts_mean wrapper, quantile, winsorize before zscore.
     "newfam_probe96": [
