@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe85: drift_bfl = 1.78 is the new ceiling. Try bfl weight variations
+    # and different drift-window bases (60min, 30min) paired with bfl.
+    "newfam_probe85": [
+        # drift_bfl with bfl at 1.5x weight
+        ("dbf_bfl15", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 1.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl with bfl at 2x weight
+        ("dbf_bfl2x", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # bfl + news_pct_60min (different drift window base)
+        ("d60_bfl", "add(group_zscore(ts_backfill(news_pct_60min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # bfl + news_pct_30min
+        ("d30_bfl", "add(group_zscore(ts_backfill(news_pct_30min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl decay 4 (faster)
+        ("dbf_d4", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # drift_bfl decay 2 (very fast)
+        ("dbf_d2", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+    ],
     # probe84: drift_bfl (drift120 + snt_buzz_bfl) = SH 1.78 - removing snt_buzz
     # LIFTED. bfl is the orthogonal social signal. Push with various dense 3rd legs.
     "newfam_probe84": [
