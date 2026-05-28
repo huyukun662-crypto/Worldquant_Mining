@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe93: SUB limit scales with overall SH. Try different universes
+    # (TOP500/1000) where sub-test threshold differs, and explore alternative
+    # 2-leg combinations using snt_buzz_ret or scl12_buzz instead of bfl.
+    "newfam_probe93": [
+        # d1_smbfl10_b06 on TOP500 (smaller universe, different SUB cut)
+        ("b06_t500", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.6))", {'delay': 0, 'universe': 'TOP500', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1_smbfl10_b06 on TOP1000
+        ("b06_t1000", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.6))", {'delay': 0, 'universe': 'TOP1000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # snt_buzz_ret + drift (replace bfl with ret variant)
+        ("d1_buzzret_b05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_ret, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # scl12_buzz + drift (different social vehicle)
+        ("d1_sclbuzz_b05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(scl12_buzz, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # snt_buzz (no bfl, but original buzz with smoothing)
+        ("d1_buzz_sm10", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1_smbfl10_b06 + SUBINDUSTRY neut (try once more with bigger weight)
+        ("b06_sub", "add(group_zscore(ts_backfill(news_pct_120min, 22), subindustry), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), subindustry), 0.6))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY', 'decay': 1}),
+    ],
     # probe92: SUB limit scales with overall SH (2.34 -> limit 1.01). Try
     # medium-Sharpe variants where SUB limit may drop enough to pass.
     # Also test ts_decay_linear on drift to smooth.
