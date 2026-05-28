@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe64: si_cma is SH 2.20 / FIT 3.35 / 7 of 8 - only CONCENTRATED_WEIGHT
+    # fails on 2021-05-05 (0.206 vs 0.1 limit, single-day spike from the CMA
+    # asset-growth leg which uses winsorize std=4). Fix the CMA leg concentration:
+    # rank() bounding, tighter winsorize std=2, smaller CMA weight, tighter
+    # truncation. Keep the SH/FIT.
+    "newfam_probe64": [
+        # rank the CMA leg (uniform bounded weights) - cleanest fix
+        ("si_cma_rk", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252))), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # tighter winsorize std=2 on CMA leg (allows some non-uniformity, less aggressive than rank)
+        ("si_cma_w2", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # CMA weight 0.5x - dampen the leg that causes concentration
+        ("si_cma_w05", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=4), market), -1), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # rank CMA + truncation=0.05 (belt-and-suspenders)
+        ("si_cma_rk_t05", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252))), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 6}),
+        # rank CMA + decay 4 (capture asset growth changes faster)
+        ("si_cma_rk_d4", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252))), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # winsorize std=2 + truncation=0.05 (allow some signal, cap any spike)
+        ("si_cma_w2_t05", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe63: si_pos_rk standalone = SH 1.82 / FIT 2.47 / TO 0.086. To clear 2.0
     # without re-overlap, either (a) tune si alone via decay/neut/window, or
     # (b) pair with a SECOND strong orthogonal signal. Try analyst-revision
