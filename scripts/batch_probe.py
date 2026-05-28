@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe69: short_interest direction blocked by 2021-05-05 concentration spike
+    # (sparse coverage). Pivot AGAIN - explore dense news12 fields not in prior
+    # direction. news_pct_120min (cov 0.91, 234 users), news_atr14 (49 users),
+    # news_max_dn_ret (30 users), news_eps_actual (PEAD-rebuilt) - all dense
+    # enough to skip concentration spike, all distinct from the prior pool.
+    # Test both signs of news drift (continuation vs reversal).
+    "newfam_probe69": [
+        # News drift 120min (continuation - buy what moves up)
+        ("drift120_pos", "group_zscore(ts_backfill(news_pct_120min, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # News drift 120min REVERSAL (sell what jumped, over-reaction unwind)
+        ("drift120_neg", "multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # News drift 90min (faster - more immediate reaction)
+        ("drift90_pos", "group_zscore(ts_backfill(news_pct_90min, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # ATR-based low-vol (news_atr14 inverted - BAB on news events)
+        ("atr_lowvol", "multiply(group_zscore(rank(ts_backfill(news_atr14, 22)), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # PEAD via dense news_eps_actual / close (price-normalized, unit-safe)
+        ("pead_dense", "group_zscore(ts_backfill(divide(news_eps_actual, close), 120), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Maximum down-move after news (panic indicator, reversal)
+        ("maxdn_rev", "multiply(group_zscore(ts_backfill(news_max_dn_ret, 22), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe68: dense fillers all hurt the 2.24 base. Two cleaner paths to fix
     # the 2021-05-05 coverage gap: (a) alternative SI fields - news12 has
     # nws12_mainz_short_interest (cov 0.8636) and nws12_prez_short_interest
