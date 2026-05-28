@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe68: dense fillers all hurt the 2.24 base. Two cleaner paths to fix
+    # the 2021-05-05 coverage gap: (a) alternative SI fields - news12 has
+    # nws12_mainz_short_interest (cov 0.8636) and nws12_prez_short_interest
+    # (cov 0.8115, pre-market) measuring the same metric at different times,
+    # avg of all three should densify coverage; (b) group_backfill with explicit
+    # lookback to fill from subindustry peer median when own value is NaN.
+    "newfam_probe68": [
+        # alt SI field: mainz (cov 0.8636, marginally denser)
+        ("si_mainz", "group_zscore(quantile(ts_backfill(nws12_mainz_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # alt SI field: pre-market (different temporal coverage)
+        ("si_prez", "group_zscore(quantile(ts_backfill(nws12_prez_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # AVG of 3 SI variants (any one non-NaN -> avg non-NaN) for denser coverage
+        ("si_avg3", "group_zscore(quantile(divide(add(add(ts_backfill(news_short_interest, 22), ts_backfill(nws12_mainz_short_interest, 22)), ts_backfill(nws12_prez_short_interest, 22)), 3)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # group_backfill via subindustry peer median, lookback 5
+        ("si_grpbf5", "group_zscore(quantile(group_backfill(ts_backfill(news_short_interest, 22), subindustry, 5)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # group_backfill lookback 22
+        ("si_grpbf22", "group_zscore(quantile(group_backfill(ts_backfill(news_short_interest, 22), subindustry, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # avg3 + CMA (best base SI + asset growth orthogonal stack)
+        ("si_avg3_cma", "add(group_zscore(quantile(divide(add(add(ts_backfill(news_short_interest, 22), ts_backfill(nws12_mainz_short_interest, 22)), ts_backfill(nws12_prez_short_interest, 22)), 3)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe67: ts_skewness/ts_kurtosis inaccessible. The 0.236 concentration value
     # across all variants strongly implies coverage gap: ~4 names have positions on
     # 2021-05-05 (1/0.236 ~= 4.2). Two attacks: (a) group_backfill fills via peer
