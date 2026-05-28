@@ -218,6 +218,27 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe73: pivot to ANALYST category (90 dense fields, barely touched).
+    # Analyst-based anomalies are well-documented AND likely orthogonal to the
+    # prior value/quality/news direction (different information source: sell-side
+    # forecasts/recommendations rather than fundamentals/price/news).
+    # Candidates: Diether-Malloy-Scherbina (2002) dispersion, Womack (1996)
+    # revisions breadth, Jegadeesh-Kim (2006) recommendation changes,
+    # Bhushan (1989) coverage breadth.
+    "newfam_probe73": [
+        # Forecast revisions breadth (Womack 1996): (up - down) / numest, positive sign
+        ("anl_breadth", "group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Forecast revisions breadth FLIPPED
+        ("anl_breadth_neg", "multiply(group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # EPS estimate momentum (current EPS estimate / EPS estimate 60d ago)
+        ("anl_eps_mom", "group_zscore(divide(ts_backfill(est_epsr, 120), ts_delay(ts_backfill(est_epsr, 120), 60)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Analyst coverage breadth (number of estimates - cold-stock premium, low coverage)
+        ("anl_coverage_neg", "multiply(group_zscore(rank(vec_avg(anl4_basicconaf_numest)), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Net profit estimate / cap (analyst-implied earnings yield, distinct from realized E/P)
+        ("anl_est_ey", "group_zscore(ts_backfill(divide(est_netprofit, cap), 120), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 2-leg: revisions breadth + EPS momentum (both forecast-dynamics signals)
+        ("anl_2leg", "add(group_zscore(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), market), group_zscore(divide(ts_backfill(est_epsr, 120), ts_delay(ts_backfill(est_epsr, 120), 60)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe72: last-chance attacks on si concentration. (a) Extreme truncation
     # 0.02-0.04 to externally cap each position. With truncation=0.02 even 50
     # names at 2% each = H-index 0.02, well below 0.10 limit. SH should
