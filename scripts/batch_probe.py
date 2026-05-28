@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe76: buzz_drift = 1.63 (2-leg). Need 3rd dense orthogonal leg to push
+    # past 2.0. mom_12_1 (0.28) is opposite to STR in prior pool, explicitly
+    # orthogonal. iss_solo (1.01, signed_power 0.5 net-issuance) is different
+    # category (financing) than buzz (sentiment) and drift (news). Also try
+    # weight rebalancing (drift x 1.5) and decay variation.
+    "newfam_probe76": [
+        # 3-leg: buzz + drift + 12-1 momentum (explicitly opposite of STR)
+        ("bdm_mom", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: buzz + drift + iss_solo (signed_power 0.5 net-issuance)
+        ("bdi_iss", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg: buzz + drift + mom + iss (all orthogonal directions)
+        ("bdmi_4leg", "add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market)), multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift at higher decay (10) - smoother
+        ("bd_d10", "add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 10}),
+        # buzz_drift with drift120 at 1.5x weight (drift is denser)
+        ("bd_drift15", "add(group_zscore(ts_backfill(snt_buzz, 22), market), multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 1.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz_drift with snt_buzz at 1.5x weight (buzz is slightly stronger standalone)
+        ("bd_buzz15", "add(multiply(group_zscore(ts_backfill(snt_buzz, 22), market), 1.5), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe75: snt_buzz at SH 1.04 / cov 1.0 is the find. Tune it and stack
     # with drift120 (SH 0.98, also cov 1.0). Both dense -> no concentration
     # risk by construction. If they're orthogonal stacking should clear 2.0
