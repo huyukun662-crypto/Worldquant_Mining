@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe67: ts_skewness/ts_kurtosis inaccessible. The 0.236 concentration value
+    # across all variants strongly implies coverage gap: ~4 names have positions on
+    # 2021-05-05 (1/0.236 ~= 4.2). Two attacks: (a) group_backfill fills via peer
+    # median when own value is NaN; (b) TINY-weight dense filler (0.05-0.1x) so all
+    # names get non-zero positions without signal interference. Try BAB low-vol
+    # (documented anomaly) and rank(adv20) as candidate dense fillers.
+    "newfam_probe67": [
+        # group_backfill via subindustry peer median (fills sparse names)
+        ("si_grpbf", "group_zscore(quantile(group_backfill(ts_backfill(news_short_interest, 22), subindustry)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + low-vol BAB at TINY 0.1x weight (just to fill positions)
+        ("si_qntl_lvol01", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(historical_volatility_60), market), -0.1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + low-vol at 0.2x
+        ("si_qntl_lvol02", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(historical_volatility_60), market), -0.2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + rank(cap) size-reversal at 0.1x (small-cap premium filler)
+        ("si_qntl_size", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(cap), market), -0.1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + amihud illiquidity at 0.2x (rank of abs(returns)/dollar_volume, dense)
+        ("si_qntl_amh", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(rank(divide(abs(returns), multiply(close, volume))), market), 0.2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # group_backfill + CMA combo (peer fill + asset growth)
+        ("si_grpbf_cma", "add(group_zscore(quantile(group_backfill(ts_backfill(news_short_interest, 22), subindustry)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe66: si concentration spike on 2021-05-05 is STRUCTURAL - news_short_interest
     # has thin coverage on that single date, no transform of si fixes it. Need a
     # DENSE filler leg (full PV coverage) to dilute concentration on the bad date.
