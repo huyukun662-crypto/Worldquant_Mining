@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe80: buzz_drift = 1.63 is a local max - no 3rd leg helps. Try
+    # untested cov-1.0 fields solo (snt_buzz_bfl, scl12_buzz solo) and
+    # weight/decay rebalancing of the buzz_drift stack.
+    "newfam_probe80": [
+        # snt_buzz_bfl solo (47 users, cov 1.0, never tested)
+        ("buzz_bfl", "group_zscore(ts_backfill(snt_buzz_bfl, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # scl12_buzz solo (137 users, cov 1.0)
+        ("scl_buzz", "group_zscore(ts_backfill(scl12_buzz, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_buzz at 2x weight + drift120 (boost stronger leg)
+        ("buzz2x_drift", "add(multiply(group_zscore(ts_backfill(snt_buzz, 22), market), 2), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_buzz + drift120 + snt_buzz_bfl (3-leg buzz family)
+        ("buzz_drift_bfl", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz smoothed via ts_decay_linear before stacking
+        ("buzz_decay_drift", "add(group_zscore(ts_decay_linear(ts_backfill(snt_buzz, 22), 10), market), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz + drift + scl12_buzz (3-leg different social vehicle)
+        ("buzz_drift_scl", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(scl12_buzz, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe79: stack buzz_drift (1.63) with various DENSE 3rd legs to push past 2.0.
     # Each 3rd leg is high-coverage (cov 0.95+), distinct signal type.
     "newfam_probe79": [
