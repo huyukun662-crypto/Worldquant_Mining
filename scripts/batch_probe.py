@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe70: KEY INSIGHT - si (sparse) + drift120 (dense) are both positive-
+    # direction predictors. Stacking them at proper weights should ADD Sharpe AND
+    # dilute the 2021-05-05 concentration spike with drift120's dense coverage.
+    # Better than the probe67 fillers because drift120 has standalone SH 0.98
+    # (not noise), so weight allocation to it doesn't waste book.
+    "newfam_probe70": [
+        # si_qntl + drift120 at 1:1 weight
+        ("si_drift_11", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + drift120 at 2:1 (favor stronger leg)
+        ("si_drift_21", "add(multiply(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), 2), group_zscore(ts_backfill(news_pct_120min, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + drift120 + CMA (3-leg, CMA negative direction adds another orthogonal)
+        ("si_drift_cma", "add(add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + drift120 + maxdn_rev (3-leg, all positive-direction)
+        ("si_drift_maxdn", "add(add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(ts_backfill(news_max_dn_ret, 22), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift120 + mom_12_1 (no SI - test if dense-only stack reaches 2.0)
+        ("drift_mom", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_qntl + drift120 at 1:2 (give dense filler more weight to crush concentration)
+        ("si_drift_12", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe69: short_interest direction blocked by 2021-05-05 concentration spike
     # (sparse coverage). Pivot AGAIN - explore dense news12 fields not in prior
     # direction. news_pct_120min (cov 0.91, 234 users), news_atr14 (49 users),
