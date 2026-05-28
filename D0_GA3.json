@@ -14,17 +14,47 @@
         "alpha_id": "1YJx6kk6",
         "passed": false
       }
+    },
+    {
+      "gen": 1,
+      "best_fit": 1.2384615384615385,
+      "best": {
+        "fit": 1.2384615384615385,
+        "expr": "add(add(multiply(winsorize(group_zscore(divide(close, ts_mean(close, 10)), subindustry), std=4), -1.5), multiply(winsorize(group_zscore(ts_delta(ts_backfill(est_epsr, 120), 66), subindustry), std=4), 1.0)), multiply(winsorize(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), std=4), 0.5))",
+        "sharpe": 1.0,
+        "fitness": 0.57,
+        "turnover": 0.2653,
+        "conc": true,
+        "corr": 0.132,
+        "alpha_id": "1YJx6kk6",
+        "passed": false
+      }
+    },
+    {
+      "gen": 2,
+      "best_fit": 1.3453846153846156,
+      "best": {
+        "fit": 1.3453846153846156,
+        "expr": "add(add(add(add(multiply(winsorize(group_zscore(ts_delta(close, 5), subindustry), std=4), -2), multiply(winsorize(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), std=4), 0.7)), multiply(winsorize(group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), subindustry), std=4), 2)), multiply(winsorize(group_zscore(ts_delta(ts_backfill(est_epsr, 120), 66), subindustry), std=4), 1.8)), multiply(winsorize(group_zscore(ts_backfill(divide(est_netprofit, est_tot_assets), 120), subindustry), std=4), -1.5))",
+        "sharpe": 1.06,
+        "fitness": 0.67,
+        "turnover": 0.1909,
+        "conc": true,
+        "corr": 0.416,
+        "alpha_id": "LLk9bmom",
+        "passed": false
+      }
     }
   ],
   "best": {
-    "fit": 1.2384615384615385,
-    "expr": "add(add(multiply(winsorize(group_zscore(divide(close, ts_mean(close, 10)), subindustry), std=4), -1.5), multiply(winsorize(group_zscore(ts_delta(ts_backfill(est_epsr, 120), 66), subindustry), std=4), 1.0)), multiply(winsorize(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), std=4), 0.5))",
-    "sharpe": 1.0,
-    "fitness": 0.57,
-    "turnover": 0.2653,
+    "fit": 1.3453846153846156,
+    "expr": "add(add(add(add(multiply(winsorize(group_zscore(ts_delta(close, 5), subindustry), std=4), -2), multiply(winsorize(group_zscore(ts_backfill(divide(est_epsr, close), 120), subindustry), std=4), 0.7)), multiply(winsorize(group_zscore(ts_backfill(divide(est_bookvalue_ps, close), 120), subindustry), std=4), 2)), multiply(winsorize(group_zscore(ts_delta(ts_backfill(est_epsr, 120), 66), subindustry), std=4), 1.8)), multiply(winsorize(group_zscore(ts_backfill(divide(est_netprofit, est_tot_assets), 120), subindustry), std=4), -1.5))",
+    "sharpe": 1.06,
+    "fitness": 0.67,
+    "turnover": 0.1909,
     "conc": true,
-    "corr": 0.132,
-    "alpha_id": "1YJx6kk6",
+    "corr": 0.416,
+    "alpha_id": "LLk9bmom",
     "passed": false
   }
 }
