@@ -218,6 +218,24 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe78: stack buzz_drift (1.63, sentiment+news) with NEW orthogonal
+    # quality signals from probe77. asset_turn (0.93) is slow + orthogonal,
+    # sloan_wc (0.82) is accrual quality. Test 3-leg and 4-leg combinations
+    # with quality leg at various weights. Target SH >= 2.0 + 8/8.
+    "newfam_probe78": [
+        # 3-leg: buzz + drift + asset_turn
+        ("bda_turn", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: buzz + drift + asset_turn at 1.5x
+        ("bda_turn15", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market), 1.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: buzz + drift + sloan_wc
+        ("bds_sloan", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(rank(ts_backfill(divide(subtract(subtract(fnd6_act, fnd6_lct), ts_delay(subtract(fnd6_act, fnd6_lct), 252)), fnd6_at), 120)), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg: buzz + drift + asset_turn + sloan_wc
+        ("bdas_4leg", "add(add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market)), multiply(group_zscore(rank(ts_backfill(divide(subtract(subtract(fnd6_act, fnd6_lct), ts_delay(subtract(fnd6_act, fnd6_lct), 252)), fnd6_at), 120)), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: buzz + drift + anl_est_ey (0.75 standalone, analyst earnings yield)
+        ("bda_ey", "add(add(group_zscore(ts_backfill(snt_buzz, 22), market), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(ts_backfill(divide(est_netprofit, cap), 120), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: buzz at 1.5x + drift + asset_turn (boost strongest leg)
+        ("bda_b15", "add(add(multiply(group_zscore(ts_backfill(snt_buzz, 22), market), 1.5), group_zscore(ts_backfill(news_pct_120min, 22), market)), group_zscore(rank(ts_backfill(divide(fnd6_revt, fnd6_at), 120)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe77: TWO parallel attacks. (a) tune buzz_drift with rank/quantile/
     # zscore transforms to look for hidden SH lift; (b) NEW fundamental quality
     # ratios that the prior pool didn't touch: operating margin (Novy-Marx
