@@ -218,6 +218,28 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe71: pivot AGAIN - news_short_interest direction structurally blocked
+    # (CONCENTRATED_WEIGHT 0.25 on 2021-05-05 won't move below 0.10). New
+    # direction: "growth/financing/momentum stack" - explicit POLAR OPPOSITE
+    # of the prior mega's value/quality/short-reversal/news theme. All dense PV
+    # or fundamental signals: 12-1 momentum (Jegadeesh continuation, opposite
+    # of short reversal), industry momentum (Moskowitz-Grinblatt), net issuance
+    # signed_power (Pontiff-Woodgate, financing), CMA asset growth (FF-5
+    # investment). Different anomalies AND opposite directional sign.
+    "newfam_probe71": [
+        # 4-leg pure: 12-1 mom + ind mom + net-issuance + CMA (all positive-flow direction signals, then signed)
+        ("mfin_4leg", "add(add(add(group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market), group_zscore(group_mean(divide(close, ts_delay(close, 126)), 1, subindustry), market)), multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1)), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: 12-1 mom + net-iss + CMA (drop industry mom which was weakest 0.26)
+        ("mfin_3leg", "add(add(group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market), multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1)), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 2-leg: net-iss + CMA (financing only, simplest possible)
+        ("fin_2leg", "add(multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 4-leg with mom at 2x weight (boost momentum since standalone is weak)
+        ("mfin_2xmom", "add(add(add(multiply(group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market), 2), group_zscore(group_mean(divide(close, ts_delay(close, 126)), 1, subindustry), market)), multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1)), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Net issuance ALONE with signed_power 0.5 (control)
+        ("iss_solo", "multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # CMA asset growth ALONE with proper regularization (control)
+        ("cma_solo", "multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe70: KEY INSIGHT - si (sparse) + drift120 (dense) are both positive-
     # direction predictors. Stacking them at proper weights should ADD Sharpe AND
     # dilute the 2021-05-05 concentration spike with drift120's dense coverage.
