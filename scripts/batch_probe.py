@@ -218,6 +218,26 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe62: short_int flipped sign was SH -1.46 + FIT -2.37 in probe61, meaning
+    # the POSITIVE-sign version yields SH +1.46 / FIT +2.37 standalone (already
+    # near LOW_FITNESS pass). On this account high short interest = high return
+    # (opposite of Asquith textbook - perhaps short-squeeze regime). Stack it
+    # with momentum (also positive-sign here) and a 52-week-high anchor built
+    # without ts_max. Also rebuild PEAD as pure ratio to dodge the unit error.
+    "newfam_probe62": [
+        # short interest with POSITIVE sign (flipped from probe61 - strongest single signal)
+        ("si_pos", "group_zscore(ts_backfill(news_short_interest, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # short interest, rank-regularized (passes CONCENTRATED_WEIGHT if sparse)
+        ("si_pos_rk", "group_zscore(rank(ts_backfill(news_short_interest, 22)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 52-week-high anchoring via 252d zscore (no ts_max)
+        ("hi52w_zsc", "group_zscore(ts_zscore(close, 252), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # PEAD as pure ratio (sidesteps unit subtraction)
+        ("pead_ratio", "group_zscore(ts_backfill(divide(news_eps_actual, est_epsr), 120), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 2-leg: short_int + 12-1 momentum (both orthogonal to prior pool)
+        ("si_x_mom", "add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 3-leg: short_int + 12-1 mom + 52w-anchor (all orthogonal to value/quality/short-reversal)
+        ("si_mom_52w", "add(add(group_zscore(rank(ts_backfill(news_short_interest, 22)), market), group_zscore(divide(ts_delay(close, 22), ts_delay(close, 252)), market)), group_zscore(ts_zscore(close, 252), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe61: PIVOT - the val/qual/CFO/PV-corr/short-reversal/news direction
     # registers -1,066 on Performance Comparison (alpha correlated with already-
     # submitted portfolio). Switch to ORTHOGONAL risk premia: behavioral
