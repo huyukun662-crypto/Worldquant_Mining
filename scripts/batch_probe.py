@@ -218,6 +218,24 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe59: extend vqcr25 (1.81, 4-leg) with one more academic anomaly to clear 2.0.
+    # Strongest addition is price-volume corr (Amihud-style illiquidity reversal,
+    # Brennan-Subrahmanyam): high price-volume comovement = informed buying =
+    # mean-reverts. Keep expression simple - 5 legs, each a single named anomaly.
+    "newfam_probe59": [
+        # 5-leg: vqcr + price-volume corr (Amihud illiquidity reversal). Reversal 2x.
+        ("vqcr_pv_r2", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 5-leg with reversal 2.5x
+        ("vqcr_pv_r25", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # 5-leg, reversal 2x, decay 6 (smoother turnover)
+        ("vqcr_pv_r2_d6", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # 5-leg with faster corr window (10d) at reversal 2.5x
+        ("vqcr_pv10_r25", "add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(group_zscore(ts_corr(close, volume, 10), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # vqcr3 - 4-leg with reversal 3x (test if heavier reversal helps with CFO leg)
+        ("vqcr3", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 3))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+        # vqcr2 - 4-leg with reversal 2x baseline (control vs 2.5x = 1.81)
+        ("vqcr2", "add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 4}),
+    ],
     # probe58: push the 3-leg val_qual_rev2 (1.60) toward the 2.0 LOW_SHARPE limit:
     # heavier reversal weight, deeper decay, sub-industry whole-expression neut,
     # and add ONE more classic academic leg (net-issuance Pontiff-Woodgate or
