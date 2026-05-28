@@ -218,6 +218,28 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe74: socialmedia + fundamental deep dive. 5 unused socialmedia fields
+    # ALL at coverage 1.0 (no possible concentration issue!), with high alphaCount.
+    # Plus unused fundamentals tapping ACCOUNTING quality (deferred tax, SBC
+    # dilution, AOCI) which are orthogonal to the price/value/news direction.
+    # Field metadata notes: snt_buzz/snt_value descriptions say "Negative..." so
+    # high value = negative sentiment - so the "underperform high buzz" anomaly
+    # actually means BUY high snt_buzz (counter to intuition; descriptions imply
+    # the sign is already flipped at source).
+    "newfam_probe74": [
+        # scl12_sentiment - direct social sentiment score, cov 1.0, 110 users
+        ("scl_sent", "group_zscore(ts_backfill(scl12_sentiment, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_buzz_ret - cov 1.0, 70 users, "negative return of sentiment volume" (already inverted)
+        ("snt_buzz_ret", "group_zscore(ts_backfill(snt_buzz_ret, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_buzz - "negative relative sentiment volume" (descriptive sign flipped)
+        ("snt_buzz", "group_zscore(ts_backfill(snt_buzz, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # snt_value - mirror of snt_social_value (negative sentiment direction)
+        ("snt_value", "group_zscore(ts_backfill(snt_value, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # SBC dilution - high stock-based comp = future share dilution = underperform
+        ("sbc_dilut", "multiply(group_zscore(rank(ts_backfill(divide(fn_comp_options_grants_a, sharesout), 120)), market), -1)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # Deferred tax assets - quality signal (high DTA = future tax benefit OR earnings issue)
+        ("dta_quality", "group_zscore(rank(ts_backfill(divide(fnd2_a_dfdtxava, cap), 120)), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe73: pivot to ANALYST category (90 dense fields, barely touched).
     # Analyst-based anomalies are well-documented AND likely orthogonal to the
     # prior value/quality/news direction (different information source: sell-side
