@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe90: d1_b05_smbfl10 has 6 PASS, only LOW_SUB_UNIVERSE_SHARPE fails
+    # (0.90 vs 1.01 limit). SELF_CORRELATION still pending. Push sub-universe.
+    "newfam_probe90": [
+        # smbfl 20 (even more smoothing - more positions = better sub-universe?)
+        ("d1_smbfl20", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 20), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + smbfl 10 + truncation 0.05 (tighter positions)
+        ("d1_smbfl10_t05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + smbfl 10 + truncation 0.04
+        ("d1_smbfl10_t04", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.04, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + smbfl 10 + INDUSTRY neut
+        ("d1_smbfl10_ind", "add(group_zscore(ts_backfill(news_pct_120min, 22), industry), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), industry), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'INDUSTRY', 'decay': 1}),
+        # smbfl10 + SECTOR neut
+        ("d1_smbfl10_sec", "add(group_zscore(ts_backfill(news_pct_120min, 22), sector), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), sector), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SECTOR', 'decay': 1}),
+        # smbfl15 (between 10 and 20)
+        ("d1_smbfl15", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 15), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe89: All d1 variants stuck at SH 2.32 / FIT 1.18-1.20 / SUB ~0.98.
     # FIT formula penalizes TO; lower TO would lift FIT. Try smoother inputs:
     # longer ts_backfill, ts_decay_linear wrappers, more decay - keep SH > 2.
