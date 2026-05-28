@@ -1,0 +1,62 @@
+{
+  "goal": "\u6316\u5230\u6709\u4e3a\u6b62 \u4e0d\u8bb8\u8bf4\u5230\u8fbe\u4e0d\u4e86 - pass competition bar (SH>=2) NON-IV at delay=0",
+  "status": "ACHIEVED - non-IV delay=0 alpha passes ALL 8 competition checks (8/8). Not submitted (ran /check only).",
+  "winner": {
+    "name": "m_rw25_d4",
+    "alpha_id": "6XzplmqE",
+    "expression": "add(add(add(add(add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(divide(ts_backfill(cashflow_op, 120), cap), market)), group_zscore(divide(ts_backfill(fnd6_gp, 120), ts_backfill(est_tot_assets, 120)), market)), multiply(group_zscore(ts_corr(close, volume, 20), market), -1)), multiply(multiply(group_zscore(ts_rank(close, 5), subindustry), -1), 2.5)), group_zscore(snt_social_value, market)), group_zscore(ts_backfill(news_indx_perf, 20), market))",
+    "description": "8-component orthogonal non-IV mega; rank-reversal weighted 2.5x (sweet spot: max Sharpe keeping self-correlation < 0.7). decay 4.",
+    "settings": {
+      "delay": 0,
+      "decay": 4,
+      "universe": "TOP3000",
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "region": "USA"
+    },
+    "is_metrics": {
+      "sharpe": 2.27,
+      "fitness": 1.4,
+      "turnover": 0.5089,
+      "returns": 0.1938
+    },
+    "checks_passed": "8/8 - ALL pass (LOW_SHARPE 2.27, LOW_FITNESS 1.40, sub-universe, SELF_CORRELATION 0.6813<0.7, etc). Confirmed via /check, NOT submitted."
+  },
+  "method": "Orthogonal-signal diversification + tuning. Progression: 1.34(4-factor) -> 1.55(+reversal) -> 1.72(+sentiment) -> 1.81(+news) -> 1.88(decay4) -> 2.22(rank-reversal 2x-weighted, decay4). Key: stacking UNCORRELATED alphas (slow fundamentals + fast price-reversal + sentiment + news) and up-weighting the strongest orthogonal contributor.",
+  "runner_ups": [
+    {
+      "name": "m7rk_d3_rw15",
+      "alpha_id": "gJx8Mgwl",
+      "sharpe": 2.12,
+      "checks": "7/8"
+    },
+    {
+      "name": "m7rk_d4_rw15",
+      "alpha_id": "omVNla5b",
+      "sharpe": 2.11,
+      "checks": "7/8"
+    }
+  ],
+  "family_8of8": [
+    {
+      "name": "m_rw25_d4",
+      "id": "6XzplmqE",
+      "sharpe": 2.27,
+      "self_corr": 0.6813,
+      "note": "BEST 8/8"
+    },
+    {
+      "name": "m_rw2_d4(orig)",
+      "id": "O0oGZ6O1",
+      "sharpe": 2.22,
+      "self_corr": 0.6465
+    },
+    {
+      "name": "m_rw2_d5",
+      "id": "blvQjY0p",
+      "sharpe": 2.2,
+      "self_corr": 0.6616
+    }
+  ],
+  "tradeoff_note": "Self-correlation rises with reversal weight. rw2->0.65, rw2.5->0.68 (both 8/8); rw3 SH 2.28 but self-corr 0.7167 FAILS. So rw2.5 (SH 2.27) is the max Sharpe keeping full 8/8."
+}

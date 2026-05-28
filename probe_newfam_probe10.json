@@ -1,0 +1,26 @@
+{
+  "anl_rev_eps": {
+    "expr": "group_zscore(divide(subtract(anl4_dez1afv4_est, anl4_dez1afv4_preest), add(abs(anl4_dez1afv4_preest), 0.01)), market)",
+    "error": "Operator subtract does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_breadth_af": {
+    "expr": "group_zscore(divide(subtract(anl4_basicconaf_pu, anl4_basicconaf_down), add(anl4_basicconaf_numest, 1)), market)",
+    "error": "Operator subtract does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_breadth_qf": {
+    "expr": "group_zscore(divide(subtract(anl4_basicconqf_pu, anl4_basicconqf_down), add(anl4_basicconqf_numest, 1)), market)",
+    "error": "Operator subtract does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_combo": {
+    "expr": "add(group_zscore(divide(subtract(anl4_basicconaf_pu, anl4_basicconaf_down), add(anl4_basicconaf_numest, 1)), market), group_zscore(divide(subtract(anl4_basicconqf_pu, anl4_basicconqf_down), add(anl4_basicconqf_numest, 1)), market))",
+    "error": "Operator subtract does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_combo_disp": {
+    "expr": "add(add(group_zscore(divide(subtract(anl4_basicconaf_pu, anl4_basicconaf_down), add(anl4_basicconaf_numest, 1)), market), group_zscore(divide(subtract(anl4_basicconqf_pu, anl4_basicconqf_down), add(anl4_basicconqf_numest, 1)), market)), group_zscore(multiply(divide(subtract(anl4_basicconaf_high, anl4_basicconaf_low), add(abs(anl4_basicconaf_mean), 0.01)), -1), market))",
+    "error": "Operator subtract does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "anl_disp": {
+    "expr": "group_zscore(multiply(divide(subtract(anl4_basicconaf_high, anl4_basicconaf_low), add(abs(anl4_basicconaf_mean), 0.01)), -1), market)",
+    "error": "Operator subtract does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  }
+}

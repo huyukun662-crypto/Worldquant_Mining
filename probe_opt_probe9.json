@@ -1,0 +1,566 @@
+{
+  "g2r": {
+    "expr": "add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close)))",
+    "alpha_id": "akodoV61",
+    "metrics": {
+      "sharpe": 2.49,
+      "turnover": 0.2082,
+      "fitness": 2.68,
+      "returns": 0.242,
+      "drawdown": 0.0719,
+      "margin": 0.002325,
+      "longCount": 1763,
+      "shortCount": 1157,
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "PASS",
+          "limit": 2.0,
+          "value": 2.49
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "PASS",
+          "limit": 1.3,
+          "value": 2.68
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.2082
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.2082
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "PASS",
+          "limit": 1.08,
+          "value": 1.54
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 20,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "g1r": {
+    "expr": "add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), quantile(divide(subtract(vwap, close), close)))",
+    "alpha_id": "mLZ8qVY6",
+    "metrics": {
+      "sharpe": 2.21,
+      "turnover": 0.2627,
+      "fitness": 2.07,
+      "returns": 0.2296,
+      "drawdown": 0.0703,
+      "margin": 0.001748,
+      "longCount": 1630,
+      "shortCount": 1290,
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "PASS",
+          "limit": 2.0,
+          "value": 2.21
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "PASS",
+          "limit": 1.3,
+          "value": 2.07
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.2627
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.2627
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "PASS",
+          "limit": 0.96,
+          "value": 1.41
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 20,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "g32r": {
+    "expr": "add(add(add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close))), quantile(divide(subtract(vwap, close), close)))",
+    "alpha_id": "VkOpOdG8",
+    "metrics": {
+      "sharpe": 2.41,
+      "turnover": 0.2282,
+      "fitness": 2.47,
+      "returns": 0.2393,
+      "drawdown": 0.0696,
+      "margin": 0.002097,
+      "longCount": 1709,
+      "shortCount": 1211,
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "PASS",
+          "limit": 2.0,
+          "value": 2.41
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "PASS",
+          "limit": 1.3,
+          "value": 2.47
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.2282
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.2282
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "PASS",
+          "limit": 1.04,
+          "value": 1.51
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 20,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "g52r": {
+    "expr": "add(add(add(add(add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close))), quantile(divide(subtract(vwap, close), close)))",
+    "alpha_id": "A1kwkXZd",
+    "metrics": {
+      "sharpe": 2.52,
+      "turnover": 0.1956,
+      "fitness": 2.8,
+      "returns": 0.2422,
+      "drawdown": 0.0737,
+      "margin": 0.002476,
+      "longCount": 1801,
+      "shortCount": 1119,
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "PASS",
+          "limit": 2.0,
+          "value": 2.52
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "PASS",
+          "limit": 1.3,
+          "value": 2.8
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.1956
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.1956
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "PASS",
+          "limit": 1.09,
+          "value": 1.55
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 20,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "g2r_d25": {
+    "expr": "add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close)))",
+    "alpha_id": "rKAoAqmm",
+    "metrics": {
+      "sharpe": 2.6,
+      "turnover": 0.1812,
+      "fitness": 3.08,
+      "returns": 0.2536,
+      "drawdown": 0.0695,
+      "margin": 0.002799,
+      "longCount": 1782,
+      "shortCount": 1138,
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "PASS",
+          "limit": 2.0,
+          "value": 2.6
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "PASS",
+          "limit": 1.3,
+          "value": 3.08
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.1812
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.1812
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "PASS",
+          "limit": 1.13,
+          "value": 1.64
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 25,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "g73r": {
+    "expr": "add(add(add(add(add(add(add(add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close))), quantile(divide(subtract(vwap, close), close))), quantile(divide(subtract(vwap, close), close)))",
+    "alpha_id": "e7LOLYZg",
+    "metrics": {
+      "sharpe": 2.51,
+      "turnover": 0.1992,
+      "fitness": 2.77,
+      "returns": 0.2423,
+      "drawdown": 0.0732,
+      "margin": 0.002432,
+      "longCount": 1789,
+      "shortCount": 1130,
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "SELF_CORRELATION": "PENDING",
+        "MATCHES_COMPETITION": "PASS"
+      },
+      "checks_full": [
+        {
+          "name": "LOW_SHARPE",
+          "result": "PASS",
+          "limit": 2.0,
+          "value": 2.51
+        },
+        {
+          "name": "LOW_FITNESS",
+          "result": "PASS",
+          "limit": 1.3,
+          "value": 2.77
+        },
+        {
+          "name": "LOW_TURNOVER",
+          "result": "PASS",
+          "limit": 0.01,
+          "value": 0.1992
+        },
+        {
+          "name": "HIGH_TURNOVER",
+          "result": "PASS",
+          "limit": 0.7,
+          "value": 0.1992
+        },
+        {
+          "name": "CONCENTRATED_WEIGHT",
+          "result": "PASS"
+        },
+        {
+          "name": "LOW_SUB_UNIVERSE_SHARPE",
+          "result": "PASS",
+          "limit": 1.09,
+          "value": 1.55
+        },
+        {
+          "name": "SELF_CORRELATION",
+          "result": "PENDING"
+        },
+        {
+          "name": "MATCHES_COMPETITION",
+          "result": "PASS",
+          "competitions": [
+            {
+              "id": "challenge",
+              "name": "Challenge"
+            },
+            {
+              "id": "IQC2026S2",
+              "name": "International Quant Championship 2026 Stage 2"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 20,
+      "neutralization": "MARKET",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  }
+}

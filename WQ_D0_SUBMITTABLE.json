@@ -1,0 +1,41 @@
+{
+  "status": "FULLY SUBMITTABLE — all 8 checks PASS (incl SELF_CORRELATION)",
+  "G": "group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)",
+  "R": "quantile(divide(subtract(vwap, close), close))",
+  "common_settings": {"delay": 0, "universe": "TOP3000", "neutralization": "MARKET", "decay": 20, "region": "USA"},
+  "winners": [
+    {
+      "name": "g2r",
+      "alpha_id": "akodoV61",
+      "expression": "add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close)))",
+      "blend": "2*G + R (33% reversal)",
+      "sharpe": 2.49, "fitness": 2.68, "turnover": 0.2082, "returns": 0.242,
+      "sub_universe_sharpe": 1.55, "self_correlation": 0.6537,
+      "all_checks": "8/8 PASS", "note": "highest Sharpe"
+    },
+    {
+      "name": "g32r",
+      "alpha_id": "VkOpOdG8",
+      "expression": "add(add(add(add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector)), quantile(divide(subtract(vwap, close), close))), quantile(divide(subtract(vwap, close), close)))",
+      "blend": "3*G + 2*R (40% reversal)",
+      "sharpe": 2.41, "fitness": 2.47, "turnover": 0.2282, "returns": 0.2393,
+      "sub_universe_sharpe": "PASS", "self_correlation": 0.6046,
+      "all_checks": "8/8 PASS", "note": "balanced — recommended (good SH + safe self-corr margin)"
+    },
+    {
+      "name": "g1r",
+      "alpha_id": "mLZ8qVY6",
+      "expression": "add(group_zscore(ts_backfill(subtract(implied_volatility_call_30, implied_volatility_put_30), 22), sector), quantile(divide(subtract(vwap, close), close)))",
+      "blend": "G + R (50% reversal)",
+      "sharpe": 2.21, "fitness": 2.07, "turnover": 0.2627, "returns": 0.2296,
+      "sub_universe_sharpe": "PASS", "self_correlation": 0.5537,
+      "all_checks": "8/8 PASS", "note": "lowest self-corr (most margin)"
+    }
+  ],
+  "how_we_got_here": [
+    "base: option-implied call-put IV spread (Cremers-Weinbaum), the only D0 signal reaching SH>=2",
+    "decay=20 + ts_backfill smoothing: tamed turnover 1.0 -> 0.2, boosted SH",
+    "group_zscore by SECTOR (coarse, not subindustry) + MARKET neut: fixed LOW_SUB_UNIVERSE_SHARPE",
+    "blend orthogonal vwap-reversal (non-IV): RAISED Sharpe AND cut self-correlation vs the user's existing IV alpha from 0.78 to 0.55-0.65"
+  ]
+}

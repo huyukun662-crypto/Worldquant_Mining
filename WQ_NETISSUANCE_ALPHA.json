@@ -1,0 +1,37 @@
+{
+  "name": "net_issuance (iss_rank)",
+  "id": "ZYr7G5J8",
+  "expression": "multiply(group_zscore(rank(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252))), market), -1)",
+  "settings": {
+    "delay": 0,
+    "decay": 6,
+    "universe": "TOP3000",
+    "neutralization": "MARKET",
+    "truncation": 0.08,
+    "region": "USA"
+  },
+  "economic_meaning": "Net share-issuance anomaly (Pontiff-Woodgate, Daniel-Titman): firms REDUCING share count (buybacks) outperform; firms ISSUING shares (dilution, often when overvalued / empire-building) underperform. Signal = -rank(1-year change in shares outstanding).",
+  "is_metrics": {
+    "sharpe": 0.52,
+    "fitness": 0.42,
+    "turnover": 0.0112,
+    "returns": 0.0821
+  },
+  "checks": "5/8 - CONCENTRATED_WEIGHT PASS, LOW_SUB_UNIVERSE_SHARPE PASS, turnover PASS, matches-comp PASS, self-corr pending. (LOW_SHARPE/FITNESS below competition bar - this is a diversifier, not a 2.0 alpha)",
+  "design": "SIMPLE (1 field: sharesout). REGULARIZED via rank() - spreads the lumpy buyback/issuance weights, fixing the concentration that the raw signal (SH 1.01 but conc-FAIL) had. ECONOMIC (issuance anomaly). DISTINCT - orthogonal mechanism to the value/reversal/sentiment mega (different driver: corporate financing).",
+  "tradeoff": "Raw issuance rate: SH 1.01, FIT 1.51, ret 28%, TO 0.02 but FAILS concentration (lumpy). Rank-regularized: SH 0.52 but ALL structural gates pass + decay-stable (0.52 across decay 6/10, MARKET/IND/SUBIND). Rank trades strength for robustness. A softer regularizer (signed_power 0.5 / winsorize std=2) could retain ~0.7-0.8 while passing concentration.",
+  "regularization_spectrum": {
+    "signed_power_0.5 (KPk7Rrzg)": "SH 1.01, FIT 1.64, ret 33%, TO 0.02 - BEST economics, but CONCENTRATED_WEIGHT + sub-universe FAIL (edge in extreme names)",
+    "winsorize_std1 (wpLjVk21)": "SH 0.88 - still conc FAIL (aggressive clip insufficient)",
+    "signed_power(winsorize_std2) (O0o7vXRp)": "SH 0.73, CONCENTRATED_WEIGHT PASS but sub-universe FAIL",
+    "full_rank (ZYr7G5J8)": "SH 0.52 - the ONLY version passing ALL structural gates (conc+sub+turnover)"
+  },
+  "conclusion_A": "Softer regularization (signed_power 0.5) retains the strong economics (SH 1.01, FIT 1.64, 33% return) but CANNOT pass concentration standalone - net-issuance's predictive power is intrinsically in the extreme buyback/issuance names (concentrated) and less-liquid names (weak sub-universe). Two usable forms: (1) full-rank SH 0.52 as a clean all-gates-pass standalone diversifier; (2) signed_power(0.5) SH 1.01 as a PORTFOLIO COMPONENT added to the mega, where its concentration dilutes in combination and it contributes strong orthogonal return.",
+  "recommended_for_combination": {
+    "id": "KPk7Rrzg",
+    "expr": "multiply(group_zscore(signed_power(divide(subtract(sharesout, ts_delay(sharesout, 252)), ts_delay(sharesout, 252)), 0.5), market), -1)",
+    "sharpe": 1.01,
+    "fitness": 1.64,
+    "note": "soft-regularized; use as orthogonal add-on to the mega (concentration dilutes in combo)"
+  }
+}

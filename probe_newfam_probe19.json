@@ -1,0 +1,18 @@
+{
+  "si_replace": {
+    "expr": "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), replace(group_zscore(ts_backfill(news_short_interest, 66), market), nan, 0))",
+    "error": "Attempted to use inaccessible or unknown operator \"replace\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "si_nanmask": {
+    "expr": "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), nan_mask(group_zscore(ts_backfill(news_short_interest, 66), market), 0))",
+    "error": "Attempted to use inaccessible or unknown operator \"nan_mask\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "si_tonan": {
+    "expr": "add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), to_nan(group_zscore(ts_backfill(news_short_interest, 66), market), 0, true))",
+    "error": "Attempted to use inaccessible or unknown operator \"to_nan\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "val_si_2x": {
+    "expr": "add(add(group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market), group_zscore(ts_backfill(divide(est_ebitda, cap), 120), market)), nan_mask(group_zscore(ts_backfill(news_short_interest, 66), market), 0))",
+    "error": "Attempted to use inaccessible or unknown operator \"nan_mask\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "summary": "Exhaustive non-option delay=0 search, 19 batches (~112 candidates). Best non-option D0 signals by the CLAUDE.md authoritative survivor threshold (WQ_IS_Sharpe>1.25 AND WQ_IS_Turnover<0.25) are short-interest factors; however NONE pass the WQ platform's full 8-check bar, which for delay=0 requires LOW_SHARPE (Sharpe ~>=2.0) AND CONCENTRATED_WEIGHT (a breadth check that news_short_interest cannot satisfy due to sparse coverage).",
+  "region": "USA",
+  "delay": 0,
+  "survivors_by_claudemd_threshold": [
+    {
+      "name": "si500_tr01",
+      "alpha_id": "N1AR1g7q",
+      "expression": "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)",
+      "settings": {"delay": 0, "universe": "TOP500", "neutralization": "MARKET", "decay": 6, "truncation": 0.01, "region": "USA"},
+      "sharpe": 1.60, "turnover": 0.0526, "fitness": 2.13, "returns": 0.2213,
+      "checks": "5/8 PASS (FAIL: LOW_SHARPE, LOW_FITNESS n/a, CONCENTRATED_WEIGHT)",
+      "note": "Highest non-option D0 Sharpe with TO<0.25. Meets CLAUDE.md survivor threshold (SH>1.25, TO<0.25). Fails platform CONCENTRATED_WEIGHT (news_short_interest sparse coverage -> low breadth) and LOW_SHARPE (delay-0 bar ~2.0)."
+    },
+    {
+      "name": "si3k_tr005",
+      "alpha_id": "58Mk8gZN",
+      "expression": "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)",
+      "settings": {"delay": 0, "universe": "TOP3000", "neutralization": "MARKET", "decay": 6, "truncation": 0.005, "region": "USA"},
+      "sharpe": 1.55, "turnover": 0.0453, "fitness": 1.85, "returns": 0.1773,
+      "checks": "5/8 PASS (FAIL: LOW_SHARPE, CONCENTRATED_WEIGHT)",
+      "note": "TOP3000 variant. Same caveats."
+    },
+    {
+      "name": "si_w",
+      "alpha_id": "(probe2)",
+      "expression": "winsorize(group_zscore(ts_backfill(news_short_interest, 66), sector), std=4)",
+      "settings": {"delay": 0, "universe": "TOP3000", "neutralization": "MARKET", "decay": 6, "region": "USA"},
+      "sharpe": 1.44, "turnover": 0.04,
+      "note": "Base short-interest factor."
+    }
+  ],
+  "best_fully_concentration_passing": {
+    "name": "value_ebitda",
+    "expression": "quantile(ts_backfill(divide(est_ebitda, cap), 120))",
+    "sharpe": 1.07, "turnover": "<0.05",
+    "note": "Strongest non-option D0 signal that PASSES CONCENTRATED_WEIGHT (dense). Below the platform LOW_SHARPE ~2.0 bar. This is the realistic ceiling for an all-checks-clean non-option D0 single factor."
+  },
+  "structural_conclusion": {
+    "lowsharpe_bar_d0": "~2.0 (empirical: SH 1.60 FAILs LOW_SHARPE, option g2r SH 2.49 PASSes)",
+    "strong_signals_blocked": "short interest |SH| up to 1.60 but CONCENTRATED_WEIGHT (breadth) unfixable: rank, group_zscore, group_backfill, winsorize, truncation down to 0.005, universe TOP200/500/1000, and dense-blend all fail. NaN-fill operators (coalesce, replace, nan_mask, to_nan) ALL gated at this account tier, so densification is impossible.",
+    "strong_short_sentiment_family": "borrow fee / utilization / days-to-cover (mdl177*) are delay=1 ONLY (0 fields at delay=0).",
+    "dense_signals_weak": "all dense (concentration-passing) price/volume/supply-chain/fundamental signals cap |SH|<0.7 individually (reversal 0.68, w52 0.18, overnight -0.31, supply-chain -0.3..0.38, issuance 0.67, gross profitability 0.34); multi-factor stacks cap ~1.0-1.5 and often dilute below the best single (value 1.07).",
+    "gated_operators_observed": ["ts_max", "ts_skewness", "ts_returns", "coalesce", "replace", "nan_mask", "to_nan"],
+    "verdict": "A non-option delay=0 factor passing ALL 8 WQ checks with Sharpe >= ~2.0 is infeasible with this account's available fields and operators. The only D0 signal both strong and dense enough to clear the bar is the OPTION IV call-put spread (g2r, SH 2.49) - precisely the family excluded by the non-option constraint."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "si_avg3": {
+    "expr": "group_zscore(quantile(divide(add(add(ts_backfill(news_short_interest, 22), ts_backfill(nws12_mainz_short_interest, 22)), ts_backfill(nws12_prez_short_interest, 22)), 3)), market)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "si_mainz": {
+    "expr": "group_zscore(quantile(ts_backfill(nws12_mainz_short_interest, 22)), market)",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "si_grpbf22": {
+    "expr": "group_zscore(quantile(group_backfill(ts_backfill(news_short_interest, 22), subindustry, 22)), market)",
+    "error": "Incompatible unit for input of \"group_backfill\" at index 0, expected \"Unit[]\", found \"Unit[TSShare:1]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "si_avg3_cma": {
+    "expr": "add(group_zscore(quantile(divide(add(add(ts_backfill(news_short_interest, 22), ts_backfill(nws12_mainz_short_interest, 22)), ts_backfill(nws12_prez_short_interest, 22)), 3)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))",
+    "error": "Operator ts_backfill does not support event inputs. <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+  },
+  "si_prez": {
+    "expr": "group_zscore(quantile(ts_backfill(nws12_prez_short_interest, 22)), market)",
+    "error": "timeout"
+  },
+  "si_grpbf5": {
+    "expr": "group_zscore(quantile(group_backfill(ts_backfill(news_short_interest, 22), subindustry, 5)), market)",
+    "error": "timeout"
+  }
+}
