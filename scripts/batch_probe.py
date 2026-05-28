@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe83: bbd_buzz05 SH 1.75 - lowering buzz weight LIFTED SH. drift
+    # is the dominant leg. Push further by reducing buzz/bfl weights and
+    # exploring drift-dominated stacks.
+    "newfam_probe83": [
+        # drift + bfl alone (drop buzz)
+        ("drift_bfl", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift solo (control - what's drift alone at decay 6?)
+        ("drift_solo_d6", "group_zscore(ts_backfill(news_pct_120min, 22), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz 0.3x + drift + bfl 0.5x (further weight reduction on both)
+        ("bbd_low_w", "add(add(multiply(group_zscore(ts_backfill(snt_buzz, 22), market), 0.3), group_zscore(ts_backfill(news_pct_120min, 22), market)), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift_bfl + buzz_ret (new buzz cousin at full weight)
+        ("dbf_buzz_ret", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(snt_buzz_bfl, 22), market)), group_zscore(ts_backfill(snt_buzz_ret, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # drift120 + drift90 + bfl (multi-window news)
+        ("drift_multi_bfl", "add(add(group_zscore(ts_backfill(news_pct_120min, 22), market), group_zscore(ts_backfill(news_pct_90min, 22), market)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # buzz 0.5x + drift 1.5x + bfl 1x (drift even more dominant)
+        ("bbd_drift_dom", "add(add(multiply(group_zscore(ts_backfill(snt_buzz, 22), market), 0.5), multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 1.5)), group_zscore(ts_backfill(snt_buzz_bfl, 22), market))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe82: 3-leg buzz_drift_bfl = 1.70 capped. Try structural variations:
     # weight rebalance, asymmetric decay, truncation/universe/neutralization.
     "newfam_probe82": [
