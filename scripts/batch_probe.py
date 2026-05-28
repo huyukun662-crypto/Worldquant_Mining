@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe95: 30+ probes plateau at 6/8 (SUB blocked). Try hybrid/last-chance
+    # ideas: NaN-handling=OFF, smaller-universe direct, group_neutralize wrap.
+    "newfam_probe95": [
+        # nanHandling=OFF (default ON) - may include MORE names with missing data filled as 0
+        ("smbfl10_nanoff", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1, 'nanHandling': 'OFF'}),
+        # smbfl10_b06 with SUBINDUSTRY (already tested but with smoothing only on bfl)
+        ("smbfl10_b06_sub", "add(group_zscore(ts_backfill(news_pct_120min, 22), subindustry), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), subindustry), 0.6))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY', 'decay': 1}),
+        # smbfl10 + b06 + group_neutralize wrapper for additional dispersion
+        ("smbfl10_b06_gn", "group_neutralize(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.6)), subindustry)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # smbfl10 + b06 with rank wrapper (uniform weights, max diversification)
+        ("smbfl10_b06_rank", "rank(add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.6)))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # truncation 0.15 (very loose, max diversification)
+        ("smbfl10_t15", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.15, 'neutralization': 'MARKET', 'decay': 1}),
+        # truncation 0.2
+        ("smbfl10_t20", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.2, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe94: SUB consistently ~0.80-0.90 of overall SH. Need consistency.
     # Try ts_decay_linear with various windows; combine d2-d4 with smoothing.
     "newfam_probe94": [
