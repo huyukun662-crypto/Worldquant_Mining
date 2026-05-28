@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe88: d1_bfl05 = SH 2.32, FIT 1.20, TO 0.58 - CONCENTRATED_WEIGHT now
+    # PASSES! 2 fails: FIT 1.20 < 1.30 and LOW_SUB_UNIVERSE_SHARPE 0.98 < 1.0
+    # (razor close). Try neut variations + bfl weight fine-tuning.
+    "newfam_probe88": [
+        # d1 + bfl 0.5x + INDUSTRY neut (industry-neutral may lift sub-universe)
+        ("d1_b05_ind", "add(group_zscore(ts_backfill(news_pct_120min, 22), industry), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), industry), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'INDUSTRY', 'decay': 1}),
+        # d1 + bfl 0.5x + SUBINDUSTRY neut
+        ("d1_b05_sub", "add(group_zscore(ts_backfill(news_pct_120min, 22), subindustry), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), subindustry), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'SUBINDUSTRY', 'decay': 1}),
+        # d1 + bfl 0.7x (between 0.5 and 1.0)
+        ("d1_bfl07", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.7))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.3x (more reduction)
+        ("d1_bfl03", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.3))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.5x + truncation 0.05
+        ("d1_b05_t05", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + drift 1.5x + bfl 0.5x (boost drift, reduce bfl)
+        ("d1_dr15_b05", "add(multiply(group_zscore(ts_backfill(news_pct_120min, 22), market), 1.5), multiply(group_zscore(ts_backfill(snt_buzz_bfl, 22), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe87: dbf_d1 SH 2.30 crossed 2.0 but TO 0.73 fails HIGH_TURNOVER (0.7).
     # Need to slow it just enough to drop TO < 0.7 while keeping SH > 2.0.
     # FIT also needs lift (1.13 -> 1.3).
