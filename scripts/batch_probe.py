@@ -218,6 +218,22 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe94: SUB consistently ~0.80-0.90 of overall SH. Need consistency.
+    # Try ts_decay_linear with various windows; combine d2-d4 with smoothing.
+    "newfam_probe94": [
+        # d2 + bfl smbfl 15 + bfl 0.6x (slower base for consistency)
+        ("d2_smbfl15_b06", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 15), market), 0.6))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+        # d1 + smbfl 30 (extreme smoothing for sub-universe consistency)
+        ("d1_smbfl30", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 30), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + drift smoothed by 3 + bfl smoothed by 10
+        ("d1_smdr3_smbfl10", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 3), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # Larger truncation 0.1 (potentially more diversified positions)
+        ("d1_smbfl10_t10", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.1, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + smbfl 10 with pasteurization OFF (default ON, try OFF)
+        ("d1_smbfl10_nopast", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1, 'pasteurization': 'OFF'}),
+        # d1 + smbfl 10 with truncation 0.06 (slightly less)
+        ("d1_smbfl10_t06", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.06, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe93: SUB limit scales with overall SH. Try different universes
     # (TOP500/1000) where sub-test threshold differs, and explore alternative
     # 2-leg combinations using snt_buzz_ret or scl12_buzz instead of bfl.
