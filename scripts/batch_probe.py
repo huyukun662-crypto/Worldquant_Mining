@@ -218,6 +218,23 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe92: SUB limit scales with overall SH (2.34 -> limit 1.01). Try
+    # medium-Sharpe variants where SUB limit may drop enough to pass.
+    # Also test ts_decay_linear on drift to smooth.
+    "newfam_probe92": [
+        # d1_smbfl10 with ts_decay_linear(5) on drift too
+        ("d1_smboth", "add(group_zscore(ts_decay_linear(ts_backfill(news_pct_120min, 22), 5), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d2 + smbfl10 (slower base, lower SH, hopefully passes SUB)
+        ("d2_smbfl10", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 2}),
+        # d3 + smbfl10 (even slower)
+        ("d3_smbfl10", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 3}),
+        # d1 + bfl 0.4x + smbfl 10 (less sentiment)
+        ("d1_smbfl10_b04", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.4))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + bfl 0.6x + smbfl 10
+        ("d1_smbfl10_b06", "add(group_zscore(ts_backfill(news_pct_120min, 22), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 22), 10), market), 0.6))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+        # d1 + smbfl10 + ts_backfill 60 (longer backfill window)
+        ("d1_smbfl10_bf60", "add(group_zscore(ts_backfill(news_pct_120min, 60), market), multiply(group_zscore(ts_decay_linear(ts_backfill(snt_buzz_bfl, 60), 10), market), 0.5))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 1}),
+    ],
     # probe91: d1_smbfl10 = SH 2.34 / FIT 1.43 / 6/8, only LOW_SUB_UNIVERSE_SHARPE
     # fails (~0.90 vs limit 1.01). Direction is news/social = large-cap heavy.
     # Try adding a small-weight all-cap leg (iss/asset_turn/value) to lift
