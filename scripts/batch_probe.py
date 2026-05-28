@@ -218,6 +218,25 @@ BATCHES = {
     # probe55: more SIMPLE ECONOMIC alphas - Sloan accruals (earnings quality: cash earnings >
     # accrual earnings persist), dividend yield (income), earnings yield E/P. Winsorize/rank
     # regularized, 1-field ratios, distinct from value/reversal/issuance pool.
+    # probe65: root cause = even si_pos_rk standalone fails CONCENTRATED_WEIGHT
+    # on 2021-05-05 (0.132 > 0.1 limit). The spike is in the short_interest
+    # field on that date, not from CMA. Fix the si leg itself: smooth
+    # single-day spike via ts_decay_linear, lengthen backfill window, or
+    # use quantile (uniform-bounded distribution).
+    "newfam_probe65": [
+        # ts_decay_linear(rank(...), 10) smears single-day spike across 10 days
+        ("si_decay10", "add(group_zscore(ts_decay_linear(rank(ts_backfill(news_short_interest, 22)), 10), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # ts_decay_linear span 20 (more smoothing)
+        ("si_decay20", "add(group_zscore(ts_decay_linear(rank(ts_backfill(news_short_interest, 22)), 20), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # longer backfill window (252 = 1 year) for smoother backfilled values
+        ("si_bf252", "add(group_zscore(rank(ts_backfill(news_short_interest, 252)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # quantile (gaussian-bounded distribution) instead of rank
+        ("si_qntl", "add(group_zscore(quantile(ts_backfill(news_short_interest, 22)), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+        # decay10 + tighter truncation 0.05 (combo to crush single-day concentration)
+        ("si_decay10_t05", "add(group_zscore(ts_decay_linear(rank(ts_backfill(news_short_interest, 22)), 10), market), multiply(group_zscore(winsorize(divide(subtract(ts_backfill(est_tot_assets, 60), ts_delay(ts_backfill(est_tot_assets, 60), 252)), ts_delay(ts_backfill(est_tot_assets, 60), 252)), std=2), market), -1))", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.05, 'neutralization': 'MARKET', 'decay': 6}),
+        # si_decay10 standalone (single leg, no CMA) - cleanest possible 1-leg test
+        ("si_decay10_solo", "group_zscore(ts_decay_linear(rank(ts_backfill(news_short_interest, 22)), 10), market)", {'delay': 0, 'universe': 'TOP3000', 'truncation': 0.08, 'neutralization': 'MARKET', 'decay': 6}),
+    ],
     # probe64: si_cma is SH 2.20 / FIT 3.35 / 7 of 8 - only CONCENTRATED_WEIGHT
     # fails on 2021-05-05 (0.206 vs 0.1 limit, single-day spike from the CMA
     # asset-growth leg which uses winsorize std=4). Fix the CMA leg concentration:
