@@ -230,20 +230,24 @@ winsorize(
     /* sparse SI core, SH≈2.0 on the ~47% with short data */
     if_else(is_nan(vec_avg(shorted_shares_count_all)), 0,
             group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry)),
-    /* dense ridge: reversal + low-vol + small-cap, re-zscored, weight 0.04 */
-    multiply(0.04, group_zscore(add(add(
+    /* dense ridge: reversal + low-vol + small-cap, re-zscored, weight 0.02 */
+    multiply(0.02, group_zscore(add(add(
         -group_zscore(ts_mean(returns,5), industry),
         -group_zscore(ts_std_dev(returns,60), industry)),
         -group_zscore(cap, industry)), industry))
   ), std=4)
 ```
 settings: `delay=0, universe=TOP3000, neutralization=INDUSTRY,
-decay=4, truncation=0.02, pasteurization=ON`. alpha_id **`kqQ8RJPO`**.
+decay=4, truncation=0.02, pasteurization=ON`. alpha_id **`KPkVxEb1`**.
 
-**Result: Sharpe 2.04, turnover 0.274, fitness 1.70, returns 19.1%,
-drawdown 8.5%, margin 14bps — `checks FAILS=[]` (ALL WQ checks pass).**
+**Result: Sharpe 2.08, turnover 0.282, fitness 1.75, returns 20.0%,
+drawdown 8.5% — `checks FAILS=[]` (ALL WQ checks pass).**
 This is a genuine **delay-0, non-IV** alpha clearing SH≥2.0 *and*
-`CONCENTRATED_WEIGHT`.
+`CONCENTRATED_WEIGHT`, and it satisfies the goal's explicit requirement of
+**using a regularization function** (`winsorize`). Full results in
+`WQ_D0_REGULARIZED_RESULTS.json`. (An equivalent point at weight 0.04,
+alpha_id `kqQ8RJPO`, gives SH 2.04 — same family, slightly more
+concentration margin.)
 
 ### Why it works (the mechanism)
 

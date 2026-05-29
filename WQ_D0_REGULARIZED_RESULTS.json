@@ -1,0 +1,27 @@
+[
+  {
+    "label": "D0_regularized_short_interest_winner",
+    "delay": 0,
+    "universe": "TOP3000",
+    "neutralization": "INDUSTRY",
+    "decay": 4,
+    "truncation": 0.02,
+    "pasteurization": "ON",
+    "region": "USA",
+    "uses_IV": false,
+    "uses_template": false,
+    "regularization": "winsorize(std=4) + small dense composite ridge (weight 0.02)",
+    "expression": "winsorize(add(if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry)), multiply(0.02, group_zscore(add(add(-group_zscore(ts_mean(returns,5), industry), -group_zscore(ts_std_dev(returns,60), industry)), -group_zscore(cap, industry)), industry))), std=4)",
+    "alpha_id": "KPkVxEb1",
+    "metrics": {
+      "sharpe": 2.08,
+      "turnover": 0.282,
+      "fitness": 1.75,
+      "returns": 0.2005,
+      "drawdown": 0.085,
+      "margin": 0.001422
+    },
+    "checks": "ALL PASS (FAILS=[])",
+    "all_pass_window": "ridge weight in [0.005, 0.050]; peak SH 2.08 at 0.010-0.020"
+  }
+]
