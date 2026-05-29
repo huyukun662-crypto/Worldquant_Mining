@@ -193,8 +193,12 @@ def main():
     sa = _load(REPO / "scripts" / "submit_alpha.py", "submit_alpha")
     submit_one = sa.submit_one
 
-    # Candidates: ad-hoc from argv, else the curated list.
-    if len(sys.argv) > 1:
+    # Candidates: a .py file with a CANDIDATES list, or ad-hoc expressions
+    # from argv, else the default curated list.
+    if len(sys.argv) == 2 and sys.argv[1].endswith(".py"):
+        mod = _load(Path(sys.argv[1]).resolve(), "cands_mod")
+        cands = mod.CANDIDATES
+    elif len(sys.argv) > 1:
         cands = [{"name": f"adhoc{i}", "expression": e, "theme": "", "settings": {}}
                  for i, e in enumerate(sys.argv[1:], 1)]
     else:
@@ -224,10 +228,26 @@ def main():
                  f"fit={rec.get('fitness')} self_corr={rec.get('self_corr')} "
                  f"reasons={rec.get('fail_reasons') or rec.get('error','')}")
 
+    # Merge into the cumulative report (keep prior rounds; replace any record
+    # with the same name+expression+settings by the newer run).
     out = REPO / "WQ_D0_CHECK_REPORT.json"
+    prior = []
+    if out.exists():
+        try:
+            prior = json.load(open(out))
+        except Exception:
+            prior = []
+
+    def key(r):
+        return (r.get("name"), r.get("expression"), json.dumps(r.get("settings"), sort_keys=True))
+
+    merged = {key(r): r for r in prior}
+    for r in results:
+        merged[key(r)] = r
+    out_list = list(merged.values())
     with open(out, "w") as f:
-        json.dump(results, f, indent=2)
-    log.info(f"wrote {out}")
+        json.dump(out_list, f, indent=2)
+    log.info(f"wrote {out} ({len(out_list)} total records)")
 
     print()
     print("=" * 100)

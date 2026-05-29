@@ -50,7 +50,7 @@ CANDIDATES = [
     },
     {
         "name": "anchor_reversal_kth",
-        "expression": "-zscore(divide(close, kth_element(close, 20, 5)))",
+        "expression": "-zscore(divide(close, kth_element(close, 20, k=5)))",
         "theme": "Reference-price reversal: price vs a robust anchor (5th element "
                  "of the last 20 days) -> reverts toward the anchor.",
         "settings": {"decay": 8, "neutralization": "SUBINDUSTRY"},
@@ -91,10 +91,10 @@ CANDIDATES = [
         "settings": {"decay": 8, "neutralization": "INDUSTRY"},
     },
     {
-        "name": "quantile_extreme_fade",
-        "expression": "hump(-zscore(ts_quantile(returns, 20)), 0.02)",
-        "theme": "Extremeness fade: high rolling-quantile of recent return = "
-                 "recent winner -> fade; hump caps turnover.",
+        "name": "tsscale_extreme_fade",
+        "expression": "hump(-zscore(ts_scale(close, 20)), 0.02)",
+        "theme": "Extremeness fade: ts_scale maps price into its 20d [0,1] range; "
+                 "near the top -> fade; hump caps turnover.",
         "settings": {"decay": 4, "neutralization": "INDUSTRY"},
     },
 ]
