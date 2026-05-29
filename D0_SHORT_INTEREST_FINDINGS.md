@@ -148,6 +148,74 @@ fast regimes), none exceeds SH ≈ 1.0. The D0 LOW_SHARPE gate (>2.0) is out
 of reach for any simple single-field non-IV dense factor on this account
 tier. This is now established beyond reasonable doubt.
 
+## Moderate-complexity blends — the de-concentration frontier (batches 36–47)
+
+Per the user's "适当增加复杂度" directive, the sparse short-interest core
+was blended with **zero-filled** tilts on dense fillers to attack
+`CONCENTRATED_WEIGHT`. Core construction:
+
+```
+SI      = group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry)   # 47% coverage
+SI_fill = if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, SI)   # zero-fill the 53% with no SI data
+alpha   = add(multiply(w, FILLER), SI_fill)                          # FILLER is 100%-dense -> every name gets weight
+```
+
+Key mechanics discovered:
+- **`CONCENTRATED_WEIGHT` is a coverage problem, not a max-weight problem.**
+  `shorted_shares_count_all` covers only ~47% of TOP3000; the other 53%
+  get zero weight, so the book concentrates regardless of `truncation`
+  (tested 0.05/0.02/0.01 — all still flag). Lowering truncation even
+  *raised* SH (2.05→2.11) but never cleared the flag.
+- **Zero-filling the SI tilt + a 100%-dense filler clears the flag** —
+  every name now carries the filler's weight.
+- **But de-concentrating dilutes Sharpe.** The 53% non-SI names trade on
+  the filler (Sharpe≈0 for cap, ≈0.6 for reversal/news), dragging the
+  book Sharpe from the pure-SI 2.02 down. This is a hard frontier.
+
+Frontier (D0, TOP3000, INDUSTRY, decay 4, trunc 0.02):
+
+| construction | SH | TO | FIT | CONCENTRATED | net |
+|---|---:|---:|---:|:---:|---|
+| pure sparse SI | **2.02** | 0.06 | 2.85 | **FAIL** | SH passes, concentrated |
+| + cap filler (w≈0.008–0.02) | 1.39 | 0.16 | 1.45 | pass | **all pass except SHARPE** |
+| + news filler (w≈0.08) | 1.52 | 0.21 | 1.05 | pass | SHARPE+FIT fail |
+| + cap&news filler | **1.55** | 0.21 | 1.16 | pass | SHARPE+FIT fail (max de-conc SH) |
+
+- Filler weight ↓ ⇒ SH ↑ (toward pure-SI) but `CONCENTRATED` returns near 0.
+- Higher-quality filler (news ≈0.95 standalone) lifts the ceiling
+  (1.39→1.55) but injects turnover ⇒ `LOW_FITNESS`.
+- The two D0 gates are **mutually exclusive for a 47%-coverage signal**:
+  SH=2.0 needs an SI-dominated (concentrated) book; clearing
+  `CONCENTRATED_WEIGHT` needs the 53% to carry diluting weight ⇒ SH≈1.4–1.55.
+
+### The delay-1-only escape hatch (not usable at D0)
+The rich securities-lending / short-sentiment dataset
+(`mdl77_shortsentimentfactor_*`, `mdl177_*shortsentimentfactor_*`:
+`act_util`, `days_to_cover`, `benchmark_fee`, `sht_int`, `dmd_supply`…)
+— genuinely strong, *dense* short-crowding signals that could plausibly
+clear both gates — exist **only at delay=1** (present in
+`data_fields_cache_USA_1_*`, **absent from every `USA_0_*` cache**).
+At D0 they error `unknown variable`. So the one field family that could
+break the trilemma is unavailable at delay 0 on this tier.
+
+### Best D0 deliverables from this route
+- **Strongest all-checks-pass-except-Sharpe** (recommended legitimate factor):
+  ```
+  add(multiply(0.015, group_zscore(cap, industry)),
+      if_else(is_nan(vec_avg(shorted_shares_count_all)), 0,
+              group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry)))
+  ```
+  SH 1.39, FIT 1.45, TO 0.16 — passes CONCENTRATED_WEIGHT, FITNESS,
+  TURNOVER; fails only LOW_SHARPE (limit 2.0).
+- **Max de-concentrated Sharpe** (`c02n05`, adds news): SH 1.55, but
+  FIT 1.16 < 1.3.
+
+**Conclusion for D0 + non-IV:** SH≥2.0 and `CONCENTRATED_WEIGHT`-pass
+cannot be satisfied simultaneously. The de-concentrated ceiling is
+SH≈1.55 (FIT-failing) / 1.39 (all-pass). Breaking SH 2.0 requires either
+accepting the concentrated pure-SI alpha, or moving to **delay=1** to use
+the dense short-sentiment dataset.
+
 ## Bottom line
 On this account's data, the short-interest D0 alpha is genuinely strong
 (SH≈2.0, FIT≈2.9) but **not directly submittable** because its ~47 % field
