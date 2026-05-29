@@ -216,6 +216,34 @@ SH≈1.55 (FIT-failing) / 1.39 (all-pass). Breaking SH 2.0 requires either
 accepting the concentrated pure-SI alpha, or moving to **delay=1** to use
 the dense short-sentiment dataset.
 
+## Additional D0 levers exhausted (batches 48–50)
+
+After the frontier was mapped, every remaining distinct mechanism was
+tested to break SH 2.0 ∧ pass-concentration at delay 0:
+
+- **Universe sweep** (pure SI on TOP1000/500/200): SH *drops*
+  (1.89/1.66/1.20) and `CONCENTRATED_WEIGHT` still fails — fewer names
+  make de-concentration *harder*, not easier. TOP3000 is the best universe.
+- **Union of two short-interest sources** (`shorted_shares_count_all` ⊕
+  zero-filled `news_short_interest`): SH stays 2.04 but still
+  `CONCENTRATED` — the two sources are sparse on the *same* ~47% of names,
+  so the union adds no coverage (and adds turnover 0.39).
+- **Dense short-crowding proxy** (small-cap + high-vol + neg-momentum, no
+  short data): SH −0.05 — no predictive content.
+- **Dense signal-field scan** (sales_growth, cashflow/op-income quality,
+  snt_buzz, scl12_sentiment): all |SH| ≤ 0.5 — confirms no dense delay-0
+  field carries a strong standalone signal.
+- `nws12_*_short_interest` are **event inputs** (`ts_backfill`/`is_nan`
+  reject them); `news_short_interest` is the only usable alt short field
+  and behaves identically to the primary (high SH, same sparsity).
+
+**After ~270 simulations across 50 batches, the D0 non-IV result is
+conclusive:** the only delay-0 signal reaching SH≥2.0 is the
+short-interest family, which covers ~47% of TOP3000 and therefore always
+trips `CONCENTRATED_WEIGHT`; de-concentrating it caps SH at ≈1.55. No
+universe, source-union, proxy, or dense field breaks this. The fields
+that *could* break it (`*shortsentimentfactor_*`) are delay-1 only.
+
 ## Bottom line
 On this account's data, the short-interest D0 alpha is genuinely strong
 (SH≈2.0, FIT≈2.9) but **not directly submittable** because its ~47 % field
