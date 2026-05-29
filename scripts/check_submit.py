@@ -33,10 +33,17 @@ log = logging.getLogger("check_submit")
 REPO = Path(__file__).resolve().parent.parent
 VENDOR = REPO / "vendor" / "worldquant-miner"
 
-# ---- submit gates (WQ-authoritative thresholds, per CLAUDE.md) ----
-SHARPE_FLOOR = 1.25
-TURNOVER_CEILING = 0.25
+# ---- submit gates (WQ-authoritative, read off the live is.checks limits) ----
+# D0 (delay=0) limits observed on this tier: LOW_SHARPE limit=2.0,
+# LOW_FITNESS limit=1.3, HIGH_TURNOVER limit=0.7 (NOT 0.25), SELF_CORR<0.7.
+SHARPE_FLOOR = 2.0
+FITNESS_FLOOR = 1.3
+TURNOVER_CEILING = 0.7
 SELF_CORR_LIMIT = 0.70
+# self-correlation is computed asynchronously after the sim completes;
+# poll the endpoint up to this many times before giving up.
+SELF_CORR_RETRIES = 8
+SELF_CORR_WAIT_S = 12
 
 # delay=0 base settings; per-candidate `settings` are merged on top.
 BASE_SETTINGS = {
@@ -139,25 +146,29 @@ def check_one(submit_one, session, name: str, expr: str, settings: dict) -> dict
                    for c in checks],
     })
 
-    # Self / production correlation (read-only, free).
-    self_corr, self_st = _max_corr(session, res["alpha_id"], "self")
+    # Self correlation (read-only, free) -- computed async, so retry until the
+    # endpoint populates `max`. prod-correlation is 403 on this tier.
+    self_corr, self_st = None, "pending"
+    for _ in range(SELF_CORR_RETRIES):
+        self_corr, self_st = _max_corr(session, res["alpha_id"], "self")
+        if self_corr is not None:
+            break
+        time.sleep(SELF_CORR_WAIT_S)
     prod_corr, prod_st = _max_corr(session, res["alpha_id"], "prod")
     rec["self_corr"] = self_corr
     rec["self_corr_status"] = self_st
     rec["prod_corr"] = prod_corr
     rec["prod_corr_status"] = prod_st
 
-    # Submittable gate.
+    # Submittable gate: NO is.check is FAIL (the checks already encode the
+    # SH>=2.0 / FIT>=1.3 / TO<=0.7 D0 limits), AND self-correlation resolved
+    # below the limit. A still-PENDING self-correlation is NOT counted as a
+    # pass -- we only call it submittable once we have the number.
     any_fail = any(c.get("result") == "FAIL" for c in checks)
     sh = rec["sharpe"] or 0.0
     to = rec["turnover"] if rec["turnover"] is not None else 1.0
-    sc_ok = (self_corr is None) or (self_corr < SELF_CORR_LIMIT)
-    rec["submittable"] = bool(
-        (not any_fail)
-        and sh > SHARPE_FLOOR
-        and to < TURNOVER_CEILING
-        and sc_ok
-    )
+    self_ok = (self_corr is not None) and (self_corr < SELF_CORR_LIMIT)
+    rec["submittable"] = bool((not any_fail) and self_ok)
     rec["fail_reasons"] = _why(checks, sh, to, self_corr)
     return rec
 
@@ -167,11 +178,9 @@ def _why(checks, sh, to, self_corr):
     fails = [c.get("name") for c in checks if c.get("result") == "FAIL"]
     if fails:
         r.append("FAILED_CHECKS=" + ",".join(fails))
-    if sh <= SHARPE_FLOOR:
-        r.append(f"sharpe {sh:.3f} <= {SHARPE_FLOOR}")
-    if to >= TURNOVER_CEILING:
-        r.append(f"turnover {to:.3f} >= {TURNOVER_CEILING}")
-    if self_corr is not None and self_corr >= SELF_CORR_LIMIT:
+    if self_corr is None:
+        r.append("self_corr PENDING")
+    elif self_corr >= SELF_CORR_LIMIT:
         r.append(f"self_corr {self_corr:.3f} >= {SELF_CORR_LIMIT}")
     return r
 
