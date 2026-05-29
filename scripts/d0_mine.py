@@ -32,10 +32,16 @@ def _session():
         "cm", VENDOR / "core" / "credential_manager.py")
     cm_mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cm_mod)
-    cm = cm_mod.CredentialManager(base_path=str(REPO))
-    if not cm.authenticate(auto_load=True, auto_prompt=False):
-        raise SystemExit("auth failed")
-    return cm.session
+    last = None
+    for attempt in range(6):
+        try:
+            cm = cm_mod.CredentialManager(base_path=str(REPO))
+            if cm.authenticate(auto_load=True, auto_prompt=False):
+                return cm.session
+        except Exception as e:  # transient SSL clock-skew etc.
+            last = e
+        time.sleep(2 * (attempt + 1))
+    raise SystemExit(f"auth failed after retries: {last}")
 
 
 def settings_d0(universe="TOP3000", neut="INDUSTRY", decay=4, trunc=0.08):
