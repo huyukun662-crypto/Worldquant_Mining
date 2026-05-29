@@ -34,8 +34,13 @@ def run(candidates):
             print(f"    SH={s['sharpe']} TO={s['turnover']} FIT={s['fitness']} "
                   f"FAILS={fails}", flush=True)
         else:
-            print(f"    NOT OK: {res.get('stage')} {res.get('message') or res.get('body','')[:120]}", flush=True)
-            s["error"] = res
+            msg = res.get('message') or res.get('body', '')
+            print(f"    NOT OK: {res.get('stage')} {msg[:120]}", flush=True)
+            s = {"label": label, "expression": expr, "sharpe": None,
+                 "setting": {"universe": uni, "neut": neut, "decay": decay,
+                             "trunc": trunc, "delay": 0},
+                 "error": {"stage": res.get("stage"), "status": res.get("status"),
+                           "message": msg[:300]}}
         results.append(s)
         with open(OUT, "w") as f:
             json.dump(results, f, indent=2)
