@@ -1,0 +1,7 @@
+[
+ ["combo_rev_rec_sent", "add(add(zscore(multiply(-ts_zscore(close, 5), rank(ts_mean(divide(abs(returns), volume), 20)))), zscore(vec_avg(nws18_ghc_lna))), zscore(snt_social_value))", "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["combo_rev_sent",     "add(zscore(-ts_quantile(close, 20)), zscore(snt_social_value))",                                       "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["recchg_top1000_d8",  "vec_avg(nws18_ghc_lna)",                                                                              "TOP1000", "SUBINDUSTRY", 8, 0.05],
+ ["combo_rev_rec",      "add(zscore(-ts_quantile(close, 20)), zscore(vec_avg(nws18_ghc_lna)))",                                 "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["combo4",             "add(add(add(zscore(-ts_quantile(close, 20)), zscore(vec_avg(nws18_ghc_lna))), zscore(snt_social_value)), zscore(vec_avg(advantageous_position_flag)))", "TOP3000", "SUBINDUSTRY", 4, 0.05]
+]

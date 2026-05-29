@@ -1,0 +1,10 @@
+[
+ ["rev_avdiff_close",  "-ts_av_diff(close, 5)",                         "TOP3000", "SUBINDUSTRY", 4, 0.08],
+ ["rev_zscore_close",  "-ts_zscore(close, 5)",                          "TOP3000", "SUBINDUSTRY", 4, 0.08],
+ ["rev_vwap_winsor",   "winsorize(-ts_av_diff(vwap, 5), std=4)",        "TOP3000", "SUBINDUSTRY", 4, 0.08],
+ ["rev_weekly_ret",    "-ts_sum(returns, 5)",                           "TOP3000", "SUBINDUSTRY", 4, 0.08],
+ ["rev_hump_zscore",   "hump(-ts_zscore(close, 5), 0.01)",              "TOP3000", "SUBINDUSTRY", 0, 0.08],
+ ["rev_ts_quantile",   "-ts_quantile(close, 5)",                        "TOP3000", "SUBINDUSTRY", 4, 0.08],
+ ["intraday_rev",      "-ts_mean(divide(subtract(close, open), open), 5)","TOP3000","SUBINDUSTRY", 4, 0.08],
+ ["rev_signed_power",  "-signed_power(ts_av_diff(close, 5), 0.5)",       "TOP3000", "SUBINDUSTRY", 4, 0.08]
+]

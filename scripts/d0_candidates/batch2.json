@@ -1,0 +1,11 @@
+[
+ ["rev_1d_returns",  "-returns",                                                              "TOP3000", "SUBINDUSTRY", 8, 0.05],
+ ["rev_3d_mean_ret", "-ts_mean(returns, 3)",                                                  "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["rev_volscaled",   "-divide(ts_delta(close, 5), ts_std_dev(close, 20))",                    "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["rev_multi",       "add(-ts_zscore(close, 3), -ts_zscore(close, 10))",                      "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["gap_rev",         "-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))",       "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["illiq_rev",       "multiply(-ts_zscore(close, 5), rank(ts_mean(divide(abs(returns), volume), 20)))", "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["rev_hump",        "hump(-ts_zscore(close, 3), hump=0.02)",                                 "TOP3000", "SUBINDUSTRY", 0, 0.05],
+ ["rev_quantile",    "-ts_quantile(close, 20)",                                               "TOP3000", "SUBINDUSTRY", 4, 0.05],
+ ["rev_regr_resid",  "-ts_regression(close, vwap, 10, rettype=0)",                            "TOP3000", "SUBINDUSTRY", 4, 0.05]
+]
