@@ -94,6 +94,45 @@ The only positive-Sharpe concentration-passing construction remains the
 additive `SI(subindustry)×3 + illiquidity-reversal + social-sentiment`
 (SH 1.93, FIT 0.96) — short of the 2.0 / 1.3 gates.
 
+## Dense cold-field sweep (batch 34) — broadening the field family
+Per the decision to broaden beyond short-interest, the winning SI
+transform `group_zscore(ts_mean(ts_backfill(FIELD,22),22), industry)` was
+applied to **12 dense (cov≈1.0) cold non-IV fields** spanning every
+available non-IV alt-data family: Ravenpack event sentiment
+(`nws18_ssc/nip/bee/qep/bam/acb/sse`), social-media sentiment
+(`scl12_sentiment`, `snt_social_value`, `snt_buzz_ret`), and news price
+reaction (`news_max_up_ret`, `story_event_record_count`).
+
+Result: **every dense field scores |SH| ≤ 0.54** under the slow (22-day)
+transform — best was `news_max_up_ret` at −0.54, `rp_bam` at +0.39. These
+fields are event-driven (fast); 22-day smoothing destroys their signal,
+while their raw/fast form (tested earlier) tops out near SH≈1.0 with high
+turnover (→ failing LOW_FITNESS). So **no dense single non-IV field
+reaches the D0 SH≥2.0 bar** on this account.
+
+### Two regimes, both blocked
+| regime | example | SH | gate that fails |
+|---|---|---|---|
+| sparse, slow, high-SH | short interest (47% cov) | **2.02** | CONCENTRATED_WEIGHT |
+| dense, slow | Ravenpack/social/news, smoothed | ≤0.55 | LOW_SHARPE |
+| dense, fast | news directional / sentiment, raw | ≈1.0 | LOW_SHARPE / LOW_FITNESS (turnover) |
+
+The only signal reaching SH≥2.0 is the sparse short-interest factor, and
+its sparsity is exactly what trips CONCENTRATED_WEIGHT. Densifying it
+(book-fill, group_backfill, multi-field union, news-drift `if_else`) either
+fails to fix concentration or collapses the Sharpe (the heavily-shorted
+names lose their edge once the full universe trades).
+
+### Conclusion / recommended path
+A **simple, single-field, non-IV** D0 alpha that clears all gates
+(SH>2.0 ∧ FIT>1.3 ∧ CONCENTRATED_WEIGHT) was **not found** on this account
+tier. Reaching the D0 bar appears to require one of: (a) the **option /
+IV** datasets (excluded by spec), or (b) a **complex PR#17-style
+book-filled multi-component** alpha (sparse high-SH core + a *good* dense
+drift filler + reversal) — i.e. relaxing the "简洁/avoid-IV" constraints.
+The strongest clean artifact remains the pure short-interest factor
+(SH 2.02 / FIT 2.85), submittable on every gate except CONCENTRATED_WEIGHT.
+
 ## Bottom line
 On this account's data, the short-interest D0 alpha is genuinely strong
 (SH≈2.0, FIT≈2.9) but **not directly submittable** because its ~47 % field
