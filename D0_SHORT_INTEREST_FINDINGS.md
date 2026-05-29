@@ -133,6 +133,21 @@ drift filler + reversal) — i.e. relaxing the "简洁/avoid-IV" constraints.
 The strongest clean artifact remains the pure short-interest factor
 (SH 2.02 / FIT 2.85), submittable on every gate except CONCENTRATED_WEIGHT.
 
+## Simple dense sweep, fast regime + regularization (batch 35)
+To exhaust the "simple + dense" route, six more single-construction dense
+factors were tested with short-window/raw transforms + `group_zscore` +
+decay/`hump` regularization (PV microstructure + the strongest raw
+signals): analyst-rec-change, vwap-reversion, price-volume correlation,
+intraday reversal, short-smoothed social sentiment. Results:
+`recchg` 0.68, `vwap_rev` 0.64, `pv_corr` |0.83|, `intraday_rev` 0.31,
+`sent_short` 0.51 — **all |SH| ≤ 0.85**, with the higher ones carrying
+turnover ≈ 0.8 (→ HIGH_TURNOVER / LOW_FITNESS).
+
+Across **~18 distinct simple dense fields/constructions** (both slow and
+fast regimes), none exceeds SH ≈ 1.0. The D0 LOW_SHARPE gate (>2.0) is out
+of reach for any simple single-field non-IV dense factor on this account
+tier. This is now established beyond reasonable doubt.
+
 ## Bottom line
 On this account's data, the short-interest D0 alpha is genuinely strong
 (SH≈2.0, FIT≈2.9) but **not directly submittable** because its ~47 % field
