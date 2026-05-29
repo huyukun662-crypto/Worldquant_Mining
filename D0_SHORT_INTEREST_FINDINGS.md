@@ -78,6 +78,22 @@ persists at truncation 0.01–0.10.)
   lower truncation, smaller universe (TOP1000/500), multi-field SI union
   (same underlying coverage), zero-turnover size filler (size SH≈0 here).
 
+## PR#17-style `if_else` news-drift book-fill (batches 32–33)
+Replicating the proven PR#17 recipe — `if_else(is_nan(SI_core), <dense
+news-drift filler>, SI_core×3)` with dense `news_max_up_ret` /
+`news_max_dn_ret` / `news_session_range_pct` fillers — **does fix
+CONCENTRATED_WEIGHT** (the fill is dense, cov≈1.0). BUT the densified
+construction returns **SH ≈ −0.2 to −0.27** (negative) under INDUSTRY,
+NONE, MARKET and SECTOR neutralization alike. The heavily-shorted names
+that drive the +2.0 Sharpe in the *sparse* book apparently lose (even
+flip) their edge once the full universe trades and the long/short book is
+re-balanced across all names. So the news-drift fill trades the
+CONCENTRATED_WEIGHT failure for a LOW_SHARPE failure.
+
+The only positive-Sharpe concentration-passing construction remains the
+additive `SI(subindustry)×3 + illiquidity-reversal + social-sentiment`
+(SH 1.93, FIT 0.96) — short of the 2.0 / 1.3 gates.
+
 ## Bottom line
 On this account's data, the short-interest D0 alpha is genuinely strong
 (SH≈2.0, FIT≈2.9) but **not directly submittable** because its ~47 % field
