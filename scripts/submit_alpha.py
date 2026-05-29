@@ -20,6 +20,28 @@ import sys
 import time
 from pathlib import Path
 
+import requests
+
+
+def _get_retry(session, url, *, timeout=30, tries=5):
+    """GET that tolerates transient network errors (ReadTimeout, ConnErr).
+
+    The WQ API occasionally drops a long-poll connection; a bare
+    session.get would raise and crash a multi-hour mining run. Retry with
+    exponential backoff and return the last exception's None on exhaustion
+    so callers can `continue` the poll loop.
+    """
+    delay = 2
+    for attempt in range(tries):
+        try:
+            return session.get(url, timeout=timeout)
+        except (requests.exceptions.RequestException,) as e:
+            log.warning(f"   GET {url[:60]} failed ({type(e).__name__}); "
+                        f"retry {attempt + 1}/{tries} in {delay}s")
+            time.sleep(delay)
+            delay = min(delay * 2, 32)
+    return None
+
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("submit")
@@ -67,7 +89,12 @@ def submit_one(session, expression: str, settings: dict | None = None) -> dict:
     body = {"type": "REGULAR", "settings": s, "regular": expression}
 
     log.info(f"-> POST /simulations  expr={expression[:80]!r}")
-    r = session.post("https://api.worldquantbrain.com/simulations", json=body, timeout=30)
+    try:
+        r = session.post("https://api.worldquantbrain.com/simulations",
+                         json=body, timeout=30)
+    except requests.exceptions.RequestException as e:
+        return {"ok": False, "stage": "submit", "error": f"{type(e).__name__}: {e}"[:300],
+                "expression": expression}
     if r.status_code != 201:
         return {"ok": False, "stage": "submit", "status": r.status_code,
                 "body": r.text[:500], "expression": expression}
@@ -82,7 +109,10 @@ def submit_one(session, expression: str, settings: dict | None = None) -> dict:
     last_status = ""
     while time.time() - t0 < POLL_TIMEOUT_S:
         time.sleep(POLL_INTERVAL_S)
-        rp = session.get(progress_url, timeout=30)
+        rp = _get_retry(session, progress_url, timeout=30)
+        if rp is None:
+            log.warning("   progress poll timed out after retries; continuing")
+            continue
         if rp.status_code == 429:
             log.info("   429 throttled; sleeping 30s")
             time.sleep(30)
@@ -101,8 +131,12 @@ def submit_one(session, expression: str, settings: dict | None = None) -> dict:
                 return {"ok": False, "stage": "complete-no-alpha-id",
                         "data": data, "expression": expression}
             log.info(f"   COMPLETE alpha_id={alpha_id}; fetching metrics")
-            ra = session.get(f"https://api.worldquantbrain.com/alphas/{alpha_id}",
-                              timeout=30)
+            ra = _get_retry(session,
+                            f"https://api.worldquantbrain.com/alphas/{alpha_id}",
+                            timeout=30)
+            if ra is None:
+                return {"ok": False, "stage": "alpha-get", "error": "timeout after retries",
+                        "alpha_id": alpha_id, "expression": expression}
             if ra.status_code != 200:
                 return {"ok": False, "stage": "alpha-get",
                         "status": ra.status_code, "body": ra.text[:500],
