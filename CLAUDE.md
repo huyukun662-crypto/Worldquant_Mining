@@ -51,10 +51,18 @@ session doesn't have to rediscover them.
 
 ## MILESTONE: first verified D0-submittable factor (SH 2.11, all checks PASS)
 
-After 25 rounds, `scripts/d0_candidates_round25.py` produced the first factor
-that passes EVERY delay=0 submit gate, **independently reverified** by a direct
+After 25 rounds, `scripts/d0_candidates_round25.py` produced THREE factors that
+pass EVERY delay=0 submit gate, each **independently reverified** by a direct
 `/alphas/{id}` + `/correlations/self` read this session (not just the harness
-flag). Recorded in `WQ_D0_SUBMITTABLE.json` (alpha_id `Xg1vpex5`):
+flag). All three are in `WQ_D0_SUBMITTABLE.json`:
+
+```
+skew0_news2_pv    (P0vYvNxK): SH 2.21  FIT 1.44  TO 0.40  self_corr 0.53
+news2_pv_skew0_07 (Xg1vpex5): SH 2.11  FIT 1.33  TO 0.40  self_corr 0.48
+skew0_news_pv_s10 (E5k8qzXm): SH 2.00  FIT 1.44  TO 0.41  self_corr 0.56
+```
+
+The representative factor (alpha_id `Xg1vpex5`):
 
 ```
 2 * group_zscore(ts_mean(news_pct_120min, 5), industry)
