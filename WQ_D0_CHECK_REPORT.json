@@ -9256,5 +9256,394 @@
       "self_corr 0.758 >= 0.7"
     ],
     "theme": "2x news + PV + low-vol + gross profit (4-leg)."
+  },
+  {
+    "name": "newsmom_hump03_d4",
+    "expression": "hump(group_zscore(news_pct_120min, industry), hump=0.03)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "N1AL8718",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.34,
+    "turnover": 0.7005,
+    "fitness": 0.46,
+    "returns": 0.0837,
+    "drawdown": 0.1158,
+    "longCount": 612,
+    "shortCount": 631,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.34,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.46,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.7005,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "value": 0.7005,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": 0.42,
+        "limit": 0.58
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.2085,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,HIGH_TURNOVER,LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "theme": "news drift, hump 0.03 (cut TO)."
+  },
+  {
+    "name": "newsmom_hump06_d4",
+    "expression": "hump(group_zscore(news_pct_120min, industry), hump=0.06)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "rKA98n3o",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.31,
+    "turnover": 0.7005,
+    "fitness": 0.45,
+    "returns": 0.0819,
+    "drawdown": 0.1167,
+    "longCount": 612,
+    "shortCount": 631,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.31,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.45,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.7005,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "value": 0.7005,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": 0.38,
+        "limit": 0.57
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.2095,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,HIGH_TURNOVER,LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "theme": "news drift, hump 0.06."
+  },
+  {
+    "name": "news_runup",
+    "expression": "group_zscore(divide(news_eod_high, news_data_close), industry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": null,
+    "submittable": false,
+    "ok": false,
+    "error": "simulation: Attempted to use unknown variable \"news_data_close\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "theme": "intraday high / close on news day."
+  },
+  {
+    "name": "news_settle",
+    "expression": "group_zscore(divide(news_data_close, news_ton_low), industry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": null,
+    "submittable": false,
+    "ok": false,
+    "error": "simulation: Attempted to use unknown variable \"news_data_close\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "theme": "close / pre-news low."
+  },
+  {
+    "name": "news_vol",
+    "expression": "group_zscore(news_close_vol, industry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "6XzZ2zwp",
+    "submittable": false,
+    "ok": true,
+    "sharpe": -0.28,
+    "turnover": 0.8981,
+    "fitness": -0.06,
+    "returns": -0.0347,
+    "drawdown": 0.4249,
+    "longCount": 498,
+    "shortCount": 1057,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.28,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.06,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.8981,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "value": 0.8981,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.33,
+        "limit": -0.12
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6362,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,HIGH_TURNOVER,CONCENTRATED_WEIGHT,LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "theme": "news-day close volume (attention)."
+  },
+  {
+    "name": "news_drift_settle",
+    "expression": "group_zscore(ts_mean(news_pct_120min, 5), industry) + group_zscore(divide(news_data_close, news_ton_low), industry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": null,
+    "submittable": false,
+    "ok": false,
+    "error": "simulation: Attempted to use unknown variable \"news_data_close\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "theme": "smoothed drift + settle."
+  },
+  {
+    "name": "news_drift_settle_vol",
+    "expression": "group_zscore(ts_mean(news_pct_120min, 5), industry) + group_zscore(divide(news_data_close, news_ton_low), industry) + group_zscore(news_close_vol, industry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": null,
+    "submittable": false,
+    "ok": false,
+    "error": "simulation: Attempted to use unknown variable \"news_data_close\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "theme": "drift + settle + volume (3 news views)."
+  },
+  {
+    "name": "news2hump_settle_pv",
+    "expression": "2 * hump(group_zscore(news_pct_120min, industry), hump=0.04) + group_zscore(divide(news_data_close, news_ton_low), industry) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": null,
+    "submittable": false,
+    "ok": false,
+    "error": "simulation: Attempted to use unknown variable \"news_data_close\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "theme": "2x hump-drift + settle + PV."
   }
 ]
