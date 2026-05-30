@@ -11766,5 +11766,715 @@
       "FAILED_CHECKS=CONCENTRATED_WEIGHT"
     ],
     "theme": "control: nan OFF, d24."
+  },
+  {
+    "name": "base_skew015",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.15 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "88nEg2av",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.4,
+    "turnover": 0.4196,
+    "fitness": 0.69,
+    "returns": 0.1016,
+    "drawdown": 0.0908,
+    "longCount": 1002,
+    "shortCount": 991,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.4,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.69,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.4196,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.4196,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.105569,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.92,
+        "limit": 0.61
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.3803,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT"
+    ],
+    "theme": "safe base + 0.15 skew."
+  },
+  {
+    "name": "base_skew025",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.25 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "A1krJKlR",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.46,
+    "turnover": 0.4206,
+    "fitness": 0.74,
+    "returns": 0.1074,
+    "drawdown": 0.0896,
+    "longCount": 1003,
+    "shortCount": 990,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.46,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.74,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.4206,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.4206,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.105122,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.94,
+        "limit": 0.63
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.3946,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT"
+    ],
+    "theme": "safe base + 0.25 skew."
+  },
+  {
+    "name": "base_skew035",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.35 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "Xg1vwpba",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.52,
+    "turnover": 0.422,
+    "fitness": 0.79,
+    "returns": 0.113,
+    "drawdown": 0.0885,
+    "longCount": 1005,
+    "shortCount": 988,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.52,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.79,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.422,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.422,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.104685,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.96,
+        "limit": 0.66
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": null,
+    "self_corr_status": "no-json",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT",
+      "self_corr PENDING"
+    ],
+    "theme": "safe base + 0.35 skew."
+  },
+  {
+    "name": "base_skew05",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.5 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "E5k809pK",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.6,
+    "turnover": 0.4244,
+    "fitness": 0.85,
+    "returns": 0.1209,
+    "drawdown": 0.0867,
+    "longCount": 1009,
+    "shortCount": 985,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.6,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.85,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.4244,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.4244,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.104046,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.99,
+        "limit": 0.69
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": null,
+    "self_corr_status": "no-json",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT",
+      "self_corr PENDING"
+    ],
+    "theme": "safe base + 0.50 skew."
+  },
+  {
+    "name": "base_skew025_t03",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.25 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.03,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "P0vYq1v7",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.47,
+    "turnover": 0.4206,
+    "fitness": 0.74,
+    "returns": 0.106,
+    "drawdown": 0.0896,
+    "longCount": 1003,
+    "shortCount": 990,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.47,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.74,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.4206,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.4206,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.103817,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.91,
+        "limit": 0.64
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": null,
+    "self_corr_status": "no-json",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT",
+      "self_corr PENDING"
+    ],
+    "theme": "base + 0.25 skew, trunc 0.03."
+  },
+  {
+    "name": "base_skew035_t03",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.35 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.03,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "O0oMq3zg",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.53,
+    "turnover": 0.422,
+    "fitness": 0.79,
+    "returns": 0.1116,
+    "drawdown": 0.0885,
+    "longCount": 1005,
+    "shortCount": 989,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.53,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.79,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.422,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.422,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.103108,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.94,
+        "limit": 0.66
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": null,
+    "self_corr_status": "no-json",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT",
+      "self_corr PENDING"
+    ],
+    "theme": "base + 0.35 skew, trunc 0.03."
+  },
+  {
+    "name": "base_skew025_d12",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.25 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, sector))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "d5d3mR5w",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.6,
+    "turnover": 0.3914,
+    "fitness": 0.88,
+    "returns": 0.1174,
+    "drawdown": 0.0867,
+    "longCount": 1003,
+    "shortCount": 990,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.6,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.88,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.3914,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.3914,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.103007,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.06,
+        "limit": 0.69
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": null,
+    "self_corr_status": "no-json",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT",
+      "self_corr PENDING"
+    ],
+    "theme": "base + 0.25 skew, decay 12."
+  },
+  {
+    "name": "base_skew025_subind",
+    "expression": "2 * (group_zscore(ts_mean(news_pct_120min, 5), industry)) + -zscore(ts_covariance(returns, volume, 20)) - group_zscore(ts_av_diff(close, 5), industry) + 0.25 * (-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "Xg1vlgW5",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.22,
+    "turnover": 0.4226,
+    "fitness": 0.56,
+    "returns": 0.0889,
+    "drawdown": 0.0919,
+    "longCount": 977,
+    "shortCount": 969,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.22,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.56,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.4226,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.4226,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "value": 0.168329,
+        "limit": 0.1
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.85,
+        "limit": 0.53
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": null,
+    "self_corr_status": "no-json",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS,CONCENTRATED_WEIGHT",
+      "self_corr PENDING"
+    ],
+    "theme": "base + 0.25 subindustry-skew."
   }
 ]
