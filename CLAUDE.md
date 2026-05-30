@@ -236,6 +236,26 @@ per hour; budget candidates accordingly.
 The script `scripts/submit_alpha.py` calls `/simulations`, not the Submit
 Alpha endpoint, so it never touches the Submit Alpha quota.
 
+### There is NO read-only "would-it-pass-submission?" endpoint
+
+Probed this session (GET-only, never POSTed):
+
+```
+GET     /alphas/{id}/submit            -> 404  (no read-only check endpoint)
+OPTIONS /alphas/{id}/submit            -> 200  Allow: GET, POST, PUT, PATCH, ...
+GET     /alphas/{id}/correlations/self -> 200  (self-corr IS readable)
+GET     /alphas/{id}/correlations/prod -> 403  (production-corr gated by tier)
+```
+
+The Submit-Alpha pre-checks (Self Correlation + Performance Comparison) run
+ONLY as part of `POST /alphas/{id}/submit`, which IS the submit action and
+consumes the quota. So the most you can verify WITHOUT submitting is:
+(1) all 8 `is.checks` PASS via `/alphas/{id}`, and (2) self-correlation < 0.70
+via `/correlations/self`. The Performance-Comparison / prod-correlation gate
+CANNOT be previewed on this tier (prod endpoint is 403, and there is no
+read-only submit endpoint). "Check submittability without submitting" tops
+out at IS-checks + self-corr.
+
 ## Local-proxy pipeline invariants (for the triage stage only)
 
 - **IS window**: 2019-01-01 → 2023-12-31 (set in `mining_pipeline/data.py`)
