@@ -14,7 +14,7 @@ import d0_mine  # noqa: E402
 OUT = REPO / "D0_RESULTS.json"
 
 
-def run(candidates):
+def run(candidates, out=OUT):
     sess = d0_mine._session()
     results = []
     for i, c in enumerate(candidates, 1):
@@ -32,7 +32,7 @@ def run(candidates):
             fails = [c["name"] for c in s["checks"]
                      if c["result"] == "FAIL"]
             print(f"    SH={s['sharpe']} TO={s['turnover']} FIT={s['fitness']} "
-                  f"FAILS={fails}", flush=True)
+                  f"FAILS={fails} ALPHA={s.get('alpha_id')}", flush=True)
         else:
             msg = res.get('message') or res.get('body', '')
             print(f"    NOT OK: {res.get('stage')} {msg[:120]}", flush=True)
@@ -42,7 +42,7 @@ def run(candidates):
                  "error": {"stage": res.get("stage"), "status": res.get("status"),
                            "message": msg[:300]}}
         results.append(s)
-        with open(OUT, "w") as f:
+        with open(out, "w") as f:
             json.dump(results, f, indent=2)
     # rank
     ok = [r for r in results if r.get("sharpe") is not None]
@@ -57,4 +57,7 @@ def run(candidates):
 
 if __name__ == "__main__":
     cands = json.load(open(sys.argv[1]))
-    run([tuple(c) for c in cands])
+    # unique output per input file to avoid concurrent-run races
+    stem = Path(sys.argv[1]).stem
+    out = REPO / f"D0_RESULTS_{stem}.json"
+    run([tuple(c) for c in cands], out=out)
