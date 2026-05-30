@@ -23,24 +23,59 @@ factor must be driven by something else.
 | earnings surprise (eps ratio / growth) | news12/fnd | ≤0.05 | weak/negative at D0 |
 | earnings yield (ebit/EV) | fundamental6 | 0.17 | |
 
-**Orthogonal D0 signals cap at SH ≈ 1.0.** Short interest remains the only
-D0 family reaching SH ≈ 2.0 — so an *uncorrelated* factor cannot also clear
-the 2.0 submit gate at delay 0. The deliverable here is a genuine
-diversifier (SH ≈ 1.0), not an independently-submittable alpha.
+**Orthogonal D0 signals cap at SH ≈ 1.0 individually.** Short interest
+remains the only D0 family reaching SH ≈ 2.0 — so an *uncorrelated* factor
+cannot also clear the 2.0 submit gate at delay 0.
+
+## Building the factor up via orthogonal diversification (o6–o8)
+Single orthogonal cores cap ~1.0, but **stacking independent orthogonal
+signals lifts Sharpe through diversification** while staying uncorrelated
+with short interest:
+
+| composite | SH | fitness | corr vs KPkVxEb1 |
+|---|---:|---:|---:|
+| dispersion only | 1.01 | 0.45 | **-0.010** |
+| + 0.5·uncertainty(pu) | 1.31 | 0.71 | — |
+| + 0.4·value (book/price) | 1.58 | 0.95 | **0.057** |
+| **+ 0.3·quality (ROE)** ⭐ | **1.64** | 1.05 | **0.126** |
+| + profitability/retained-earnings | ≤1.21 | — | hurt (too noisy at D0) |
+
+The peak orthogonal composite is the **4-way: dispersion + uncertainty +
+value + quality**, SH **1.64**.
+
+## FINAL orthogonal factor (alpha `9qJ8M2JK`)
+```
+group_zscore(
+  add(add(add(
+    group_zscore(ts_backfill(divide(subtract(
+        vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)),
+        vec_avg(anl4_basicconqf_mean)), 66), industry),          /* dispersion */
+    multiply(0.5, group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu),66), industry))),  /* uncertainty */
+    multiply(0.4, group_zscore(ts_backfill(divide(bookvalue_ps, close),66), industry))),  /* value */
+    multiply(0.3, group_zscore(ts_backfill(return_equity,66), industry))),                /* quality */
+  industry)
+```
+settings: `delay=0, TOP3000, INDUSTRY, decay=4, truncation=0.02`.
+**SH 1.64, fitness 1.05, turnover 0.19, returns 7.8%, drawdown 6.6%.**
 
 ## Orthogonality CONFIRMED (the key result)
-Daily-PnL Pearson correlation, measured over 1,235 days via
-`scripts/d0_corr.py`:
+Daily-PnL Pearson correlation vs the short-interest winner, over 1,235
+days via `scripts/d0_corr.py`:
 
 ```
-KPkVxEb1 (short-interest, SH 2.08)  vs  kqQvJ9ad (analyst dispersion, SH 1.01)
-    corr = -0.010
+KPkVxEb1 (short-interest, SH 2.08)  vs  9qJ8M2JK (4-way composite, SH 1.64)
+    corr = +0.126        # low — a genuine diversifier
+KPkVxEb1  vs  kqQvJ9ad  (dispersion-only, SH 1.01)
+    corr = -0.010        # essentially zero
+KPkVxEb1  vs  2rJ9GwzJ  (3-way, no ROE, SH 1.58)
+    corr = +0.057        # maximally orthogonal variant
 ```
 
-**Essentially zero correlation** — the analyst-forecast-dispersion factor
-is a true orthogonal diversifier to the short-interest winner, exactly as
-the economic intuition predicts (short crowding and analyst disagreement
-are independent return drivers).
+The two factors are driven by **independent economics** — short-side
+crowding (factor 1) vs analyst disagreement / value / quality (factor 2) —
+and the measured PnL correlation (0.13, well under the 0.7 self-correlation
+gate) confirms it. SH 1.64 is below the 2.0 submit gate, as expected for an
+orthogonal D0 signal. Full result in `WQ_ORTHOGONAL_FACTOR_RESULTS.json`.
 
 ## Construction notes / pitfalls
 - Analyst fields update sparsely → **must `ts_backfill`** before any

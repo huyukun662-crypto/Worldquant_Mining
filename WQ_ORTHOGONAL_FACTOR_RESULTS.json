@@ -1,0 +1,33 @@
+[
+  {
+    "label": "D0_orthogonal_analyst_uncertainty_value_quality",
+    "purpose": "second D0 factor, uncorrelated with short-interest winner KPkVxEb1",
+    "delay": 0,
+    "universe": "TOP3000",
+    "neutralization": "INDUSTRY",
+    "decay": 4,
+    "truncation": 0.02,
+    "uses_IV": false,
+    "uses_template": false,
+    "economic_thesis": "analyst forecast DISPERSION + predicted UNCERTAINTY (Diether-Malloy-Scherbina disagreement anomaly) + VALUE (book-to-price) + QUALITY (ROE) \u2014 all independent of short-side crowding",
+    "components": {
+      "analyst_dispersion": "(consensus_high - consensus_low)/consensus_mean  [anl4_basicconqf]",
+      "analyst_uncertainty": "vec_avg(anl4_basicconqf_pu)  weight 0.5",
+      "value": "bookvalue_ps/close  weight 0.4",
+      "quality": "return_equity  weight 0.3"
+    },
+    "expression": "group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry)",
+    "alpha_id": "9qJ8M2JK",
+    "metrics": {
+      "sharpe": 1.64,
+      "turnover": 0.1925,
+      "fitness": 1.05,
+      "returns": 0.0784,
+      "drawdown": 0.0656,
+      "margin": 0.000815
+    },
+    "correlation_with_KPkVxEb1": 0.126,
+    "correlation_n_days": 1235,
+    "note": "SH 1.64 < the 2.0 submit gate (orthogonal D0 signals cap ~1.0 individually; this 4-way composite reaches 1.64 via diversification). Genuine uncorrelated diversifier to the short-interest winner."
+  }
+]
