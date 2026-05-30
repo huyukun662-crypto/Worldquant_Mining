@@ -1,0 +1,72 @@
+[
+  {
+    "alpha_id": "2rJ9GwzJ",
+    "expression": "group_zscore(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.3,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), industry)",
+    "sharpe": 1.58,
+    "turnover": 0.2025,
+    "fitness": 0.95,
+    "returns": 0.0734,
+    "drawdown": 0.0487,
+    "margin": 0.000725,
+    "longCount": 1188,
+    "shortCount": 1708,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.58,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.95,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2025,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2025,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.39,
+        "limit": 0.68
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "orthoF",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  }
+]
