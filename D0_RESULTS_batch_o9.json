@@ -1,0 +1,422 @@
+[
+  {
+    "alpha_id": "e7LNjp3z",
+    "expression": "group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_numest), multiply(2,vec_avg(anl4_basicconqf_down))), add(vec_avg(anl4_basicconqf_numest),1)), 66), industry)",
+    "sharpe": 0.07,
+    "turnover": 0.1407,
+    "fitness": 0.01,
+    "returns": 0.0044,
+    "drawdown": 0.1659,
+    "margin": 6.3e-05,
+    "longCount": 1679,
+    "shortCount": 1355,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.07,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.01,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1407,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1407,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.02,
+        "limit": 0.03
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "rev_breadth",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "1YJOModW",
+    "expression": "group_zscore(-ts_backfill(divide(vec_avg(anl4_basicconqf_down), add(vec_avg(anl4_basicconqf_numest),1)), 66), industry)",
+    "sharpe": -0.27,
+    "turnover": 0.1393,
+    "fitness": -0.09,
+    "returns": -0.0163,
+    "drawdown": 0.1609,
+    "margin": -0.000235,
+    "longCount": 1673,
+    "shortCount": 1362,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.27,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.09,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1393,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1393,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.19,
+        "limit": -0.12
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "down_ratio",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "ZYrgJQ70",
+    "expression": "group_zscore(add(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), multiply(0.3,group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_numest), multiply(2,vec_avg(anl4_basicconqf_down))), add(vec_avg(anl4_basicconqf_numest),1)), 66), industry))), industry)",
+    "sharpe": 1.56,
+    "turnover": 0.1871,
+    "fitness": 0.97,
+    "returns": 0.0719,
+    "drawdown": 0.0855,
+    "margin": 0.000769,
+    "longCount": 1280,
+    "shortCount": 1610,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.56,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.97,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1871,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1871,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.42,
+        "limit": 0.68
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "c5_b03",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "d5dYGMdv",
+    "expression": "group_zscore(add(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), multiply(0.5,group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_numest), multiply(2,vec_avg(anl4_basicconqf_down))), add(vec_avg(anl4_basicconqf_numest),1)), 66), industry))), industry)",
+    "sharpe": 1.4,
+    "turnover": 0.1828,
+    "fitness": 0.84,
+    "returns": 0.0656,
+    "drawdown": 0.096,
+    "margin": 0.000718,
+    "longCount": 1348,
+    "shortCount": 1542,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.4,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.84,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1828,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1828,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.27,
+        "limit": 0.61
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "c5_b05",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "78J3eQgb",
+    "expression": "group_zscore(add(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), multiply(0.7,group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_numest), multiply(2,vec_avg(anl4_basicconqf_down))), add(vec_avg(anl4_basicconqf_numest),1)), 66), industry))), industry)",
+    "sharpe": 1.21,
+    "turnover": 0.1781,
+    "fitness": 0.7,
+    "returns": 0.059,
+    "drawdown": 0.104,
+    "margin": 0.000663,
+    "longCount": 1405,
+    "shortCount": 1484,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.21,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.7,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1781,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1781,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.1,
+        "limit": 0.52
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "c5_b07",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "9qJ8NjG2",
+    "expression": "winsorize(group_zscore(add(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), multiply(0.5,group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_numest), multiply(2,vec_avg(anl4_basicconqf_down))), add(vec_avg(anl4_basicconqf_numest),1)), 66), industry))), industry), std=4)",
+    "sharpe": 1.39,
+    "turnover": 0.1793,
+    "fitness": 0.83,
+    "returns": 0.0644,
+    "drawdown": 0.0966,
+    "margin": 0.000718,
+    "longCount": 1351,
+    "shortCount": 1539,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.39,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.83,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1793,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1793,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.24,
+        "limit": 0.6
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "c5_b05_win",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  }
+]
