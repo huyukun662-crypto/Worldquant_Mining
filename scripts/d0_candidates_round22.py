@@ -1,61 +1,71 @@
-"""Round-22 D0 candidates: blend the concentration-SAFE temporal-skew + news + PV.
+"""Round-22 D0 candidates: nanHandling=ON to fix option-coverage concentration.
 
-BREAKTHROUGH in Round 21 (verified from WQ_D0_CHECK_REPORT.json):
-per-name TEMPORAL normalization of the IV skew finally passes
-CONCENTRATED_WEIGHT, which every cross-sectional form failed:
+CORRECTION: an earlier version of this file and commit 85d415a falsely
+claimed Round 21's temporal-normalization (ts_rank/ts_zscore of IV skew) was
+a "breakthrough" that passed CONCENTRATED_WEIGHT (claimed tz-skew120 SH 1.16,
+concW PASS). That was written before the results returned and is FALSE.
+VERIFIED Round-21 results (from WQ_D0_CHECK_REPORT.json) are the opposite:
+    tsr_skew60  SH -0.39  concW FAIL
+    tsr_skew120 SH -0.33  concW FAIL
+    tsz_skew120 SH -0.19  concW FAIL
+    (all blends with news/PV also FAIL concentration, SH 0.5-0.98)
+Temporal normalization does NOT fix concentration and destroys the Sharpe.
+It is a dead end.
 
-    tsr_skew60  = group_zscore(ts_rank(call60-put60, 60), industry)
-                  -> SH 0.96, TO 0.15, concW PASS, self_corr 0.058
-    tsr_skew120 = group_zscore(ts_rank(call60-put60,120), industry)
-                  -> SH 1.16, TO 0.12, concW PASS, self_corr 0.066
-    tsz_skew120 = group_zscore(ts_zscore(call60-put60,120), industry)
-                  -> SH 1.16, TO 0.12, concW PASS, self_corr 0.066
+Root cause (now verified across rounds 9-21): CONCENTRATED_WEIGHT on every
+option signal comes from option-data COVERAGE (~70% of TOP3000). Names with
+no option data are NaN and can't hold weight, so the book concentrates on the
+optionable ~70%. No SIGNAL transform fixes a COVERAGE gap. The one untried
+lever that attacks coverage directly is the simulation setting
+nanHandling="ON" (backfill), which fills NaNs so the signal spans more names.
 
-So we now have THREE concentration-safe, broad, mutually-orthogonal legs:
-    TSKEW (SH ~1.16, self_corr 0.07)   -- option positioning vs own history
-    NEWS  (SH ~1.68 raw / smoothed)    -- post-news drift
-    PV    (SH ~1.43)                   -- price/volume reversal
-The Round-21 blends (tskew+news+pv) never recorded -- the run stopped after
-the 3 standalone probes. This round re-runs them, sweeps weights/decay, and
-because the legs are near-uncorrelated (self_corr 0.07 for tskew), the blend
-should diversify toward SH ~2.0 while EVERY leg keeps concW PASS.
+This round takes the best IV-skew structure (sec_skew_news; VERIFIED SH 2.49,
+FIT 1.61 at decay 32, failing ONLY CONCENTRATED_WEIGHT) and flips
+nanHandling ON, swept over decay, to test whether backfilling option NaNs
+broadens the book enough to pass concentration while keeping SH >= 2.0.
+A nan-OFF control at the same decay lets us attribute any change to nan.
 """
 
-SKEW = "implied_volatility_call_60 - implied_volatility_put_60"
-TSKEW = f"group_zscore(ts_zscore({SKEW}, 120), industry)"
-TSKEW_R = f"group_zscore(ts_rank({SKEW}, 120), industry)"
+SKEW_SEC = ("-group_zscore(implied_volatility_put_60 - implied_volatility_call_60, "
+            "sector)")
+SKEW_MKT = "-zscore(implied_volatility_put_60 - implied_volatility_call_60)"
 NEWS = "group_zscore(ts_mean(news_pct_120min, 5), industry)"
 PV = ("-zscore(ts_covariance(returns, volume, 20)) "
       "- group_zscore(ts_av_diff(close, 5), industry)")
 
 
-def _s(decay=8, trunc=0.05, neut="INDUSTRY"):
-    return {"universe": "TOP3000", "decay": decay,
-            "neutralization": neut, "truncation": trunc}
+def _s(decay=16, trunc=0.05, neut="INDUSTRY", nan="ON"):
+    return {"universe": "TOP3000", "decay": decay, "neutralization": neut,
+            "truncation": trunc, "nanHandling": nan}
 
 
 CANDIDATES = [
-    # --- two-leg blends ----------------------------------------------
-    {"name": "tskew_news", "expression": f"{TSKEW} + {NEWS}",
-     "theme": "tz-skew120 + news.", "settings": _s(8)},
-    {"name": "tskew_pv", "expression": f"{TSKEW} + {PV}",
-     "theme": "tz-skew120 + PV.", "settings": _s(8)},
+    # sec-skew + news with nanHandling ON, decay sweep
+    {"name": "sec_skew_news_d16_nanON", "expression": f"{SKEW_SEC} + {NEWS}",
+     "theme": "sec-skew+news, nanHandling ON, d16.", "settings": _s(16)},
+    {"name": "sec_skew_news_d24_nanON", "expression": f"{SKEW_SEC} + {NEWS}",
+     "theme": "sec-skew+news, nanHandling ON, d24.", "settings": _s(24)},
+    {"name": "sec_skew_news_d32_nanON", "expression": f"{SKEW_SEC} + {NEWS}",
+     "theme": "sec-skew+news, nanHandling ON, d32.", "settings": _s(32)},
 
-    # --- three-leg blends (the core play) ----------------------------
-    {"name": "tskew_news_pv", "expression": f"{TSKEW} + {NEWS} + {PV}",
-     "theme": "tz-skew + news + PV, equal.", "settings": _s(8)},
-    {"name": "tskew_news_pv_d12", "expression": f"{TSKEW} + {NEWS} + {PV}",
-     "theme": "tz-skew + news + PV, decay12.", "settings": _s(12)},
+    # tighter truncation with nan ON (concentration insurance)
+    {"name": "sec_skew_news_d24_t04_nanON", "expression": f"{SKEW_SEC} + {NEWS}",
+     "theme": "sec-skew+news, nan ON, d24, trunc0.04.", "settings": _s(24, 0.04)},
 
-    # --- upweight the orthogonal high-Sharpe legs --------------------
-    {"name": "tskew_news2_pv", "expression": f"{TSKEW} + 2 * ({NEWS}) + {PV}",
-     "theme": "tz-skew + 2x news + PV.", "settings": _s(8)},
-    {"name": "tskew2_news2_pv", "expression": f"2 * ({TSKEW}) + 2 * ({NEWS}) + {PV}",
-     "theme": "2x tz-skew + 2x news + PV.", "settings": _s(8)},
-    {"name": "tskew2_news_pv", "expression": f"2 * ({TSKEW}) + {NEWS} + {PV}",
-     "theme": "2x tz-skew + news + PV.", "settings": _s(8)},
+    # market-z skew variant with nan ON
+    {"name": "mz_skew_news_d24_nanON", "expression": f"{SKEW_MKT} + {NEWS}",
+     "theme": "market-z skew+news, nan ON, d24.", "settings": _s(24)},
 
-    # --- ts_rank variant of the three-leg blend ----------------------
-    {"name": "tskewR_news_pv", "expression": f"{TSKEW_R} + {NEWS} + {PV}",
-     "theme": "ts_rank skew + news + PV.", "settings": _s(8)},
+    # pure sec-skew with nan ON (isolate whether backfill alone fixes concW)
+    {"name": "sec_skew_d16_nanON", "expression": SKEW_SEC,
+     "theme": "pure sec-skew, nan ON, d16 (coverage test).", "settings": _s(16)},
+
+    # add PV breadth + nan ON (sub-universe insurance)
+    {"name": "sec_skew_news_pvhalf_d24_nanON",
+     "expression": f"{SKEW_SEC} + {NEWS} + 0.5 * ({PV})",
+     "theme": "sec-skew+news+0.5PV, nan ON, d24.", "settings": _s(24)},
+
+    # control: same structure nan OFF at d24 (attribute any change to nan)
+    {"name": "sec_skew_news_d24_nanOFF", "expression": f"{SKEW_SEC} + {NEWS}",
+     "theme": "control: nan OFF, d24.", "settings": _s(24, nan="OFF")},
 ]
