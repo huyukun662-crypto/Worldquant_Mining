@@ -1,0 +1,422 @@
+[
+  {
+    "alpha_id": "mLZ0jKVK",
+    "expression": "winsorize(add(multiply(0.4, if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry))), multiply(0.6, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "sharpe": 1.86,
+    "turnover": 0.1921,
+    "fitness": 1.28,
+    "returns": 0.0907,
+    "drawdown": 0.0519,
+    "margin": 0.000944,
+    "longCount": 1222,
+    "shortCount": 1667,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.86,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 1.28,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1921,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1921,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.63,
+        "limit": 0.81
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "mix_si40",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "rKAN5111",
+    "expression": "winsorize(add(multiply(0.5, if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry))), multiply(0.5, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "sharpe": 1.92,
+    "turnover": 0.1946,
+    "fitness": 1.35,
+    "returns": 0.0956,
+    "drawdown": 0.0528,
+    "margin": 0.000982,
+    "longCount": 1220,
+    "shortCount": 1669,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.92,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.35,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1946,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1946,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.67,
+        "limit": 0.83
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "mix_si50",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "YPQE5nql",
+    "expression": "winsorize(add(multiply(0.6, if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry))), multiply(0.4, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "sharpe": 1.97,
+    "turnover": 0.1981,
+    "fitness": 1.41,
+    "returns": 0.1011,
+    "drawdown": 0.0538,
+    "margin": 0.001021,
+    "longCount": 1218,
+    "shortCount": 1671,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.97,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.41,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1981,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1981,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.73,
+        "limit": 0.85
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "mix_si60",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "mLZ0gmJ5",
+    "expression": "winsorize(add(multiply(0.7, if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry))), multiply(0.3, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "sharpe": 2.02,
+    "turnover": 0.203,
+    "fitness": 1.47,
+    "returns": 0.108,
+    "drawdown": 0.0547,
+    "margin": 0.001064,
+    "longCount": 1218,
+    "shortCount": 1672,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.02,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.47,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.203,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.203,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.78,
+        "limit": 0.87
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "mix_si70",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "mLZ0gG9p",
+    "expression": "winsorize(add(multiply(0.45, if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry))), multiply(0.55, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "sharpe": 1.89,
+    "turnover": 0.1933,
+    "fitness": 1.31,
+    "returns": 0.0931,
+    "drawdown": 0.0523,
+    "margin": 0.000963,
+    "longCount": 1221,
+    "shortCount": 1668,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.89,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.31,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1933,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1933,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.65,
+        "limit": 0.82
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "mix_si45",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  },
+  {
+    "alpha_id": "9qJdj6gV",
+    "expression": "winsorize(add(multiply(0.55, if_else(is_nan(vec_avg(shorted_shares_count_all)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all),22),22), industry))), multiply(0.45, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3,group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "sharpe": 1.95,
+    "turnover": 0.1962,
+    "fitness": 1.38,
+    "returns": 0.0983,
+    "drawdown": 0.0533,
+    "margin": 0.001002,
+    "longCount": 1219,
+    "shortCount": 1670,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.95,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.38,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1962,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1962,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.7,
+        "limit": 0.84
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "label": "mix_si55",
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    }
+  }
+]
