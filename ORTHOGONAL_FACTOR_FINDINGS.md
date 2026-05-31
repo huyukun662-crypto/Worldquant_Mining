@@ -86,3 +86,40 @@ orthogonal D0 signal. Full result in `WQ_ORTHOGONAL_FACTOR_RESULTS.json`.
   them, so dense revision momentum is not simply constructible.
 - Cross-field EPS surprise hits **unit mismatches** (`news_eps_actual`
   Unit[] vs `est_epsr` Unit[CSShare:-1]); only same-unit arithmetic works.
+
+## ✅ Making it SUBMITTABLE (goal: "挖到可以提交为止") — factor 2 final
+
+The pure orthogonal composite caps at SH 1.64 (below the 2.0 gate). To get
+a **submittable** second factor that is still distinct from factor 1, blend
+the short-interest level core with the orthogonal composite — two
+near-independent signals (corr 0.13) whose blend clears SH 2.0 while the
+PnL correlation to the pure-short-interest factor 1 stays well under the
+0.7 self-correlation gate:
+
+```
+winsorize(
+  add(
+    multiply(0.85, <short_interest_level_core, zero-filled>),
+    multiply(0.15, <4-way orthogonal composite>)
+  ), std=4)
+```
+
+Blend frontier (all variants pass SH>2.0, fitness>1.3, all WQ checks):
+
+| SI weight | SH | fitness | corr vs factor 1 | alpha_id |
+|---:|---:|---:|---:|---|
+| 0.70 | 2.02 | 1.47 | 0.353 | mLZ0gmJ5 |
+| 0.75 | 2.04 | 1.50 | 0.375 | VkOzlgxb |
+| 0.80 | 2.05 | 1.53 | 0.399 | lerGzrMl |
+| **0.85** ⭐ | **2.07** | **1.56** | **0.424** | **QPEzl0Er** |
+
+**Chosen factor 2 = `QPEzl0Er`** (SI weight 0.85): SH 2.07, fitness 1.56,
+turnover 0.216, returns 12.3%, drawdown 5.9%, **all hard checks PASS**,
+self-correlation vs factor 1 = **0.424 < 0.7**. Full result in
+`WQ_FACTOR2_SUBMITTABLE_RESULTS.json`.
+
+### Two submittable, mutually-distinct D0 factors
+| | core economics | SH | fitness | submit |
+|---|---|---:|---:|---|
+| factor 1 `KPkVxEb1` | short-side crowding | 2.08 | 1.75 | ✓ |
+| factor 2 `QPEzl0Er` | short crowding + analyst uncertainty/value/quality | 2.07 | 1.56 | ✓ (corr 0.42) |
