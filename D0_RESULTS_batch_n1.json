@@ -32,5 +32,22 @@
       "status": "ERROR",
       "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
     }
+  },
+  {
+    "label": "amihud",
+    "expression": "group_zscore(ts_mean(divide(abs(returns), add(multiply(close,volume),1)), 22), industry)",
+    "sharpe": null,
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    },
+    "error": {
+      "stage": "sim",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:2,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    }
   }
 ]
