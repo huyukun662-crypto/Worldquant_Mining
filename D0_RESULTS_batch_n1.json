@@ -49,5 +49,56 @@
       "status": "WARNING",
       "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:2,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
     }
+  },
+  {
+    "label": "high52",
+    "expression": "group_zscore(divide(close, ts_max(close, 252)), industry)",
+    "sharpe": null,
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    },
+    "error": {
+      "stage": "sim",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    }
+  },
+  {
+    "label": "vol_trend",
+    "expression": "group_zscore(divide(ts_mean(volume,5), add(ts_mean(volume,66),1)), industry)",
+    "sharpe": null,
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    },
+    "error": {
+      "stage": "sim",
+      "status": "WARNING",
+      "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[TSPrice:1,TSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    }
+  },
+  {
+    "label": "downvol",
+    "expression": "-group_zscore(ts_std_dev(ts_min(returns,5), 66), industry)",
+    "sharpe": null,
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    },
+    "error": {
+      "stage": "sim",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_min\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    }
   }
 ]
