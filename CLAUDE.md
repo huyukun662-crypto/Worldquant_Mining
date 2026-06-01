@@ -98,6 +98,31 @@ That alone leaves ONE gate: self-correlation to the user's submitted pool was
 DOWN-WEIGHTED (coeff 0.7) into the orthogonal news+PV base (self_corr 0.357)
 pulls the combined self_corr to 0.48 while keeping SH 2.11 and concW PASS.
 
+### Orthogonal (uncorrelated) submittable factors — delay=1
+
+The 3 factors above all share the same sources (news_pct_120min + PV
+cov/av_diff + iv put-call skew). Asked for factors UNCORRELATED to them,
+rounds 26-32 mined entirely DIFFERENT families: option IV-momentum,
+forward-earnings-yield, days-since-high, price-volume-correlation,
+vwap-reversion, return-rank reversal — all NaN-filled + industry-neutral so
+concentration-safe. Key findings:
+
+- No single orthogonal leg exceeds SH ~0.9; the strong D0 edge lives in the
+  skew. A fully-orthogonal BLEND caps at SH ~1.52 at delay=0 — which FAILS
+  the delay=0 LOW_SHARPE bar of 2.0.
+- **The delay=0 2.0 bar is delay-specific.** At delay=1 the LOW_SHARPE limit
+  drops, and the SAME orthogonal blend passes EVERY check. Verified by direct
+  `/alphas/{id}` read, recorded in `WQ_D0_SUBMITTABLE.json`:
+  ```
+  d1_base5_revrank_d4 (vRdX1gnQ): delay=1 SH 2.13 FIT 1.46 TO 0.41 selfC 0.62
+  d1_base5_revrank    (gJxVZOXe): delay=1 SH 1.92 FIT 1.58 TO 0.25 selfC 0.64
+  ```
+  Expression (both): `IV-mom + fwd-EY + days-since-high + (-pv-corr) +
+  vwap-reversion [+ (-return-rank)]`, each leg `if_else(is_nan(gz),0,gz)`,
+  TOP3000, INDUSTRY, trunc 0.05. These use ZERO survivor signal source, so
+  they are genuinely uncorrelated to the 3 skew-based d0 factors. The same
+  expression at delay=0 (control) is only SH 1.52 (fails LOW_SHARPE+FITNESS).
+
 ### Dead ends proven along the way (don't re-walk)
 
 - Cross-sectional standardization of skew (zscore/rank/winsorize/market/sector)

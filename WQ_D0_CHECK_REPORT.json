@@ -17635,5 +17635,695 @@
       "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS"
     ],
     "theme": "base5+callmom trunc0.08."
+  },
+  {
+    "name": "d1_base5_revrank",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(-ts_rank(returns, 10), industry)), 0, group_zscore(-ts_rank(returns, 10), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "gJxVZOXe",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 1.92,
+    "turnover": 0.2482,
+    "fitness": 1.58,
+    "returns": 0.1679,
+    "drawdown": 0.0977,
+    "longCount": 1569,
+    "shortCount": 1569,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.92,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.58,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2482,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2482,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.29,
+        "limit": 0.83
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6435,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "base5+revrank @ delay1."
+  },
+  {
+    "name": "d1_base5_callmom",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(ts_delta(implied_volatility_call_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_call_60, 20), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "3qzvVe6Z",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 1.6,
+    "turnover": 0.1949,
+    "fitness": 1.35,
+    "returns": 0.1397,
+    "drawdown": 0.099,
+    "longCount": 1579,
+    "shortCount": 1559,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.6,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.35,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1949,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1949,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.96,
+        "limit": 0.69
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6163,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "base5+callmom @ delay1."
+  },
+  {
+    "name": "d1_base5_callmom_revrank",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(ts_delta(implied_volatility_call_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_call_60, 20), industry)) + if_else(is_nan(group_zscore(-ts_rank(returns, 10), industry)), 0, group_zscore(-ts_rank(returns, 10), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "E5kPRPbr",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 1.82,
+    "turnover": 0.2493,
+    "fitness": 1.47,
+    "returns": 0.1618,
+    "drawdown": 0.097,
+    "longCount": 1577,
+    "shortCount": 1560,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.82,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.47,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2493,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2493,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.19,
+        "limit": 0.79
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6237,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "base5+callmom+revrank @ delay1."
+  },
+  {
+    "name": "d1_base5",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "VkObd2bb",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 1.68,
+    "turnover": 0.1788,
+    "fitness": 1.5,
+    "returns": 0.1432,
+    "drawdown": 0.1,
+    "longCount": 1570,
+    "shortCount": 1567,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.68,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.5,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1788,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1788,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.04,
+        "limit": 0.73
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.638,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "base5 @ delay1."
+  },
+  {
+    "name": "d1_base5_revrank_d12",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(-ts_rank(returns, 10), industry)), 0, group_zscore(-ts_rank(returns, 10), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 12,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "vRdXOZxb",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 1.76,
+    "turnover": 0.1848,
+    "fitness": 1.6,
+    "returns": 0.153,
+    "drawdown": 0.1003,
+    "longCount": 1564,
+    "shortCount": 1573,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.76,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.6,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1848,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1848,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.22,
+        "limit": 0.76
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6336,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "base5+revrank @ delay1 decay12."
+  },
+  {
+    "name": "d1_base5_revrank_d4",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(-ts_rank(returns, 10), industry)), 0, group_zscore(-ts_rank(returns, 10), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "vRdX1gnQ",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 2.13,
+    "turnover": 0.4093,
+    "fitness": 1.46,
+    "returns": 0.1914,
+    "drawdown": 0.0898,
+    "longCount": 1574,
+    "shortCount": 1563,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.13,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.46,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.4093,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.4093,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.44,
+        "limit": 0.92
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6238,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "base5+revrank @ delay1 decay4."
+  },
+  {
+    "name": "d1_base5_pv2iv2",
+    "expression": "2 * (if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry))) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + 2 * (if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry))) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(-ts_rank(returns, 10), industry)), 0, group_zscore(-ts_rank(returns, 10), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "MPkNYGg9",
+    "submittable": true,
+    "ok": true,
+    "sharpe": 1.77,
+    "turnover": 0.2151,
+    "fitness": 1.46,
+    "returns": 0.1464,
+    "drawdown": 0.0854,
+    "longCount": 1592,
+    "shortCount": 1545,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.77,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.46,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2151,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2151,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.19,
+        "limit": 0.77
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6594,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [],
+    "theme": "weighted base5+revrank @ delay1."
+  },
+  {
+    "name": "d0_base5_revrank_control",
+    "expression": "if_else(is_nan(group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)), 0, group_zscore(ts_delta(implied_volatility_mean_60, 20), industry)) + if_else(is_nan(group_zscore(divide(est_epsr, close), industry)), 0, group_zscore(divide(est_epsr, close), industry)) + if_else(is_nan(group_zscore(ts_arg_max(close, 60), industry)), 0, group_zscore(ts_arg_max(close, 60), industry)) + if_else(is_nan(group_zscore(-ts_corr(close, volume, 20), industry)), 0, group_zscore(-ts_corr(close, volume, 20), industry)) + if_else(is_nan(group_zscore(-divide(subtract(close, vwap), vwap), industry)), 0, group_zscore(-divide(subtract(close, vwap), vwap), industry)) + if_else(is_nan(group_zscore(-ts_rank(returns, 10), industry)), 0, group_zscore(-ts_rank(returns, 10), industry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "zqOnkomX",
+    "submittable": false,
+    "ok": true,
+    "sharpe": 1.52,
+    "turnover": 0.2459,
+    "fitness": 1.11,
+    "returns": 0.1323,
+    "drawdown": 0.102,
+    "longCount": 1565,
+    "shortCount": 1568,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.52,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 1.11,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2459,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2459,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.89,
+        "limit": 0.66
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "self_corr": 0.6385,
+    "self_corr_status": "ok",
+    "prod_corr": null,
+    "prod_corr_status": "http:403",
+    "fail_reasons": [
+      "FAILED_CHECKS=LOW_SHARPE,LOW_FITNESS"
+    ],
+    "theme": "control: base5+revrank @ delay0."
   }
 ]
