@@ -1,0 +1,36 @@
+[
+  {
+    "label": "max_lottery",
+    "expression": "-group_zscore(ts_max(returns, 22), industry)",
+    "sharpe": null,
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    },
+    "error": {
+      "stage": "sim",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    }
+  },
+  {
+    "label": "skew",
+    "expression": "-group_zscore(ts_skewness(returns, 66), industry)",
+    "sharpe": null,
+    "setting": {
+      "universe": "TOP3000",
+      "neut": "INDUSTRY",
+      "decay": 4,
+      "trunc": 0.02,
+      "delay": 0
+    },
+    "error": {
+      "stage": "sim",
+      "status": "ERROR",
+      "message": "Attempted to use inaccessible or unknown operator \"ts_skewness\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+    }
+  }
+]
