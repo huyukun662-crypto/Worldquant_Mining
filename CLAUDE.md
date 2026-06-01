@@ -123,6 +123,23 @@ concentration-safe. Key findings:
   they are genuinely uncorrelated to the 3 skew-based d0 factors. The same
   expression at delay=0 (control) is only SH 1.52 (fails LOW_SHARPE+FITNESS).
 
+### A fully-uncorrelated factor at DELAY=0 is structurally impossible (tier)
+
+Asked specifically for a ZERO-survivor (no skew/news/PVcov/av_diff) factor at
+DELAY=0, rounds 36-38 exhausted the space and the verified ceiling is SH ~1.52,
+below the hard d0 LOW_SHARPE gate of 2.0:
+- pure reversal (low-decay, the classic d0 edge) — TOP3000 d0 SH <=0.6 with
+  turnover 1.0-1.4 (cost-killed); reversal is not the answer.
+- IV-momentum FAMILY (4 horizons + accel) — DILUTES to SH 0.58 (single
+  ivmom20 0.86 is better); also NaN-fill doubles op count → 64-operator limit.
+- base6 (the best zero-survivor blend) under every neutralization
+  (INDUSTRY/SUBINDUSTRY/SECTOR/MARKET) × truncation (0.02-0.10) × decay
+  (4/8/12) — SH 1.44-1.54, ALWAYS fails LOW_SHARPE.
+Conclusion: the strong d0 edge is structurally the iv put-call skew; removing
+ALL survivor sources caps a d0 factor at ~1.5. A genuinely-uncorrelated 2.0
+factor exists ONLY at delay=1 (vRdX1gnQ SH 2.13). At delay=0 the closest is
+`obase_skew20` (np3GzWZE, SH 2.16) which shares the skew leg (self_corr 0.65).
+
 ### Dead ends proven along the way (don't re-walk)
 
 - Cross-sectional standardization of skew (zscore/rank/winsorize/market/sector)
