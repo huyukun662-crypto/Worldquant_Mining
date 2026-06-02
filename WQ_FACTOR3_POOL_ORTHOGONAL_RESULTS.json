@@ -1,0 +1,34 @@
+[
+  {
+    "label": "D0_factor3_pure_analyst_uncertainty_value_POOL_ORTHOGONAL",
+    "purpose": "3rd D0 factor, LOW correlation with the ENTIRE existing alpha pool (19 alphas: IV + price/volume technicals)",
+    "delay": 0,
+    "universe": "TOP3000",
+    "neutralization": "INDUSTRY",
+    "decay": 4,
+    "truncation": 0.02,
+    "uses_IV": false,
+    "uses_template": false,
+    "economic_thesis": "analyst forecast DISPERSION + predicted UNCERTAINTY + light VALUE \u2014 fundamental signal orthogonal to the pool's IV & price/volume technicals",
+    "expression": "group_zscore(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5,group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.2,group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), industry)",
+    "alpha_id": "wpLkemQQ",
+    "metrics": {
+      "sharpe": 1.54,
+      "turnover": 0.207,
+      "fitness": 0.88,
+      "returns": 0.0683,
+      "drawdown": 0.0585,
+      "margin": 0.00066
+    },
+    "max_pool_correlation": 0.262,
+    "pool_corr_note": "max corr 0.262 vs the whole 19-alpha pool (lowest among all high-SH candidates); pure dispersion is even lower at 0.226 (SH 1.01)",
+    "frontier_SH_vs_poolcorr": {
+      "an_disp_SH1.01": 0.226,
+      "an_dp_v2_SH1.54": 0.262,
+      "4way_SH1.64": 0.365,
+      "SI_blends_SH2.0+": 0.42,
+      "pure_short_interest_SH2.08": 0.531
+    },
+    "key_constraint": "At D0 without IV, ANY SH>2.0 factor needs short interest, which inherently correlates ~0.42 with the pool's IV/price-volume alphas. So submittable (SH>2.0) and pool-uncorrelated (<0.3) are mutually exclusive at D0 non-IV. This factor maximizes Sharpe (1.54) subject to genuine pool-orthogonality (0.262)."
+  }
+]

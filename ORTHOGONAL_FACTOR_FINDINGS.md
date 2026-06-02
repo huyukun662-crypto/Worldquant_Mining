@@ -123,3 +123,38 @@ self-correlation vs factor 1 = **0.424 < 0.7**. Full result in
 |---|---|---:|---:|---|
 | factor 1 `KPkVxEb1` | short-side crowding | 2.08 | 1.75 | ✓ |
 | factor 2 `QPEzl0Er` | short crowding + analyst uncertainty/value/quality | 2.07 | 1.56 | ✓ (corr 0.42) |
+
+## ✅ POOL-orthogonal factor (goal: "挖与这些不相关的因子") — factor 3
+
+Inspected the account's actual 19-alpha pool: it is **saturated with IV
+(`implied_volatility_*`, SH 2.4) and price/volume technicals**
+(`ts_corr(high,close)`, intraday `(close-open)/open`, range, reversal).
+So the pool-orthogonal direction is **fundamental/analyst**, not
+price/volume (which would collide) and not IV (avoided per spec).
+
+Measured **max correlation against the whole pool** via WQ
+`/alphas/{id}/correlations/self`:
+
+| factor | SH | max pool corr | note |
+|---|---:|---:|---|
+| pure dispersion | 1.01 | **0.226** | lowest correlation |
+| **dispersion + 0.5·pu + 0.2·value** ⭐ | **1.54** | **0.262** | best Sharpe at low corr |
+| 4-way (+ROE) | 1.64 | 0.365 | ROE/value raise corr |
+| SI×fundamental blends (SH>2.0) | 2.0+ | ~0.42 | SI floor |
+| pure short interest | 2.08 | 0.531 | |
+
+**Factor 3 = `wpLkemQQ`**: `group_zscore(dispersion + 0.5·pu +
+0.2·book/price)`, SH 1.54, turnover 0.21, **max pool correlation 0.262** —
+far below the 0.42 of the earlier blend. Value weight is the correlation
+driver (0.2→corr 0.26, 0.4→corr 0.45+); keeping it light is what makes this
+factor genuinely pool-orthogonal. Full result in
+`WQ_FACTOR3_POOL_ORTHOGONAL_RESULTS.json`.
+
+### Hard constraint discovered
+At **D0 without IV**, *any* SH>2.0 factor must rely on short interest,
+which inherently correlates ~0.42 with the pool's IV/price-volume alphas
+(heavily-shorted ⇒ high IV). Therefore **submittable (SH>2.0) and
+pool-uncorrelated (<0.3) are mutually exclusive** on this account at delay
+0 without IV. Factor 3 maximizes Sharpe (1.54) subject to true
+pool-orthogonality (0.262); reaching SH 2.0 would require either IV (out of
+spec) or accepting ~0.42 pool correlation (the SI blend, e.g. `QPEzl0Er`).
