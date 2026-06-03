@@ -140,6 +140,45 @@ ALL survivor sources caps a d0 factor at ~1.5. A genuinely-uncorrelated 2.0
 factor exists ONLY at delay=1 (vRdX1gnQ SH 2.13). At delay=0 the closest is
 `obase_skew20` (np3GzWZE, SH 2.16) which shares the skew leg (self_corr 0.65).
 
+### Rounds 39-40: the two UNTRIED orthogonal families don't break the ceiling
+
+Rounds 26-38 only mined option-IV / news / PV / earnings. Rounds 39-40 swept the
+two families that are available at d0/TOP3000 and were NEVER touched:
+**socialmedia** (8 MATRIX fields) and **broader analyst estimates** (only
+`est_epsr` had been used). Single-leg d0 probes (`scripts/d0_candidates_round39.py`):
+
+- socialmedia is genuinely orthogonal (self_corr 0.17-0.41) but carries NO d0
+  edge: `snt_social_value` SH 0.50 is the best, `snt_value` 0.35, buzz legs ~0.
+- fresh-analyst value yields are stronger but NOT orthogonal: `est_fcf/close`
+  SH 0.69 / TO 0.019 but **self_corr 0.68**; `est_netprofit/close` 0.33 /
+  self_corr 0.70 — they sit on top of existing pool value alphas.
+
+Round-40 (`scripts/d0_candidates_round40.py`) blended these into base6 (the
+proven 1.52 orthogonal blend) to measure the empirical fully-orthogonal d0
+ceiling. The genuinely-orthogonal social leg DIVERSIFIES (adds in quadrature);
+the value-yield leg does not (it correlates with base6's own est_epsr leg):
+
+```
+b6_socval2 (9qRZ8MRq): base6 + 2*social_value   SH 1.76  FIT 1.26  selfC 0.579
+b6_soc2    (XgKmVnxX): base6 + social_value+snt  SH 1.61  FIT 1.18  selfC 0.648
+b6_fcf2    (pw7YMgjo): base6 + 2*FCF_yield       SH 1.59  FIT 1.29  selfC 0.623
+```
+
+So the new social family lifts the fully-orthogonal d0 ceiling from 1.52 to
+**1.76** (b6_socval2, self_corr 0.58 — safely orthogonal) — a real gain, but
+still below the hard d0 LOW_SHARPE gate of 2.0. Quadrature on the remaining
+weak orthogonal legs caps the ceiling at ~1.8. **Conclusion stands, now
+confirmed across ALL d0 families: a genuinely-uncorrelated d0 factor at SH>=2.0
+is structurally impossible on this tier; the orthogonal-d0 ceiling is ~1.76-1.8.**
+A real >=2.0 requires either the near-orthogonal `np3GzWZE` (d0, shares the skew
+leg, self_corr 0.65) or the genuinely-orthogonal `vRdX1gnQ` (delay=1, SH 2.13).
+
+Op-budget note: NaN-filling every leg via `if_else(is_nan(X),0,X)` doubles op
+count, so base6 + social + fcfy hits the 64-operator limit (71-78 ops). The
+dense PV/vwap/returns legs don't actually need NaN-fill (no NaN to fill) — a
+future round could drop those wrappers to free budget, but quadrature says it
+won't clear 2.0 regardless.
+
 ### Dead ends proven along the way (don't re-walk)
 
 - Cross-sectional standardization of skew (zscore/rank/winsorize/market/sector)
