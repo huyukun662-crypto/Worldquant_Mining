@@ -175,9 +175,33 @@ leg, self_corr 0.65) or the genuinely-orthogonal `vRdX1gnQ` (delay=1, SH 2.13).
 
 Op-budget note: NaN-filling every leg via `if_else(is_nan(X),0,X)` doubles op
 count, so base6 + social + fcfy hits the 64-operator limit (71-78 ops). The
-dense PV/vwap/returns legs don't actually need NaN-fill (no NaN to fill) — a
-future round could drop those wrappers to free budget, but quadrature says it
-won't clear 2.0 regardless.
+dense PV/vwap/returns legs don't actually need NaN-fill (no NaN to fill).
+
+### Round 41: lean base6 (op-efficient) confirms the orthogonal ceiling = 1.78
+
+Round 41 (`scripts/d0_candidates_round41.py`) took the last untested lever:
+drop the NaN-fill wrapper from base6's DENSE PV legs (arg_max/ts_corr/vwap/
+ts_rank — no NaN to fill, so the wrapper was pure wasted budget) and keep it
+only on the SPARSE option/analyst/social legs. That freed ~16 operators and let
+the extra orthogonal legs fit. Result — the fully-orthogonal d0 ceiling is now
+empirically nailed (all genuinely-orthogonal, self_corr 0.55-0.60, all fail only
+because SH < 2.0):
+
+```
+lean_soc3     (qMX9JLgj): lean base6 + 2*socval + sentval + ebrev  SH 1.78 FIT 1.26
+lean_socfcf   (O09QdqMY): + FCF-yield (fits now)                   SH 1.77 FIT 1.29
+lean_soc3_d12 (rKWpaZwd): lean_soc3 at decay12                     SH 1.72 FIT 1.33
+```
+
+`lean_soc3_d12` gets FITNESS to 1.33 (PASS) and turnover to 0.177 — only
+LOW_SHARPE still fails. Adding more legs DILUTES (lean_soc4 with scl_sent dropped
+to 1.72); FCF-yield adds nothing (overlaps base6's est_epsr value leg). **Final,
+exhaustive verdict: the genuinely-orthogonal d0 ceiling on this tier is SH ~1.78
+— hard-capped below the 2.0 LOW_SHARPE gate.** Every lever is now spent
+(expression families option/news/PV/earnings/social/analyst, neutralization,
+truncation, decay, weighting, and op-efficient packing). A real >=2.0 needs the
+near-orthogonal `np3GzWZE` (d0, shares skew, selfC 0.65) or the genuinely-
+orthogonal `vRdX1gnQ` (delay=1, SH 2.13).
 
 ### Dead ends proven along the way (don't re-walk)
 
