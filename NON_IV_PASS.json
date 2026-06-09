@@ -1,13 +1,16 @@
 {
- "description": "FIRST non-IV PASS alphas: group_neutralize of reversed CFO/X ratios. All pass LOW_SHARPE>1.25, LOW_FITNESS>1.0, all WQ submission checks (SELF_CORRELATION PENDING).",
- "factors": [
+ "discovery": "First non-IV alphas to PASS the WQ submission gate (LOW_SHARPE > 1.25, LOW_FITNESS > 1.0).",
+ "mechanism": "group_neutralize( reverse(zscore(CFO / X)), subindustry ) where X is in {assets, sales, ebitda, equity, debt}. CFO is the cashflow field. Reversed sign (long low CFO/X, short high CFO/X) reflects the 2019-2023 IS-window junk/value cycle.",
+ "recommended_single_submission": "Vk86dvEG (highest SH=1.35, FIT=1.43, very low TO=0.024)",
+ "cluster_truth": "All 8 PASS alphas are 0.79-0.99 mutually correlated (single mechanism cluster). WQ self-correlation gate (<0.7) means at most 1 from this list will be accepted as a submitted alpha. The submitter should pick Vk86dvEG and submit only that.",
+ "pass_alphas": [
   {
-   "tag": "Vk86dvEG_BEST_nonIV",
    "alpha_id": "Vk86dvEG",
    "sharpe": 1.35,
    "fitness": 1.43,
    "turnover": 0.024,
-   "drawdown": 0.109,
+   "drawdown": 0.1087,
+   "description": "BEST: 3 CFO ratios (assets+sales+0.5*ebitda) with subindustry group_neutralize",
    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), 10))",
    "settings": {
     "universe": "TOP3000",
@@ -18,12 +21,28 @@
    }
   },
   {
-   "tag": "MPx13AZk_quad",
+   "alpha_id": "qMXWLjPj",
+   "sharpe": 1.33,
+   "fitness": 1.39,
+   "turnover": 0.0235,
+   "drawdown": 0.1088,
+   "description": "CFO 6 fields, decay=10",
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
    "alpha_id": "MPx13AZk",
    "sharpe": 1.29,
    "fitness": 1.3,
-   "turnover": 0.028,
-   "drawdown": 0.102,
+   "turnover": 0.0283,
+   "drawdown": 0.1024,
+   "description": "4 CFO ratios (assets+sales+ebitda+equity)",
    "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(equity, 60)))), subindustry)), 10))",
    "settings": {
     "universe": "TOP3000",
@@ -34,13 +53,77 @@
    }
   },
   {
-   "tag": "wpeYbeKY_multiwin",
+   "alpha_id": "RRrVEw5z",
+   "sharpe": 1.29,
+   "fitness": 1.33,
+   "turnover": 0.0226,
+   "drawdown": 0.1083,
+   "description": "CFO 6 fields, ts_decay window=20",
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), 20))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
+   "alpha_id": "pw7Px32x",
+   "sharpe": 1.31,
+   "fitness": 1.33,
+   "turnover": 0.0703,
+   "drawdown": 0.1034,
+   "description": "CFO triple + 0.3 group_neut(social sentiment) \u2014 only cross-source PASS",
+   "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), multiply(0.3, group_neutralize(zscore(winsorize(zscore(ts_backfill(snt_social_value, 10)), std=4)), subindustry))), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
+   "alpha_id": "akOLV0ov",
+   "sharpe": 1.27,
+   "fitness": 1.29,
+   "turnover": 0.0261,
+   "drawdown": 0.1051,
+   "description": "CFO 8-field stack",
+   "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(equity, 60)))), subindustry))), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
    "alpha_id": "wpeYbeKY",
    "sharpe": 1.26,
    "fitness": 1.24,
-   "turnover": 0.023,
-   "drawdown": 0.112,
+   "turnover": 0.0226,
+   "drawdown": 0.1123,
+   "description": "CFO multi-window (60d + 90d backfill)",
    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 90), ts_backfill(assets, 90)))), subindustry)), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
+   "alpha_id": "3qA9GL2z",
+   "sharpe": 1.26,
+   "fitness": 1.29,
+   "turnover": 0.0233,
+   "drawdown": 0.1354,
+   "description": "CFO + EBIT cross-profitability",
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.3, add(group_neutralize(reverse(zscore(divide(ts_backfill(ebit, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(ebit, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)))), 10))",
    "settings": {
     "universe": "TOP3000",
     "delay": 1,
