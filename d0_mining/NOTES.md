@@ -33,11 +33,25 @@ NOT click Submit Alpha.
 | reversal × volume-shock (multiply) | 0.25 | - | - | destroys the signal |
 | low-vol anomaly `-quantile(ts_std_dev(returns,20),gaussian)` | 0.16 | 0.07 | low | no edge at D0 |
 
-**Plateau**: pure short-term price mean-reversion saturates at
-**SH ≈ 1.2, FIT ≈ 0.72** at D0 on TOP3000. To reach the 2.0 bar we need
-to combine the reversal workhorse with genuinely *orthogonal* economic
-PV signals (intraday/overnight reversal, momentum, relative volume,
-price acceleration, regression residual). batch5 screens those.
+**Plateau (PV only)**: pure price/volume signals saturate at
+**SH ≈ 1.38, FIT ≈ 0.88** at D0 on TOP3000 (best = 3-signal reversal
+combo: `ts_av_diff(close,10)` + `ts_corr(close,volume,10)` +
+risk-adjusted reversal `ts_av_diff(close,10)/ts_std_dev(returns,20)`,
+each `group_zscore(quantile(.,gaussian),subindustry)`). Combining
+*correlated* reversal signals barely diversifies. Risk-adjusting the
+reversal (`/ts_std_dev`) lifted a single signal 1.18 → 1.27.
+
+**Account setting limits (batch8)**: neutralizations `STATISTICAL`,
+`CROWDING`, `FAST`, `SLOW` are **NOT available** (HTTP 400) on this
+tier — only NONE/MARKET/SECTOR/INDUSTRY/SUBINDUSTRY. So risk-model
+neutralization can't be used to lift Sharpe. INDUSTRY ≈ SUBINDUSTRY.
+
+**Break-the-wall plan**: add a signal *orthogonal* to price reversal.
+D0 `socialmedia` sentiment fields have **coverage 1.0**:
+`scl12_sentiment`, `scl12_buzz`, `snt_value`, `snt_social_value`
+(economic: attention/sentiment-induced overpricing reverts; uncommon;
+non-IV). batch9 screens them standalone; batch10 combines sentiment ×
+reversal to target SH > 2.0.
 
 ## Regularization / uncommon operators in play
 
@@ -48,7 +62,6 @@ price acceleration, regression residual). batch5 screens those.
 - Avoided: any implied-volatility / option (IV) fields.
 
 ## Tooling
-
 - `scripts/wq_probe.py`  — single D0 probe + check thresholds.
 - `scripts/wq_batch.py`  — concurrent (max 2) batch tester over
   (expression, settings); writes results incrementally; flags
