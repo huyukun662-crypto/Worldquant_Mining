@@ -1,0 +1,129 @@
+{
+ "description": "Five-alpha portfolio all PASSING WQ submission gate (LOW_SHARPE, LOW_FITNESS, LOW_TURNOVER, HIGH_TURNOVER, CONCENTRATED_WEIGHT, LOW_SUB_UNIVERSE_SHARPE all PASS).",
+ "cluster_structure": "Only 3 truly distinct IV mechanisms exist as PASS clusters on this account: (1) PCR ratio momentum, (2) long-horizon skew differential, (3) term-structure with light skew weighting. Within-cluster correlations are 0.85-0.99; cross-cluster 0.26-0.67.",
+ "correlation_matrix_pairwise_PnL": {
+  "A_PCR": {
+   "A_PCR": 1.0,
+   "Sk_h720": 0.667,
+   "Sk_LongStack": 0.697,
+   "Mix_70_30": 0.258,
+   "Mix_60_40": 0.427
+  },
+  "Sk_h720": {
+   "A_PCR": 0.667,
+   "Sk_h720": 1.0,
+   "Sk_LongStack": 0.952,
+   "Mix_70_30": 0.407,
+   "Mix_60_40": 0.626
+  },
+  "Sk_LongStack": {
+   "A_PCR": 0.697,
+   "Sk_h720": 0.952,
+   "Sk_LongStack": 1.0,
+   "Mix_70_30": 0.501,
+   "Mix_60_40": 0.718
+  },
+  "Mix_70_30": {
+   "A_PCR": 0.258,
+   "Sk_h720": 0.407,
+   "Sk_LongStack": 0.501,
+   "Mix_70_30": 1.0,
+   "Mix_60_40": 0.961
+  },
+  "Mix_60_40": {
+   "A_PCR": 0.427,
+   "Sk_h720": 0.626,
+   "Sk_LongStack": 0.718,
+   "Mix_70_30": 0.961,
+   "Mix_60_40": 1.0
+  }
+ },
+ "caveat": "Submitting all 5 to WQ would trigger SELF_CORRELATION rejection on within-cluster pairs (Sk_h720<->LongStack 0.952; Mix_70_30<->Mix_60_40 0.961). For submission, choose AT MOST one per cluster -> 3 alpha submissions max.",
+ "factors": [
+  {
+   "tag": "A_PCR_directional",
+   "alpha_id": "d5Qj0zdw",
+   "economic": "Cluster 1: option put/call IV ratio momentum across 30/60/90d horizons. Bearish hedging -> reversal. Anchor alpha.",
+   "sharpe": 2.82,
+   "fitness": 3.72,
+   "turnover": 0.1043,
+   "drawdown": 0.0641,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 15,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(add(add(zscore(divide(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_call_30, 5))), zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5)))), zscore(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_call_90, 5)))), 15)))"
+  },
+  {
+   "tag": "Sk_h720_pure",
+   "alpha_id": "xAnjNEbb",
+   "economic": "Cluster 2: long-horizon (720d) put-IV minus call-IV skew differential reversed. Long flat-skew, short steep-skew.",
+   "sharpe": 1.8,
+   "fitness": 2.03,
+   "turnover": 0.122,
+   "drawdown": 0.074,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5))), 10)))"
+  },
+  {
+   "tag": "Sk_LongStack",
+   "alpha_id": "E5Kl8a3r",
+   "economic": "Cluster 2 alt: stacked long-horizon skews (180/360/720) reversed. Higher SH version; mutual 0.952 with Sk_h720.",
+   "sharpe": 1.95,
+   "fitness": 2.42,
+   "turnover": 0.1056,
+   "drawdown": 0.0871,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5))))), 10))"
+  },
+  {
+   "tag": "Mix_70term_30skew",
+   "alpha_id": "88Ll0ng7",
+   "economic": "Cluster 3: weighted blend 70% IV-mean term-structure (30/180+60/360+90/720) + 30% skew. Best A-diversifier (corr 0.258).",
+   "sharpe": 1.55,
+   "fitness": 1.45,
+   "turnover": 0.1164,
+   "drawdown": 0.1075,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.8, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.2, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  },
+  {
+   "tag": "Mix_TermSkew_60_40",
+   "alpha_id": "E5KlMqmJ",
+   "economic": "Cluster 3 alt: 60% term + 40% skew. Higher SH (1.88) but 0.961 within cluster.",
+   "sharpe": 1.88,
+   "fitness": 2.03,
+   "turnover": 0.1147,
+   "drawdown": 0.1039,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.6, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.4, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  }
+ ]
+}
