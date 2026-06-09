@@ -99,6 +99,9 @@ def main():
     out_path = sys.argv[2] if len(sys.argv) > 2 else "wq_batch_results.json"
     session = auth()
     results = [None] * len(cands)
+    def _flush():
+        with open(out_path, "w") as f:
+            json.dump(results, f, indent=2)
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT) as ex:
         futs = {ex.submit(run_one, session, c): i for i, c in enumerate(cands)}
         for fut in as_completed(futs):
@@ -107,6 +110,7 @@ def main():
                 results[i] = fut.result()
             except Exception as e:
                 results[i] = {"ok": False, "expr": cands[i]["expr"], "error": str(e)}
+            _flush()  # incremental: survive a mid-run kill
             r = results[i]
             if r.get("ok"):
                 c = r["checks"]
