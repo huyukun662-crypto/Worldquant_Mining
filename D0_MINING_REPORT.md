@@ -15,24 +15,27 @@ Independently re-read via `/alphas/{id}/check` (`WQ_D0_SUBMITTABLE.json`):
 
 | alpha_id   | SH   | FIT  | TO    | ann.ret | maxDD | self-corr | gates |
 |------------|-----:|-----:|------:|--------:|------:|----------:|:-----:|
-| **zqWkWowV** | 2.04 | **1.69** | 0.127 | 8.7% | 3.2% | 0.30 | **8/8 PASS** |
-| le0WoaRe   | 2.06 | 1.63 | 0.139 | — | — | 0.31 | 8/8 PASS |
-| P01Gk5zq   | 2.02 | 1.68 | 0.117 | — | — | 0.30 | 8/8 PASS |
-| WjgAvl3j   | 2.03 | 1.59 | 0.158 | — | — | 0.39 | 8/8 PASS |
+| **O097MAJR** | 2.03 | **1.70** | 0.123 | 8.8% | **3.19%** | 0.31 | **8/8 PASS** |
+| LLR7mKEM   | 2.03 | 1.72 | 0.127 | — | 3.3% | 0.34 | 8/8 PASS |
+| LLR7zXNM   | 2.00 | 1.68 | **0.119** | 8.9% | 3.3% | 0.33 | 8/8 PASS |
+| zqWkWowV   | 2.04 | 1.69 | 0.127 | 8.7% | 3.2% | 0.30 | 8/8 PASS |
 
-Recommended: **`zqWkWowV`** — best Fitness (1.69) with a comfortable Sharpe
-margin (2.04) after fitness-optimization (decay 10, truncation 0.012).
+Recommended: **`O097MAJR`** — Pareto-best: a `ts_decay_linear`-smoothed
+reversal diversifier simultaneously lowers turnover (0.123), lifts Fitness
+(1.70), and gives the lowest drawdown (3.19%) while holding the Sharpe
+margin (2.03). `LLR7zXNM` is the lowest-turnover submittable (0.119) if
+turnover matters more than Sharpe headroom.
 
-### zqWkWowV — full gate table
+### O097MAJR — full gate table
 
 ```
-LOW_SHARPE              PASS  2.04  > 2.0
-LOW_FITNESS             PASS  1.69  > 1.3
-LOW_TURNOVER            PASS  0.127 > 0.01
-HIGH_TURNOVER           PASS  0.127 < 0.7
+LOW_SHARPE              PASS  2.03  > 2.0
+LOW_FITNESS             PASS  1.70  > 1.3
+LOW_TURNOVER            PASS  0.123 > 0.01
+HIGH_TURNOVER           PASS  0.123 < 0.7
 CONCENTRATED_WEIGHT     PASS
-LOW_SUB_UNIVERSE_SHARPE PASS  1.16  > 0.88
-SELF_CORRELATION        PASS  0.30  < 0.7
+LOW_SUB_UNIVERSE_SHARPE PASS  > limit
+SELF_CORRELATION        PASS  0.31  < 0.7
 MATCHES_COMPETITION     PASS
 ```
 
@@ -42,14 +45,27 @@ MATCHES_COMPETITION     PASS
 winsorize(
   if_else(
     is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)),
-    group_zscore(ts_mean(news_pct_90min, 22), subindustry),                 # book-fill (dense)
+    group_zscore(ts_mean(news_pct_90min, 22), subindustry),                          # book-fill (dense)
     5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)  # short core x5
   )
-  - 0.5 * group_zscore(ts_delta(close, 5), subindustry),                    # reversal diversifier
+  - 0.5 * group_zscore(ts_decay_linear(ts_delta(close, 5), 5), subindustry),         # SMOOTHED reversal diversifier
   std=4)
 settings: USA TOP3000, delay=0, decay=10, neutralization=SUBINDUSTRY,
           truncation=0.012, pasteurization=ON
 ```
+
+### Turnover / drawdown reduction (round TO-1, TO-2)
+
+- `maxDD` is already at its floor (~3.1–3.3%, exceptional for a submittable
+  alpha) and does not respond to further smoothing — it is signal-driven.
+- Turnover floor at `SH >= 2.0` is **~0.119**; below that the reversal
+  diversifier (which lifts SH over 2.0) loses too much of its own Sharpe
+  and the alpha drops under the 2.0 gate.
+- **`hump(x, h)` rejected** by this account ("exactly 1 input"), so the
+  explicit-threshold turnover cap is unavailable.
+- Best lever: replace the raw `ts_delta(close,5)` reversal with a
+  `ts_decay_linear(ts_delta(close,5),5)`-smoothed one — lower turnover AND
+  higher fitness AND lower drawdown at the same Sharpe.
 
 ### Fitness optimization (rounds FIT-1, FIT-2)
 
