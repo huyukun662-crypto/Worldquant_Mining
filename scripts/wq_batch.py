@@ -24,7 +24,7 @@ BASE_SETTINGS = {
     "maxTrade": "OFF", "testPeriod": "P0Y0M",
 }
 
-MAX_CONCURRENT = 3
+MAX_CONCURRENT = 2
 POLL_TIMEOUT_S = 600
 
 
