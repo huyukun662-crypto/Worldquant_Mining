@@ -1,0 +1,12 @@
+[
+  {"expr": "-quantile(ts_zscore(close, 10), driver=gaussian)", "settings": {"decay": 6}},
+  {"expr": "-quantile(ts_av_diff(close, 10), driver=gaussian)", "settings": {"decay": 8}},
+  {"expr": "-quantile(ts_av_diff(close, 20), driver=gaussian)", "settings": {"decay": 10}},
+  {"expr": "-group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-quantile(ts_av_diff(close, 5), driver=gaussian)", "settings": {"decay": 16}},
+  {"expr": "-quantile(ts_rank(close, 120), driver=gaussian)", "settings": {"decay": 8}},
+  {"expr": "-quantile(ts_std_dev(returns, 20), driver=gaussian)", "settings": {"decay": 8}},
+  {"expr": "-quantile(ts_av_diff(close, 5), driver=gaussian)", "settings": {"decay": 6, "universe": "TOP1000"}},
+  {"expr": "-multiply(quantile(ts_av_diff(close, 5), driver=gaussian), rank(ts_std_dev(returns, 20)))", "settings": {"decay": 8}},
+  {"expr": "-quantile(ts_av_diff(vwap, 5), driver=gaussian)", "settings": {"decay": 6}}
+]
