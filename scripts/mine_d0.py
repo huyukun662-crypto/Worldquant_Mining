@@ -70,6 +70,15 @@ def auth() -> requests.Session:
 
 
 def submit_one(s: requests.Session, expr: str, settings: dict) -> dict:
+    try:
+        return _submit_one(s, expr, settings)
+    except Exception as e:  # network/transient -> never kill the batch
+        full = dict(BASE_SETTINGS); full.update(settings or {})
+        return {"ok": False, "expression": expr, "settings": full,
+                "error": f"exc: {type(e).__name__}: {str(e)[:150]}"}
+
+
+def _submit_one(s: requests.Session, expr: str, settings: dict) -> dict:
     full = dict(BASE_SETTINGS)
     full.update(settings or {})
     body = {"type": "REGULAR", "settings": full, "regular": expr}
