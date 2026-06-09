@@ -1,0 +1,122 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 20,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), 20))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), 30))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), 20))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 20,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(hump(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), hump=0.01), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(hump(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), hump=0.005), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(ts_mean(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), 5), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), multiply(0.5, subtract(0, zscore(ts_backfill(relative_valuation_rank_derivative, 10))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(multiply(0.5, add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4)))), subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(fscore_momentum, 10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(multiply(0.7, add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4)))), multiply(0.3, subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(fscore_momentum, 10))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 15,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(ts_mean(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), 10), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 15,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(hump(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), hump=0.005), multiply(0.3, subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(fscore_momentum, 10))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]
