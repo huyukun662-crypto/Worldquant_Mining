@@ -1,0 +1,38 @@
+{
+  "verdict_D0": "NOT submittable on this tier: D0 bar is Sharpe>2.0 / Fitness>1.3; PV ceiling ~1.38; risk-model neutralization (STATISTICAL/CROWDING/FAST/SLOW) locked (HTTP400).",
+  "submittable_factor_delay1": {
+    "expression": "-add(add(group_zscore(quantile(ts_av_diff(close, 10), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 10), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "Jjd7GLKx",
+    "is": {
+      "sharpe": 1.59,
+      "turnover": 0.2536,
+      "fitness": 1.06,
+      "returns": 0.112,
+      "drawdown": 0.047,
+      "subuniverse_sharpe": 0.85
+    },
+    "all_checks_pass": true,
+    "economic_meaning": "short-horizon mean reversion (ts_av_diff close) + price-volume overreaction reversal (ts_corr close,volume) + risk-adjusted reversal (ts_av_diff/ts_std_dev); each gaussian-quantile regularized and subindustry-neutralized."
+  },
+  "D0_best_proxy": {
+    "expression": "-add(add(group_zscore(quantile(ts_av_diff(close, 10), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 10), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry))",
+    "D0_sharpe": 1.38,
+    "D0_fitness": 0.88
+  }
+}

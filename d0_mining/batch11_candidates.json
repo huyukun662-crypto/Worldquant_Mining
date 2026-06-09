@@ -1,0 +1,5 @@
+[
+  {"expr": "-add(add(group_zscore(quantile(ts_av_diff(close, 10), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 10), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry))", "settings": {"delay": 1, "decay": 8}},
+  {"expr": "-group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry)", "settings": {"delay": 1, "decay": 8}},
+  {"expr": "-add(add(group_zscore(quantile(ts_av_diff(close, 10), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 10), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry))", "settings": {"delay": 1, "decay": 16}}
+]
