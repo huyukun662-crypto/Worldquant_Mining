@@ -1,0 +1,102 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(subtract(subtract(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10))), zscore(ts_backfill(multi_factor_static_score_derivative, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(subtract(subtract(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10))), zscore(ts_backfill(multi_factor_static_score_derivative, 10))), zscore(ts_backfill(fscore_quality, 10))), zscore(ts_backfill(fscore_profitability, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(subtract(subtract(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10))), zscore(ts_backfill(multi_factor_static_score_derivative, 10))), zscore(ts_regression(returns, zscore(ts_backfill(fscore_value, 10)), 60))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(add(subtract(subtract(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10))), zscore(ts_backfill(multi_factor_static_score_derivative, 10))), zscore(ts_backfill(fscore_quality, 10))), zscore(ts_backfill(fscore_profitability, 10))), zscore(ts_regression(returns, zscore(ts_backfill(fscore_value, 10)), 60))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(snt_social_value, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(snt_social_value, 10))), zscore(ts_backfill(snt_social_volume, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(subtract(subtract(subtract(0, zscore(ts_backfill(parkinson_volatility_60, 10))), zscore(ts_backfill(historical_volatility_60, 10))), zscore(ts_backfill(beta_last_60_days_spy, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), subtract(0, zscore(ts_backfill(parkinson_volatility_60, 10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(subtract(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10))), zscore(ts_regression(returns, zscore(ts_backfill(fscore_value, 10)), 60))), zscore(ts_regression(returns, zscore(snt_social_value), 60))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(subtract(subtract(subtract(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(growth_potential_rank_derivative, 10))), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10))), zscore(ts_backfill(multi_factor_static_score_derivative, 10))), zscore(ts_backfill(snt_social_value, 10))), subtract(0, zscore(ts_backfill(historical_volatility_60, 10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]
