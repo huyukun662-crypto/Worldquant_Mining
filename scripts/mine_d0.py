@@ -183,8 +183,8 @@ def main():
                     sc = r.get("self_corr")
                     scs = f" selfcorr={sc:.2f}" if isinstance(sc, (int, float)) else ""
                     print(f"  OK  SH={r['sharpe']:+.3f} TO={r['turnover']:.3f} "
-                          f"FIT={r['fitness']:+.3f}{scs}  [{mark}]  {r['alpha_id']}  "
-                          f"{r['expression'][:60]}", flush=True)
+                          f"FIT={r['fitness']:+.3f} DD={r.get('drawdown')}{scs}  [{mark}]  {r['alpha_id']}  "
+                          f"{r['expression'][:55]}", flush=True)
                 else:
                     print(f"  ERR {r['error'][:80]}  {r['expression'][:60]}",
                           flush=True)
