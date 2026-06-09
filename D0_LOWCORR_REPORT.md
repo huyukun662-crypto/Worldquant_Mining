@@ -85,3 +85,46 @@ interest factor (`O097MAJR`, corr ~1.0 to the family). `6XErewE7` is the
 best compromise on the frontier (corr 0.51, SH 1.98) but is not quite
 submittable. Reaching SH>2.0 *and* corr<0.7 simultaneously is not
 attainable on this account's non-IV data tier.
+
+---
+
+## Update: a FRESH *submittable* decorrelated factor — `d5QOMdxx`
+
+By keeping a heavy short core but adding only a **light orthogonal tilt**
+(the QPEzl0Er insight: ~15-20% non-short content drops correlation from
+0.93 to ~0.5 while short keeps SH>2.0), we get a submittable factor that
+is genuinely decorrelated from this session's `O097MAJR`:
+
+```
+d5QOMdxx  (USA TOP3000, delay=0, decay=4, INDUSTRY, truncation=0.02)
+  0.8 * book-filled short-interest core
++ 0.2 * group_zscore(analyst-dispersion + 0.5*forecast-uncertainty
+                      + 0.4*book/price + 0.3*ROE + 0.4*earnings-effect)
+  all winsorized, INDUSTRY-neutral
+SH 2.05 · FIT 2.09 · TO 0.135 · ann.ret 14.1% · maxDD 7.3% · 8/8 PASS
+dPnL-corr vs O097MAJR = 0.54   (vs QPEzl0Er = 0.86)
+```
+
+It adds the fresh `ern4_erneffct7` earnings-announcement ingredient to a
+0.8/0.2 short/fundamental split (distinct from QPEzl0Er's 0.85/0.15
+analyst-only), and is **submittable AND 0.54-correlated** to O097MAJR.
+
+### The submittable space is ~1-dimensional
+
+Measuring the existing SH>2.0 factors confirms the structure: the only
+submittable mechanism is short-interest, and the decorrelating *tilts*
+that preserve SH>2.0 fall into two families —
+- **reversal tilt** → the `O097MAJR` family
+- **analyst-dispersion tilt** → the `QPEzl0Er` / `d5QOMdxx` family
+
+A new submittable factor decorrelates from one family (`d5QOMdxx` is 0.54
+to O097MAJR) but stays correlated (~0.86) to its own family. Decorrelating
+from **both** simultaneously requires dropping short weight enough that
+SH falls under 2.0 (the `Grodw623`/`O09rpmgJ` orthogonal factors, corr
+0.09-0.30, SH 1.0-1.3).
+
+### Bottom line for "fresh + low-correlation"
+- vs this session's factor (`O097MAJR`): **`d5QOMdxx`** is fresh,
+  submittable, and decorrelated (0.54).
+- vs the whole pool / a true independent stream: **`O09rpmgJ`** (corr
+  0.09) or **`Grodw623`** (corr 0.30), at the cost of submittability.

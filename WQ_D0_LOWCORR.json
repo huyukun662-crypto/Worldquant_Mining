@@ -1,5 +1,30 @@
 [
   {
+    "alpha_id": "d5QOMdxx",
+    "grade": "GOOD",
+    "mechanism": "short-interest + earnings-effect + analyst-dispersion + value (w=0.8/0.2, INDUSTRY) -- SUBMITTABLE & decorrelated from O097MAJR",
+    "expression": "winsorize(add(multiply(0.8, if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), industry)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), industry))), multiply(0.2, group_zscore(add(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.5, group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.4, group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.3, group_zscore(ts_backfill(return_equity, 66), industry))), multiply(0.4, group_zscore(ts_mean(ts_backfill(vec_avg(ern4_erneffct7), 22), 22), industry))), industry))), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.05,
+      "fitness": 2.09,
+      "turnover": 0.1353,
+      "returns": 0.1411,
+      "drawdown": 0.0733
+    },
+    "dPnL_corr_vs_O097MAJR": 0.539,
+    "dPnL_corr_vs_QPEzl0Er": 0.859,
+    "submittable": true
+  },
+  {
     "alpha_id": "6XErewE7",
     "grade": "AVERAGE",
     "mechanism": "short(minority) + earnings-effect + value + reversal (blend)",
