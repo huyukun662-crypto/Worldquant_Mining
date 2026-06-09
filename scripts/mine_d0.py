@@ -78,6 +78,28 @@ def submit_one(s: requests.Session, expr: str, settings: dict) -> dict:
                 "error": f"exc: {type(e).__name__}: {str(e)[:150]}"}
 
 
+def poll_check(s: requests.Session, aid: str, tries: int = 30) -> list | None:
+    """Poll /alphas/{id}/check until the IS check block populates.
+    Returns the list of check dicts (incl. real SELF_CORRELATION) or None."""
+    for _ in range(tries):
+        rc = s.get(f"{API}/alphas/{aid}/check", timeout=60)
+        if rc.status_code == 429:
+            time.sleep(15); continue
+        txt = (rc.text or "").strip()
+        if not txt:
+            time.sleep(5); continue
+        try:
+            checks = ((rc.json().get("is") or {}).get("checks")) or []
+        except Exception:
+            time.sleep(5); continue
+        # wait until self-correlation resolves out of PENDING
+        if checks and all(c.get("result") != "PENDING" for c in checks):
+            return checks
+        if checks:
+            time.sleep(5)
+    return checks if 'checks' in dir() else None
+
+
 def _submit_one(s: requests.Session, expr: str, settings: dict) -> dict:
     full = dict(BASE_SETTINGS)
     full.update(settings or {})
@@ -111,8 +133,13 @@ def _submit_one(s: requests.Session, expr: str, settings: dict) -> dict:
                 return {"ok": False, "expression": expr, "settings": full,
                         "alpha_id": aid, "error": f"alpha-get-{ra.status_code}"}
             isb = (ra.json().get("is") or {})
-            checks = isb.get("checks") or []
+            # Real submit gate: poll /alphas/{id}/check (this computes
+            # SELF_CORRELATION against the submitted pool; the plain
+            # /alphas read leaves it PENDING).
+            checks = poll_check(s, aid) or (isb.get("checks") or [])
             failed = [c["name"] for c in checks if c.get("result") == "FAIL"]
+            self_corr = next((c.get("value") for c in checks
+                              if c.get("name") == "SELF_CORRELATION"), None)
             return {
                 "ok": True, "expression": expr, "settings": full,
                 "alpha_id": aid,
@@ -122,6 +149,7 @@ def _submit_one(s: requests.Session, expr: str, settings: dict) -> dict:
                 "margin": isb.get("margin"),
                 "longCount": isb.get("longCount"),
                 "shortCount": isb.get("shortCount"),
+                "self_corr": self_corr,
                 "checks": checks,
                 "failed_checks": failed,
                 "pass_submittable": len(failed) == 0,
@@ -152,9 +180,11 @@ def main():
                 if r.get("ok"):
                     mark = "PASS-SUBMIT" if r["pass_submittable"] else \
                            f"fail:{','.join(r['failed_checks'])}"
+                    sc = r.get("self_corr")
+                    scs = f" selfcorr={sc:.2f}" if isinstance(sc, (int, float)) else ""
                     print(f"  OK  SH={r['sharpe']:+.3f} TO={r['turnover']:.3f} "
-                          f"FIT={r['fitness']:+.3f}  [{mark}]  "
-                          f"{r['expression'][:70]}", flush=True)
+                          f"FIT={r['fitness']:+.3f}{scs}  [{mark}]  {r['alpha_id']}  "
+                          f"{r['expression'][:60]}", flush=True)
                 else:
                     print(f"  ERR {r['error'][:80]}  {r['expression'][:60]}",
                           flush=True)
