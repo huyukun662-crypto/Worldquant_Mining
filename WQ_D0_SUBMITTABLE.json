@@ -1,5 +1,78 @@
 [
   {
+    "alpha_id": "zqWkWowV",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_delta(close, 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.04,
+      "fitness": 1.69,
+      "turnover": 0.1266,
+      "returns": 0.0871,
+      "drawdown": 0.0318
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.04,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.69,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1266,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1266,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.16,
+        "limit": 0.88
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.3023,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "note": "fitness-optimized: decay10 truncation0.015 -> best FIT 1.69 with SH margin 2.04"
+  },
+  {
     "alpha_id": "le0WoaRe",
     "grade": "AVERAGE",
     "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_delta(close, 5), subindustry), std=4)",

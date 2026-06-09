@@ -13,24 +13,26 @@ All numbers come from WorldQuant Brain's `/simulations` + `/alphas/{id}/check`
 
 Independently re-read via `/alphas/{id}/check` (`WQ_D0_SUBMITTABLE.json`):
 
-| alpha_id   | SH   | FIT  | TO    | self-corr | sub-univ SH | gates |
-|------------|-----:|-----:|------:|----------:|------------:|:-----:|
-| **le0WoaRe** | 2.06 | 1.63 | 0.139 | 0.31 | 1.16 | **8/8 PASS** |
-| P01Gk5zq   | 2.02 | 1.68 | 0.117 | 0.30 | 1.14 | 8/8 PASS |
-| WjgAvl3j   | 2.03 | 1.59 | 0.158 | 0.39 | 1.04 | 8/8 PASS |
+| alpha_id   | SH   | FIT  | TO    | ann.ret | maxDD | self-corr | gates |
+|------------|-----:|-----:|------:|--------:|------:|----------:|:-----:|
+| **zqWkWowV** | 2.04 | **1.69** | 0.127 | 8.7% | 3.2% | 0.30 | **8/8 PASS** |
+| le0WoaRe   | 2.06 | 1.63 | 0.139 | — | — | 0.31 | 8/8 PASS |
+| P01Gk5zq   | 2.02 | 1.68 | 0.117 | — | — | 0.30 | 8/8 PASS |
+| WjgAvl3j   | 2.03 | 1.59 | 0.158 | — | — | 0.39 | 8/8 PASS |
 
-Recommended: **`le0WoaRe`** (largest Sharpe margin over the 2.0 gate).
+Recommended: **`zqWkWowV`** — best Fitness (1.69) with a comfortable Sharpe
+margin (2.04) after fitness-optimization (decay 10, truncation 0.012).
 
-### le0WoaRe — full gate table
+### zqWkWowV — full gate table
 
 ```
-LOW_SHARPE              PASS  2.06  > 2.0
-LOW_FITNESS             PASS  1.63  > 1.3
-LOW_TURNOVER            PASS  0.139 > 0.01
-HIGH_TURNOVER           PASS  0.139 < 0.7
+LOW_SHARPE              PASS  2.04  > 2.0
+LOW_FITNESS             PASS  1.69  > 1.3
+LOW_TURNOVER            PASS  0.127 > 0.01
+HIGH_TURNOVER           PASS  0.127 < 0.7
 CONCENTRATED_WEIGHT     PASS
-LOW_SUB_UNIVERSE_SHARPE PASS  1.16  > 0.89
-SELF_CORRELATION        PASS  0.31  < 0.7
+LOW_SUB_UNIVERSE_SHARPE PASS  1.16  > 0.88
+SELF_CORRELATION        PASS  0.30  < 0.7
 MATCHES_COMPETITION     PASS
 ```
 
@@ -45,9 +47,24 @@ winsorize(
   )
   - 0.5 * group_zscore(ts_delta(close, 5), subindustry),                    # reversal diversifier
   std=4)
-settings: USA TOP3000, delay=0, decay=8, neutralization=SUBINDUSTRY,
-          truncation=0.02, pasteurization=ON
+settings: USA TOP3000, delay=0, decay=10, neutralization=SUBINDUSTRY,
+          truncation=0.012, pasteurization=ON
 ```
+
+### Fitness optimization (rounds FIT-1, FIT-2)
+
+The expression is fixed; only settings/weights were swept. Fitness =
+`sharpe·sqrt(|returns|/max(turnover, 0.125))`, and turnover is already at
+the 0.125 floor, so gains came from Sharpe/returns, not lower turnover:
+
+- Raising the short-core weight (×7…×12) **lowers** Sharpe (the short
+  signal alone is noisier; the half-weight reversal is what lifts SH).
+- `truncation` 0.015–0.012 (slightly more concentrated) is the sweet spot;
+  0.01 over-concentrates and drops SH below 2.0.
+- `decay` 10–12 is optimal; 14 over-smooths and drops SH.
+- Adding a social-sentiment diversifier did not help (FIT stayed 1.68).
+- **Structure ceiling ≈ FIT 1.69**; higher would need a structurally
+  stronger / additional orthogonal signal.
 
 ### Economic rationale (3 components)
 
