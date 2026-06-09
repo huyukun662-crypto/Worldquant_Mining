@@ -1,15 +1,15 @@
 {
-  "summary": "19 batches (~146 WQ simulations). D0 submit bar = Sharpe>2.0 & Fitness>1.3 (delay-driven, confirmed). Risk-model neutralizations (STATISTICAL/CROWDING/FAST/SLOW) are LOCKED on this account tier -> the standard lever to reach D0 Sharpe 2.0 is unavailable. Best clean, simple, economic, non-IV D0 factor caps at Sharpe ~1.81-1.83 (passes EVERY submit check except the steep delay-0 2.0 Sharpe bar). The SAME factor at delay=1 passes ALL submit checks.",
+  "summary": "23 batches (~170 WQ simulations). D0 submit bar = Sharpe>2.0 & Fitness>1.3 (delay-driven). Risk-model neutralizations (STATISTICAL/CROWDING/FAST/SLOW) LOCKED on this tier -> the standard lever to reach D0 Sharpe 2.0 is unavailable. After exhaustively combining reversal + value + quality + asset-turnover (4 orthogonal axes), tuning neutralization/decay/truncation/universe/weights, and testing accruals/buyback/capex/sentiment/news/momentum/vector_neut, the D0 ceiling is a HARD asymptote at Sharpe ~1.88 (FIT 1.31-1.52, passes EVERY submit check except the 2.0 Sharpe bar). The SAME factor at delay=1 passes ALL submit checks.",
   "factor_economics": "Cross-sectional VALUE (sales/price + EBIT/price + gross-profitability quality) MINUS short-horizon price OVERREACTION/REVERSAL (de-meaned price ts_av_diff + price-volume correlation + risk-adjusted reversal). Long cheap+profitable+oversold names, short expensive+over-extended names. Regularized with gaussian-quantile + subindustry group_zscore + ts_backfill. No IV / option fields.",
   "best_D0": {
-    "alpha_id": "N1O7Jq27",
-    "expression": "subtract(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+    "alpha_id": "88LlZo0o",
+    "expression": "subtract(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(1.2, add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry))))",
     "settings": {
       "instrumentType": "EQUITY",
       "region": "USA",
       "universe": "TOP3000",
       "delay": 0,
-      "decay": 2,
+      "decay": 1,
       "neutralization": "NONE",
       "truncation": 0.08,
       "pasteurization": "ON",
@@ -21,14 +21,15 @@
       "testPeriod": "P0Y0M"
     },
     "is": {
-      "sharpe": 1.81,
-      "turnover": 0.2545,
-      "fitness": 1.41,
-      "returns": 0.1552,
-      "drawdown": 0.1212,
-      "subuniverse_sharpe": 1.08
+      "sharpe": 1.88,
+      "turnover": 0.3146,
+      "fitness": 1.31,
+      "returns": 0.153,
+      "drawdown": 0.1107,
+      "subuniverse_sharpe": 1.04
     },
-    "checks": "ALL PASS except LOW_SHARPE (1.81 < 2.0)"
+    "checks": "ALL PASS except LOW_SHARPE (1.88 < 2.0)",
+    "economic_axes": "value(sales/price,ebit/price)+quality(gross profitability)+efficiency(asset turnover) MINUS short-term reversal(price de-mean, price-volume corr, risk-adjusted reversal)"
   },
   "submittable_delay1": {
     "alpha_id": "d5QjYnwv",
@@ -58,5 +59,26 @@
       "subuniverse_sharpe": 1.36
     },
     "checks": "ALL PASS (submittable)"
+  },
+  "best_D0_robust": {
+    "alpha_id": "kqKj916z",
+    "note": "higher-fitness variant SH 1.86 FIT 1.52 decay2",
+    "expression": "subtract(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 2,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
   }
 }
