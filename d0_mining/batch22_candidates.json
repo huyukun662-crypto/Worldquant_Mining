@@ -1,0 +1,66 @@
+[
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, divide(subtract(est_netprofit, est_cashflow_op), est_tot_assets)), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "subtract(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(subtract(est_netprofit, est_cashflow_op), est_tot_assets)), 22), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 1
+  }
+ },
+ {
+  "expr": "subtract(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 1
+  }
+ },
+ {
+  "expr": "subtract(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 0
+  }
+ },
+ {
+  "expr": "subtract(add(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(subtract(est_netprofit, est_cashflow_op), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 1
+  }
+ },
+ {
+  "expr": "subtract(add(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(subtract(est_netprofit, est_cashflow_op), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 0
+  }
+ }
+]
