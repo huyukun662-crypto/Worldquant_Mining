@@ -1,0 +1,53 @@
+{
+ "description": "FIRST non-IV PASS alphas: group_neutralize of reversed CFO/X ratios. All pass LOW_SHARPE>1.25, LOW_FITNESS>1.0, all WQ submission checks (SELF_CORRELATION PENDING).",
+ "factors": [
+  {
+   "tag": "Vk86dvEG_BEST_nonIV",
+   "alpha_id": "Vk86dvEG",
+   "sharpe": 1.35,
+   "fitness": 1.43,
+   "turnover": 0.024,
+   "drawdown": 0.109,
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
+   "tag": "MPx13AZk_quad",
+   "alpha_id": "MPx13AZk",
+   "sharpe": 1.29,
+   "fitness": 1.3,
+   "turnover": 0.028,
+   "drawdown": 0.102,
+   "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(equity, 60)))), subindustry)), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  },
+  {
+   "tag": "wpeYbeKY_multiwin",
+   "alpha_id": "wpeYbeKY",
+   "sharpe": 1.26,
+   "fitness": 1.24,
+   "turnover": 0.023,
+   "drawdown": 0.112,
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 90), ts_backfill(assets, 90)))), subindustry)), 10))",
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   }
+  }
+ ]
+}
