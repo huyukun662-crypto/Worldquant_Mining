@@ -1,0 +1,122 @@
+[
+  {
+    "alpha_id": "6XErewE7",
+    "grade": "AVERAGE",
+    "mechanism": "short(minority) + earnings-effect + value + reversal (blend)",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 4 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) + 1.0 * group_zscore(ts_mean(ts_backfill(vec_avg(ern4_erneffct7), 22), 22), subindustry) + 0.7 * group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), subindustry) + 0.5 * group_zscore(ts_backfill(return_equity, 66), subindustry) - 0.3 * group_zscore(ts_decay_linear(ts_delta(close, 5), 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 1.98,
+      "fitness": 1.92,
+      "turnover": 0.0819,
+      "returns": 0.118,
+      "drawdown": 0.0508
+    },
+    "dPnL_corr_vs_O097MAJR": 0.509,
+    "submittable": false
+  },
+  {
+    "alpha_id": "Grodw623",
+    "grade": "INFERIOR",
+    "mechanism": "earnings-effect + book/price value + ROE + sentiment (no short)",
+    "expression": "winsorize(group_zscore(ts_mean(ts_backfill(vec_avg(ern4_erneffct7), 22), 22), subindustry) + 0.7 * group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), subindustry) - 0.5 * group_zscore(ts_decay_linear(ts_delta(close, 5), 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 1.28,
+      "fitness": 1.07,
+      "turnover": 0.0726,
+      "returns": 0.0873,
+      "drawdown": 0.0841
+    },
+    "dPnL_corr_vs_O097MAJR": 0.301,
+    "submittable": false
+  },
+  {
+    "alpha_id": "LLR9pQ6n",
+    "grade": "INFERIOR",
+    "mechanism": "earnings-effect (heavy) + value (no short)",
+    "expression": "winsorize(2 * group_zscore(ts_mean(ts_backfill(vec_avg(ern4_erneffct7), 22), 22), subindustry) + group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 1.09,
+      "fitness": 0.82,
+      "turnover": 0.0274,
+      "returns": 0.07,
+      "drawdown": 0.0704
+    },
+    "dPnL_corr_vs_O097MAJR": 0.138,
+    "submittable": false
+  },
+  {
+    "alpha_id": "O09rpmgJ",
+    "grade": "INFERIOR",
+    "mechanism": "earnings-effect + value + reversal (no short)",
+    "expression": "winsorize(group_zscore(ts_mean(ts_backfill(vec_avg(ern4_erneffct7), 22), 22), subindustry) + 0.7 * group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), subindustry) + 0.5 * group_zscore(ts_backfill(return_equity, 66), subindustry) - 0.5 * group_zscore(ts_mean(scl12_sentiment, 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 1.0,
+      "fitness": 0.75,
+      "turnover": 0.0866,
+      "returns": 0.0704,
+      "drawdown": 0.0741
+    },
+    "dPnL_corr_vs_O097MAJR": 0.089,
+    "submittable": false
+  },
+  {
+    "alpha_id": "mLXgVZrK",
+    "grade": "AVERAGE",
+    "mechanism": "short(x3, minority) + heavy earnings + value",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 4 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) + 2.0 * group_zscore(ts_mean(ts_backfill(vec_avg(ern4_erneffct7), 22), 22), subindustry) + 1.5 * group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), subindustry) + 0.7 * group_zscore(ts_backfill(return_equity, 66), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 1.64,
+      "fitness": 1.53,
+      "turnover": 0.0594,
+      "returns": 0.1093,
+      "drawdown": 0.0603
+    },
+    "dPnL_corr_vs_O097MAJR": 0.361,
+    "submittable": false
+  }
+]
