@@ -80,5 +80,53 @@
       "maxTrade": "OFF",
       "testPeriod": "P0Y0M"
     }
+  },
+  "BREAKTHROUGH": "D0 SUBMITTABLE achieved at SH 2.02 (>2.0) / FIT 1.46 (>1.3), ALL is.checks PASS. The 52-week-high proximity axis (ts_rank(close,250), George-Hwang anomaly, weight 0.8) was the final orthogonal piece (1.97->2.02).",
+  "SUBMITTABLE_D0": {
+    "alpha_id": "YPA5W8Go",
+    "expression": "subtract(add(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(1.6, group_zscore(quantile(ts_backfill(divide(ts_delta(sales, 120), cap), 22), driver=gaussian), subindustry))), multiply(0.8, group_zscore(quantile(ts_rank(close, 250), driver=gaussian), subindustry))), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 1,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 2.02,
+      "turnover": 0.2573,
+      "fitness": 1.46,
+      "returns": 0.1337,
+      "drawdown": 0.0689,
+      "subuniverse_sharpe": 1.16
+    },
+    "checks": "ALL is.checks PASS (LOW_SHARPE 2.02>2.0, LOW_FITNESS 1.46>1.3, turnover/concentrated-weight/sub-universe all PASS; SELF_CORRELATION pending until actual submit)",
+    "economic_axes": "LONG value(sales/price+EBIT/price)+quality(gross profitability)+efficiency(asset turnover)+growth(sales growth)+52week-high proximity, SHORT short-term reversal(price de-mean+price-volume corr+risk-adjusted reversal). Regularized: gaussian-quantile + subindustry group_zscore + ts_backfill. Zero IV/option fields.",
+    "alt_submittable": [
+      {
+        "alpha_id": "RRrV2rb0",
+        "sharpe": 2.02,
+        "fitness": 1.46
+      },
+      {
+        "alpha_id": "0m8Rekd1",
+        "sharpe": 2.02,
+        "fitness": 1.43
+      },
+      {
+        "alpha_id": "QPQ32Xnw",
+        "sharpe": 2.0,
+        "fitness": 1.44
+      }
+    ]
   }
 }
