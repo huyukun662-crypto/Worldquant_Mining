@@ -1,0 +1,66 @@
+[
+ {
+  "expr": "group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 4
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "NONE",
+   "decay": 4
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 16
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_zscore(volume, 60), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 4
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_backfill(news_prev_day_ret, 22)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ },
+ {
+  "expr": "add(group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ }
+]
