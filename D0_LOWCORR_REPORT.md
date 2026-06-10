@@ -128,3 +128,49 @@ SH falls under 2.0 (the `Grodw623`/`O09rpmgJ` orthogonal factors, corr
   submittable, and decorrelated (0.54).
 - vs the whole pool / a true independent stream: **`O09rpmgJ`** (corr
   0.09) or **`Grodw623`** (corr 0.30), at the cost of submittability.
+
+---
+
+## Final: `QPQK17p5` — best-overall submittable D0 factor (3rd family)
+
+A **vol-return-covariance diversifier** (neither the reversal nor the
+analyst tilt) on the short core gives the best factor of the whole search:
+
+```
+winsorize(
+  if_else(is_nan(SI), news_fill, 5 * SI)                                   # short-squeeze core, book-filled
+  - 0.5 * group_zscore(ts_covariance(returns, volume, 20), subindustry),   # vol-return covariance diversifier
+  std=4)
+  SI = group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest),22),22), subindustry)
+  news_fill = group_zscore(ts_mean(news_pct_90min, 22), subindustry)
+settings: USA TOP3000, delay=0, decay=10, SUBINDUSTRY, truncation=0.012
+SH 2.23 · FIT 1.86 · TO 0.107 · ann.ret 8.7% · maxDD 3.35% · 8/8 PASS
+official SELF_CORRELATION vs submitted pool = 0.296  (limit 0.7)
+```
+
+- Highest Sharpe of all submittable factors found (2.23 vs 2.03-2.06).
+- Concise: short core + ONE diversifier, same complexity as O097MAJR.
+- Regularized (`winsorize`, `group_zscore`); uncommon ops `ts_covariance`,
+  `vec_avg`, `ts_backfill`, `if_else`; no IV.
+- The `ts_covariance(returns, volume, 20)` leg (volume-amplified momentum
+  reversal: names where returns co-move with volume get faded) is its own
+  weak-but-orthogonal mechanism — standalone SH only 0.2-0.5, yet as a
+  diversifier it beats both the reversal (2.03) and analyst (2.05) tilts.
+
+### Correlation caveats (measured)
+- Official submit-gate self-correlation (vs the 19 SUBMITTED alphas): **0.30** ✅
+- dPnL corr vs the *unsubmitted* O097MAJR: 0.81 (same short core) — if you
+  submit several of this short family, the FIRST one enters the pool and
+  the others' SELF_CORRELATION will then jump; submit only one of the
+  short-core factors (QPQK17p5 is the best), then pick later factors from
+  other mechanisms.
+
+### Dead ends established this round (so they're not re-walked)
+- `ern4_*` earnings-effect fields are IV-derived: every factor containing
+  them correlates 0.73-0.81 with the submitted IV alpha `j21EEbx9` → fails
+  SELF_CORRELATION. Avoid ern4 when low correlation is required.
+- All slow fundamental tilts (value/ROE/sentiment composites) also land
+  ~0.78 on `j21EEbx9` (low-turnover books overlap).
+- Standalone D0 Sharpe of unique mechanisms: covariance 0.5, turnover
+  anomaly -0.3, buzz momentum 0.39, low-vol anomaly 0.18 (dead), Ravenpack
+  ssc ~0.1 (dead), dividend yield (turnover explodes).

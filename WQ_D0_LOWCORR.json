@@ -1,5 +1,32 @@
 [
   {
+    "alpha_id": "QPQK17p5",
+    "grade": "AVERAGE",
+    "mechanism": "short-interest squeeze + vol-return-covariance diversifier (3rd family: neither reversal nor analyst tilt)",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_covariance(returns, volume, 20), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.23,
+      "fitness": 1.86,
+      "turnover": 0.1065,
+      "returns": 0.0873,
+      "drawdown": 0.0335
+    },
+    "official_self_correlation_vs_submitted_pool": 0.2959,
+    "dPnL_corr_vs_O097MAJR": 0.805,
+    "dPnL_corr_vs_d5QOMdxx": 0.615,
+    "check_all_pass": true,
+    "submittable": true
+  },
+  {
     "alpha_id": "d5QOMdxx",
     "grade": "GOOD",
     "mechanism": "short-interest + earnings-effect + analyst-dispersion + value (w=0.8/0.2, INDUSTRY) -- SUBMITTABLE & decorrelated from O097MAJR",
