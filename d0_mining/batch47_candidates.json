@@ -1,0 +1,50 @@
+[
+ {
+  "expr": "group_zscore(quantile(subtract(ts_delta(close, 250), ts_delta(close, 20)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 12
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_rank(returns, 60), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ }
+]
