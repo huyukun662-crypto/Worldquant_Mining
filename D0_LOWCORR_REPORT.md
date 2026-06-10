@@ -205,3 +205,35 @@ submittable factor — the short core is shared and required for SH>2.0, so
 correlation below ~0.5 forces SH under the 2.0 gate. `3qAV1VG0` is that
 frontier point: the most-decorrelated submittable D0 factor available
 given the short+reversal family is already in the pool.
+
+---
+
+## Round N+1 (goal: keep mining decorrelated): pv13 statistical grouping breaks the 0.51 floor
+
+New mechanisms tested this round, all standalone-capped well under 2.0:
+economic-link momentum spillover `rel_ret_cust/part/comp/all` (pv13,
+Cohen-Frazzini) best 0.78; 5-way no-short composite (spillover + analyst
++ value + covariance + buzz) caps at SH ~1.1; spillover-as-diversifier on
+the short core kills SH to 1.3-1.9 (its 0.35 turnover is too noisy).
+
+The winner lever: replace `subindustry`/`industry` grouping with the
+**pv13 statistical risk-model grouping** (`pv13_r2_min20_3000_sector`) —
+different residual structure, same short+analyst engine:
+
+| alpha_id | SH | FIT | corr vs O097MAJR | corr vs 3qAV1VG0 | official self-corr | 8/8 |
+|---|---|---|---|---|---|---|
+| `ZYomqmMY` (short 0.68) | 2.03 | 1.77 | **0.49** | 0.93 | 0.42 | ✅ |
+| `LLR5q2Km` (short 0.62) | 2.00 | 1.57 | **0.44** | 0.93 | 0.41 | ✅ |
+
+`LLR5q2Km` sets the record-low correlation (0.44) to the short+reversal
+family among submittable factors, but its Sharpe margin is zero (2.0/2.0)
+— `ZYomqmMY` is the safer pick of the pair.
+
+### Hard boundary (now fully mapped)
+A submittable D0 factor decorrelated from BOTH short-core families
+simultaneously (reversal-tilt AND analyst-tilt) does not exist on this
+data tier: the short core is required for SH>2.0 and is shared, so any
+new submittable factor lands >=0.9 on whichever family shares its tilt.
+The decorrelation frontier per family: ~0.44 (vs reversal family, via
+pv13 grouping + analyst tilt) and ~0.5 (vs analyst family, via reversal/
+covariance tilt). Pick the family you have NOT yet submitted.
