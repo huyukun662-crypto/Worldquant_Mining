@@ -202,5 +202,37 @@
       "pnl_corr_vs_RRrV2g8a": 0.032,
       "note": "single-core variant if maximum simplicity is preferred"
     }
+  },
+  "LOW_CORR_SUBMITTABLE_D0": {
+    "alpha_id": "WjgeqKYj",
+    "expression": "subtract(add(add(add(add(add(add(multiply(1.5, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.5, group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_backfill(divide(est_bookvalue_ps, close), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_cashflow_op, cap), 22), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(est_netprofit, est_shequity), 22), driver=gaussian), subindustry)), multiply(0.8, group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), multiply(1.5, group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.5, group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 2.13,
+      "turnover": 0.1831,
+      "fitness": 1.96,
+      "returns": 0.1551,
+      "drawdown": 0.0879,
+      "subuniverse_sharpe": 0.93
+    },
+    "all_is_checks": "PASS (SH 2.13>2.0, FIT 1.96>1.3, sub-universe 0.93>0.92, turnover/concentrated-weight PASS)",
+    "pnl_corr_vs_winner_RRrV2g8a": 0.622,
+    "note": "LOWEST-correlation SUBMITTABLE D0 factor (corr 0.622, below the 0.70 self-correlation submit gate). Frontier minimum: pushing volume-anchor weight higher to lower correlation further breaks LOW_SUB_UNIVERSE_SHARPE (whose limit scales ~0.43x main Sharpe). Adds a volume/liquidity anchor (relative-volume + Amihud illiquidity) on top of a value/quality/efficiency core, MINUS short (5d) reversal.",
+    "tradeoff": "corr 0.033 (E5Kpn81r, SH 1.39, 2 cores) = truly low-corr but NOT submittable; corr 0.622 (this, SH 2.13) = submittable. A submittable D0 factor must load on the same robust fundamental signals as the winner to clear sub-universe Sharpe, forcing corr >= ~0.62."
   }
 }
