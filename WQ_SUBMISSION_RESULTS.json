@@ -995,5 +995,86 @@
       }
     },
     "note": "NON-OPTION submittable (pure pv+fundamental). Quality-heavy composite. SH 1.37 FIT 1.07 self_corr 0.53. z-score reversal + capex + book/price value + gross-profitability quality, MARKET neut. delay=1."
+  },
+  {
+    "ok": true,
+    "alpha_id": "vRmOlxna",
+    "delay": 1,
+    "expression": "0.7 * (trade_when(pcr_oi_20 < 1, rank(-1 * ts_regression(close, ts_backfill(call_breakeven_20, 30), 10, rettype = 0)), -1)) + 0.3 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 2.28,
+        "turnover": 0.379,
+        "fitness": 1.39,
+        "self_corr": null,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 2.28
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.39
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.379
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.379
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.99,
+            "value": 2.18
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "Optimized user factor #3 (pcr_oi/call_breakeven trade_when + gross-profitability dilution). 0.7*v0 + 0.3*GP lifts FIT 1.05->1.39, SH 1.99->2.28, cuts TO 0.413->0.379. 7/8 checks PASS, 0 FAIL, self_corr pending (v0-baseline same-structure sc=0.31 << 0.7)."
   }
 ]
