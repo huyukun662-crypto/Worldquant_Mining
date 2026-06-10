@@ -158,5 +158,49 @@
     },
     "all_is_checks": "PASS (LOW_SHARPE 2.05>2.0, LOW_FITNESS 1.45>1.3, LOW/HIGH_TURNOVER, CONCENTRATED_WEIGHT, LOW_SUB_UNIVERSE_SHARPE all PASS; SELF_CORRELATION pending until real submit)",
     "note": "Margin-robust variant (52w weight 0.7, reversal weight 1.1). Sharpe 2.05 and Fitness 1.45 sit comfortably above the 2.0/1.3 D0 submission bars."
+  },
+  "LOW_CORR_D0": {
+    "goal": "D0 factor with LOW correlation to FINAL_SUBMITTABLE_D0 (RRrV2g8a), regularized, simple (2 cores)",
+    "best": {
+      "alpha_id": "E5Kpn81r",
+      "expression": "add(multiply(2, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 12,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M"
+      },
+      "is": {
+        "sharpe": 1.39,
+        "turnover": 0.1332,
+        "fitness": 1.12,
+        "returns": 0.086,
+        "drawdown": 0.0793,
+        "subuniverse_sharpe": 1.12
+      },
+      "pnl_corr_vs_RRrV2g8a": 0.033,
+      "economics": "LONG recent-volume-surge names (5d/60d relative volume = attention/information arrival) + LONG illiquid names (negated Amihud |ret|/dollar-volume = liquidity premium). Volume/liquidity domain — orthogonal to the value-reversal winner by construction and by measured PnL corr 0.033."
+    },
+    "solo_simplest": {
+      "alpha_id": "A13N5N1d",
+      "expression": "group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)",
+      "is": {
+        "sharpe": 1.36,
+        "turnover": 0.1933,
+        "fitness": 0.76
+      },
+      "pnl_corr_vs_RRrV2g8a": 0.032,
+      "note": "single-core variant if maximum simplicity is preferred"
+    }
   }
 }
