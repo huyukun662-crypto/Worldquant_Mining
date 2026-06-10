@@ -174,3 +174,34 @@ official SELF_CORRELATION vs submitted pool = 0.296  (limit 0.7)
 - Standalone D0 Sharpe of unique mechanisms: covariance 0.5, turnover
   anomaly -0.3, buzz momentum 0.39, low-vol anomaly 0.18 (dead), Ravenpack
   ssc ~0.1 (dead), dividend yield (turnover explodes).
+
+---
+
+## Update (user already submitted the short+reversal family): `3qAV1VG0`
+
+Since `O097MAJR`/QPQK17p5 (short+reversal/covariance) are already submitted,
+a new factor must be a *different mechanism*. `3qAV1VG0` lowers the short
+weight to 0.68 and lets an **analyst-dispersion** composite carry the rest
+— a genuinely different driver, the lowest dPnL correlation to the
+submitted short family among all submittable factors found:
+
+```
+3qAV1VG0  (USA TOP3000, delay=0, decay=4, INDUSTRY, truncation=0.02)
+  0.68 * book-filled short-interest core (shorted_shares_count_all)
++ 0.32 * group_zscore(analyst-dispersion + 0.6*forecast-uncertainty
+                      + 0.5*book/price + 0.4*ROE)        # NO ern4 -> avoids IV-alpha correlation
+  winsorized, INDUSTRY-neutral
+SH 2.12 · FIT 1.94 · TO 0.153 · maxDD 7.0% · 8/8 PASS
+official SELF_CORRELATION vs submitted pool = 0.42
+dPnL-corr vs O097MAJR (your submitted factor) = 0.51
+```
+
+The analyst composite deliberately drops `ern4_erneffct7` (IV-derived,
+0.73-0.81 to the submitted IV alpha) — using only analyst-dispersion /
+forecast-uncertainty / value / ROE keeps official self-corr at 0.42.
+
+**Floor:** dPnL-corr to the short family bottoms at ~0.51 for any
+submittable factor — the short core is shared and required for SH>2.0, so
+correlation below ~0.5 forces SH under the 2.0 gate. `3qAV1VG0` is that
+frontier point: the most-decorrelated submittable D0 factor available
+given the short+reversal family is already in the pool.
