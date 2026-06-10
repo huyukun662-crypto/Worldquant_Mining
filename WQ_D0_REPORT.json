@@ -266,5 +266,54 @@
     "pnl_corr_vs_winner_RRrV2g8a": 0.525,
     "cores": "6 signals: relative-volume + Amihud illiquidity (volume/liquidity anchor) + book/price (value, decorrelator) + gross-profitability + asset-turnover (quality/efficiency, for sub-universe) MINUS 5-day reversal (av_diff + price-volume corr).",
     "why_best": "Beats the 9-core WjgeqKYj on ALL goal axes: lower correlation (0.525 vs 0.622), simpler (6 vs 9 cores), still fully submittable. book/price is a stronger decorrelator than the full value+quality stack, so dropping sales/cashflow/ROE both simplified AND decorrelated."
+  },
+  "THIRD_FACTOR_low_corr_to_both": {
+    "goal": "D0 factor uncorrelated to BOTH already-submitted RRrV2g8a and xAnbVxal",
+    "best_balanced": {
+      "alpha_id": "gJ3Wq86g",
+      "expression": "subtract(add(add(add(multiply(2,add(add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 6,
+        "neutralization": "NONE",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M"
+      },
+      "is": {
+        "sharpe": 1.2,
+        "fitness": 1.1,
+        "turnover": 0.1061,
+        "returns": 0.105
+      },
+      "pnl_corr": {
+        "vs_RRrV2g8a": 0.425,
+        "vs_xAnbVxal": 0.386
+      },
+      "economics": "Investment/conservative anomaly composite: LOW capex-intensity + LONG-TERM (2yr) reversal + LOW asset-growth + share-buyback, plus light value/quality, MINUS short reversal. A factor domain (corporate investment) NOT spanned by the two submitted factors.",
+      "note": "NOT standalone-submittable (SH 1.20 < 2.0) but genuinely uncorrelated (max corr 0.43) -> strong portfolio diversifier."
+    },
+    "purest_diversifier": {
+      "alpha_id": "P01Mr9a7",
+      "expression": "group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry)",
+      "is": {
+        "sharpe": 0.88,
+        "fitness": 0.39
+      },
+      "pnl_corr": {
+        "vs_RRrV2g8a": 0.053,
+        "vs_xAnbVxal": -0.049
+      },
+      "note": "Pure low-capex (conservative investment) anomaly. Near-ZERO correlation to both (0.05/-0.05). SH 0.88."
+    },
+    "finding": "No D0 factor on this account tier is BOTH submittable (SH>2.0, sub-universe-Sharpe>0.43xSH) AND below 0.70 PnL-correlation to both submitted factors. Reaching SH 2.0 requires either the volume anchor (corr 0.74 to xAnbVxal, >gate) or the full value/quality stack (corr >0.6 to RRrV2g8a). The orthogonal domains (corporate-investment, long-term reversal) cap at SH ~1.5. Trade-off is fundamental on this signal palette."
   }
 }
