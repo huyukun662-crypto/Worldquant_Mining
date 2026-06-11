@@ -1,0 +1,109 @@
+{
+ "description": "5 non-IV PASS alphas (all pass WQ IS gates: SH>1.25, FIT>1.0, etc.). Submitted reference: LLRNoLXM CFO factor.",
+ "corr_vs_submitted_CFO_LLRNoLXM": {
+  "2rK5O8x8": 0.573,
+  "88LNjbJX": 0.403,
+  "j2ga3k5E": 0.529,
+  "KPLgGxQp": 0.769,
+  "Vk86dvEG": 0.946
+ },
+ "mutual_pairwise_corr": {
+  "2rK5O8x8<->88LNjbJX": 0.979,
+  "2rK5O8x8<->j2ga3k5E": 0.992,
+  "2rK5O8x8<->KPLgGxQp": 0.915,
+  "2rK5O8x8<->Vk86dvEG": 0.522,
+  "88LNjbJX<->j2ga3k5E": 0.982,
+  "88LNjbJX<->KPLgGxQp": 0.837,
+  "88LNjbJX<->Vk86dvEG": 0.36,
+  "j2ga3k5E<->KPLgGxQp": 0.922,
+  "j2ga3k5E<->Vk86dvEG": 0.44,
+  "KPLgGxQp<->Vk86dvEG": 0.758
+ },
+ "submittable_after_CFO_OPT_already_submitted": {
+  "recommended": "88LNjbJX (lowest corr 0.403 vs CFO; SH 1.29 FIT 1.16)",
+  "alt_higher_SH": "2rK5O8x8 (corr 0.573, SH 1.46 FIT 1.39)",
+  "reason": "Only ONE +ATO-cluster alpha can join the submitted pool (mutual corr 0.98+ among 88LNjbJX/2rK5O8x8/j2ga3k5E)"
+ },
+ "alphas": [
+  {
+   "alpha_id": "2rK5O8x8",
+   "note": "BEST SH: CFO + PT + 0.5*ATO; corr 0.573 vs submitted; highest SH+FIT in this batch",
+   "sharpe": 1.46,
+   "fitness": 1.39,
+   "turnover": 0.0282,
+   "drawdown": 0.0936,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), add(add(group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(equity, 60)))), subindustry)))), add(group_neutralize(zscore(divide(ts_backfill(fnd6_mfma2_revt, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_mfma2_revt, 60), ts_backfill(equity, 60))), subindustry))), 10))"
+  },
+  {
+   "alpha_id": "88LNjbJX",
+   "note": "BEST CORR: 0.7*CFO + PT + ATO; corr 0.403 vs submitted \u2014 most decorrelated",
+   "sharpe": 1.29,
+   "fitness": 1.16,
+   "turnover": 0.0288,
+   "drawdown": 0.0909,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(add(multiply(0.7, add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry)))), add(add(group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(equity, 60)))), subindustry)))), add(group_neutralize(zscore(divide(ts_backfill(fnd6_mfma2_revt, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_mfma2_revt, 60), ts_backfill(equity, 60))), subindustry))), 10))"
+  },
+  {
+   "alpha_id": "j2ga3k5E",
+   "note": "1.5*PT-heavy + 0.7*ATO + CFO; corr 0.529 vs submitted",
+   "sharpe": 1.4,
+   "fitness": 1.35,
+   "turnover": 0.0291,
+   "drawdown": 0.1091,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), add(add(group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(equity, 60)))), subindustry)))), multiply(0.7, add(group_neutralize(zscore(divide(ts_backfill(fnd6_mfma2_revt, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_mfma2_revt, 60), ts_backfill(equity, 60))), subindustry)))), 10))"
+  },
+  {
+   "alpha_id": "KPLgGxQp",
+   "note": "CFO + PT (no ATO); SH 1.51 highest of all; corr 0.769 (over 0.7 gate)",
+   "sharpe": 1.51,
+   "fitness": 1.53,
+   "turnover": 0.0274,
+   "drawdown": 0.1212,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), multiply(0.5, add(add(group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(pretax_income, 60), ts_backfill(equity, 60)))), subindustry))))), 10))"
+  },
+  {
+   "alpha_id": "Vk86dvEG",
+   "note": "Pure CFO baseline (same cluster as submitted); corr 0.946 \u2014 for reference",
+   "sharpe": 1.35,
+   "fitness": 1.43,
+   "turnover": 0.024,
+   "drawdown": 0.1087,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), 10))"
+  }
+ ]
+}
