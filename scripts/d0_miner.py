@@ -161,8 +161,10 @@ def simulate_one(session, expression: str, settings: dict, sem, results, idx):
     checks = (chk.get("is") or {}).get("checks") or []
     out["checks"] = checks
     out["checks_failed"] = [c["name"] for c in checks if c.get("result") == "FAIL"]
-    out["submittable"] = bool(checks) and not out["checks_failed"] and \
-        all(c.get("result") in ("PASS", "PENDING") for c in checks)
+    # Only FAIL blocks Submit Alpha. WARNING (e.g. the UNITS check on
+    # unitless rank-sums) and PENDING (SELF_CORRELATION before submit)
+    # do not.
+    out["submittable"] = bool(checks) and not out["checks_failed"]
     results[idx] = out
     log.info(f"[{idx}] SH={out.get('sharpe')} TO={out.get('turnover')} "
              f"FIT={out.get('fitness')} fail={out['checks_failed']} "
