@@ -1,0 +1,122 @@
+[
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(zscore(ts_backfill(beta_last_60_days_spy, 20)), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(ts_backfill(beta_last_60_days_spy, 20))), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(ts_backfill(beta_last_30_days_spy, 20)), subindustry), group_neutralize(zscore(ts_backfill(beta_last_60_days_spy, 20)), subindustry)), group_neutralize(zscore(ts_backfill(beta_last_90_days_spy, 20)), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(ts_backfill(beta_last_30_days_spy, 20))), subindustry), group_neutralize(reverse(zscore(ts_backfill(beta_last_60_days_spy, 20))), subindustry)), group_neutralize(reverse(zscore(ts_backfill(beta_last_90_days_spy, 20))), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(zscore(ts_backfill(correlation_last_60_days_spy, 20)), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(ts_backfill(correlation_last_60_days_spy, 20))), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(ts_backfill(correlation_last_30_days_spy, 20))), subindustry), group_neutralize(reverse(zscore(ts_backfill(correlation_last_60_days_spy, 20))), subindustry)), group_neutralize(reverse(zscore(ts_backfill(correlation_last_90_days_spy, 20))), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(zscore(ts_delta(ts_backfill(beta_last_60_days_spy, 20), 60)), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(ts_backfill(beta_last_60_days_spy, 20)), subindustry), group_neutralize(zscore(ts_backfill(correlation_last_60_days_spy, 20)), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(group_neutralize(reverse(zscore(ts_backfill(beta_last_60_days_spy, 20))), subindustry), group_neutralize(reverse(zscore(ts_backfill(correlation_last_60_days_spy, 20))), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(ts_backfill(beta_last_30_days_spy, 20)), subindustry), group_neutralize(zscore(ts_backfill(beta_last_60_days_spy, 20)), subindustry)), group_neutralize(zscore(ts_backfill(beta_last_360_days_spy, 20)), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(zscore(ts_backfill(beta_last_30_days_spy, 20)), subindustry), group_neutralize(zscore(ts_backfill(beta_last_60_days_spy, 20)), subindustry)), group_neutralize(zscore(ts_backfill(beta_last_90_days_spy, 20)), subindustry)), group_neutralize(zscore(ts_backfill(beta_last_360_days_spy, 20)), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  }
+]
