@@ -422,5 +422,35 @@
       "note": "one notch below SH 2.0 gate; corr 0.60 to both"
     },
     "saturation": "Pure profitability path SATURATES at SH ~1.98 (Vk8d5KmJ); higher weights (p7-p8, opa5-6) plateau at 1.91-1.96, do not cross 2.0. To cross 2.0 need a different lever: batch63 adds a CONTROLLED small dose of volume anchor to Vk8d5KmJ core (corr#2 has 0.10 headroom at 0.60) targeting SH>=2.0 with corr#2 still <0.70."
+  },
+  "THIRD_FACTOR_SOLVED": {
+    "verdict": "SOLVED: found a D0 factor that is BOTH submittable (SH>=2.0, passes ALL WQ checks) AND uncorrelated (<0.70) to both already-submitted factors.",
+    "deliverable": {
+      "alpha_id": "LLRMo5Pv",
+      "sharpe": 2.03,
+      "fitness": 1.68,
+      "turnover": 0.129,
+      "corr_vs_RRrV2g8a": 0.599,
+      "corr_vs_xAnbVxal": 0.629,
+      "checks": "ALL PASS (no LOW_SHARPE/LOW_FITNESS/HIGH_TURNOVER/LOW_SUB_UNIVERSE_SHARPE)",
+      "expression": "add(subtract(add(add(add(add(multiply(2, add(add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry)), multiply(6, group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(4, group_zscore(quantile(ts_backfill(divide(subtract(est_grossincome, est_capex), est_tot_assets), 22), driver=gaussian), subindustry))), multiply(3, add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))), multiply(0.75, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)))",
+      "settings": {
+        "delay": 0,
+        "neutralization": "NONE",
+        "decay": 6,
+        "truncation": 0.08
+      },
+      "economic_story": "investment-anomaly core (low capex/asset-growth/share-issuance + long-term reversal) + heavy gross & operating profitability (Novy-Marx) + short reversal, plus a SMALL 0.75x relative-volume dose to bridge SH past 2.0 without breaching the 0.70 self-correlation gate."
+    },
+    "alt_higher_SH": {
+      "alpha_id": "rKWRa01a",
+      "sharpe": 2.14,
+      "corr": [
+        0.606,
+        0.684
+      ],
+      "note": "higher SH but corr#2=0.684 leaves thin margin to the 0.70 gate"
+    },
+    "how_it_defeats_earlier_verdict": "Earlier infeasibility held for FULL volume-anchored factors (corr#2=0.74). Building SH almost entirely from a profitability/investment core (corr#2 plateaus ~0.60) and adding only a MINIMAL volume dose to cross 2.0 keeps corr#2 at 0.629 < 0.70."
   }
 }
