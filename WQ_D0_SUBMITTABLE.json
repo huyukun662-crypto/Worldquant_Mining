@@ -1,0 +1,576 @@
+[
+  {
+    "alpha_id": "6XEAJXAP",
+    "grade": "GOOD",
+    "mechanism": "short(0.72)+analyst composite(0.28), INDUSTRY -- decorrelated (corr 0.53 vs O097MAJR) WITH Sharpe margin 2.11 to survive the platform 2.0 recompute",
+    "expression": "winsorize(add(multiply(0.72, if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), industry)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), industry))), multiply(0.28, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.6, group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.5, group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.4, group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.11,
+      "fitness": 1.97,
+      "turnover": 0.149,
+      "drawdown": 0.0706
+    },
+    "official_self_correlation_vs_submitted_pool": 0.4125,
+    "dPnL_corr_vs_O097MAJR": 0.534,
+    "check_all_pass": true,
+    "submittable": true
+  },
+  {
+    "alpha_id": "LLR5q2Km",
+    "grade": "AVERAGE",
+    "mechanism": "short(0.62) + analyst composite under pv13 statistical grouping; record-low corr to short+reversal family",
+    "expression": "winsorize(add(multiply(0.62, if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), pv13_r2_min20_3000_sector)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), pv13_r2_min20_3000_sector))), multiply(0.38, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), pv13_r2_min20_3000_sector), multiply(0.6, group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), pv13_r2_min20_3000_sector))), multiply(0.5, group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), pv13_r2_min20_3000_sector))), multiply(0.4, group_zscore(ts_backfill(return_equity, 66), pv13_r2_min20_3000_sector))), pv13_r2_min20_3000_sector))), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.0,
+      "fitness": 1.57,
+      "turnover": 0.1651,
+      "drawdown": 0.0732
+    },
+    "official_self_correlation_vs_submitted_pool": 0.4053,
+    "dPnL_corr_vs_O097MAJR": 0.441,
+    "dPnL_corr_vs_3qAV1VG0": 0.93,
+    "check_all_pass": true,
+    "submittable": true
+  },
+  {
+    "alpha_id": "ZYomqmMY",
+    "grade": "AVERAGE",
+    "mechanism": "short(0.68) + analyst composite under pv13 statistical grouping; safer Sharpe margin (2.03)",
+    "expression": "winsorize(add(multiply(0.68, if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), pv13_r2_min20_3000_sector)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), pv13_r2_min20_3000_sector))), multiply(0.32, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), pv13_r2_min20_3000_sector), multiply(0.6, group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), pv13_r2_min20_3000_sector))), multiply(0.5, group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), pv13_r2_min20_3000_sector))), multiply(0.4, group_zscore(ts_backfill(return_equity, 66), pv13_r2_min20_3000_sector))), pv13_r2_min20_3000_sector))), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.03,
+      "fitness": 1.77,
+      "turnover": 0.155,
+      "drawdown": 0.0818
+    },
+    "official_self_correlation_vs_submitted_pool": 0.42,
+    "dPnL_corr_vs_O097MAJR": 0.488,
+    "dPnL_corr_vs_3qAV1VG0": 0.93,
+    "check_all_pass": true,
+    "submittable": true
+  },
+  {
+    "alpha_id": "3qAV1VG0",
+    "grade": "AVERAGE",
+    "mechanism": "short-interest(0.68) + analyst-dispersion/uncertainty/value/ROE(0.32), INDUSTRY -- submittable, lowest dPnL corr (0.51) to the already-submitted short+reversal family",
+    "expression": "winsorize(add(multiply(0.68, if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), industry)), 0, group_zscore(ts_mean(ts_backfill(vec_avg(shorted_shares_count_all), 22), 22), industry))), multiply(0.32, group_zscore(add(add(add(group_zscore(ts_backfill(divide(subtract(vec_avg(anl4_basicconqf_high), vec_avg(anl4_basicconqf_low)), vec_avg(anl4_basicconqf_mean)), 66), industry), multiply(0.6, group_zscore(ts_backfill(vec_avg(anl4_basicconqf_pu), 66), industry))), multiply(0.5, group_zscore(ts_backfill(divide(bookvalue_ps, close), 66), industry))), multiply(0.4, group_zscore(ts_backfill(return_equity, 66), industry))), industry))), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.12,
+      "fitness": 1.94,
+      "turnover": 0.153,
+      "returns": 0.1278,
+      "drawdown": 0.0703
+    },
+    "official_self_correlation_vs_submitted_pool": 0.41,
+    "dPnL_corr_vs_O097MAJR": 0.513,
+    "check_all_pass": true,
+    "submittable": true
+  },
+  {
+    "alpha_id": "QPQK17p5",
+    "grade": "AVERAGE",
+    "mechanism": "short-interest squeeze + vol-return-covariance diversifier (3rd family: neither reversal nor analyst tilt)",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_covariance(returns, volume, 20), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.23,
+      "fitness": 1.86,
+      "turnover": 0.1065,
+      "returns": 0.0873,
+      "drawdown": 0.0335
+    },
+    "official_self_correlation_vs_submitted_pool": 0.2959,
+    "dPnL_corr_vs_O097MAJR": 0.805,
+    "dPnL_corr_vs_d5QOMdxx": 0.615,
+    "check_all_pass": true,
+    "submittable": true
+  },
+  {
+    "alpha_id": "LLR7zXNM",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.6 * group_zscore(ts_decay_linear(ts_delta(close, 5), 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.0,
+      "fitness": 1.68,
+      "turnover": 0.1193,
+      "returns": 0.0887,
+      "drawdown": 0.0334
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.0,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.68,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1193,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1193,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.05,
+        "limit": 0.87
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.3309,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "note": "lowest-turnover submittable (TO 0.119), SH margin tight at 2.00"
+  },
+  {
+    "alpha_id": "O097MAJR",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_decay_linear(ts_delta(close, 5), 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.03,
+      "fitness": 1.7,
+      "turnover": 0.1229,
+      "returns": 0.0877,
+      "drawdown": 0.0319
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.03,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.7,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1229,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1229,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.09,
+        "limit": 0.88
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.3111,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "note": "recommended: smoothed reversal (ts_decay_linear), lower TO + higher FIT"
+  },
+  {
+    "alpha_id": "zqWkWowV",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_delta(close, 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.012,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.04,
+      "fitness": 1.69,
+      "turnover": 0.1266,
+      "returns": 0.0871,
+      "drawdown": 0.0318
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.04,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.69,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1266,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1266,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.16,
+        "limit": 0.88
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.3023,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "note": "fitness-optimized: decay10 truncation0.015 -> best FIT 1.69 with SH margin 2.04"
+  },
+  {
+    "alpha_id": "le0WoaRe",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_delta(close, 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.06,
+      "fitness": 1.63,
+      "turnover": 0.1392,
+      "returns": 0.0876,
+      "drawdown": 0.031,
+      "margin": 0.001259,
+      "longCount": 1377,
+      "shortCount": 1539
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.06,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.63,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1392,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1392,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.16,
+        "limit": 0.89
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.3066,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ]
+  },
+  {
+    "alpha_id": "P01Gk5zq",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - 0.5 * group_zscore(ts_delta(close, 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.02,
+      "fitness": 1.68,
+      "turnover": 0.1175,
+      "returns": 0.0863,
+      "drawdown": 0.0324,
+      "margin": 0.001469,
+      "longCount": 1374,
+      "shortCount": 1541
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.02,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.68,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1175,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1175,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.14,
+        "limit": 0.87
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.2986,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ]
+  },
+  {
+    "alpha_id": "WjgAvl3j",
+    "grade": "AVERAGE",
+    "expression": "winsorize(if_else(is_nan(group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)), group_zscore(ts_mean(news_pct_90min, 22), subindustry), 5 * group_zscore(ts_mean(ts_backfill(vec_avg(nws12_mainz_short_interest), 22), 22), subindustry)) - group_zscore(ts_delta(close, 5), subindustry), std=4)",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 10,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.02,
+      "pasteurization": "ON"
+    },
+    "is": {
+      "sharpe": 2.03,
+      "fitness": 1.59,
+      "turnover": 0.1582,
+      "returns": 0.0974,
+      "drawdown": 0.0332,
+      "margin": 0.001231,
+      "longCount": 1393,
+      "shortCount": 1522
+    },
+    "check_all_pass": true,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 2.03,
+        "limit": 2.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.59,
+        "limit": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1582,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1582,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.04,
+        "limit": 0.88
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PASS",
+        "value": 0.3851,
+        "limit": 0.7
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ]
+  }
+]
