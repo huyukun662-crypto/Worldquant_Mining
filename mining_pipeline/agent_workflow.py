@@ -47,6 +47,8 @@ from dataclasses import dataclass, field as dc_field, asdict
 from pathlib import Path
 from typing import Any
 
+import requests
+
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("5agent")
@@ -241,7 +243,8 @@ class SimulationAgent:
     def __init__(self, session, max_concurrent: int = 1,
                  poll_timeout_s: int = 600, poll_interval_s: int = 6):
         self.session = session
-        self.sem = threading.Semaphore(max_concurrent)
+        self.max_concurrent = max(int(max_concurrent), 1)
+        self.sem = threading.Semaphore(self.max_concurrent)
         self.poll_timeout_s = poll_timeout_s
         self.poll_interval_s = poll_interval_s
 
@@ -254,7 +257,11 @@ class SimulationAgent:
         # the job.
         r = None
         for attempt in range(48):
-            r = self.session.post(f"{BASE}/simulations", json=body, timeout=30)
+            try:
+                r = self.session.post(f"{BASE}/simulations", json=body, timeout=30)
+            except requests.exceptions.RequestException as e:
+                log.info(f"   POST network error ({type(e).__name__}); retrying")
+                time.sleep(10); continue
             if r.status_code == 429:
                 wait = float(r.headers.get("Retry-After") or 25)
                 if attempt % 4 == 0:
@@ -274,12 +281,20 @@ class SimulationAgent:
         t0 = time.time()
         while time.time() - t0 < self.poll_timeout_s:
             time.sleep(self.poll_interval_s)
-            rp = self.session.get(progress, timeout=30)
+            # Network hiccups during polling must NOT kill the job (a shared,
+            # loaded account intermittently times out); swallow and retry.
+            try:
+                rp = self.session.get(progress, timeout=30)
+            except requests.exceptions.RequestException:
+                continue
             if rp.status_code == 429:
                 time.sleep(20); continue
             if rp.status_code != 200:
                 continue
-            data = rp.json()
+            try:
+                data = rp.json()
+            except ValueError:
+                continue
             st = data.get("status", "")
             if st == "COMPLETE":
                 return self._fetch_alpha(data.get("alpha"), expression, settings)
@@ -289,7 +304,17 @@ class SimulationAgent:
         return SimResult(False, expression, settings, error="poll-timeout")
 
     def _fetch_alpha(self, alpha_id, expression, settings) -> SimResult:
-        ra = self.session.get(f"{BASE}/alphas/{alpha_id}", timeout=30)
+        for _ in range(5):
+            try:
+                ra = self.session.get(f"{BASE}/alphas/{alpha_id}", timeout=30)
+            except requests.exceptions.RequestException:
+                time.sleep(5); continue
+            if ra.status_code == 200:
+                break
+            time.sleep(5)
+        else:
+            return SimResult(False, expression, settings, alpha_id=alpha_id or "",
+                             error="alpha-get-network")
         if ra.status_code != 200:
             return SimResult(False, expression, settings, alpha_id=alpha_id or "",
                              error=f"alpha-get-{ra.status_code}")
@@ -312,29 +337,47 @@ class SimulationAgent:
             alpha_id=alpha_id or "",
         )
 
-    def run(self, jobs: list[tuple[str, dict]]) -> list[SimResult]:
-        """Run (expression, settings) jobs concurrently (semaphore-bounded)."""
+    def run(self, jobs: list[tuple[str, dict]],
+            on_result=None) -> list[SimResult]:
+        """Run (expression, settings) jobs, semaphore-bounded.
+
+        `on_result(i, res, results)` (optional) is invoked after each job
+        completes so the caller can persist partial results -- a single
+        job NEVER crashes the batch (its exception becomes an error result).
+        Thread count == max_concurrent, so jobs run in submission order.
+        """
         results: list[SimResult] = [None] * len(jobs)  # type: ignore
+        lock = threading.Lock()
 
         def worker(i, expr, st):
             with self.sem:
                 log.info(f"   [sim {i+1}/{len(jobs)}] decay={st.get('decay')} "
                          f"neut={st.get('neutralization')} expr={expr[:70]}")
-                res = self._submit_one(expr, st)
-                tag = "OK " if res.ok else "ERR"
-                if res.ok:
-                    log.info(f"   [{tag} {i+1}] SH={res.sharpe:+.3f} "
-                             f"TO={res.turnover:.3f} DD={res.drawdown:.3f} "
-                             f"FIT={res.fitness:+.3f} "
-                             f"checks={res.checks_passed}/{res.checks_total}")
-                else:
-                    log.info(f"   [{tag} {i+1}] {res.error[:90]}")
-                results[i] = res
+                try:
+                    res = self._submit_one(expr, st)
+                except Exception as e:  # never let one job kill the batch
+                    res = SimResult(False, expr, st,
+                                    error=f"worker-exc: {type(e).__name__}: {e}")
+            tag = "OK " if res.ok else "ERR"
+            if res.ok:
+                log.info(f"   [{tag} {i+1}] SH={res.sharpe:+.3f} "
+                         f"TO={res.turnover:.3f} DD={res.drawdown:.3f} "
+                         f"FIT={res.fitness:+.3f} "
+                         f"checks={res.checks_passed}/{res.checks_total}")
+            else:
+                log.info(f"   [{tag} {i+1}] {res.error[:90]}")
+            results[i] = res
+            if on_result is not None:
+                with lock:
+                    try:
+                        on_result(i, res, results)
+                    except Exception:
+                        pass
 
-        with cf.ThreadPoolExecutor(max_workers=self.sem._value + 2) as ex:
+        with cf.ThreadPoolExecutor(max_workers=self.max_concurrent) as ex:
             futs = [ex.submit(worker, i, e, s) for i, (e, s) in enumerate(jobs)]
             for f in cf.as_completed(futs):
-                f.result()
+                f.result()  # worker swallows its own errors; this won't raise
         return results
 
 
@@ -426,12 +469,22 @@ def main():
     sim = SimulationAgent(mgr.session, max_concurrent=args.concurrent)
     val = ValidationAgent()
 
-    all_results: list[SimResult] = []
+    all_results: list[SimResult] = []   # results from completed stages
 
-    def persist():
-        with open(args.out, "w") as f:
-            json.dump([asdict(r) for r in all_results if r is not None],
-                      f, indent=2)
+    def persist(current=None):
+        """Write completed-stage results plus the in-progress `current`
+        array. Called after EVERY sim (via on_result) so a crash mid-stage
+        never loses data."""
+        rows = [asdict(r) for r in all_results if r is not None]
+        if current:
+            rows += [asdict(r) for r in current if r is not None]
+        tmp = f"{args.out}.tmp"
+        with open(tmp, "w") as f:
+            json.dump(rows, f, indent=2)
+        Path(tmp).replace(args.out)   # atomic swap
+
+    def _cb(i, res, results):
+        persist(results)
 
     # --- Stage 1+2+3: ideas -> default D1 body -----------------------------
     ideas = idea.generate(args.ideas)
@@ -442,7 +495,7 @@ def main():
     # --- Stage 4: screening simulations ------------------------------------
     log.info(f"=== SCREEN: {len(screen_jobs)} simulations "
              f"(~{len(screen_jobs)*120/args.concurrent/60:.0f} min) ===")
-    screen = sim.run(screen_jobs)
+    screen = sim.run(screen_jobs, on_result=_cb)
     all_results.extend(screen); persist()
 
     # --- Stage 5 (interim) + refine the most promising ---------------------
@@ -457,7 +510,7 @@ def main():
     if refine_jobs:
         log.info(f"=== REFINE: {len(refine_jobs)} simulations "
                  f"(~{len(refine_jobs)*120/args.concurrent/60:.0f} min) ===")
-        refine = sim.run(refine_jobs)
+        refine = sim.run(refine_jobs, on_result=_cb)
         all_results.extend(refine); persist()
 
     # --- Stage 5: validate & rank ------------------------------------------
