@@ -1,0 +1,50 @@
+[
+ {
+  "expr": "-group_zscore(quantile(ts_backfill(news_indx_perf, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "decay": 6
+  }
+ },
+ {
+  "expr": "-group_zscore(quantile(ts_backfill(news_pct_30min, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "decay": 6
+  }
+ },
+ {
+  "expr": "-group_zscore(quantile(ts_backfill(news_max_dn_ret, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "decay": 6
+  }
+ },
+ {
+  "expr": "-group_zscore(quantile(ts_backfill(news_low_exc_stddev, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "decay": 6
+  }
+ },
+ {
+  "expr": "-group_zscore(quantile(ts_backfill(news_prev_day_ret, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "decay": 6
+  }
+ },
+ {
+  "expr": "-group_zscore(quantile(ts_backfill(news_high_exc_stddev, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "decay": 6
+  }
+ },
+ {
+  "expr": "-add(add(add(group_zscore(quantile(ts_av_diff(close, 10), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 10), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(news_indx_perf, 22), driver=gaussian), subindustry))",
+  "settings": {
+   "decay": 8
+  }
+ },
+ {
+  "expr": "-add(add(add(group_zscore(quantile(ts_av_diff(close, 10), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 10), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 10), ts_std_dev(returns, 20)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(news_pct_30min, 22), driver=gaussian), subindustry))",
+  "settings": {
+   "decay": 8
+  }
+ }
+]

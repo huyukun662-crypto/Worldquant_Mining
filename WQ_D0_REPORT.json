@@ -1,0 +1,502 @@
+{
+  "summary": "23 batches (~170 WQ simulations). D0 submit bar = Sharpe>2.0 & Fitness>1.3 (delay-driven). Risk-model neutralizations (STATISTICAL/CROWDING/FAST/SLOW) LOCKED on this tier -> the standard lever to reach D0 Sharpe 2.0 is unavailable. After exhaustively combining reversal + value + quality + asset-turnover (4 orthogonal axes), tuning neutralization/decay/truncation/universe/weights, and testing accruals/buyback/capex/sentiment/news/momentum/vector_neut, the D0 ceiling is a HARD asymptote at Sharpe ~1.88 (FIT 1.31-1.52, passes EVERY submit check except the 2.0 Sharpe bar). The SAME factor at delay=1 passes ALL submit checks.",
+  "factor_economics": "Cross-sectional VALUE (sales/price + EBIT/price + gross-profitability quality) MINUS short-horizon price OVERREACTION/REVERSAL (de-meaned price ts_av_diff + price-volume correlation + risk-adjusted reversal). Long cheap+profitable+oversold names, short expensive+over-extended names. Regularized with gaussian-quantile + subindustry group_zscore + ts_backfill. No IV / option fields.",
+  "best_D0": {
+    "alpha_id": "88LlZo0o",
+    "expression": "subtract(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(1.2, add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 1,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 1.88,
+      "turnover": 0.3146,
+      "fitness": 1.31,
+      "returns": 0.153,
+      "drawdown": 0.1107,
+      "subuniverse_sharpe": 1.04
+    },
+    "checks": "ALL PASS except LOW_SHARPE (1.88 < 2.0)",
+    "economic_axes": "value(sales/price,ebit/price)+quality(gross profitability)+efficiency(asset turnover) MINUS short-term reversal(price de-mean, price-volume corr, risk-adjusted reversal)"
+  },
+  "submittable_delay1": {
+    "alpha_id": "d5QjYnwv",
+    "expression": "subtract(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 3,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 1.78,
+      "turnover": 0.2195,
+      "fitness": 1.48,
+      "returns": 0.152,
+      "drawdown": 0.1134,
+      "subuniverse_sharpe": 1.36
+    },
+    "checks": "ALL PASS (submittable)"
+  },
+  "best_D0_robust": {
+    "alpha_id": "kqKj916z",
+    "note": "higher-fitness variant SH 1.86 FIT 1.52 decay2",
+    "expression": "subtract(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 2,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    }
+  },
+  "BREAKTHROUGH": "D0 SUBMITTABLE achieved at SH 2.02 (>2.0) / FIT 1.46 (>1.3), ALL is.checks PASS. The 52-week-high proximity axis (ts_rank(close,250), George-Hwang anomaly, weight 0.8) was the final orthogonal piece (1.97->2.02).",
+  "SUBMITTABLE_D0": {
+    "alpha_id": "YPA5W8Go",
+    "expression": "subtract(add(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(1.6, group_zscore(quantile(ts_backfill(divide(ts_delta(sales, 120), cap), 22), driver=gaussian), subindustry))), multiply(0.8, group_zscore(quantile(ts_rank(close, 250), driver=gaussian), subindustry))), add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 1,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 2.02,
+      "turnover": 0.2573,
+      "fitness": 1.46,
+      "returns": 0.1337,
+      "drawdown": 0.0689,
+      "subuniverse_sharpe": 1.16
+    },
+    "checks": "ALL is.checks PASS (LOW_SHARPE 2.02>2.0, LOW_FITNESS 1.46>1.3, turnover/concentrated-weight/sub-universe all PASS; SELF_CORRELATION pending until actual submit)",
+    "economic_axes": "LONG value(sales/price+EBIT/price)+quality(gross profitability)+efficiency(asset turnover)+growth(sales growth)+52week-high proximity, SHORT short-term reversal(price de-mean+price-volume corr+risk-adjusted reversal). Regularized: gaussian-quantile + subindustry group_zscore + ts_backfill. Zero IV/option fields.",
+    "alt_submittable": [
+      {
+        "alpha_id": "RRrV2rb0",
+        "sharpe": 2.02,
+        "fitness": 1.46
+      },
+      {
+        "alpha_id": "0m8Rekd1",
+        "sharpe": 2.02,
+        "fitness": 1.43
+      },
+      {
+        "alpha_id": "QPQ32Xnw",
+        "sharpe": 2.0,
+        "fitness": 1.44
+      }
+    ]
+  },
+  "FINAL_SUBMITTABLE_D0": {
+    "alpha_id": "RRrV2g8a",
+    "expression": "subtract(add(add(add(add(add(group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_ebit, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(1.6, group_zscore(quantile(ts_backfill(divide(ts_delta(sales, 120), cap), 22), driver=gaussian), subindustry))), multiply(0.7, group_zscore(quantile(ts_rank(close, 250), driver=gaussian), subindustry))), multiply(1.1, add(add(group_zscore(quantile(ts_av_diff(close, 15), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 15), driver=gaussian), subindustry)), group_zscore(quantile(divide(ts_av_diff(close, 15), ts_std_dev(returns, 30)), driver=gaussian), subindustry))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 1,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 2.05,
+      "turnover": 0.2733,
+      "fitness": 1.45,
+      "returns": 0.1372,
+      "drawdown": 0.0723,
+      "subuniverse_sharpe": 1.16
+    },
+    "all_is_checks": "PASS (LOW_SHARPE 2.05>2.0, LOW_FITNESS 1.45>1.3, LOW/HIGH_TURNOVER, CONCENTRATED_WEIGHT, LOW_SUB_UNIVERSE_SHARPE all PASS; SELF_CORRELATION pending until real submit)",
+    "note": "Margin-robust variant (52w weight 0.7, reversal weight 1.1). Sharpe 2.05 and Fitness 1.45 sit comfortably above the 2.0/1.3 D0 submission bars."
+  },
+  "LOW_CORR_D0": {
+    "goal": "D0 factor with LOW correlation to FINAL_SUBMITTABLE_D0 (RRrV2g8a), regularized, simple (2 cores)",
+    "best": {
+      "alpha_id": "E5Kpn81r",
+      "expression": "add(multiply(2, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 12,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M"
+      },
+      "is": {
+        "sharpe": 1.39,
+        "turnover": 0.1332,
+        "fitness": 1.12,
+        "returns": 0.086,
+        "drawdown": 0.0793,
+        "subuniverse_sharpe": 1.12
+      },
+      "pnl_corr_vs_RRrV2g8a": 0.033,
+      "economics": "LONG recent-volume-surge names (5d/60d relative volume = attention/information arrival) + LONG illiquid names (negated Amihud |ret|/dollar-volume = liquidity premium). Volume/liquidity domain — orthogonal to the value-reversal winner by construction and by measured PnL corr 0.033."
+    },
+    "solo_simplest": {
+      "alpha_id": "A13N5N1d",
+      "expression": "group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)",
+      "is": {
+        "sharpe": 1.36,
+        "turnover": 0.1933,
+        "fitness": 0.76
+      },
+      "pnl_corr_vs_RRrV2g8a": 0.032,
+      "note": "single-core variant if maximum simplicity is preferred"
+    }
+  },
+  "LOW_CORR_SUBMITTABLE_D0": {
+    "alpha_id": "WjgeqKYj",
+    "expression": "subtract(add(add(add(add(add(add(multiply(1.5, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.5, group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_backfill(divide(est_bookvalue_ps, close), 22), driver=gaussian), subindustry), group_zscore(quantile(ts_backfill(divide(est_cashflow_op, cap), 22), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(est_netprofit, est_shequity), 22), driver=gaussian), subindustry)), multiply(0.8, group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), multiply(1.5, group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.5, group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 2.13,
+      "turnover": 0.1831,
+      "fitness": 1.96,
+      "returns": 0.1551,
+      "drawdown": 0.0879,
+      "subuniverse_sharpe": 0.93
+    },
+    "all_is_checks": "PASS (SH 2.13>2.0, FIT 1.96>1.3, sub-universe 0.93>0.92, turnover/concentrated-weight PASS)",
+    "pnl_corr_vs_winner_RRrV2g8a": 0.622,
+    "note": "LOWEST-correlation SUBMITTABLE D0 factor (corr 0.622, below the 0.70 self-correlation submit gate). Frontier minimum: pushing volume-anchor weight higher to lower correlation further breaks LOW_SUB_UNIVERSE_SHARPE (whose limit scales ~0.43x main Sharpe). Adds a volume/liquidity anchor (relative-volume + Amihud illiquidity) on top of a value/quality/efficiency core, MINUS short (5d) reversal.",
+    "tradeoff": "corr 0.033 (E5Kpn81r, SH 1.39, 2 cores) = truly low-corr but NOT submittable; corr 0.622 (this, SH 2.13) = submittable. A submittable D0 factor must load on the same robust fundamental signals as the winner to clear sub-universe Sharpe, forcing corr >= ~0.62."
+  },
+  "BEST_LOW_CORR_SUBMITTABLE_D0": {
+    "alpha_id": "xAnbVxal",
+    "expression": "subtract(add(add(add(add(multiply(1.5,group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.5,group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), multiply(1.5,group_zscore(quantile(ts_backfill(divide(est_bookvalue_ps, close), 22), driver=gaussian), subindustry))), multiply(1.5,group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.5,group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "is": {
+      "sharpe": 2.18,
+      "turnover": 0.2217,
+      "fitness": 1.78,
+      "returns": 0.148,
+      "drawdown": 0.07,
+      "subuniverse_sharpe": 1.1
+    },
+    "all_is_checks": "PASS (SH 2.18>2.0, FIT 1.78>1.3, sub-universe 1.10>0.94, turnover/concentrated-weight PASS)",
+    "pnl_corr_vs_winner_RRrV2g8a": 0.525,
+    "cores": "6 signals: relative-volume + Amihud illiquidity (volume/liquidity anchor) + book/price (value, decorrelator) + gross-profitability + asset-turnover (quality/efficiency, for sub-universe) MINUS 5-day reversal (av_diff + price-volume corr).",
+    "why_best": "Beats the 9-core WjgeqKYj on ALL goal axes: lower correlation (0.525 vs 0.622), simpler (6 vs 9 cores), still fully submittable. book/price is a stronger decorrelator than the full value+quality stack, so dropping sales/cashflow/ROE both simplified AND decorrelated."
+  },
+  "THIRD_FACTOR_low_corr_to_both": {
+    "goal": "D0 factor uncorrelated to BOTH already-submitted RRrV2g8a and xAnbVxal",
+    "best_balanced": {
+      "alpha_id": "gJ3Wq86g",
+      "expression": "subtract(add(add(add(multiply(2,add(add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 0,
+        "decay": 6,
+        "neutralization": "NONE",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M"
+      },
+      "is": {
+        "sharpe": 1.2,
+        "fitness": 1.1,
+        "turnover": 0.1061,
+        "returns": 0.105
+      },
+      "pnl_corr": {
+        "vs_RRrV2g8a": 0.425,
+        "vs_xAnbVxal": 0.386
+      },
+      "economics": "Investment/conservative anomaly composite: LOW capex-intensity + LONG-TERM (2yr) reversal + LOW asset-growth + share-buyback, plus light value/quality, MINUS short reversal. A factor domain (corporate investment) NOT spanned by the two submitted factors.",
+      "note": "NOT standalone-submittable (SH 1.20 < 2.0) but genuinely uncorrelated (max corr 0.43) -> strong portfolio diversifier."
+    },
+    "purest_diversifier": {
+      "alpha_id": "P01Mr9a7",
+      "expression": "group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry)",
+      "is": {
+        "sharpe": 0.88,
+        "fitness": 0.39
+      },
+      "pnl_corr": {
+        "vs_RRrV2g8a": 0.053,
+        "vs_xAnbVxal": -0.049
+      },
+      "note": "Pure low-capex (conservative investment) anomaly. Near-ZERO correlation to both (0.05/-0.05). SH 0.88."
+    },
+    "finding": "No D0 factor on this account tier is BOTH submittable (SH>2.0, sub-universe-Sharpe>0.43xSH) AND below 0.70 PnL-correlation to both submitted factors. Reaching SH 2.0 requires either the volume anchor (corr 0.74 to xAnbVxal, >gate) or the full value/quality stack (corr >0.6 to RRrV2g8a). The orthogonal domains (corporate-investment, long-term reversal) cap at SH ~1.5. Trade-off is fundamental on this signal palette.",
+    "new_domain_exhaustion": "Explored all remaining D0 data domains for a strong orthogonal signal: option=IV/skew/historical-vol only (excluded per no-IV rule); socialmedia(scl12/snt)=noise (SH ~0); analyst revisions(anl4_*)=EVENT-typed (arithmetic ops rejected); news-attention(news_vol_stddev/range/ratio)=weak (best SH 0.61). No strong NEW orthogonal domain exists at D0 on this account. The uncorrelated-diversifier deliverable remains gJ3Wq86g (investment anomaly, corr 0.43/0.39, SH 1.20)."
+  },
+  "THIRD_FACTOR_CONCLUSION": {
+    "verdict": "EXHAUSTIVELY CONFIRMED (56 batches, ~290 sims): no D0 factor on this account tier is BOTH submittable (SH>2.0 & sub-universe-Sharpe>0.43xSH) AND below 0.70 PnL-correlation to BOTH already-submitted factors (RRrV2g8a, xAnbVxal).",
+    "why": "Sub-universe Sharpe at SH~2.0 requires the specific volume anchor relvol(5/60)+amihud(22); that exact construction is what xAnbVxal uses, giving corr 0.74 (>gate). Alternative volume constructions lose the sub-universe Sharpe (drop to 0.47-0.61). Without volume, value/quality/investment caps at SH ~1.5. Orthogonal domains (investment, long-term reversal, non-overlap value/quality, news-attention) all standalone <1.6.",
+    "best_uncorrelated_deliverable": {
+      "alpha_id": "akOVz2e1",
+      "sharpe": 1.79,
+      "fitness": 1.56,
+      "corr_vs_RRrV2g8a": 0.574,
+      "corr_vs_xAnbVxal": 0.559,
+      "note": "gJ3 investment core + 4x gross-profitability + 2x operating-profitability((grossinc-capex)/assets) + 2x short-reversal. SH 1.79, corr <0.6 to BOTH, FIT 1.56. delay=0 NONE-neut decay6. Profitability path reaches high SH WITHOUT volume anchor -> corr to xAnbVxal stays far below the 0.74 of volume-anchored factors."
+    },
+    "alternatives": [
+      {
+        "alpha_id": "1YgjddAJ",
+        "sharpe": 1.54,
+        "corr": [
+          0.571,
+          0.464
+        ],
+        "note": "non-overlap value/quality; higher SH, higher corr"
+      },
+      {
+        "alpha_id": "P01Mr9a7",
+        "sharpe": 0.88,
+        "corr": [
+          0.053,
+          -0.049
+        ],
+        "note": "pure capex; near-zero corr, lowest SH"
+      },
+      {
+        "alpha_id": "xAn1zWdq",
+        "sharpe": 1.94,
+        "corr": [
+          0.376,
+          0.74
+        ],
+        "note": "submittable-class SH but corr 0.74 to xAnbVxal (just over gate)"
+      }
+    ],
+    "paths_forward": "(1) accept gJ3Wq86g as a non-standalone-submittable diversifier; (2) relax the 0.70 correlation requirement; (3) higher account tier unlocks risk-model neutralization + more datasets, immediately opening orthogonal space.",
+    "alt_low_corr": {
+      "alpha_id": "9qRE8PZ2",
+      "sharpe": 1.38,
+      "corr": [
+        0.46,
+        0.439
+      ],
+      "note": "lower corr, slightly lower SH"
+    },
+    "frontier": [
+      {
+        "id": "gJ3Wq86g",
+        "SH": 1.2,
+        "corr": [
+          0.43,
+          0.39
+        ]
+      },
+      {
+        "id": "WjgL37oN",
+        "SH": 1.41,
+        "corr": [
+          0.49,
+          0.46
+        ]
+      },
+      {
+        "id": "RRrAlX60",
+        "SH": 1.66,
+        "corr": [
+          0.56,
+          0.55
+        ]
+      },
+      {
+        "id": "akOVz2e1",
+        "SH": 1.79,
+        "corr": [
+          0.57,
+          0.56
+        ]
+      },
+      {
+        "id": "A13QzRGe",
+        "SH": 1.85,
+        "corr": [
+          0.6,
+          0.6
+        ]
+      }
+    ],
+    "revised_note": "EARLIER infeasibility verdict applied to VOLUME-ANCHORED factors (capped at corr 0.74 to xAnbVxal). A PROFITABILITY-DRIVEN path (no volume anchor) reaches SH 1.85 at corr ~0.60 to both, and may cross SH 2.0 below 0.70 -- re-testing.",
+    "BREAKTHROUGH": "Profitability-driven path PLATEAUS at corr ~0.60 to both anchors: RRrAlX60 SH1.66 corr0.56/0.55 -> Vk8d5KmJ SH1.98 corr0.60/0.60. Correlation is flat while SH climbs, so crossing SH 2.0 should keep corr ~0.60 (<<0.70 gate). The earlier infeasibility verdict held ONLY for volume-anchored factors (capped at corr 0.74 to xAnbVxal); the no-volume profitability path defeats it.",
+    "near_submittable": {
+      "alpha_id": "Vk8d5KmJ",
+      "sharpe": 1.98,
+      "fitness": 1.61,
+      "corr": [
+        0.603,
+        0.603
+      ],
+      "note": "one notch below SH 2.0 gate; corr 0.60 to both"
+    },
+    "saturation": "Pure profitability path SATURATES at SH ~1.98 (Vk8d5KmJ); higher weights (p7-p8, opa5-6) plateau at 1.91-1.96, do not cross 2.0. To cross 2.0 need a different lever: batch63 adds a CONTROLLED small dose of volume anchor to Vk8d5KmJ core (corr#2 has 0.10 headroom at 0.60) targeting SH>=2.0 with corr#2 still <0.70."
+  },
+  "THIRD_FACTOR_SOLVED": {
+    "verdict": "SOLVED: found a D0 factor that is BOTH submittable (SH>=2.0, passes ALL WQ checks) AND uncorrelated (<0.70) to both already-submitted factors.",
+    "deliverable": {
+      "alpha_id": "LLRMo5Pv",
+      "sharpe": 2.03,
+      "fitness": 1.68,
+      "turnover": 0.129,
+      "corr_vs_RRrV2g8a": 0.599,
+      "corr_vs_xAnbVxal": 0.629,
+      "checks": "ALL PASS (no LOW_SHARPE/LOW_FITNESS/HIGH_TURNOVER/LOW_SUB_UNIVERSE_SHARPE)",
+      "expression": "add(subtract(add(add(add(add(multiply(2, add(add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry)), multiply(6, group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(4, group_zscore(quantile(ts_backfill(divide(subtract(est_grossincome, est_capex), est_tot_assets), 22), driver=gaussian), subindustry))), multiply(3, add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))), multiply(0.75, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)))",
+      "settings": {
+        "delay": 0,
+        "neutralization": "NONE",
+        "decay": 6,
+        "truncation": 0.08
+      },
+      "economic_story": "investment-anomaly core (low capex/asset-growth/share-issuance + long-term reversal) + heavy gross & operating profitability (Novy-Marx) + short reversal, plus a SMALL 0.75x relative-volume dose to bridge SH past 2.0 without breaching the 0.70 self-correlation gate."
+    },
+    "alt_higher_SH": {
+      "alpha_id": "rKWRa01a",
+      "sharpe": 2.14,
+      "corr": [
+        0.606,
+        0.684
+      ],
+      "note": "higher SH but corr#2=0.684 leaves thin margin to the 0.70 gate"
+    },
+    "how_it_defeats_earlier_verdict": "Earlier infeasibility held for FULL volume-anchored factors (corr#2=0.74). Building SH almost entirely from a profitability/investment core (corr#2 plateaus ~0.60) and adding only a MINIMAL volume dose to cross 2.0 keeps corr#2 at 0.629 < 0.70.",
+    "converged_solution_set": [
+      {
+        "alpha_id": "LLRMo5Pv",
+        "relvol_dose": 0.75,
+        "sharpe": 2.03,
+        "fitness": 1.68,
+        "corr": [
+          0.599,
+          0.629
+        ],
+        "margin_to_0.70": 0.071
+      },
+      {
+        "alpha_id": "RRrEOj6n",
+        "relvol_dose": 0.6,
+        "sharpe": 2.02,
+        "fitness": 1.66,
+        "corr": [
+          0.6,
+          0.624
+        ],
+        "margin_to_0.70": 0.076,
+        "note": "RECOMMENDED: best SH/corr balance with widest self-correlation margin"
+      },
+      {
+        "alpha_id": "LLRMvV5a",
+        "relvol_dose": 0.5,
+        "sharpe": 2.01,
+        "fitness": 1.65,
+        "corr": [
+          0.601,
+          0.621
+        ],
+        "margin_to_0.70": 0.079
+      }
+    ],
+    "convergence_note": "relvol dose 0.5-0.75 all yield SH 2.01-2.03 with corr#2 0.62-0.63; solution is stable. All three pass ALL WQ checks AND are <0.70 correlated to both submitted factors. Recommend RRrEOj6n.",
+    "SUBMITTED": {
+      "alpha_id": "LLRMo5Pv",
+      "status": "ACTIVE",
+      "stage": "OS",
+      "dateSubmitted": "2026-06-11T02:25:41-04:00",
+      "competition": "IQC2026S2",
+      "is_sharpe": 2.03,
+      "self_correlation": "PENDING (normal)"
+    }
+  }
+}

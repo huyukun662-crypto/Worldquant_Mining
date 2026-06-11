@@ -1,0 +1,417 @@
+[
+  {
+    "ok": true,
+    "expr": "subtract(add(add(add(add(add(multiply(1.0,group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.0,group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), multiply(3.0,add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.0,group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "e7r6qQXl",
+    "sharpe": 1.42,
+    "turnover": 0.1216,
+    "fitness": 1.4,
+    "returns": 0.1219,
+    "drawdown": 0.1327,
+    "margin": 0.002005,
+    "longCount": 945,
+    "shortCount": 895,
+    "checks": {
+      "LOW_SHARPE": {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.42
+      },
+      "LOW_FITNESS": {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.4
+      },
+      "LOW_TURNOVER": {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1216
+      },
+      "HIGH_TURNOVER": {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1216
+      },
+      "CONCENTRATED_WEIGHT": {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      "LOW_SUB_UNIVERSE_SHARPE": {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.61,
+        "value": 0.99
+      },
+      "SELF_CORRELATION": {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      "MATCHES_COMPETITION": {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "ok": true,
+    "expr": "subtract(add(add(add(add(add(multiply(0.8,group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(0.8,group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), multiply(3.0,add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.0,group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "mLXYxZ3p",
+    "sharpe": 1.37,
+    "turnover": 0.1192,
+    "fitness": 1.33,
+    "returns": 0.1179,
+    "drawdown": 0.1354,
+    "margin": 0.001978,
+    "longCount": 942,
+    "shortCount": 899,
+    "checks": {
+      "LOW_SHARPE": {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.37
+      },
+      "LOW_FITNESS": {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.33
+      },
+      "LOW_TURNOVER": {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1192
+      },
+      "HIGH_TURNOVER": {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1192
+      },
+      "CONCENTRATED_WEIGHT": {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      "LOW_SUB_UNIVERSE_SHARPE": {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.59,
+        "value": 0.98
+      },
+      "SELF_CORRELATION": {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      "MATCHES_COMPETITION": {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "ok": true,
+    "expr": "subtract(add(add(add(add(add(multiply(1.0,group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.0,group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), multiply(3.0,add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)))), multiply(2.5,group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(2.5,group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.0,group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "O09J5AEd",
+    "sharpe": 1.47,
+    "turnover": 0.1152,
+    "fitness": 1.44,
+    "returns": 0.1192,
+    "drawdown": 0.1272,
+    "margin": 0.002068,
+    "longCount": 946,
+    "shortCount": 895,
+    "checks": {
+      "LOW_SHARPE": {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.47
+      },
+      "LOW_FITNESS": {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.44
+      },
+      "LOW_TURNOVER": {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1152
+      },
+      "HIGH_TURNOVER": {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1152
+      },
+      "CONCENTRATED_WEIGHT": {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      "LOW_SUB_UNIVERSE_SHARPE": {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.64,
+        "value": 1.02
+      },
+      "SELF_CORRELATION": {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      "MATCHES_COMPETITION": {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "ok": true,
+    "expr": "subtract(add(add(add(add(add(multiply(1.0,group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.0,group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), multiply(4.0,add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.0,group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "QPQY5RZr",
+    "sharpe": 1.26,
+    "turnover": 0.1037,
+    "fitness": 1.19,
+    "returns": 0.1108,
+    "drawdown": 0.135,
+    "margin": 0.002138,
+    "longCount": 937,
+    "shortCount": 904,
+    "checks": {
+      "LOW_SHARPE": {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.26
+      },
+      "LOW_FITNESS": {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.19
+      },
+      "LOW_TURNOVER": {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1037
+      },
+      "HIGH_TURNOVER": {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1037
+      },
+      "CONCENTRATED_WEIGHT": {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      "LOW_SUB_UNIVERSE_SHARPE": {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.55,
+        "value": 0.91
+      },
+      "SELF_CORRELATION": {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      "MATCHES_COMPETITION": {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "ok": true,
+    "expr": "subtract(add(add(add(add(add(multiply(1.2,group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), multiply(1.2,group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))), multiply(2.5,add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(2.0,group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry))), multiply(1.5,group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry))), add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "alpha_id": "akOVW06W",
+    "sharpe": 1.53,
+    "turnover": 0.1309,
+    "fitness": 1.55,
+    "returns": 0.1342,
+    "drawdown": 0.1385,
+    "margin": 0.00205,
+    "longCount": 957,
+    "shortCount": 883,
+    "checks": {
+      "LOW_SHARPE": {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.53
+      },
+      "LOW_FITNESS": {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.55
+      },
+      "LOW_TURNOVER": {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1309
+      },
+      "HIGH_TURNOVER": {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1309
+      },
+      "CONCENTRATED_WEIGHT": {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      "LOW_SUB_UNIVERSE_SHARPE": {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.66,
+        "value": 1.04
+      },
+      "SELF_CORRELATION": {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      "MATCHES_COMPETITION": {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    }
+  }
+]

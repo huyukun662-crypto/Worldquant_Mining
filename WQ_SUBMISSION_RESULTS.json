@@ -266,5 +266,37 @@
     "local_os_sharpe": 1.8019215946221296,
     "local_os_turnover": 0.004333085848303529,
     "local_os_annret": 0.1884447442646943
+  },
+  {
+    "ok": true,
+    "alpha_id": "LLRMo5Pv",
+    "status": "ACTIVE",
+    "stage": "OS",
+    "grade": "AVERAGE",
+    "dateSubmitted": "2026-06-11T02:25:41-04:00",
+    "competitions": [
+      "challenge",
+      "IQC2026S2"
+    ],
+    "is": {
+      "sharpe": 2.03,
+      "fitness": 1.68,
+      "turnover": 0.1288,
+      "sub_universe_sharpe": 1.17,
+      "checks": "ALL PASS"
+    },
+    "os": {
+      "self_correlation": "PENDING (normal until competition closes)"
+    },
+    "corr_vs_RRrV2g8a": 0.599,
+    "corr_vs_xAnbVxal": 0.629,
+    "expression": "add(subtract(add(add(add(add(multiply(2, add(add(add(group_zscore(quantile(ts_backfill(multiply(-1, divide(est_capex, est_tot_assets)), 22), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_delta(close, 500)), driver=gaussian), subindustry)), group_zscore(quantile(ts_backfill(multiply(-1, divide(ts_delta(est_tot_assets, 250), est_tot_assets)), 22), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_delta(sharesout, 250)), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, cap), 22), driver=gaussian), subindustry)), multiply(6, group_zscore(quantile(ts_backfill(divide(est_grossincome, est_tot_assets), 22), driver=gaussian), subindustry))), group_zscore(quantile(ts_backfill(divide(sales, est_tot_assets), 22), driver=gaussian), subindustry)), multiply(4, group_zscore(quantile(ts_backfill(divide(subtract(est_grossincome, est_capex), est_tot_assets), 22), driver=gaussian), subindustry))), multiply(3, add(group_zscore(quantile(ts_av_diff(close, 5), driver=gaussian), subindustry), group_zscore(quantile(ts_corr(close, volume, 5), driver=gaussian), subindustry)))), multiply(0.75, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)))",
+    "settings": {
+      "delay": 0,
+      "neutralization": "NONE",
+      "decay": 6,
+      "truncation": 0.08
+    },
+    "note": "Third factor: submittable (SH2.03, all WQ checks pass) AND uncorrelated (<0.70) to both prior submissions RRrV2g8a & xAnbVxal. Investment-anomaly + profitability core + minimal relvol dose."
   }
 ]

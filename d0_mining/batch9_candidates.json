@@ -1,0 +1,10 @@
+[
+  {"expr": "-group_zscore(quantile(ts_backfill(scl12_sentiment, 22), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-group_zscore(quantile(ts_backfill(scl12_buzz, 22), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-group_zscore(quantile(ts_backfill(snt_social_value, 22), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-group_zscore(quantile(ts_backfill(snt_value, 22), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-group_zscore(quantile(ts_backfill(snt_social_volume, 22), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-group_zscore(quantile(ts_delta(ts_backfill(scl12_sentiment, 22), 5), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "group_zscore(quantile(ts_backfill(scl12_sentiment, 22), driver=gaussian), subindustry)", "settings": {"decay": 6}},
+  {"expr": "-group_zscore(quantile(ts_mean(ts_backfill(scl12_sentiment, 22), 5), driver=gaussian), subindustry)", "settings": {"decay": 6}}
+]

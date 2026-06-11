@@ -1,0 +1,14 @@
+[
+  {"expr": "-ts_zscore(returns, 5)", "settings": {"decay": 6}},
+  {"expr": "-winsorize(ts_zscore(returns, 5), std=4)", "settings": {"decay": 6}},
+  {"expr": "-ts_rank(returns, 10)", "settings": {"decay": 6}},
+  {"expr": "-ts_zscore(close, 20)", "settings": {"decay": 6}},
+  {"expr": "-divide(ts_delta(close, 1), ts_std_dev(returns, 20))", "settings": {"decay": 8}},
+  {"expr": "-rank(divide(subtract(close, ts_min(low, 5)), add(subtract(ts_max(high, 5), ts_min(low, 5)), 0.001)))", "settings": {"decay": 6}},
+  {"expr": "-ts_corr(rank(close), rank(volume), 10)", "settings": {"decay": 6}},
+  {"expr": "multiply(-ts_delta(close, 1), rank(divide(1, multiply(close, volume))))", "settings": {"decay": 8}},
+  {"expr": "-ts_delta(divide(close, vwap), 3)", "settings": {"decay": 6}},
+  {"expr": "-ts_mean(returns, 5)", "settings": {"decay": 8}},
+  {"expr": "-rank(divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1)))", "settings": {"decay": 6}},
+  {"expr": "-ts_zscore(returns, 10)", "settings": {"decay": 10}}
+]

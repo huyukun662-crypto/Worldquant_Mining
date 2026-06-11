@@ -1,0 +1,50 @@
+[
+ {
+  "expr": "group_zscore(quantile(ts_backfill(news_vol_stddev, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, news_vol_stddev), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(news_range_stddev, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, news_range_stddev), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(news_ratio_vol, 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_backfill(multiply(-1, ts_mean(news_vol_stddev, 5)), 22), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 6
+  }
+ }
+]

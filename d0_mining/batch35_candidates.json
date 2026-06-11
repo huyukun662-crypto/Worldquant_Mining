@@ -1,0 +1,50 @@
+[
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_mean(divide(volume, sharesout), 22)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_zscore(multiply(close, volume), 60), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_corr(volume, abs(returns), 20), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_mean(divide(subtract(high, low), close), 22)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(multiply(-1, ts_delta(ts_mean(volume, 5), 20)), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ },
+ {
+  "expr": "group_zscore(quantile(ts_mean(divide(subtract(close, open), subtract(high, low)), 10), driver=gaussian), subindustry)",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 10
+  }
+ }
+]

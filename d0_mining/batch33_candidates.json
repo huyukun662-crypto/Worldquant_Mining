@@ -1,0 +1,50 @@
+[
+ {
+  "expr": "add(group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "add(group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry), multiply(1.5, group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry)))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "add(multiply(1.5, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 8
+  }
+ },
+ {
+  "expr": "add(group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 16
+  }
+ },
+ {
+  "expr": "add(group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 4
+  }
+ },
+ {
+  "expr": "add(multiply(1.5, group_zscore(quantile(divide(ts_mean(volume, 5), ts_mean(volume, 60)), driver=gaussian), subindustry)), group_zscore(quantile(multiply(-1, ts_mean(divide(abs(returns), multiply(vwap, volume)), 22)), driver=gaussian), subindustry))",
+  "settings": {
+   "delay": 0,
+   "neutralization": "SUBINDUSTRY",
+   "decay": 12
+  }
+ }
+]
