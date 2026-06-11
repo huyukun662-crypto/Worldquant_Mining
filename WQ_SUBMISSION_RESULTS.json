@@ -1076,5 +1076,491 @@
       }
     },
     "note": "Optimized user factor #3 (pcr_oi/call_breakeven trade_when + gross-profitability dilution). 0.7*v0 + 0.3*GP lifts FIT 1.05->1.39, SH 1.99->2.28, cuts TO 0.413->0.379. 7/8 checks PASS, 0 FAIL, self_corr pending (v0-baseline same-structure sc=0.31 << 0.7)."
+  },
+  {
+    "ok": true,
+    "alpha_id": "N1OP7K6L",
+    "delay": 1,
+    "expression": "0.6 * (trade_when(pcr_oi_20 < 1, rank(-1 * ts_regression(close, ts_backfill(call_breakeven_20, 30), 10, rettype = 0)), -1)) + 0.4 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 2.13,
+        "turnover": 0.3436,
+        "fitness": 1.39,
+        "self_corr": 0.3722,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 2.13
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.39
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.3436
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.3436
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.92,
+            "value": 2.09
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "D1 mining find (d1_ivreg_pcr_gp40). BEST: pcr-gated IV regression + 40% gross-profit. 7/8 checks PASS, FAIL=[], self_corr<0.7."
+  },
+  {
+    "ok": true,
+    "alpha_id": "rKW7jZZm",
+    "delay": 1,
+    "expression": "0.6 * (trade_when(pcr_oi_20 < 1, rank(-1 * ts_regression(close, ts_backfill(call_breakeven_20, 30), 10, rettype = 0)), -1)) + 0.2 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market)) + 0.2 * (group_rank(divide(ts_backfill(bookvalue_ps,250), close), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 2.09,
+        "turnover": 0.3884,
+        "fitness": 1.34,
+        "self_corr": 0.6543,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 2.09
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.34
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.3884
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.3884
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.9,
+            "value": 2.21
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "D1 mining find (d1_ivreg_pcr_gp_val). pcr-gated IV regression + GP+Value triple. 7/8 checks PASS, FAIL=[], self_corr<0.7."
+  },
+  {
+    "ok": true,
+    "alpha_id": "omYagXQb",
+    "delay": 1,
+    "expression": "0.7 * (trade_when(ts_rank(volume, 20) > 0.7, rank(-1 * divide(close - vwap, vwap)), -1)) + 0.3 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 2.02,
+        "turnover": 0.3385,
+        "fitness": 1.24,
+        "self_corr": 0.325,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 2.02
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.24
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.3385
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.3385
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.87,
+            "value": 1.47
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "D1 mining find (d1_vwap_hivol_gp). vwap-reversal on high-volume days + GP (low TO). 7/8 checks PASS, FAIL=[], self_corr<0.7."
+  },
+  {
+    "ok": true,
+    "alpha_id": "6XEMjvLP",
+    "delay": 1,
+    "expression": "0.5 * (trade_when(pcr_oi_20 < 1, rank(-1 * ts_regression(close, ts_backfill(call_breakeven_20, 30), 10, rettype = 0)), -1)) + 0.2 * (trade_when(pcr_oi_20 < 1, rank(-1 * ts_backfill(implied_volatility_call_60 - implied_volatility_put_60, 5)), -1)) + 0.3 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 1.98,
+        "turnover": 0.3819,
+        "fitness": 1.13,
+        "self_corr": 0.357,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.98
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.13
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.3819
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.3819
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.86,
+            "value": 2.1
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "D1 mining find (d1_iv_combo_pcr_gp). IV-regression + IV-skew dual-signal pcr-gated + GP. 7/8 checks PASS, FAIL=[], self_corr<0.7."
+  },
+  {
+    "ok": true,
+    "alpha_id": "2rK5p0EJ",
+    "delay": 1,
+    "expression": "0.7 * (trade_when(pcr_oi_20 < 1, rank(-1 * ts_sum(returns, 5)), -1)) + 0.3 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 1.42,
+        "turnover": 0.317,
+        "fitness": 1.08,
+        "self_corr": 0.3983,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.42
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.08
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.317
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.317
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.61,
+            "value": 1.18
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "D1 mining find (d1_prev_pcr_gp). price-reversal pcr-gated + GP. 7/8 checks PASS, FAIL=[], self_corr<0.7."
+  },
+  {
+    "ok": true,
+    "alpha_id": "omYagNVb",
+    "delay": 1,
+    "expression": "0.7 * (trade_when(pcr_oi_20 < 1, rank(-1 * divide(close - vwap, vwap)), -1)) + 0.3 * (group_rank(divide(ts_backfill(sales,250), ts_backfill(assets,250)), market))",
+    "settings": {
+      "delay": 1,
+      "universe": "TOP3000",
+      "decay": 2,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON",
+      "region": "USA",
+      "instrumentType": "EQUITY"
+    },
+    "alpha": {
+      "is": {
+        "sharpe": 2.01,
+        "turnover": 0.6331,
+        "fitness": 1.05,
+        "self_corr": 0.2719,
+        "checks_passed": 7,
+        "checks_total": 8,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 2.01
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.05
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.6331
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.6331
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.87,
+            "value": 1.51
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": "D1 mining find (d1_vwap_pcr_gp). vwap-reversal pcr-gated + GP (high TO). 7/8 checks PASS, FAIL=[], self_corr<0.7."
   }
 ]
