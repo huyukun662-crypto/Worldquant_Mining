@@ -1,0 +1,109 @@
+{
+ "description": "5 NEW PASS D1 alphas all uncorrelated (max|c|<0.7) with submitted pool {LLRNoLXM CFO, 2rK5O8x8 +ATO, d5Qj0zdw A_PCR}",
+ "corr_vs_submitted_pool": {
+  "E5KQ88Qm": 0.673,
+  "9qRlMaOK": 0.468,
+  "E5KlMqmJ": 0.427,
+  "xAnjNEbb": 0.667,
+  "88Ll0ng7": 0.258
+ },
+ "mutual_corr_among_themselves": {
+  "E5KQ88Qm-9qRlMaOK": 0.765,
+  "E5KQ88Qm-E5KlMqmJ": 0.732,
+  "E5KQ88Qm-xAnjNEbb": 0.903,
+  "E5KQ88Qm-88Ll0ng7": 0.526,
+  "9qRlMaOK-E5KlMqmJ": 0.968,
+  "9qRlMaOK-xAnjNEbb": 0.744,
+  "9qRlMaOK-88Ll0ng7": 0.901,
+  "E5KlMqmJ-xAnjNEbb": 0.626,
+  "E5KlMqmJ-88Ll0ng7": 0.961,
+  "xAnjNEbb-88Ll0ng7": 0.407
+ },
+ "mutually_submittable_subset_recommended": [
+  "88Ll0ng7",
+  "xAnjNEbb"
+ ],
+ "submission_advice": "Submit 88Ll0ng7 (lowest corr 0.258) AND xAnjNEbb (mutual 0.407) together as 4th+5th alphas; others (E5KQ88Qm, 9qRlMaOK, E5KlMqmJ) each individually pass self-corr but are mutually >0.7 \u2014 pick one as backup if a member of the recommended pair is rejected",
+ "alphas": [
+  {
+   "alpha_id": "E5KQ88Qm",
+   "note": "Sk_h270 single-horizon stack (NEW from batch 71)",
+   "sharpe": 2.08,
+   "fitness": 2.69,
+   "turnover": 0.1224,
+   "drawdown": 0.1098,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(reverse(zscore(subtract(ts_backfill(implied_volatility_put_270, 5), ts_backfill(implied_volatility_call_270, 5)))), 10))"
+  },
+  {
+   "alpha_id": "9qRlMaOK",
+   "note": "Sk_h1080 + Extreme term composite (NEW from batch 71)",
+   "sharpe": 1.91,
+   "fitness": 2.0,
+   "turnover": 0.1322,
+   "drawdown": 0.098,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))), reverse(zscore(subtract(ts_backfill(implied_volatility_put_1080, 5), ts_backfill(implied_volatility_call_1080, 5))))), 10))"
+  },
+  {
+   "alpha_id": "E5KlMqmJ",
+   "note": "TermSk_60_40 blend (existing pool)",
+   "sharpe": 1.88,
+   "fitness": 2.03,
+   "turnover": 0.1147,
+   "drawdown": 0.1039,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.6, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.4, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  },
+  {
+   "alpha_id": "xAnjNEbb",
+   "note": "Sk_h720 single-horizon (existing pool)",
+   "sharpe": 1.8,
+   "fitness": 2.03,
+   "turnover": 0.122,
+   "drawdown": 0.074,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5))), 10)))"
+  },
+  {
+   "alpha_id": "88Ll0ng7",
+   "note": "Mix_70term_30skew (existing pool, lowest corr 0.258 vs submitted)",
+   "sharpe": 1.55,
+   "fitness": 1.45,
+   "turnover": 0.1164,
+   "drawdown": 0.1075,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.8, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.2, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  }
+ ]
+}
