@@ -91,6 +91,17 @@ proxies only):
   returns, drawdown, checks_passed, checks_total, alpha_id, expression,
   optimized, settings:{universe, delay, decay, truncation,
   neutralization, pasteurization, ...}}]`.
+- `WQ_D0_MINING_REPORT.json` — **delay-0 survivor** that clears the full
+  D0 submit gate (verified, NOT submitted). Expression:
+  `winsorize(add(zscore(add(ts_av_diff((high-low)/close, 20),
+  ts_av_diff((high-low)/close, 5))), 0.5*zscore((high+low-2*close)/
+  (high-low))), std=4)` — multi-horizon intraday range-expansion (niche
+  op `ts_av_diff`, an information-flow/attention proxy) diversified by a
+  0.5-weighted intraday close-position reversal. D0, TOP3000, decay=12,
+  trunc=0.05, SUBINDUSTRY. WQ IS: **SH 2.23, FIT 1.46, TO 0.49,
+  self-corr 0.467** — every IS check PASS + self-corr < 0.7. Uses only PV
+  fields, no IV, structurally orthogonal to the existing returns-reversal
+  + implied-vol ACTIVE pool.
 
 ### Evidence
 
@@ -137,8 +148,22 @@ per hour; budget candidates accordingly.
 
 ### Account tier limits observed on `2445560398@qq.com`
 
-- `delay=0` not available for simulation (HTTP 400 "Delay 0 is not
-  available"). `wq_pipeline.SETTING_SPACE['delay'] = [1]` reflects this.
+- `delay=0` **IS now available** for simulation (2026-06 re-test: a plain
+  `rank(close)` at `delay=0, TOP3000` returns HTTP 201 and completes). The
+  earlier "Delay 0 is not available" note is **obsolete** — the account
+  tier was upgraded. `delay=0` factors (D0) are now mineable end-to-end.
+- **D0 submit thresholds are HIGHER than D1.** The IS `checks` block applies
+  a stiffer bar at `delay=0`: `LOW_SHARPE` limit = **2.0** (not 1.25) and
+  `LOW_FITNESS` limit = **1.3** (not 1.0). `LOW_SUB_UNIVERSE_SHARPE` floats
+  ~0.93-0.97. Turnover gate is unchanged (`HIGH_TURNOVER` < 0.7,
+  `LOW_TURNOVER` > 0.01). So a submittable D0 alpha needs WQ_IS_SH > 2.0 AND
+  WQ_IS_FIT > 1.3 AND self-corr < 0.7 — confirmed against the account's own
+  ACTIVE D0 alphas (SH 2.01-2.73, FIT 1.56-3.02).
+- **Submit-readiness can be verified without submitting**: `/alphas/{id}`
+  returns the full IS `checks` (all but SELF_CORRELATION), and
+  `GET /alphas/{id}/correlations/self` returns the max self-correlation vs
+  the user's ACTIVE pool. Both together == the submit gate. Neither touches
+  the Submit Alpha quota (see below).
 - `ILLIQUID_MINVOL1M` universe returns 0 fields on `/data-fields`.
 - USA `/data-fields` ceiling: 6,038 distinct field IDs across all
   documented universes × delays (vs the 7,831 the WQ UI advertises;
