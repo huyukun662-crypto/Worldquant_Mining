@@ -70,14 +70,17 @@ def wname(r):
 
 def robust(sess, fam, expr, s):
     r=None
-    for attempt in range(3):
+    for attempt in range(5):
         try:
             r=submit(sess, fam, expr, s)
-            if (not r.ok) and r.error and ("CONCURRENT" in str(r.error) or "429" in str(r.error)):
-                log.info(f"   concurrent wait 45s ({attempt+1}/3)"); time.sleep(45); continue
+            if not r.ok and r.error:
+                err=str(r.error)
+                # retry on concurrent-limit, 429, or 5xx gateway errors
+                if "CONCURRENT" in err or "429" in err or "504" in err or "503" in err or "502" in err or "500" in err:
+                    log.info(f"   transient err ({err[:40]}), wait 60s ({attempt+1}/5)"); time.sleep(60); continue
             return r
         except Exception as e:
-            log.warning(f"   net {attempt+1}/3 {str(e)[:55]}"); time.sleep(20)
+            log.warning(f"   net {attempt+1}/5 {str(e)[:55]}"); time.sleep(25)
     return r
 
 def main():
