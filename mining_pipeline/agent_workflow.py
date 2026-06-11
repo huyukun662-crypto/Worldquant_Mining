@@ -110,7 +110,7 @@ SLOW_TS = ("ts_mean", "ts_decay_linear", "ts_zscore", "ts_rank", "ts_std_dev")
 LONG_WINDOWS = (20, 30, 40, 60, 90, 120)
 WRAPPERS = ("rank", "zscore", "normalize")          # cross-sectional scale
 ARITH = ("subtract", "divide", "add")
-UNARY = ("reverse", "log", "s_log_1p")              # incl. sign-flip (reverse)
+UNARY = ("reverse", "log")                          # incl. sign-flip (reverse)
 
 
 class IdeaAgent:
