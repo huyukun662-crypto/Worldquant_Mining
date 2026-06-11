@@ -97,9 +97,11 @@ proxies only):
   ts_av_diff((high-low)/close, 5))), 0.5*zscore((high+low-2*close)/
   (high-low))), std=4)` — multi-horizon intraday range-expansion (niche
   op `ts_av_diff`, an information-flow/attention proxy) diversified by a
-  0.5-weighted intraday close-position reversal. D0, TOP3000, decay=12,
-  trunc=0.05, SUBINDUSTRY. WQ IS: **SH 2.23, FIT 1.46, TO 0.49,
-  self-corr 0.467** — every IS check PASS + self-corr < 0.7. Uses only PV
+  0.5-weighted intraday close-position reversal. D0, TOP3000, decay=20,
+  trunc=0.08, SUBINDUSTRY. WQ IS: **SH 2.13, FIT 1.52, TO 0.40,
+  maxDD 0.078, self-corr 0.454** — every IS check PASS + self-corr < 0.7.
+  (decay 12→20 / trunc 0.05→0.08 vs the first pass cut turnover 0.49→0.40
+  and maxDD 0.090→0.078 while keeping SH > 2.0.) Uses only PV
   fields, no IV, structurally orthogonal to the existing returns-reversal
   + implied-vol ACTIVE pool.
 
