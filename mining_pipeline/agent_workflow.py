@@ -169,6 +169,88 @@ class IdeaAgent:
         log.info(f"[IdeaAgent] generated {len(out)} low-turnover ideas")
         return out
 
+    # -- economically-grounded low-turnover priors -------------------------
+    #
+    # Per the user's "smarter idea generation" directive: build fresh
+    # expressions around documented low-turnover PV anomaly *structures*
+    # (long-term reversal, skip-recent momentum, low-volatility, price-vs-MA
+    # trend, illiquidity). These are constructed from operators here -- NOT
+    # imported from worldquant_mining.factor_templates / Alpha101. Each is
+    # emitted in BOTH signs (sign-fitting): WQ Brain decides which direction
+    # actually carries Sharpe. Long horizons => intrinsically low turnover.
+
+    def _prior_families(self) -> list[tuple[str, str]]:
+        """Return (name, expression) for each economically-motivated prior,
+        sign UN-fixed (the natural/long direction). Windows sampled long."""
+        f = self.rng
+        W = lambda *c: f.choice(c)
+        fams: list[tuple[str, str]] = []
+
+        # 1. Long-term reversal / momentum: average daily return over a long
+        #    window (= cumulative drift). Natural sign = momentum; reverse =
+        #    reversal. Uses the `returns` field + ts_mean (both proven-valid).
+        fams.append(("ltr_ret",  f"rank(ts_mean(returns, {W(120, 180, 250)}))"))
+
+        # 2. Skip-recent (12-1) momentum: long-window drift minus recent drift.
+        wl, ws = W(200, 250), W(20, 40)
+        fams.append(("mom_skip",
+                     f"rank(subtract(ts_mean(returns, {wl}), "
+                     f"ts_mean(returns, {ws})))"))
+
+        # 3. Low-volatility anomaly: low realized-vol names outperform
+        #    (natural sign of vol is +; reverse() longs the low-vol book).
+        fams.append(("lowvol",   f"rank(ts_std_dev(returns, {W(40, 60, 120)}))"))
+
+        # 4. Price-vs-long-MA trend (rank is shift-invariant, so the ratio
+        #    alone captures "above/below its long moving average").
+        fams.append(("trend_ma",
+                     f"rank(divide(close, ts_mean(close, {W(60, 120, 200)})))"))
+
+        # 5. Volatility-scaled momentum (Sharpe-like): drift normalized by risk.
+        fams.append(("volscaled_mom",
+                     f"rank(divide(ts_mean(returns, {W(120, 200)}), "
+                     f"ts_std_dev(returns, {W(40, 60)})))"))
+
+        # 6. Volume-trend reversal: short vs long average turnover.
+        wl, ws = W(60, 120), W(10, 20)
+        fams.append(("vol_trend",
+                     f"rank(subtract(ts_mean(volume, {ws}), "
+                     f"ts_mean(volume, {wl})))"))
+
+        # 7. Range-position: where price sits in its long high-low band.
+        w = W(60, 120)
+        fams.append(("range_pos",
+                     f"rank(divide(subtract(close, ts_mean(low, {w})), "
+                     f"subtract(ts_mean(high, {w}), ts_mean(low, {w}))))"))
+
+        # 8. Liquidity/size tilt: small, illiquid names (cap proxy) -- low TO.
+        fams.append(("size_tilt", f"rank(ts_mean(cap, {W(60, 120)}))"))
+
+        return fams
+
+    def generate_priors(self, n: int) -> list[str]:
+        """Generate up to `n` low-turnover prior expressions, each in BOTH
+        signs for sign-fitting. Returns a de-duplicated list."""
+        out, seen = [], set()
+        guard = 0
+        while len(out) < n and guard < 200:
+            guard += 1
+            for _name, base in self._prior_families():
+                for expr in (base, f"reverse({base})"):
+                    self.dfa.assert_iv_free(expr)
+                    h = hashlib.md5(expr.encode()).hexdigest()
+                    if h in seen:
+                        continue
+                    seen.add(h)
+                    out.append(expr)
+                    if len(out) >= n:
+                        break
+                if len(out) >= n:
+                    break
+        log.info(f"[IdeaAgent] generated {len(out)} prior-based ideas "
+                 f"(anomaly structures, both signs)")
+        return out
+
 
 # ---------------------------------------------------------------------------
 # Agent 3: ConstructionAgent -- D1 settings, low-turnover lever = decay
@@ -195,17 +277,21 @@ class ConstructionAgent:
         self.universe = universe
 
     def default_settings(self) -> dict:
-        # High decay + INDUSTRY neutralization -> strong low-turnover prior.
+        # Light decay preserves the (already slow, low-turnover) anomaly
+        # signal while INDUSTRY neutralization removes sector beta. High
+        # decay washed signal out in the random run, so screen light.
         s = dict(FIXED_SETTINGS)
-        s.update(universe=self.universe, decay=32, truncation=0.08,
+        s.update(universe=self.universe, decay=6, truncation=0.08,
                  neutralization="INDUSTRY")
         return s
 
     def refine_grid(self) -> list[dict]:
-        """Setting variants for the refinement pass, all biased low-TO."""
+        """Setting variants for the refinement pass. Explores the
+        decay/turnover trade-off (low decay = more signal, higher TO;
+        high decay = lower TO) and neutralization."""
         grid = []
-        for decay in (16, 32, 64):
-            for neut in ("INDUSTRY", "SUBINDUSTRY", "MARKET"):
+        for decay in (0, 12, 32):
+            for neut in ("INDUSTRY", "SUBINDUSTRY"):
                 s = dict(FIXED_SETTINGS)
                 s.update(universe=self.universe, decay=decay,
                          truncation=0.08, neutralization=neut)
@@ -446,8 +532,11 @@ def _load(p: Path, name: str):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--ideas", type=int, default=12,
-                    help="Number of low-turnover ideas to screen (1 sim each)")
+    ap.add_argument("--ideas", type=int, default=16,
+                    help="Number of ideas to screen (1 sim each)")
+    ap.add_argument("--mode", choices=("priors", "random"), default="priors",
+                    help="priors = economically-grounded anomaly structures "
+                         "with sign-fitting; random = fresh random combos")
     ap.add_argument("--refine", type=int, default=3,
                     help="Top-K ideas to refine over the settings grid")
     ap.add_argument("--universe", type=str, default="TOP3000")
@@ -487,7 +576,8 @@ def main():
         persist(results)
 
     # --- Stage 1+2+3: ideas -> default D1 body -----------------------------
-    ideas = idea.generate(args.ideas)
+    ideas = (idea.generate_priors(args.ideas) if args.mode == "priors"
+             else idea.generate(args.ideas))
     for e in ideas:
         log.info(f"   idea: {e}")
     screen_jobs = [(e, con.default_settings()) for e in ideas]
