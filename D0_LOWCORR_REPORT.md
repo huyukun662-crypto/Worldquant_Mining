@@ -237,3 +237,28 @@ new submittable factor lands >=0.9 on whichever family shares its tilt.
 The decorrelation frontier per family: ~0.44 (vs reversal family, via
 pv13 grouping + analyst tilt) and ~0.5 (vs analyst family, via reversal/
 covariance tilt). Pick the family you have NOT yet submitted.
+
+---
+
+## Margin fix: `6XEAJXAP` — decorrelated AND clears the platform 2.0 recompute
+
+The user's submit /check showed a 2.00-Sharpe factor recompute to **1.97
+(FAIL)** on the platform — so a decorrelated factor also needs Sharpe
+*margin*, not just IS>2.0. Raising short weight to 0.72 (from LLR5q2Km's
+0.62) under INDUSTRY grouping restores margin while keeping decorrelation:
+
+```
+6XEAJXAP  (USA TOP3000, delay=0, decay=4, INDUSTRY, truncation=0.02)
+  0.72 * book-filled short-interest core (shorted_shares_count_all)
++ 0.28 * group_zscore(analyst-dispersion + 0.6*forecast-uncertainty
+                      + 0.5*book/price + 0.4*ROE)
+  winsorized, INDUSTRY-neutral
+SH 2.11 · FIT 1.97 · TO 0.149 · maxDD 7.1% · 8/8 PASS
+official SELF_CORRELATION vs submitted pool = 0.41   dPnL-corr vs O097MAJR = 0.53
+```
+
+Sharpe 2.11 leaves ~0.1 of margin over the 2.0 gate (a 2.00 factor lost
+0.03 on recompute → 2.11 should land ~2.07-2.08). This is the recommended
+"decorrelated + safe-to-submit" pick. For maximum margin regardless of
+correlation, QPQK17p5 (SH 2.23) is safest but 0.81-correlated to the
+short+reversal family.
