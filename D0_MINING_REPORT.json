@@ -1,5 +1,286 @@
 [
   {
+    "expression": "add(multiply(2, rank(signed_power(-ts_delta(close, 3), 1.5))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "xAnv3mmn",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.81,
+    "turnover": 0.3172,
+    "fitness": 1.31,
+    "returns": 0.1653,
+    "drawdown": 0.124,
+    "margin": 0.001043,
+    "longCount": 1028,
+    "shortCount": 1002,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.81
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.31
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3172
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3172
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.78,
+        "value": 1.06
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(multiply(-ts_delta(close, 3), inverse(multiply(close, adv20)))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "RRre6kmo",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.81,
+    "turnover": 0.3479,
+    "fitness": 1.25,
+    "returns": 0.1648,
+    "drawdown": 0.1264,
+    "margin": 0.000948,
+    "longCount": 1027,
+    "shortCount": 1003,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.81
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.25
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3479
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3479
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.78,
+        "value": 1.06
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(ts_delta(vec_avg(anl4_dez1afv4_est), 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "O09WJ1w7",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.81,
+    "turnover": 0.3389,
+    "fitness": 1.23,
+    "returns": 0.1577,
+    "drawdown": 0.1106,
+    "margin": 0.000931,
+    "longCount": 975,
+    "shortCount": 956,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.81
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.23
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3389
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3389
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.78,
+        "value": 1.06
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -279,6 +560,292 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(multiply(-ts_delta(close, 3), ts_rank(volume, 22)))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "O09WrPLR",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.8,
+    "turnover": 0.3209,
+    "fitness": 1.29,
+    "returns": 0.1654,
+    "drawdown": 0.1273,
+    "margin": 0.001031,
+    "longCount": 1026,
+    "shortCount": 1004,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.8
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.29
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3209
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3209
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.78,
+        "value": 1.04
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(vector_neut(divide(cashflow_op, cap), -ts_delta(close, 3))), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "Vk8NaGoV",
+    "warning": "Incompatible unit for input of \"vector_neut\" at index 1, expected \"Unit[CSPrice:-1,CSShare:-1]\", found \"Unit[TSPrice:1]\"; Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.8,
+    "turnover": 0.3173,
+    "fitness": 1.3,
+    "returns": 0.1644,
+    "drawdown": 0.1245,
+    "margin": 0.001036,
+    "longCount": 1028,
+    "shortCount": 1001,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.8
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.3
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3173
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3173
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.78,
+        "value": 1.04
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"vector_neut\" at index 1, expected \"Unit[CSPrice:-1,CSShare:-1]\", found \"Unit[TSPrice:1]\""
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)), rank(ts_backfill(vec_avg(nws18_ssc), 22)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "Jjd8PNOO",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.79,
+    "turnover": 0.3283,
+    "fitness": 1.24,
+    "returns": 0.1575,
+    "drawdown": 0.1141,
+    "margin": 0.00096,
+    "longCount": 1005,
+    "shortCount": 980,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.79
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.24
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3283
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3283
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.78,
+        "value": 1.04
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -527,6 +1094,100 @@
         "result": "PASS",
         "limit": 0.77,
         "value": 1.01
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_av_diff(close, 5))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "9qRljVwe",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.78,
+    "turnover": 0.3219,
+    "fitness": 1.27,
+    "returns": 0.1628,
+    "drawdown": 0.1277,
+    "margin": 0.001012,
+    "longCount": 1028,
+    "shortCount": 1002,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.78
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.27
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3219
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3219
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.77,
+        "value": 1.0
       },
       {
         "name": "UNITS",
@@ -840,6 +1501,100 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(ts_backfill(ts_delta(vec_avg(anl4_basicconaf_mean), 21), 66)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "Vk8Ndq3Y",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.77,
+    "turnover": 0.3215,
+    "fitness": 1.22,
+    "returns": 0.1534,
+    "drawdown": 0.1318,
+    "margin": 0.000954,
+    "longCount": 760,
+    "shortCount": 749,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.77
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.22
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3215
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3215
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.77,
+        "value": 1.12
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -933,6 +1688,100 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_av_diff(close, 5))), rank(-ts_rank(close, 10)), rank(-ts_delta(close, 1)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 7,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "N1OPa8Ao",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.76,
+    "turnover": 0.325,
+    "fitness": 1.23,
+    "returns": 0.1595,
+    "drawdown": 0.1335,
+    "margin": 0.000982,
+    "longCount": 1023,
+    "shortCount": 1007,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.76
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.23
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.325
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.325
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.76,
+        "value": 1.09
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -1022,6 +1871,194 @@
     ],
     "checks_failed": [
       "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-divide(subtract(close, vwap), vwap))), rank(-ts_delta(close, 3)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "vRmAkeKG",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.75,
+    "turnover": 0.3444,
+    "fitness": 1.18,
+    "returns": 0.1555,
+    "drawdown": 0.1095,
+    "margin": 0.000903,
+    "longCount": 1021,
+    "shortCount": 1008,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.75
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.18
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3444
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3444
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.76,
+        "value": 0.86
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(group_zscore(divide(cashflow_op, cap), subindustry)), rank(group_zscore(divide(sales, add(cap, subtract(debt, cash))), subindustry)), rank(group_zscore(ts_delta(return_assets, 66), subindustry)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "vRmAk5qv",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.74,
+    "turnover": 0.2894,
+    "fitness": 1.28,
+    "returns": 0.157,
+    "drawdown": 0.1343,
+    "margin": 0.001085,
+    "longCount": 1014,
+    "shortCount": 1006,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.74
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.28
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2894
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2894
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.75,
+        "value": 1.04
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
     ],
     "submittable": false
   },
@@ -1209,6 +2246,193 @@
     "checks_failed": [
       "LOW_SHARPE",
       "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "trade_when(less(ts_rank(ts_std_dev(returns, 5), 60), 0.9), add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66))), -1)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "le0a8rA2",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.72,
+    "turnover": 0.3041,
+    "fitness": 1.19,
+    "returns": 0.1451,
+    "drawdown": 0.1077,
+    "margin": 0.000955,
+    "longCount": 1032,
+    "shortCount": 1005,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.72
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.19
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3041
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3041
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.74,
+        "value": 1.07
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "kqKajnQK",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.7,
+    "turnover": 0.2104,
+    "fitness": 1.45,
+    "returns": 0.1536,
+    "drawdown": 0.1224,
+    "margin": 0.00146,
+    "longCount": 1025,
+    "shortCount": 1005,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.7
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.45
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2104
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2104
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.74,
+        "value": 0.94
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
     ],
     "submittable": false
   },
@@ -1494,6 +2718,100 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "kqKaVd0l",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.68,
+    "turnover": 0.3127,
+    "fitness": 1.26,
+    "returns": 0.1772,
+    "drawdown": 0.1438,
+    "margin": 0.001133,
+    "longCount": 1069,
+    "shortCount": 1035,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.68
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.26
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3127
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3127
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.73,
+        "value": 1.05
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), group_rank(divide(cashflow_op, cap), subindustry), group_rank(divide(sales, add(cap, subtract(debt, cash))), subindustry), group_rank(ts_delta(return_assets, 66), subindustry))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -1583,6 +2901,100 @@
     ],
     "checks_failed": [
       "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), rank(-divide(subtract(close, divide(add(high, low), 2)), close)), rank(-ts_std_dev(returns, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "j2gaA2VE",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.67,
+    "turnover": 0.4616,
+    "fitness": 1.0,
+    "returns": 0.1659,
+    "drawdown": 0.122,
+    "margin": 0.000719,
+    "longCount": 1031,
+    "shortCount": 998,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.67
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.4616
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.4616
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.72,
+        "value": 0.87
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
     ],
     "submittable": false
   },
@@ -1869,6 +3281,99 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-divide(ts_delta(close, 3), ts_std_dev(returns, 21)))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "j2gajAzE",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.66,
+    "turnover": 0.2091,
+    "fitness": 1.41,
+    "returns": 0.1516,
+    "drawdown": 0.1177,
+    "margin": 0.00145,
+    "longCount": 1024,
+    "shortCount": 1006,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.66
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.41
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2091
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2091
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.72,
+        "value": 0.97
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(vwap, 5))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -1963,6 +3468,193 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(subtract(ts_delay(close, 21), ts_delay(close, 252)), ts_delay(close, 252))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "Vk8N0gYG",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.65,
+    "turnover": 0.3076,
+    "fitness": 1.15,
+    "returns": 0.1499,
+    "drawdown": 0.1036,
+    "margin": 0.000975,
+    "longCount": 990,
+    "shortCount": 974,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.65
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.15
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3076
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3076
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.71,
+        "value": 0.91
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 16,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "qMX7jmpA",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.64,
+    "turnover": 0.1792,
+    "fitness": 1.49,
+    "returns": 0.1479,
+    "drawdown": 0.1251,
+    "margin": 0.001651,
+    "longCount": 1023,
+    "shortCount": 1006,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.64
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.49
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1792
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1792
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.71,
+        "value": 0.89
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 10)), rank(-ts_delta(close, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -2025,6 +3717,193 @@
         "result": "PASS",
         "limit": 0.71,
         "value": 0.84
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(ts_decay_linear(-ts_delta(close, 3), 5))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "E5KQlQ9G",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.63,
+    "turnover": 0.2226,
+    "fitness": 1.31,
+    "returns": 0.1446,
+    "drawdown": 0.11,
+    "margin": 0.001299,
+    "longCount": 1028,
+    "shortCount": 1002,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.63
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.31
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2226
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2226
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.71,
+        "value": 0.91
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)), rank(-ts_delta(divide(debt, equity), 252)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "78dYNz5v",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.63,
+    "turnover": 0.301,
+    "fitness": 1.11,
+    "returns": 0.1391,
+    "drawdown": 0.1223,
+    "margin": 0.000924,
+    "longCount": 934,
+    "shortCount": 917,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.63
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.11
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.301
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.301
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.71,
+        "value": 1.03
       },
       {
         "name": "UNITS",
@@ -2339,6 +4218,194 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), rank(-divide(subtract(close, divide(add(high, low), 2)), close)), rank(-ts_std_dev(returns, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P015ZPYW",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.61,
+    "turnover": 0.3606,
+    "fitness": 1.07,
+    "returns": 0.1606,
+    "drawdown": 0.1161,
+    "margin": 0.000891,
+    "longCount": 1031,
+    "shortCount": 998,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.61
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.07
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3606
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3606
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.89
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), rank(-divide(subtract(close, divide(add(high, low), 2)), close)), rank(-ts_std_dev(returns, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "zqWdYG7X",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.61,
+    "turnover": 0.3606,
+    "fitness": 1.07,
+    "returns": 0.1606,
+    "drawdown": 0.1161,
+    "margin": 0.000891,
+    "longCount": 1031,
+    "shortCount": 998,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.61
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.07
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3606
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3606
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.89
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 5))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)), rank(snt_social_value))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -2401,6 +4468,105 @@
         "result": "PASS",
         "limit": 0.69,
         "value": 1.09
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(ebit, add(cap, subtract(debt, cash)))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "KPLgrRnE",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\"; Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.59,
+    "turnover": 0.288,
+    "fitness": 1.18,
+    "returns": 0.1582,
+    "drawdown": 0.1298,
+    "margin": 0.001098,
+    "longCount": 1018,
+    "shortCount": 1005,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.59
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.18
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.288
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.288
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.69,
+        "value": 1.03
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
       },
       {
         "name": "UNITS",
@@ -2589,6 +4755,194 @@
         "result": "PASS",
         "limit": 0.68,
         "value": 0.87
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), rank(-divide(subtract(close, divide(add(high, low), 2)), close)), rank(-ts_std_dev(returns, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "zqWdYGnX",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.56,
+    "turnover": 0.3011,
+    "fitness": 1.12,
+    "returns": 0.1565,
+    "drawdown": 0.1141,
+    "margin": 0.00104,
+    "longCount": 1030,
+    "shortCount": 998,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.56
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.12
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3011
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3011
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.68,
+        "value": 0.86
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_rank(close, 5))), rank(-ts_rank(close, 10)), rank(-ts_rank(close, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "npWadOq8",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.53,
+    "turnover": 0.322,
+    "fitness": 1.0,
+    "returns": 0.1373,
+    "drawdown": 0.1518,
+    "margin": 0.000853,
+    "longCount": 1012,
+    "shortCount": 1018,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.53
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.322
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.322
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.66,
+        "value": 0.98
       },
       {
         "name": "UNITS",
@@ -3185,6 +5539,194 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1)))), rank(-ts_delta(close, 3)), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(-divide(subtract(close, divide(add(high, low), 2)), close)), rank(-ts_std_dev(returns, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "0m8PXb0r",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.46,
+    "turnover": 0.3789,
+    "fitness": 0.93,
+    "returns": 0.1533,
+    "drawdown": 0.1417,
+    "margin": 0.000809,
+    "longCount": 1031,
+    "shortCount": 998,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.46
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.93
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.3789
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.3789
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.63,
+        "value": 0.81
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(rank(-ts_delta(close, 3)), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(-divide(subtract(open, ts_delay(close, 1)), ts_delay(close, 1))), rank(-divide(subtract(close, divide(add(high, low), 2)), close)), rank(-ts_std_dev(returns, 21)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "LLRKNPe1",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.46,
+    "turnover": 0.337,
+    "fitness": 0.99,
+    "returns": 0.1558,
+    "drawdown": 0.1355,
+    "margin": 0.000924,
+    "longCount": 1031,
+    "shortCount": 998,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.46
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.99
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.337
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.337
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.63,
+        "value": 0.79
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(multiply(2, rank(-ts_delta(close, 5))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -3247,6 +5789,204 @@
         "result": "PASS",
         "limit": 0.62,
         "value": 1.05
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(subtract(ts_delay(close, 21), ts_delay(close, 252)), ts_delay(close, 252))), rank(divide(ebit, add(cap, subtract(debt, cash)))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "kqKag5pP",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\"; Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.42,
+    "turnover": 0.2823,
+    "fitness": 1.01,
+    "returns": 0.1422,
+    "drawdown": 0.125,
+    "margin": 0.001008,
+    "longCount": 985,
+    "shortCount": 972,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.42
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.01
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2823
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2823
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.61,
+        "value": 0.89
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(subtract(ts_delay(close, 21), ts_delay(close, 252)), ts_delay(close, 252))), rank(divide(ebit, add(cap, subtract(debt, cash)))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "vRmA229Q",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\"; Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.42,
+    "turnover": 0.2823,
+    "fitness": 1.01,
+    "returns": 0.1422,
+    "drawdown": 0.125,
+    "margin": 0.001008,
+    "longCount": 985,
+    "shortCount": 972,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.42
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.01
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2823
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2823
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.61,
+        "value": 0.89
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
       },
       {
         "name": "UNITS",
@@ -3544,6 +6284,105 @@
         "name": "UNITS",
         "result": "WARNING",
         "message": "Incompatible unit for input of \"log\" at index 0, expected \"Unit[]\", found \"Unit[CSPrice:1]\""
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(subtract(ts_delay(close, 21), ts_delay(close, 252)), ts_delay(close, 252))), rank(divide(ebit, add(cap, subtract(debt, cash)))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "ZYoaAo7x",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\"; Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.37,
+    "turnover": 0.2345,
+    "fitness": 1.05,
+    "returns": 0.1386,
+    "drawdown": 0.12,
+    "margin": 0.001182,
+    "longCount": 985,
+    "shortCount": 972,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.37
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 1.05
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2345
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2345
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.59,
+        "value": 0.85
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
       },
       {
         "name": "UNITS",
@@ -4670,6 +7509,100 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP1000",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "wpeojLJ5",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 1.0,
+    "turnover": 0.2157,
+    "fitness": 0.65,
+    "returns": 0.0922,
+    "drawdown": 0.1159,
+    "margin": 0.000855,
+    "longCount": 334,
+    "shortCount": 328,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 1.0
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.65
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.2157
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.2157
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.53,
+        "value": 0.67
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "add(rank(-ts_delta(close, 5)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(-ts_delta(log(assets), 252)))",
     "settings": {
       "instrumentType": "EQUITY",
@@ -5212,6 +8145,99 @@
     "submittable": false
   },
   {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "NONE",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "A13x09wd",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 0.84,
+    "turnover": 0.0735,
+    "fitness": 1.52,
+    "returns": 0.4099,
+    "drawdown": 0.6796,
+    "margin": 0.011161,
+    "longCount": 2106,
+    "shortCount": 0,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.84
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "limit": 1.3,
+        "value": 1.52
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.0735
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.0735
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.36,
+        "value": 1.03
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "-winsorize(zscore(add(ts_zscore(close, 5), ts_zscore(close, 21))), std=4)",
     "settings": {
       "instrumentType": "EQUITY",
@@ -5273,6 +8299,100 @@
         "result": "PASS",
         "limit": 0.36,
         "value": 0.62
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "add(multiply(2, rank(-ts_delta(close, 3))), rank(-ts_delta(close, 1)), rank(-ts_delta(close, 10)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP500",
+      "delay": 0,
+      "decay": 12,
+      "neutralization": "MARKET",
+      "truncation": 0.1,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "zqWdkGYX",
+    "warning": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>",
+    "sharpe": 0.78,
+    "turnover": 0.1984,
+    "fitness": 0.64,
+    "returns": 0.1351,
+    "drawdown": 0.2189,
+    "margin": 0.001362,
+    "longCount": 197,
+    "shortCount": 187,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.78
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.64
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1984
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1984
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.37,
+        "value": 0.75
+      },
+      {
+        "name": "UNITS",
+        "result": "WARNING",
+        "message": "Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\""
       },
       {
         "name": "SELF_CORRELATION",
@@ -6832,6 +9952,99 @@
     "submittable": false
   },
   {
+    "expression": "winsorize(zscore(ts_delta(vec_avg(anl4_basicconaf_mean), 21)), std=4)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P015MqMq",
+    "sharpe": 0.23,
+    "turnover": 1.6985,
+    "fitness": 0.03,
+    "returns": 0.0218,
+    "drawdown": 0.2205,
+    "margin": 2.6e-05,
+    "longCount": 100,
+    "shortCount": 100,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.23
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.03
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 1.6985
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 1.6985
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2023-09-22",
+        "limit": 0.1,
+        "value": 0.26711
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.1,
+        "value": 0.2
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "HIGH_TURNOVER",
+      "CONCENTRATED_WEIGHT"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "group_rank(divide(cashflow_op, assets), subindustry)",
     "settings": {
       "instrumentType": "EQUITY",
@@ -7469,6 +10682,99 @@
     "submittable": false
   },
   {
+    "expression": "winsorize(zscore(vec_avg(anl4_dez1afv4_est)), std=4)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "E5KQVAY9",
+    "sharpe": -0.19,
+    "turnover": 0.1927,
+    "fitness": -0.06,
+    "returns": -0.0179,
+    "drawdown": 0.3817,
+    "margin": -0.000186,
+    "longCount": 834,
+    "shortCount": 2104,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": -0.19
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": -0.06
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.1927
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.1927
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2021-01-25",
+        "limit": 0.1,
+        "value": 0.323655
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.08,
+        "value": -0.77
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "CONCENTRATED_WEIGHT",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
     "expression": "-winsorize(zscore(snt_buzz), std=4)",
     "settings": {
       "instrumentType": "EQUITY",
@@ -7818,6 +11124,99 @@
     "checks_failed": [
       "LOW_SHARPE",
       "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "submittable": false
+  },
+  {
+    "expression": "winsorize(zscore(ts_delta(vec_avg(anl4_dez1afv4_est), 21)), std=4)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 6,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "language": "FASTEXPR",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M"
+    },
+    "ok": true,
+    "alpha_id": "P015gk8w",
+    "sharpe": -0.6,
+    "turnover": 0.4097,
+    "fitness": -0.18,
+    "returns": -0.0363,
+    "drawdown": 0.2298,
+    "margin": -0.000177,
+    "longCount": 1435,
+    "shortCount": 1443,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": -0.6
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": -0.18
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.4097
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.4097
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "FAIL",
+        "date": "2021-01-22",
+        "limit": 0.1,
+        "value": 0.372883
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": -0.26,
+        "value": -1.01
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ],
+    "checks_failed": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "CONCENTRATED_WEIGHT",
       "LOW_SUB_UNIVERSE_SHARPE"
     ],
     "submittable": false
