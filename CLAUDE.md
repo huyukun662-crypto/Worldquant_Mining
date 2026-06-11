@@ -104,6 +104,20 @@ proxies only):
   and maxDD 0.090→0.078 while keeping SH > 2.0.) Uses only PV
   fields, no IV, structurally orthogonal to the existing returns-reversal
   + implied-vol ACTIVE pool.
+- `WQ_D0_MINING_REPORT_2.json` — **second delay-0 survivor**, a
+  liquidity/turnover-axis alpha orthogonal to both the ACTIVE pool and the
+  first D0 factor. Expression: `winsorize(add(add(3*zscore(ts_av_diff(
+  volume/sharesout,20)+ts_av_diff(volume/sharesout,5)), zscore(-ts_corr(
+  close,volume,20))), zscore(-(close-vwap)/vwap)), std=4)` — multi-horizon
+  abnormal turnover (niche `ts_av_diff`) + reversed price-volume correlation
+  (niche `ts_corr`, a distribution proxy) + a small close-vs-VWAP order-flow
+  kicker. D0, TOP3000, decay=4, trunc=0.05, SUBINDUSTRY. WQ IS: **SH 2.15,
+  FIT 1.35, TO 0.45, maxDD 0.044, self-corr 0.455** — every IS check PASS.
+  PnL corr vs factor 1 is **0.59 (< WQ's 0.7 bar)** so the two are
+  co-submittable; the ~0.5 floor is structural (at D0 abnormal turnover and
+  range expansion are both information-flow proxies — a pure turnover signal
+  already correlates 0.49 with factor 1). Distinct economic axis
+  (volume/liquidity vs price-range), no IV.
 
 ### Evidence
 
