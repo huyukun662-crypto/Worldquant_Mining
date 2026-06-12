@@ -322,5 +322,77 @@
     ],
     "alpha_id": "vRmZW8bz",
     "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank(add(rank(subtract(ts_mean(volume, 10), ts_mean(volume, 120))), reverse(rank(divide(close, ts_mean(close, 60))))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "decay": 12,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "sharpe": 0.99,
+    "turnover": 0.0994,
+    "fitness": 0.81,
+    "returns": 0.0832,
+    "drawdown": 0.0903,
+    "margin": 0.001674,
+    "longCount": 1534,
+    "shortCount": 1537,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "fail_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "vRmZW5VQ",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "expression": "rank(add(rank(subtract(ts_mean(volume, 10), ts_mean(volume, 120))), rank(subtract(ts_mean(returns, 200), ts_mean(returns, 40)))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "pasteurization": "ON",
+      "universe": "TOP3000",
+      "decay": 12,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "sharpe": 1.21,
+    "turnover": 0.1021,
+    "fitness": 0.96,
+    "returns": 0.0788,
+    "drawdown": 0.0694,
+    "margin": 0.001544,
+    "longCount": 1533,
+    "shortCount": 1539,
+    "checks_passed": 5,
+    "checks_total": 8,
+    "fail_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "3qA18Xae",
+    "error": ""
   }
 ]
