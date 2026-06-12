@@ -298,6 +298,54 @@ class ConstructionAgent:
                 grid.append(s)
         return grid
 
+    def best_settings(self) -> dict:
+        """The decay/neutralization that won Stage-1 refine (volume-trend
+        peak: decay=12, SUBINDUSTRY)."""
+        s = dict(FIXED_SETTINGS)
+        s.update(universe=self.universe, decay=12, truncation=0.08,
+                 neutralization="SUBINDUSTRY")
+        return s
+
+
+# ---------------------------------------------------------------------------
+# Stage-2: window-tuning + volume x price composites (push for SH > 1.25)
+# ---------------------------------------------------------------------------
+#
+# Stage-1 found volume-trend = rank(subtract(ts_mean(volume,S), ts_mean(volume,L)))
+# as the strongest low-turnover signal (+1.10). To cross the 1.25 bar we
+# (a) tune the (S, L) windows and (b) DIVERSIFY it by adding orthogonal,
+# already-positive-Sharpe PRICE signals -- a volume signal + a price signal
+# should de-correlate and lift Sharpe. All signals are combined in their
+# profitable (positive-Sharpe) direction, equal-weighted as ranks, re-ranked.
+
+def stage2_phase_a() -> list[str]:
+    """Window-tuned volume-trend singles + volume x price composites,
+    all evaluated at the Stage-1-best setting (decay=12, SUBINDUSTRY)."""
+    vt = lambda s, l: f"subtract(ts_mean(volume, {s}), ts_mean(volume, {l}))"
+
+    # positive-Sharpe direction of each Stage-1 signal, as a rank in [0,1]:
+    VT   = f"rank({vt(10, 120)})"                                  # +1.10
+    RP   = ("reverse(rank(divide(subtract(close, ts_mean(low, 60)), "
+            "subtract(ts_mean(high, 60), ts_mean(low, 60)))))")    # +1.00
+    MA   = "reverse(rank(divide(close, ts_mean(close, 60))))"      # +0.56
+    MOM  = "rank(subtract(ts_mean(returns, 200), ts_mean(returns, 40)))"  # +0.94
+
+    exprs: list[str] = []
+
+    # (a) window tuning of the volume-trend single (skip 10/120, already known)
+    for s, l in [(5, 60), (5, 120), (5, 250), (10, 60),
+                 (10, 250), (20, 120), (20, 250), (20, 60)]:
+        exprs.append(f"rank({vt(s, l)})")
+
+    # (b) volume x price composites (equal-weight rank sum, re-ranked)
+    exprs.append(f"rank(add({VT}, {RP}))")                 # vol + range-pos
+    exprs.append(f"rank(add({VT}, {MA}))")                 # vol + MA-reversion
+    exprs.append(f"rank(add({VT}, {MOM}))")                # vol + momentum
+    exprs.append(f"rank(add(add({VT}, {RP}), {MA}))")      # vol + 2 price
+    exprs.append(f"rank(add(multiply({VT}, 2), {RP}))")    # vol overweighted
+
+    return exprs
+
 
 # ---------------------------------------------------------------------------
 # Agent 4: SimulationAgent -- concurrent WQ Brain /simulations
@@ -539,6 +587,9 @@ def main():
                          "with sign-fitting; random = fresh random combos")
     ap.add_argument("--refine", type=int, default=3,
                     help="Top-K ideas to refine over the settings grid")
+    ap.add_argument("--stage2", action="store_true",
+                    help="Run window-tuning + volume x price composites "
+                         "(push the Stage-1 volume-trend winner past SH>1.25)")
     ap.add_argument("--universe", type=str, default="TOP3000")
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--concurrent", type=int, default=1)
@@ -576,11 +627,18 @@ def main():
         persist(results)
 
     # --- Stage 1+2+3: ideas -> default D1 body -----------------------------
-    ideas = (idea.generate_priors(args.ideas) if args.mode == "priors"
-             else idea.generate(args.ideas))
+    if args.stage2:
+        ideas = stage2_phase_a()
+        screen_settings = con.best_settings()
+        for e in ideas:
+            dfa.assert_iv_free(e)
+    else:
+        ideas = (idea.generate_priors(args.ideas) if args.mode == "priors"
+                 else idea.generate(args.ideas))
+        screen_settings = con.default_settings()
     for e in ideas:
         log.info(f"   idea: {e}")
-    screen_jobs = [(e, con.default_settings()) for e in ideas]
+    screen_jobs = [(e, screen_settings) for e in ideas]
 
     # --- Stage 4: screening simulations ------------------------------------
     log.info(f"=== SCREEN: {len(screen_jobs)} simulations "
@@ -594,7 +652,9 @@ def main():
     promising = [r for r in ok
                  if r.sharpe > 0 and TURNOVER_FLOOR < r.turnover < TURNOVER_CEIL]
     promising.sort(key=val.score, reverse=True)
-    refine_exprs = [r.expression for r in promising[:args.refine]]
+    # Stage-2 refines fewer (top 2) since each composite is already deep.
+    refine_k = 2 if args.stage2 else args.refine
+    refine_exprs = [r.expression for r in promising[:refine_k]]
     log.info(f"=== refining top {len(refine_exprs)} ideas over settings grid ===")
     refine_jobs = [(e, s) for e in refine_exprs for s in con.refine_grid()]
     if refine_jobs:
