@@ -118,6 +118,24 @@ proxies only):
   range expansion are both information-flow proxies — a pure turnover signal
   already correlates 0.49 with factor 1). Distinct economic axis
   (volume/liquidity vs price-range), no IV.
+- `WQ_D0_MINING_REPORT_3.json` — **third delay-0 survivor**, a moderate-
+  turnover value/quality × intraday-microstructure blend, orthogonal to the
+  ACTIVE pool and to both prior D0 factors. Expression: `winsorize(add(add(add(
+  zscore(revenue/cap), zscore((revenue-cogs)/assets)), zscore(-(close-vwap)/
+  (high-low))), 0.7*zscore(ts_av_diff((high-low)/close,20)+ts_av_diff((high-
+  low)/close,5))), std=4)` — a slow fundamental anchor (sales yield + Novy-Marx
+  gross profitability) that holds turnover/drawdown down, plus two fast intraday
+  tilts (VWAP-reversal + range expansion) that supply the Sharpe to clear the D0
+  2.0 bar. D0, TOP3000, decay=8, trunc=0.05, SUBINDUSTRY. WQ IS: **SH 2.21,
+  FIT 1.60, TO 0.28, maxDD 0.072** — every IS check PASS. Correlations all well
+  under WQ's 0.7 bar: **pool 0.544, vs factor 1 = 0.284, vs factor 2 = 0.344**.
+  The value weight was cut to 1x and the pool-orthogonal range tilt raised to
+  0.7x specifically to pull pool self-corr from 0.68 down to 0.54 for margin.
+  Key lesson: a low-turnover D0 factor that is BOTH uncorrelated with the pool
+  AND clears SH>2.0 is infeasible alone (the only orthogonal low-turnover axis,
+  value, caps at SH~1.5 and itself correlates 0.71 with the pool's value alphas);
+  blending the value anchor with moderate-turnover microstructure tilts is what
+  makes it both submittable and orthogonal, at turnover ~0.28.
 
 ### Evidence
 

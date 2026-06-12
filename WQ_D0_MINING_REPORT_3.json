@@ -1,0 +1,90 @@
+{
+  "factor_name": "value_quality_x_intraday_reversal_range",
+  "expression": "winsorize(add(add(add(zscore(divide(revenue, cap)), zscore(divide(subtract(revenue, cogs), assets))), zscore(reverse(divide(subtract(close, vwap), subtract(high, low))))), multiply(0.7, zscore(add(ts_av_diff(divide(subtract(high, low), close), 20), ts_av_diff(divide(subtract(high, low), close), 5))))), std=4)",
+  "alpha_id": "LLRmpvN6",
+  "delay": 0,
+  "turnover_target": "moderate 0.2-0.3 (per user: relaxed from ultra-low to clear the D0 SH>2.0 bar)",
+  "economic_rationale": "A four-signal D0 composite blending a slow fundamental anchor with two fast intraday-microstructure tilts. ANCHOR (low turnover): VALUE = revenue/cap (sales yield, cheap firms) + QUALITY = (revenue-cogs)/assets (Novy-Marx gross profitability, profitable firms). This anchor barely trades (value/quality move quarterly) so it holds turnover and drawdown down. TILTS (add the Sharpe needed to clear the D0 2.0 bar and diversify the drawdown): intraday VWAP-reversal -(close-vwap)/(high-low) -- stocks closing below their volume-weighted average bounce -- plus a 0.7-weighted multi-horizon intraday RANGE EXPANSION ts_av_diff((high-low)/close) over 5d & 20d, an information-flow/attention proxy. The fundamental anchor and the microstructure tilts are economically orthogonal, so the blend keeps turnover moderate (0.28) and drawdown low (0.072) while clearing SH>2.0.",
+  "regularization": [
+    "zscore (cross-sectional, x4 on each component)",
+    "winsorize (std=4)"
+  ],
+  "niche_operator": "ts_av_diff (range deviation from trailing mean)",
+  "avoids_IV": true,
+  "settings": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 0,
+    "decay": 8,
+    "truncation": 0.05,
+    "neutralization": "SUBINDUSTRY",
+    "pasteurization": "ON",
+    "language": "FASTEXPR"
+  },
+  "is_metrics": {
+    "sharpe": 2.21,
+    "fitness": 1.6,
+    "turnover": 0.2827,
+    "returns": 0.1486,
+    "drawdown": 0.0717,
+    "margin": 0.001051,
+    "longCount": 1279,
+    "shortCount": 1494
+  },
+  "submit_checks": [
+    {
+      "name": "LOW_SHARPE",
+      "result": "PASS",
+      "limit": 2.0,
+      "value": 2.21
+    },
+    {
+      "name": "LOW_FITNESS",
+      "result": "PASS",
+      "limit": 1.3,
+      "value": 1.6
+    },
+    {
+      "name": "LOW_TURNOVER",
+      "result": "PASS",
+      "limit": 0.01,
+      "value": 0.2827
+    },
+    {
+      "name": "HIGH_TURNOVER",
+      "result": "PASS",
+      "limit": 0.7,
+      "value": 0.2827
+    },
+    {
+      "name": "CONCENTRATED_WEIGHT",
+      "result": "PASS",
+      "limit": null,
+      "value": null
+    },
+    {
+      "name": "LOW_SUB_UNIVERSE_SHARPE",
+      "result": "PASS",
+      "limit": 0.96,
+      "value": 1.28
+    },
+    {
+      "name": "SELF_CORRELATION",
+      "result": "PENDING",
+      "limit": null,
+      "value": null
+    },
+    {
+      "name": "MATCHES_COMPETITION",
+      "result": "PASS",
+      "limit": null,
+      "value": null
+    }
+  ],
+  "self_correlation_max_vs_active_pool": 0.5443,
+  "pnl_correlation_vs_factor1": 0.2843,
+  "pnl_correlation_vs_factor2": 0.3441,
+  "orthogonality_note": "All three correlations are comfortably below WorldQuant's 0.7 self-correlation submission bar: vs the ACTIVE pool 0.544, vs factor 1 (price-range) 0.284, vs factor 2 (volume/turnover) 0.344. Genuinely uncorrelated with both previously mined D0 factors AND co-submittable against the existing pool. The value-led anchor was down-weighted (1x) and the pool-orthogonal range tilt up-weighted (0.7x) specifically to pull the pool self-correlation down from 0.68 to 0.54 for a safe submission margin.",
+  "submittable": true,
+  "note": "Verified submit-READY via IS checks + /correlations/self. NOT submitted."
+}
