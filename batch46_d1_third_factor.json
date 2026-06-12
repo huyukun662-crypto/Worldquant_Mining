@@ -1,0 +1,10 @@
+[
+  {"expression": "rank(ts_backfill(earnings_revision_magnitude, 66))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(ts_backfill(net_num_revisions_fy1, 66))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(ts_backfill(six_month_avg_fy1_eps_revision, 66))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(ts_backfill(net_fy1_analyst_revisions, 66))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "add(multiply(2, rank(ts_backfill(earnings_revision_magnitude, 66))), rank(ts_backfill(net_num_revisions_fy1, 66)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), filter=true)", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "add(multiply(2, rank(ts_backfill(earnings_revision_magnitude, 66))), rank(ts_backfill(net_num_revisions_fy1, 66)), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), filter=true)", "settings": {"delay": 1, "decay": 8}},
+  {"expression": "add(multiply(2, rank(ts_backfill(earnings_revision_magnitude, 66))), rank(ts_backfill(net_num_revisions_fy1, 66)), multiply(0.75, rank(ts_backfill(net_num_revisions_fy2, 66))), multiply(0.75, rank(ts_backfill(six_month_avg_fy1_eps_revision, 66))), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), filter=true)", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "add(multiply(1.5, rank(ts_backfill(earnings_revision_magnitude, 66))), rank(ts_backfill(net_num_revisions_fy1, 66)), multiply(0.75, rank(ts_backfill(net_num_revisions_fy2, 66))), multiply(0.75, rank(ts_backfill(six_month_avg_fy1_eps_revision, 66))), rank(divide(cashflow_op, cap)), rank(divide(sales, add(cap, subtract(debt, cash)))), rank(ts_delta(return_assets, 66)), group_rank(ts_mean(rel_ret_comp, 5), industry), filter=true)", "settings": {"delay": 1, "decay": 8}}
+]
