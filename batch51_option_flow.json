@@ -1,0 +1,10 @@
+[
+  {"expression": "-rank(ts_backfill(pcr_vol_30, 5))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "-rank(ts_backfill(pcr_oi_30, 5))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "-rank(ts_delta(ts_backfill(pcr_oi_30, 5), 22))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(divide(ts_backfill(forward_price_60, 5), close))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(ts_delta(divide(ts_backfill(forward_price_60, 5), close), 22))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(divide(ts_backfill(call_breakeven_60, 5), close))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "-rank(divide(ts_backfill(put_breakeven_60, 5), close))", "settings": {"delay": 1, "decay": 6}},
+  {"expression": "rank(divide(subtract(ts_backfill(call_breakeven_60, 5), ts_backfill(put_breakeven_60, 5)), close))", "settings": {"delay": 1, "decay": 6}}
+]

@@ -1,0 +1,12 @@
+[
+  {"expression": "-rank(ts_backfill(news_short_interest, 22))", "settings": {"decay": 4}},
+  {"expression": "-rank(ts_delta(ts_backfill(news_short_interest, 5), 22))", "settings": {"decay": 4}},
+  {"expression": "group_rank(-ts_backfill(news_short_interest, 22), subindustry)", "settings": {"decay": 4}},
+  {"expression": "rank(ts_decay_linear(ts_backfill(vec_avg(ern4_erneffct1), 66), 22))", "settings": {"decay": 4}},
+  {"expression": "rank(ts_backfill(vec_avg(ern4_erneffct1), 120))", "settings": {"decay": 4}},
+  {"expression": "rank(ts_backfill(vec_sum(ern4_erneffct1), 66))", "settings": {"decay": 4}},
+  {"expression": "add(multiply(2, rank(ts_backfill(vec_avg(ern4_erneffct1), 66))), multiply(1.5, -rank(ts_backfill(news_short_interest, 22))), multiply(0.75, rank(ts_backfill(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), 66))), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), filter=true)", "settings": {"decay": 4}},
+  {"expression": "add(multiply(2, rank(ts_backfill(vec_avg(ern4_erneffct1), 66))), multiply(1.5, -rank(ts_backfill(news_short_interest, 22))), multiply(0.75, rank(ts_backfill(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), 66))), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), filter=true)", "settings": {"decay": 8}},
+  {"expression": "add(multiply(2, rank(ts_backfill(vec_avg(ern4_erneffct1), 66))), multiply(1.5, -rank(ts_backfill(news_short_interest, 22))), multiply(0.75, rank(ts_backfill(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), 66))), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), filter=true)", "settings": {"decay": 4, "neutralization": "STATISTICAL"}},
+  {"expression": "add(multiply(2, rank(ts_backfill(vec_avg(ern4_erneffct1), 66))), multiply(1.5, -rank(ts_backfill(news_short_interest, 22))), multiply(0.5, rank(divide(ts_backfill(authorized_stock_buyback_amount, 252), cap))), multiply(0.75, rank(ts_backfill(divide(subtract(vec_avg(anl4_basicconaf_pu), vec_avg(anl4_basicconaf_down)), add(vec_avg(anl4_basicconaf_numest), 1)), 66))), group_rank(ts_mean(rel_ret_comp, 5), industry), multiply(0.5, rank(ts_mean(snt_social_value, 5))), rank(ts_delta(return_assets, 66)), filter=true)", "settings": {"decay": 6}}
+]
