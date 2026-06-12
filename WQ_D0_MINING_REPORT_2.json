@@ -1,0 +1,91 @@
+{
+  "factor_name": "abnormal_turnover_x_volume_price_divergence",
+  "expression": "winsorize(add(add(multiply(3, zscore(add(ts_av_diff(divide(volume, sharesout), 20), ts_av_diff(divide(volume, sharesout), 5)))), zscore(reverse(ts_corr(close, volume, 20)))), zscore(reverse(divide(subtract(close, vwap), vwap)))), std=4)",
+  "alpha_id": "pw7Wnm0o",
+  "delay": 0,
+  "economic_rationale": "Liquidity/attention-axis D0 alpha, economically orthogonal to factor 1 (which is a price-range / intraday-structure axis). Three volume-microstructure terms. PRIMARY (3x weight): multi-horizon ABNORMAL TURNOVER -- ts_av_diff of volume/sharesout over 5d and 20d, i.e. today's share turnover relative to its own recent norm. Abnormal turnover proxies a liquidity/attention shock that shows short-horizon cross-sectional continuation. SECONDARY: reversed price-volume CORRELATION ts_corr(close,volume,20) -- negative/low price-volume co-movement flags distribution (price holding up on falling volume or sliding on rising volume), which mean-reverts. TERTIARY: reversed close-vs-VWAP order-flow imbalance, a small intraday-reversal kicker. Buy stocks with a turnover shock, volume-price divergence and a weak close vs VWAP.",
+  "regularization": [
+    "zscore (cross-sectional, x3 on each term)",
+    "winsorize (std=4)"
+  ],
+  "niche_operators": [
+    "ts_av_diff (turnover deviation from trailing mean)",
+    "ts_corr (rolling price-volume correlation)"
+  ],
+  "avoids_IV": true,
+  "settings": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 0,
+    "decay": 4,
+    "truncation": 0.05,
+    "neutralization": "SUBINDUSTRY",
+    "pasteurization": "ON",
+    "language": "FASTEXPR"
+  },
+  "is_metrics": {
+    "sharpe": 2.15,
+    "fitness": 1.35,
+    "turnover": 0.4466,
+    "returns": 0.1757,
+    "drawdown": 0.0438,
+    "margin": 0.000787,
+    "longCount": 1552,
+    "shortCount": 1511
+  },
+  "submit_checks": [
+    {
+      "name": "LOW_SHARPE",
+      "result": "PASS",
+      "limit": 2.0,
+      "value": 2.15
+    },
+    {
+      "name": "LOW_FITNESS",
+      "result": "PASS",
+      "limit": 1.3,
+      "value": 1.35
+    },
+    {
+      "name": "LOW_TURNOVER",
+      "result": "PASS",
+      "limit": 0.01,
+      "value": 0.4466
+    },
+    {
+      "name": "HIGH_TURNOVER",
+      "result": "PASS",
+      "limit": 0.7,
+      "value": 0.4466
+    },
+    {
+      "name": "CONCENTRATED_WEIGHT",
+      "result": "PASS",
+      "limit": null,
+      "value": null
+    },
+    {
+      "name": "LOW_SUB_UNIVERSE_SHARPE",
+      "result": "PASS",
+      "limit": 0.93,
+      "value": 1.2
+    },
+    {
+      "name": "SELF_CORRELATION",
+      "result": "PENDING",
+      "limit": null,
+      "value": null
+    },
+    {
+      "name": "MATCHES_COMPETITION",
+      "result": "PASS",
+      "limit": null,
+      "value": null
+    }
+  ],
+  "self_correlation_max_vs_active_pool": 0.4551,
+  "pnl_correlation_vs_factor1_KPLg5Obk": 0.5888,
+  "orthogonality_note": "Both self-corr vs the ACTIVE submitted pool (0.455) and the PnL correlation vs factor 1 (0.589) are below WorldQuant's 0.7 self-correlation submission bar, so factor 2 is submittable alongside factor 1. The ~0.5-0.6 floor vs factor 1 is structural: at delay=0 abnormal turnover and intraday range expansion are both information-flow/attention proxies that co-move (a pure turnover signal already correlates 0.49 with factor 1); the components needed to clear the D0 SH>2.0 bar raise it to ~0.59. It is a genuinely different economic axis (volume/liquidity vs price-range), not a re-parameterisation of factor 1.",
+  "submittable": true,
+  "note": "Verified submit-READY via IS checks + /correlations/self. NOT submitted."
+}

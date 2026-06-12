@@ -91,6 +91,51 @@ proxies only):
   returns, drawdown, checks_passed, checks_total, alpha_id, expression,
   optimized, settings:{universe, delay, decay, truncation,
   neutralization, pasteurization, ...}}]`.
+- `WQ_D0_MINING_REPORT.json` — **delay-0 survivor** that clears the full
+  D0 submit gate (verified, NOT submitted). Expression:
+  `winsorize(add(zscore(add(ts_av_diff((high-low)/close, 20),
+  ts_av_diff((high-low)/close, 5))), 0.5*zscore((high+low-2*close)/
+  (high-low))), std=4)` — multi-horizon intraday range-expansion (niche
+  op `ts_av_diff`, an information-flow/attention proxy) diversified by a
+  0.5-weighted intraday close-position reversal. D0, TOP3000, decay=20,
+  trunc=0.08, SUBINDUSTRY. WQ IS: **SH 2.13, FIT 1.52, TO 0.40,
+  maxDD 0.078, self-corr 0.454** — every IS check PASS + self-corr < 0.7.
+  (decay 12→20 / trunc 0.05→0.08 vs the first pass cut turnover 0.49→0.40
+  and maxDD 0.090→0.078 while keeping SH > 2.0.) Uses only PV
+  fields, no IV, structurally orthogonal to the existing returns-reversal
+  + implied-vol ACTIVE pool.
+- `WQ_D0_MINING_REPORT_2.json` — **second delay-0 survivor**, a
+  liquidity/turnover-axis alpha orthogonal to both the ACTIVE pool and the
+  first D0 factor. Expression: `winsorize(add(add(3*zscore(ts_av_diff(
+  volume/sharesout,20)+ts_av_diff(volume/sharesout,5)), zscore(-ts_corr(
+  close,volume,20))), zscore(-(close-vwap)/vwap)), std=4)` — multi-horizon
+  abnormal turnover (niche `ts_av_diff`) + reversed price-volume correlation
+  (niche `ts_corr`, a distribution proxy) + a small close-vs-VWAP order-flow
+  kicker. D0, TOP3000, decay=4, trunc=0.05, SUBINDUSTRY. WQ IS: **SH 2.15,
+  FIT 1.35, TO 0.45, maxDD 0.044, self-corr 0.455** — every IS check PASS.
+  PnL corr vs factor 1 is **0.59 (< WQ's 0.7 bar)** so the two are
+  co-submittable; the ~0.5 floor is structural (at D0 abnormal turnover and
+  range expansion are both information-flow proxies — a pure turnover signal
+  already correlates 0.49 with factor 1). Distinct economic axis
+  (volume/liquidity vs price-range), no IV.
+- `WQ_D0_MINING_REPORT_3.json` — **third delay-0 survivor**, a moderate-
+  turnover value/quality × intraday-microstructure blend, orthogonal to the
+  ACTIVE pool and to both prior D0 factors. Expression: `winsorize(add(add(add(
+  zscore(revenue/cap), zscore((revenue-cogs)/assets)), zscore(-(close-vwap)/
+  (high-low))), 0.7*zscore(ts_av_diff((high-low)/close,20)+ts_av_diff((high-
+  low)/close,5))), std=4)` — a slow fundamental anchor (sales yield + Novy-Marx
+  gross profitability) that holds turnover/drawdown down, plus two fast intraday
+  tilts (VWAP-reversal + range expansion) that supply the Sharpe to clear the D0
+  2.0 bar. D0, TOP3000, decay=8, trunc=0.05, SUBINDUSTRY. WQ IS: **SH 2.21,
+  FIT 1.60, TO 0.28, maxDD 0.072** — every IS check PASS. Correlations all well
+  under WQ's 0.7 bar: **pool 0.544, vs factor 1 = 0.284, vs factor 2 = 0.344**.
+  The value weight was cut to 1x and the pool-orthogonal range tilt raised to
+  0.7x specifically to pull pool self-corr from 0.68 down to 0.54 for margin.
+  Key lesson: a low-turnover D0 factor that is BOTH uncorrelated with the pool
+  AND clears SH>2.0 is infeasible alone (the only orthogonal low-turnover axis,
+  value, caps at SH~1.5 and itself correlates 0.71 with the pool's value alphas);
+  blending the value anchor with moderate-turnover microstructure tilts is what
+  makes it both submittable and orthogonal, at turnover ~0.28.
 
 ### Evidence
 
@@ -137,8 +182,22 @@ per hour; budget candidates accordingly.
 
 ### Account tier limits observed on `2445560398@qq.com`
 
-- `delay=0` not available for simulation (HTTP 400 "Delay 0 is not
-  available"). `wq_pipeline.SETTING_SPACE['delay'] = [1]` reflects this.
+- `delay=0` **IS now available** for simulation (2026-06 re-test: a plain
+  `rank(close)` at `delay=0, TOP3000` returns HTTP 201 and completes). The
+  earlier "Delay 0 is not available" note is **obsolete** — the account
+  tier was upgraded. `delay=0` factors (D0) are now mineable end-to-end.
+- **D0 submit thresholds are HIGHER than D1.** The IS `checks` block applies
+  a stiffer bar at `delay=0`: `LOW_SHARPE` limit = **2.0** (not 1.25) and
+  `LOW_FITNESS` limit = **1.3** (not 1.0). `LOW_SUB_UNIVERSE_SHARPE` floats
+  ~0.93-0.97. Turnover gate is unchanged (`HIGH_TURNOVER` < 0.7,
+  `LOW_TURNOVER` > 0.01). So a submittable D0 alpha needs WQ_IS_SH > 2.0 AND
+  WQ_IS_FIT > 1.3 AND self-corr < 0.7 — confirmed against the account's own
+  ACTIVE D0 alphas (SH 2.01-2.73, FIT 1.56-3.02).
+- **Submit-readiness can be verified without submitting**: `/alphas/{id}`
+  returns the full IS `checks` (all but SELF_CORRELATION), and
+  `GET /alphas/{id}/correlations/self` returns the max self-correlation vs
+  the user's ACTIVE pool. Both together == the submit gate. Neither touches
+  the Submit Alpha quota (see below).
 - `ILLIQUID_MINVOL1M` universe returns 0 fields on `/data-fields`.
 - USA `/data-fields` ceiling: 6,038 distinct field IDs across all
   documented universes × delays (vs the 7,831 the WQ UI advertises;
