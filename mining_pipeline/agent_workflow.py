@@ -306,6 +306,27 @@ class ConstructionAgent:
                  neutralization="SUBINDUSTRY")
         return s
 
+    def mid_settings(self) -> dict:
+        """Stage-3 phase-A eval point: a moderate decay=8 (between the
+        decay=0 high-Sharpe and decay=12 low-TO ends) at SUBINDUSTRY."""
+        s = dict(FIXED_SETTINGS)
+        s.update(universe=self.universe, decay=8, truncation=0.08,
+                 neutralization="SUBINDUSTRY")
+        return s
+
+    def stage3_grid(self) -> list[dict]:
+        """Stage-3 refine: fine decay sweep x truncation. Higher truncation
+        spreads weight -> lower turnover; the fine decay fills the 0-12 gap
+        to find the best Sharpe/turnover point. SUBINDUSTRY fixed (best)."""
+        grid = []
+        for decay in (4, 8, 16):
+            for trunc in (0.08, 0.15):
+                s = dict(FIXED_SETTINGS)
+                s.update(universe=self.universe, decay=decay,
+                         truncation=trunc, neutralization="SUBINDUSTRY")
+                grid.append(s)
+        return grid
+
 
 # ---------------------------------------------------------------------------
 # Stage-2: window-tuning + volume x price composites (push for SH > 1.25)
@@ -344,6 +365,40 @@ def stage2_phase_a() -> list[str]:
     exprs.append(f"rank(add(add({VT}, {RP}), {MA}))")      # vol + 2 price
     exprs.append(f"rank(add(multiply({VT}, 2), {RP}))")    # vol overweighted
 
+    return exprs
+
+
+# ---------------------------------------------------------------------------
+# Stage-3: optimize the winner -- raise SH & FIT while pushing TO down
+# ---------------------------------------------------------------------------
+#
+# Winner: rank(add(multiply(rank(volume-trend), 2), range-position)).
+# Stage-3 tunes the SIGNAL (volume weight, volume windows, range window,
+# extra in-expression smoothing) at a moderate decay=8 eval point, then
+# refines the best over a fine decay x truncation grid. Note: the fitness
+# turnover term floors at 0.125, and TO is already ~0.106 -- so FIT is
+# lifted chiefly by raising Sharpe, while truncation/decay trim turnover.
+
+def stage3_phase_a() -> list[str]:
+    """Signal-side variants of the Stage-2 winner, evaluated at decay=8."""
+    VT = lambda s, l: f"rank(subtract(ts_mean(volume, {s}), ts_mean(volume, {l})))"
+    RP = lambda w: (f"reverse(rank(divide(subtract(close, ts_mean(low, {w})), "
+                    f"subtract(ts_mean(high, {w}), ts_mean(low, {w})))))")
+    combo = lambda wt, s, l, rw: f"rank(add(multiply({VT(s, l)}, {wt}), {RP(rw)}))"
+
+    exprs: list[str] = []
+    # volume-weight sweep on the winning structure (VT 10/120, RP 60)
+    for wt in (1.5, 2, 2.5, 3):
+        exprs.append(combo(wt, 10, 120, 60))
+    # lower-turnover volume window (10/250 had TO~0.099 as a single)
+    exprs.append(combo(2, 10, 250, 60))
+    exprs.append(combo(2.5, 10, 250, 60))
+    # range-position window variants
+    exprs.append(combo(2, 10, 120, 40))
+    exprs.append(combo(2, 10, 120, 90))
+    # extra in-expression smoothing (decay-linear) to suppress turnover
+    inner = f"add(multiply({VT(10, 120)}, 2), {RP(60)})"
+    exprs.append(f"rank(ts_decay_linear({inner}, 20))")
     return exprs
 
 
@@ -590,6 +645,9 @@ def main():
     ap.add_argument("--stage2", action="store_true",
                     help="Run window-tuning + volume x price composites "
                          "(push the Stage-1 volume-trend winner past SH>1.25)")
+    ap.add_argument("--stage3", action="store_true",
+                    help="Optimize the Stage-2 winner: weight/window/smoothing "
+                         "variants + fine decay x truncation refine")
     ap.add_argument("--universe", type=str, default="TOP3000")
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--concurrent", type=int, default=1)
@@ -627,7 +685,12 @@ def main():
         persist(results)
 
     # --- Stage 1+2+3: ideas -> default D1 body -----------------------------
-    if args.stage2:
+    if args.stage3:
+        ideas = stage3_phase_a()
+        screen_settings = con.mid_settings()
+        for e in ideas:
+            dfa.assert_iv_free(e)
+    elif args.stage2:
         ideas = stage2_phase_a()
         screen_settings = con.best_settings()
         for e in ideas:
@@ -652,11 +715,12 @@ def main():
     promising = [r for r in ok
                  if r.sharpe > 0 and TURNOVER_FLOOR < r.turnover < TURNOVER_CEIL]
     promising.sort(key=val.score, reverse=True)
-    # Stage-2 refines fewer (top 2) since each composite is already deep.
-    refine_k = 2 if args.stage2 else args.refine
+    # Stage-2/3 refine fewer (top 2) since each expression is already deep.
+    refine_k = 2 if (args.stage2 or args.stage3) else args.refine
     refine_exprs = [r.expression for r in promising[:refine_k]]
     log.info(f"=== refining top {len(refine_exprs)} ideas over settings grid ===")
-    refine_jobs = [(e, s) for e in refine_exprs for s in con.refine_grid()]
+    grid = con.stage3_grid() if args.stage3 else con.refine_grid()
+    refine_jobs = [(e, s) for e in refine_exprs for s in grid]
     if refine_jobs:
         log.info(f"=== REFINE: {len(refine_jobs)} simulations "
                  f"(~{len(refine_jobs)*120/args.concurrent/60:.0f} min) ===")
