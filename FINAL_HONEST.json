@@ -1,0 +1,103 @@
+{
+ "goal_status": "NOT_FULLY_ACHIEVABLE",
+ "goal": "5 non-IV PASS D1 alphas uncorrelated to submitted pool, low TO low DD",
+ "reality": "12 batches \u00d7 ~115 candidates exhausted. NON-IV mechanism space on this account+window collapses into 2 clusters: CFO-junk (submitted as LLRNoLXM/+ATO/Vk86dvEG) and Leverage (submitted as P01PppkL). Any new non-IV PASS we find is >0.7 correlated to one of these via PnL. Trade_when cross-mechanism trials confirmed: inner signal determines PnL profile, not the condition. IV pool offers PASS uncorrelated to non-IV submitted pool but with high mutual correlation within IV.",
+ "realistic_max": "2 alphas: xAnjNEbb (IV skew) + 88Ll0ng7 (IV term+skew). Plus 1 swap candidate (E5KQ88Qm or E5KlMqmJ).",
+ "why_5_uncorrelated_non_IV_is_impossible": [
+  "2019-2023 IS junk rally dominates all fundamental signals \u2014 they all decompose into same junk direction",
+  "Subindustry group_neutralize removes cross-industry effects but not the time-series junk-rally character",
+  "Trade_when conditional only changes timing, not PnL structure (inner signal determines)",
+  "Pure PV signals (vol/momentum/reversal) DD blows out 0.4-1.0",
+  "News/social data has TO 0.20+ \u2192 FIT < 1.0 \u2192 fail",
+  "model77 PEAD/abnormal-return dataset locked behind account tier (Invalid data field)",
+  "sentiment1 analyst revision/surprise dataset locked"
+ ],
+ "submission_plan_realistic": [
+  "1. Submit xAnjNEbb (Sk_h720 SH 1.80) - confirmed <0.7 vs submitted, IV cluster",
+  "2. Submit 88Ll0ng7 (Mix_70_30 SH 1.55) - confirmed mutual 0.407 with xAnj, lowest corr 0.258",
+  "3. Try E5KQ88Qm (Sk_h270 SH 2.08) - corr 0.673 vs APCR borderline OK; mutual 0.903 vs xAnj will reject",
+  "4. (Pool full at 2 IV additions; trying more triggers SELF_CORRELATION rejection)"
+ ],
+ "alphas_offered": [
+  {
+   "alpha_id": "xAnjNEbb",
+   "note": "IV-Skew family. Confirmed PASS, max corr 0.667 vs submitted (APCR). Mutual 0.407 with 88Ll0ng7.",
+   "sharpe": 1.8,
+   "fitness": 2.03,
+   "turnover": 0.122,
+   "drawdown": 0.074,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5))), 10)))"
+  },
+  {
+   "alpha_id": "88Ll0ng7",
+   "note": "IV-Term+Skew Mix. PASS. LOWEST corr to submitted (0.258). Mutual <0.7 only with xAnjNEbb.",
+   "sharpe": 1.55,
+   "fitness": 1.45,
+   "turnover": 0.1164,
+   "drawdown": 0.1075,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.8, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.2, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  },
+  {
+   "alpha_id": "E5KQ88Qm",
+   "note": "IV-Skew h270. Highest SH 2.08. corr 0.673 vs APCR. Mutual 0.903 with xAnjNEbb \u2192 can swap.",
+   "sharpe": 2.08,
+   "fitness": 2.69,
+   "turnover": 0.1224,
+   "drawdown": 0.1098,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(reverse(zscore(subtract(ts_backfill(implied_volatility_put_270, 5), ts_backfill(implied_volatility_call_270, 5)))), 10))"
+  },
+  {
+   "alpha_id": "zqW2om7o",
+   "note": "TW(ARR_cond, Lev signal). PASS, SH 1.69, ultra-low TO 0.020 DD 0.055. BUT corr 0.969 vs Leverage \u2192 likely rejected.",
+   "sharpe": 1.69,
+   "fitness": 1.5,
+   "turnover": 0.0202,
+   "drawdown": 0.0547,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(trade_when(abs(group_neutralize(reverse(zscore(ts_backfill(analyst_revision_rank_derivative, 10))), subindustry)), add(group_neutralize(zscore(divide(ts_backfill(debt, 60), ts_backfill(equity, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(debt, 60), ts_backfill(assets, 60))), subindustry)), -1), 10))"
+  },
+  {
+   "alpha_id": "2rKXnzm5",
+   "note": "TW(ECR_cond, Lev signal). SH 1.69 same. corr 0.969 vs Lev \u2192 backup.",
+   "sharpe": 1.69,
+   "fitness": 1.49,
+   "turnover": 0.0202,
+   "drawdown": 0.0553,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(trade_when(abs(group_neutralize(reverse(zscore(ts_backfill(earnings_certainty_rank_derivative, 10))), subindustry)), add(group_neutralize(zscore(divide(ts_backfill(debt, 60), ts_backfill(equity, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(debt, 60), ts_backfill(assets, 60))), subindustry)), -1), 10))"
+  }
+ ]
+}
