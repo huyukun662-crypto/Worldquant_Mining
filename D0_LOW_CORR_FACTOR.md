@@ -164,3 +164,48 @@ MATRIX 字段)以压低 corr(GroQl8nG):全部失败。单块 -0.12~0.08(这些
 替换组合池 SC 反而超标(1.41/1.35 均 FAIL SELF_CORRELATION)——
 `snt_social_value` 和 `rel_ret_comp` 块在 ZYodPA71 里有压低池 SC 的
 作用,不可省。三连方案维持不变。
+
+## 第四因子:三源合体(批次 49-52,2026-06-12)
+
+中等块(0.4-0.8)单源堆叠不过线(逆向情绪组合封顶 0.96),但**跨三个
+互不相关的数据源合体后产生引擎级协同**,3/4 过全部检验:
+
+| alpha_id | SH | FIT | TO | SC(池) | vs 58vJ2WZ6 | vs GroQl8nG | vs ZYodPA71 | decay |
+|---|---|---|---|---|---|---|---|---|
+| **KPLzRoe1**(推荐) | 1.63 | 1.23 | 0.133 | 0.511 | 0.437 | 0.304 | 0.280 | 8 |
+| d5QzwzrE | 1.45 | 1.08 | 0.115 | 0.491 | 0.445 | 0.249 | 0.179 | 6 |
+| e7rGJ1p6 | 1.41 | 1.04 | 0.083 | 0.491 | 0.425 | 0.236 | 0.186 | 10 |
+
+KPLzRoe1(USA·EQUITY·delay=1·TOP3000·decay=8·SUBINDUSTRY),复核
+全 PASS(D1 门槛 SH>1.25、FIT>1.0;LOW_SUB_UNIVERSE 0.82>0.71):
+
+```
+add(
+  multiply(1.5, rank(ts_backfill(mdl177_2_earningsqualityfactor_ttmaccu, 66))),
+  multiply(-1, rank(ts_backfill(snt1_d1_nettargetpercent, 22))),
+  multiply(0.75, rank(ts_backfill(snt1_d1_dtstsespe, 22))),
+  multiply(-0.75, rank(ts_backfill(snt1_cored1_score, 22))),
+  multiply(-1, rank(ts_backfill(mdl177_2_earningsqualityfactor_wcacc, 66))),
+  multiply(0.75, rank(ts_backfill(snt1_d1_earningssurprise, 66))),
+  rank(divide(ts_backfill(put_breakeven_60, 5), close)),
+  multiply(0.75, rank(ts_backfill(pcr_vol_30, 5))),
+  multiply(-0.5, rank(ts_delta(ts_backfill(pcr_oi_30, 5), 22))),
+  group_rank(ts_mean(rel_ret_comp, 5), industry),
+  multiply(0.5, rank(ts_mean(snt_social_value, 5))),
+  filter=true)
+```
+
+三个源(全部是 2019-2023 反号后的逆向信号 + 期权头寸):
+1. **法务会计**(model77):+ttmaccu(高应计溢价)、−wcacc(营运资本
+   应计惩罚)——方向相反的两种应计口径,实证有效。
+2. **逆向分析师情绪**(sentiment1):−净目标价上调、−综合评分、
+   +预估分歧度、+盈余惊喜——拥挤的分析师乐观是反指。
+3. **期权头寸**(option9):+put盈亏平衡价/现价、+put-call成交比、
+   −持仓比变化——看跌头寸拥挤处的逆向溢价。
+
+### 四连提交顺序(最终版)
+
+1. `GroQl8nG`(D0,SC 0.558)
+2. `58vJ2WZ6`(D0,SC≈0.662 擦线)
+3. `ZYodPA71`(D1,SC≈0.662 擦线)
+4. `KPLzRoe1`(D1,SC≈0.51,边际 ~0.19,顺序不敏感,任何时点可提)
