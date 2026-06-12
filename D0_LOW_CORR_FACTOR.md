@@ -113,3 +113,45 @@ SC 决定 58vJ2WZ6 是否仍过 0.7。
    PASS),通过则第二个提交。
 3. 不要先提交 58vJ2WZ6:它对池的 SC 已是 0.662,若 GroQl8nG 后提交,
    GroQl8nG 的新 SC = max(0.558, 0.662) = 0.662,两单边际都被压薄。
+
+## 第三因子(修订):D1 路线达成(批次 45-47,2026-06-12)
+
+"D0 不可行"的结论成立,但换 delay 即破局:**D1 的 LOW_SHARPE 门槛是
+1.25**(D0 是 2.0),且 D1 анl4 库存有完整的一致预期字段
+(`anl4_basicconafv110_*`)。把 D0 验证过的"修正动量+价值"配方(无
+ern4、无反转)在 D1 重建,直接过全部检验:
+
+| alpha_id | SH | FIT | TO | SC(池) | corr(GroQl8nG) | corr(58vJ2WZ6) | decay |
+|---|---|---|---|---|---|---|---|
+| **ZYodPA71**(推荐) | 1.74 | 1.30 | 0.196 | 0.650 | **0.662** | **0.536** | 8 |
+| 0m8NmaXr | 1.77 | 1.21 | 0.229 | 0.645 | 0.662 | 0.538 | 6 |
+| GroK1ANx(+FCF修正) | 1.64 | 1.36 | 0.170 | 0.667 | 0.661 | 0.551 | 8 |
+
+ZYodPA71 表达式(USA·EQUITY·delay=1·TOP3000·decay=8·SUBINDUSTRY):
+
+```
+add(
+  multiply(2, rank(ts_backfill(divide(ts_delta(ts_backfill(vec_avg(anl4_basicconafv110_mean), 22), 44), close), 66))),
+  group_rank(ts_backfill(divide(ts_delta(ts_backfill(vec_avg(anl4_basicconafv110_mean), 22), 44), close), 66), subindustry),
+  rank(divide(cashflow_op, cap)),
+  rank(divide(sales, add(cap, subtract(debt, cash)))),
+  rank(ts_delta(return_assets, 66)),
+  group_rank(ts_mean(rel_ret_comp, 5), industry),
+  multiply(0.5, rank(ts_mean(snt_social_value, 5))),
+  filter=true)
+```
+
+排雷记录:model77 现成修正字段全弱或反向(-0.55~0.23);anl4 一致预期
+字段在 D1 改名为 `*conafv110_*`;TOP1000 门槛仍 2.0 且信号衰减
+(1.76→0.81);非 USA region 本账号全部无权限;价值加重版(akOQkmbw)
+撞池内价值簇 SC 0.724 FAIL——价值权重必须 ≤1。
+
+### 三连提交顺序(最终)
+
+1. `GroQl8nG`(D0,SC 0.558)
+2. `58vJ2WZ6`(D0,SC≈0.662 擦线)
+3. `ZYodPA71`(D1,提交后 SC≈max(0.650, 0.662, 0.536)=0.662 擦线)
+
+注意:本地 pnl_corr 与平台 SC 的窗口可能有 ±0.02-0.05 偏差,2、3 两单
+边际只有 ~0.04,平台在 Submit 时会重算并直接拒绝超限——失败无惩罚,
+只占用一次提交槽位。
