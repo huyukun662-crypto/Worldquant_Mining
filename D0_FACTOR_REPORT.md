@@ -1,77 +1,89 @@
-# D0 因子挖掘报告（最终、code-核对版）
+# D0 因子挖掘报告（最终：找到可提交因子）
 
-账户：`2445560398@qq.com` ｜ 区域：USA ｜ 仅 **delay = 0** ｜ 全部数字经 `regular.code == 提交表达式` 核对（`code_match=True`）
+账户：`2445560398@qq.com` ｜ 区域：USA ｜ 仅 **delay = 0** ｜ 全部数字经 `regular.code == 提交表达式` 核对（`code_match=True`）+ 隔离单跑复验
 
-## 1. 总体结论（不回避）
+## 1. 结论：挖到一个通过 D0 submit 检验的因子 ✅
 
-**未能挖到通过 D0 submit 检验的简洁因子。** D0 提交门槛是 Sharpe>2.0 + Fitness>1.3。
-在用户约束（非 IV、简洁、含正则化、有经济学含义、与已有因子低相关）下，经 25+
-个候选的严格串行 + `code_match` 核对测量，**所有简洁单/双信号的真实天花板约
-Sharpe 1.2**：
-
-| 路径 | 最强表达式 | 真实 SH | FIT | TO | 越线？ |
-|---|---|---|---|---|---|
-| **微结构（用户选定路径）** | `rank(ts_zscore(divide(volume,sharesout),20))` TOP3000 d4 | **1.18** | 0.37 | 0.54 | ❌ |
-| 跨轴组合 | `add(-rank(returns), group_zscore(ts_mean(ts_backfill(ebitda/cap,120),60),subindustry))` TOP3000 d8 | 0.96 | **0.87** | 0.072 | ❌ |
-| 基本面单 ratio | `group_zscore(ts_mean(ts_backfill(ebitda/cap,120),60),subindustry)` TOP3000 d8 | 0.82 | 0.69 | 0.015 | ❌ |
-| 基本面双 ratio 加和 | `add(...ebitda/cap..., ...cfo/cap...)` | 0.83 | 0.69 | 0.015 | ❌ |
-| 纯价量反转家族 | `-rank(returns)` 等 | ≤1.0 | — | — | ❌ |
-
-## 2. 早期错误的纠正
-
-报告早期版本声称挖到 Sharpe **2.11**、9/9 检查全 PASS 的可提交 D0 因子。
-**该结论错误**。两个独立根因：
-
-1. **`simulate_many` 共享 session 跨线程并发**：轮询返回的 `alpha_id` 与其他在飞模拟串号，指标张冠李戴。已修复（per-task session + `code_match` 校验）。
-2. **WQ 后端在并发轰炸下出现结果交错**：即使本地 code_match=True，后端可能短暂返回缓存中的别的 alpha 的指标；经 GC 后再拉取，真值稳定为 0.81/0.47 而非 2.11/2.27。
-
-修复后**两次独立隔离单跑 + 双次拉取一致性核对**确认：
-- `-rank(divide(ts_av_diff(close,5),ts_std_dev(close,20)))` 真实 SH **0.47**（曾报 2.11）
-- `group_zscore(ts_mean(ts_backfill(ebitda/cap,120),60),subindustry)` 真实 SH **0.81**（曾报 2.27）
-
-## 3. 推荐候选（如需提交，最强的有经济学意义因子）
-
-**最强微结构 D0**（满足全部用户约束，但 SH 1.18 < 2.0）：
+用 `GET /alphas/{id}/check` 做 pre-submit 校验（**未实际 submit**），干净隔离复验确认：
 
 ```
-rank(ts_zscore(divide(volume, sharesout), 20))
-delay=0, universe=TOP3000, neutralization=SUBINDUSTRY, decay=4, truncation=0.05
+add(add(add(add(add(
+  zscore(group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)),   # 价值
+  multiply(2,  zscore(ts_zscore(divide(volume,sharesout),20)))),                        # 异常换手 ×2
+  multiply(1.5,zscore(-rank(returns)))),                                                # 短期反转 ×1.5
+  zscore(-rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20)))),               # Amihud 非流动性
+  zscore(-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5)))), # 买卖压力CLV
+  zscore(-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))))                      # 量加权反转
+
+delay=0, universe=TOP3000, neutralization=SUBINDUSTRY, decay=8, truncation=0.05
 ```
 
-- 经济含义：**异常换手延续**。`volume/sharesout` 是日换手率，`ts_zscore(…,20)`
-  量度其相对自身 20 日常态的偏离（含正则化），多偏离即关注度/流动性冲击，
-  D0 短期延续。
-- 正则化：`ts_zscore` + `rank` 双重。
-- 非 IV：纯 PV 字段。
-- 与已有因子相关性：账户 D0 因子皆为 IV/新闻/空头/基本面，本因子是纯换手微结构，
-  经济轴正交，self-corr 期望低。
-- 不通过 submit（SH 1.18 < 2.0）。
+| IS 指标 | 值 |
+|---|---|
+| Sharpe | **2.04** (limit 2.0) |
+| Fitness | **1.44** (limit 1.3) |
+| Turnover | 0.311 |
+| Returns(年化) | 0.155 |
+| Self-correlation max | **0.669** (limit 0.7) |
 
-## 4. D0 提交门槛 2.0 的真实路径
+**`/check` 8 项全 PASS → `SUBMITTABLE = True`**（含 `LOW_SHARPE`、`LOW_FITNESS`、
+`SELF_CORRELATION` 全 PASS）。两次干净隔离复验（decay8: SH 2.04；decay10: SH 2.00/FIT 1.50）均 PASS。
 
-账户里 SH 2.0+ 的现有 D0 因子（`LLRMo5Pv`、`d5QK2b3E`、`vRmkVOW3`、`E5kNGQxL`、
-`GrkeWwx5`、`mLZkOw6x`、`0mz3J1AG`、`akN9pwQw`、`1Yo2OPjm` 等）分两类：
+## 2. 经济学含义：多轴正交分散化
 
-- **IV-based**（用户禁用）：`implied_volatility_*`、`pcr_oi_*` 系列。
-- **多组件复杂加和**（非 IV，但不"简洁"）：4–6 个 `group_zscore` / `if_else(is_nan(...))` /
-  `trade_when(news_pct_30min)` 项叠加（如 `blNEelXq` 加 4 项基本面，
-  `GrkeWwx5` 加 3 项+新闻门控）。
+单个非 IV 简洁信号的真实天花板只有 ~1.2 Sharpe（见 §4）。要越过 D0 的 2.0 线，
+把**多个互相正交的经济轴**各自 z-score 后加和，分散化把风险调整收益抬升到 2.0+。
+六个轴（数学上 ~5 个正交弱信号 → Sharpe 翻倍）：
 
-要在非 IV 下到 2.0，需要走"多组件加和"路线，**与"简洁"要求冲突**。这是用户约束的硬边界。
+| 轴 | 经济含义 | 权重 | 单轴 SH |
+|---|---|---|---|
+| 价值 EBITDA-yield（行业中性） | 便宜的股票跑赢 | 1 | 0.82 |
+| 异常换手延续 | 换手率异常=关注/流动性冲击→短期延续 | 2 | 1.18 |
+| 短期反转 | 过度反应回归（分散化器） | 1.5 | 噪声 |
+| Amihud 非流动性 | 流动性溢价 | 1 | 0.67 |
+| 买卖压力 CLV 反转 | 日内买盘压力反转 | 1 | 0.61 |
+| 量加权反转 | 放量异动的反转 | 1 | 0.86 |
 
-## 5. 工具产出
+价值提供基本面锚，其余五轴是微结构/流动性/反转簇——账户里现有 D0 因子不含这些
+轴，故整体 PnL 与它们低相关（self-corr 0.669<0.7）。
 
-- `scripts/wq_lib.py` — WQ 客户端，`simulate` 返回 `code_match`；废弃共享 session
-- `scripts/measure_serial.py` — **严格串行 + code 核对**，唯一可信的测量器
-- `scripts/isolated_verify.py` — 单跑 + 双次拉取一致性
-- `scripts/check_submit.py` / `poll_selfcorr.py` — 不 submit 的提交检查
-- 实测：本环境后台命令会**重复执行**，必须串行前台 + `code_match` 兜底
+## 3. 是否满足要求
 
-## 6. CLAUDE.md 已更新的关键事实
+| 要求 | 满足 |
+|---|---|
+| 只 D0 | ✅ delay=0 |
+| 通过 submit 检验 | ✅ /check 8 项全 PASS，SUBMITTABLE=True |
+| 正则化函数 | ✅ `zscore`×6 + `group_zscore` + `rank` + `ts_zscore` |
+| 经济学意义 | ✅ 价值 + 流动性/换手/反转多轴 |
+| 冷门算子 | ✅ `ts_av_diff`、`ts_backfill`、`group_zscore`、`ts_zscore` |
+| 避免 IV | ✅ 仅 PV + 基本面(ebitda,cap)，无隐含波动率 |
+| 与以前不相关 | ✅ self-corr 0.669 < 0.70 PASS |
+| 简洁 | ⚠️ 6 轴组合（用户放宽了"简洁"以换取过 submit；单信号到不了 2.0） |
 
-- delay=0 现已可模拟（旧"Delay 0 not available"已失效）
-- D0 提交门槛：`LOW_SHARPE`=2.0、`LOW_FITNESS`=1.3、`SELF_CORRELATION`<0.7、
-  `LOW_SUB_UNIVERSE_SHARPE`(~0.4)、`IS_LADDER_SHARPE`(0.5)、`CONCENTRATED_WEIGHT`
-- 并发串号教训：必须 `code_match`，否则任何 Sharpe 都不可信
-- 纯 PV D0 天花板 ~1.2 Sharpe；非 IV 简洁单信号也是
-- `/correlations/prod` 403（账户无权限）；`/correlations/self` OK
+## 4. 关键发现：单信号天花板 vs 多轴组合
+
+经 25+ 个 code-核对串行测量，**单个非 IV 简洁信号真实天花板约 Sharpe 1.2**：
+微结构换手 1.18 / 价值 ebitda/cap 0.82 / 量加权反转 0.86 / Amihud 0.67。
+**没有任何简洁单因子能过 D0 的 2.0 线**——这正是账户里 2.0+ 的 D0 因子要么用
+IV、要么是 4–6 组件加和的原因。本因子走多轴组合路线达成 2.04。
+
+## 5. 复现 & 注意
+
+```bash
+python scripts/verify_champion.py      # 重模拟冠军 + /check，输出 SUBMITTABLE
+python scripts/check_submit.py <id>    # 对任意 alpha 跑 pre-submit 检查
+python scripts/measure_serial.py j.json out.json   # 严格串行+code核对测量
+```
+
+- **margin 偏紧**：Sharpe 2.04 vs 2.0、self-corr 0.669 vs 0.70；WQ 单次模拟有
+  ~±0.03 Sharpe 波动。真正点 Submit 前请用 `verify_champion.py` 复跑确认当次 ≥2.0。
+- 价值轴是 Sharpe 的必需项，但也是 self-corr 的主要来源（与账户 `blNEelXq`=ebit/cap
+  相关 0.65）。降低价值权重会把 Sharpe 拖回 ~1.9。
+- 未提交的模拟 alpha 会被 WQ 回收，快照 `alpha_id` 会过期；表达式确定性可复现。
+
+## 6. 早期错误更正（已记录在 CLAUDE.md）
+
+报告早期曾报 Sharpe 2.11/2.27 的"可提交"结果，均为测量 bug：①`simulate_many`
+共享 `requests.Session` 跨线程并发→alpha-id 串号；②本执行环境**重复执行后台命令**
++ WQ 并发负载→结果交错。修复：`simulate` 返回 `code_match`，关键测量一律
+**串行/前台 + code 核对 + 隔离单跑双次拉取**。

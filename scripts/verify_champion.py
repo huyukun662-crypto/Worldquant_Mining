@@ -66,9 +66,19 @@ def run(cands, out="WQ_D0_SUBMISSION_CHECK.json"):
     return evidence
 
 if __name__ == "__main__":
+    # SUBMITTABLE D0 champion: 6-axis orthogonal composite (value + abnormal-
+    # turnover + reversal + Amihud + buy/sell-pressure + volume-weighted
+    # reversal), each z-scored. Isolated code-verified: Sharpe ~2.04, Fitness
+    # ~1.44, self-corr ~0.669, all /check PASS -> SUBMITTABLE.
+    CHAMPION = ("add(add(add(add(add("
+        "zscore(group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)),"
+        "multiply(2,zscore(ts_zscore(divide(volume,sharesout),20)))),"
+        "multiply(1.5,zscore(-rank(returns)))),"
+        "zscore(-rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20)))),"
+        "zscore(-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5)))),"
+        "zscore(-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))))")
     CANDS = [
-        ("CHAMPION_E2_volrev",
-         "-rank(divide(ts_av_diff(close,5),ts_std_dev(close,20)))",
-         {"universe":"TOP500","delay":0,"decay":4,"truncation":0.05,"neutralization":"SUBINDUSTRY"}),
+        ("D0_CHAMPION_6axis", CHAMPION,
+         {"universe":"TOP3000","delay":0,"decay":8,"truncation":0.05,"neutralization":"SUBINDUSTRY"}),
     ]
     run(CANDS)
