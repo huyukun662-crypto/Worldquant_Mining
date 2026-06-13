@@ -1,47 +1,47 @@
 [
   {
     "ok": true,
-    "expression": "-rank(add(add(rank(divide(subtract(close, low), subtract(high, low))), ts_rank(close, 5)), rank(divide(subtract(close, vwap), vwap))))",
+    "expression": "-group_zscore(ts_std_dev(returns, 20), subindustry)",
     "settings": {
       "universe": "TOP3000",
       "decay": 8,
       "truncation": 0.08,
       "neutralization": "SUBINDUSTRY"
     },
-    "alpha_id": "E5KLPOnG",
-    "sharpe": 1.0,
-    "fitness": 0.43,
-    "turnover": 0.5093,
-    "returns": 0.0951,
-    "drawdown": 0.0857,
-    "margin": 0.000373,
-    "longCount": 1525,
-    "shortCount": 1537,
-    "subuniv": 0.48,
+    "alpha_id": "Wjg02odd",
+    "sharpe": 0.23,
+    "fitness": 0.13,
+    "turnover": 0.0775,
+    "returns": 0.0411,
+    "drawdown": 0.5835,
+    "margin": 0.00106,
+    "longCount": 1830,
+    "shortCount": 1236,
+    "subuniv": 0.17,
     "checks": [
       {
         "name": "LOW_SHARPE",
         "result": "FAIL",
         "limit": 2.0,
-        "value": 1.0
+        "value": 0.23
       },
       {
         "name": "LOW_FITNESS",
         "result": "FAIL",
         "limit": 1.3,
-        "value": 0.43
+        "value": 0.13
       },
       {
         "name": "LOW_TURNOVER",
         "result": "PASS",
         "limit": 0.01,
-        "value": 0.5093
+        "value": 0.0775
       },
       {
         "name": "HIGH_TURNOVER",
         "result": "PASS",
         "limit": 0.7,
-        "value": 0.5093
+        "value": 0.0775
       },
       {
         "name": "CONCENTRATED_WEIGHT",
@@ -50,8 +50,8 @@
       {
         "name": "LOW_SUB_UNIVERSE_SHARPE",
         "result": "PASS",
-        "limit": 0.43,
-        "value": 0.48
+        "limit": 0.1,
+        "value": 0.17
       },
       {
         "name": "SELF_CORRELATION",
@@ -75,47 +75,47 @@
   },
   {
     "ok": true,
-    "expression": "-rank(add(rank(divide(subtract(close, low), subtract(high, low))), ts_rank(close, 5)))",
+    "expression": "-group_zscore(ts_delta(close, 5), subindustry)",
     "settings": {
       "universe": "TOP3000",
       "decay": 8,
       "truncation": 0.08,
       "neutralization": "SUBINDUSTRY"
     },
-    "alpha_id": "88LYxn6o",
-    "sharpe": 1.07,
-    "fitness": 0.5,
-    "turnover": 0.4656,
-    "returns": 0.1016,
-    "drawdown": 0.0849,
-    "margin": 0.000436,
-    "longCount": 1526,
-    "shortCount": 1536,
-    "subuniv": 0.64,
+    "alpha_id": "omYr0JPm",
+    "sharpe": 1.26,
+    "fitness": 0.71,
+    "turnover": 0.308,
+    "returns": 0.0984,
+    "drawdown": 0.0591,
+    "margin": 0.000639,
+    "longCount": 1603,
+    "shortCount": 1462,
+    "subuniv": 0.74,
     "checks": [
       {
         "name": "LOW_SHARPE",
         "result": "FAIL",
         "limit": 2.0,
-        "value": 1.07
+        "value": 1.26
       },
       {
         "name": "LOW_FITNESS",
         "result": "FAIL",
         "limit": 1.3,
-        "value": 0.5
+        "value": 0.71
       },
       {
         "name": "LOW_TURNOVER",
         "result": "PASS",
         "limit": 0.01,
-        "value": 0.4656
+        "value": 0.308
       },
       {
         "name": "HIGH_TURNOVER",
         "result": "PASS",
         "limit": 0.7,
-        "value": 0.4656
+        "value": 0.308
       },
       {
         "name": "CONCENTRATED_WEIGHT",
@@ -124,8 +124,8 @@
       {
         "name": "LOW_SUB_UNIVERSE_SHARPE",
         "result": "PASS",
-        "limit": 0.46,
-        "value": 0.64
+        "limit": 0.55,
+        "value": 0.74
       },
       {
         "name": "SELF_CORRELATION",
