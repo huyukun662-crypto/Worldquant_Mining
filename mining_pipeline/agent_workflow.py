@@ -175,58 +175,72 @@ class HypothesisAgent:
 
     def archetypes(self) -> list[Archetype]:
         A = Archetype
+        # v2 - focused on the v1 winners (leverage anchor SH=1.02 TO=0.010 DD=0.078,
+        # vol_scaled_reversal SH=1.35) and orthogonal combos that should lift
+        # Sharpe past 1.25 while keeping TO under 0.25.
         return [
-            # ---- low-turnover fundamentals (Pareto anchors on TO/DD) ----
-            A("value_to_price", lambda r, f:
-              f"rank({self._ratio(r, f.VALUE_NUM, ('cap',))})", klass="fund"),
-            A("value_to_assets", lambda r, f:
-              f"rank({self._ratio(r, f.VALUE_NUM, f.SCALE_DEN)})", klass="fund"),
-            A("quality_ratio", lambda r, f:
-              f"rank({r.choice(f.QUALITY)})", klass="fund"),
-            A("margin", lambda r, f:
-              f"rank({self._ratio(r, f.MARGIN_NUM, f.MARGIN_DEN)})", klass="fund"),
+            # ---- proven anchors: leverage variants (low TO + low DD) ----
             A("leverage", lambda r, f:
               f"rank({self._ratio(r, f.LEVER_NUM, f.LEVER_DEN)})", klass="fund"),
-            A("fund_growth", lambda r, f:
-              f"rank(ts_delta({r.choice(f.VALUE_NUM)}, 90))",
-              win_lo=40, win_hi=250, klass="fund"),
+            A("leverage_lia_assets", lambda r, f:
+              f"rank(divide(liabilities, assets))", klass="fund"),
+            A("leverage_debt_eq", lambda r, f:
+              f"rank(divide(debt, equity))", klass="fund"),
+            A("leverage_debt_lt_assets", lambda r, f:
+              f"rank(divide(debt_lt, assets))", klass="fund"),
+            A("leverage_liacurr_assets", lambda r, f:
+              f"rank(divide(liabilities_curr, assets))", klass="fund"),
+            # ---- earnings-yield momentum (SH 0.89 in v1) ----
             A("earnings_yield_mom", lambda r, f:
               f"rank(ts_delta(divide(income, cap), 60))",
               win_lo=20, win_hi=180, klass="fund"),
-            # ---- combos: stack standardized signals (diversify -> Sharpe) ----
-            A("value_plus_quality", lambda r, f:
-              f"add(zscore(rank({self._ratio(r, f.VALUE_NUM, ('cap',))})), "
-              f"zscore(rank({r.choice(f.QUALITY)})))", klass="mix"),
-            A("quality_plus_revers", lambda r, f:
-              f"add(zscore(rank({r.choice(f.QUALITY)})), "
-              f"zscore(rank(ts_delta(close, 10))))", win_lo=3, win_hi=20, klass="mix"),
-            A("value_x_lowvol", lambda r, f:
-              f"add(zscore(rank({self._ratio(r, f.VALUE_NUM, ('cap',))})), "
+            A("earnings_yield_mom_long", lambda r, f:
+              f"rank(ts_delta(divide({r.choice(('income','operating_income','pretax_income'))}, cap), 120))",
+              win_lo=60, win_hi=250, klass="fund"),
+            # ---- vol-scaled reversal at LONGER windows (v1 used 2-15 -> TO 0.40
+            #      blew the user's 0.25 cap; pushed to 15-40 to halve turnover) ----
+            A("vol_scaled_reversal_slow", lambda r, f:
+              f"rank(divide(ts_delta(close, 20), ts_std_dev(returns, 20)))",
+              win_lo=15, win_hi=40, klass="pv"),
+            # ---- ORTHOGONAL COMBOS: stack the leverage anchor with an
+            #      uncorrelated signal so Sharpe diversifies up while
+            #      TO stays low (PV reversal moves slowly when window is long,
+            #      low_vol barely moves at all) ----
+            A("leverage_plus_revers", lambda r, f:
+              f"add(zscore(rank(divide(liabilities, assets))), "
+              f"zscore(rank(divide(ts_delta(close, 20), ts_std_dev(returns, 20)))))",
+              win_lo=15, win_hi=40, klass="mix"),
+            A("leverage_plus_lowvol", lambda r, f:
+              f"add(zscore(rank(divide(liabilities, assets))), "
               f"zscore(reverse(rank(ts_std_dev(returns, 60)))))",
               win_lo=20, win_hi=120, klass="mix"),
-            # ---- PV signals that can clear the fitness gate ----
-            A("short_reversal", lambda r, f:
-              f"rank(ts_delta({r.choice(('close','vwap'))}, 5))",
-              win_lo=2, win_hi=15, klass="pv"),
-            A("vol_scaled_reversal", lambda r, f:
-              f"rank(divide(ts_delta(close, 5), ts_std_dev(returns, 20)))",
-              win_lo=2, win_hi=15, klass="pv"),
-            A("zscore_reversal", lambda r, f:
-              f"rank(ts_zscore({r.choice(('close','vwap'))}, 10))",
-              win_lo=3, win_hi=25, klass="pv"),
-            A("volume_shock", lambda r, f:
-              f"rank(divide(volume, ts_mean(volume, 20)))",
-              win_lo=5, win_hi=40, klass="pv"),
-            A("intraday_move", lambda r, f:
-              f"rank(divide(subtract(close, open), open))", klass="pv"),
-            A("high_low_range", lambda r, f:
-              f"rank(divide(subtract(high, low), close))", klass="pv"),
-            # ---- defensive / low-vol (low DD) ----
-            A("low_vol", lambda r, f:
-              f"reverse(rank(ts_std_dev(returns, 60)))",
-              win_lo=20, win_hi=120, klass="pv"),
-            A("low_liquidity", lambda r, f:
-              f"reverse(rank(divide(volume, sharesout)))", klass="pv"),
+            A("leverage_plus_earnyld", lambda r, f:
+              f"add(zscore(rank(divide(liabilities, assets))), "
+              f"zscore(rank(ts_delta(divide(income, cap), 60))))",
+              win_lo=20, win_hi=180, klass="mix"),
+            A("leverage_plus_quality", lambda r, f:
+              f"add(zscore(rank(divide(liabilities, assets))), "
+              f"zscore(rank({r.choice(f.QUALITY)})))", klass="mix"),
+            # ---- triple-stack: three orthogonal sources (leverage + earnings
+            #      yield momentum + slow reversal) for max Sharpe diversification ----
+            A("triple_stack", lambda r, f:
+              f"add(add(zscore(rank(divide(liabilities, assets))), "
+              f"zscore(rank(ts_delta(divide(income, cap), 60)))), "
+              f"zscore(rank(divide(ts_delta(close, 20), ts_std_dev(returns, 20)))))",
+              win_lo=20, win_hi=180, klass="mix"),
+            A("triple_fund_stack", lambda r, f:
+              f"add(add(zscore(rank(divide(liabilities, assets))), "
+              f"zscore(rank({r.choice(f.QUALITY)}))), "
+              f"zscore(rank(ts_delta(divide(income, cap), 60))))",
+              win_lo=20, win_hi=180, klass="mix"),
+            # ---- defensive low-vol + reversal mix (no fundamentals) ----
+            A("revers_plus_lowvol", lambda r, f:
+              f"add(zscore(rank(divide(ts_delta(close, 20), ts_std_dev(returns, 20)))), "
+              f"zscore(reverse(rank(ts_std_dev(returns, 60)))))",
+              win_lo=15, win_hi=80, klass="pv"),
+            # ---- one solo quality / value baseline kept for diversity ----
+            A("quality_ratio", lambda r, f:
+              f"rank({r.choice(f.QUALITY)})", klass="fund"),
         ]
 
 
@@ -271,11 +285,15 @@ class GeneratorAgent:
 # Settings biased toward low turnover (decay) and low drawdown
 # (neutralization on, moderate truncation). delay fixed to 1 (D1, per user).
 SETTING_SPACE = {
-    "universe":       ["TOP3000", "TOP1000", "TOP500"],
+    # v1 evidence: TOP3000 was where the best Sharpe and lowest TO/DD landed;
+    # TOP500/TOP1000 frequently tripped LOW_SUB_UNIVERSE_SHARPE. Higher decay
+    # (16-64) smooths turnover for the leverage anchor. Lower truncation drives
+    # weight concentration up but lifts Sharpe; 0.02-0.05 won.
+    "universe":       ["TOP3000", "TOP1000"],
     "delay":          [1],
-    "decay":          [4, 8, 16, 32, 64],
+    "decay":          [16, 32, 64, 128],
     "truncation":     [0.02, 0.05, 0.08],
-    "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR", "MARKET"],
+    "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR"],
     "pasteurization": ["ON"],
 }
 FIXED_SETTINGS = {
