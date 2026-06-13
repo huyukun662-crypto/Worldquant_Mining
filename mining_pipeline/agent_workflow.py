@@ -351,10 +351,19 @@ class SimulatorAgent:
     def submit(self, expression: str, settings: dict) -> TrialResult:
         full = dict(FIXED_SETTINGS); full.update(settings)
         body = {"type": "REGULAR", "settings": full, "regular": expression}
+        # POST with concurrent-limit / 429 / network-transient backoff.
+        # Bare requests calls leak ReadTimeout / ConnectionError out of the
+        # Optuna objective and crash the whole study (seen in v2 run);
+        # treat any network error as transient retry.
+        import requests as _rq
         r = None
         for attempt in range(10):
-            r = self.session.post("https://api.worldquantbrain.com/simulations",
-                                  json=body, timeout=30)
+            try:
+                r = self.session.post("https://api.worldquantbrain.com/simulations",
+                                      json=body, timeout=30)
+            except (_rq.exceptions.RequestException, OSError) as e:
+                log.info(f"      POST net-error: {type(e).__name__}; retry in 20s")
+                time.sleep(20); r = None; continue
             if r.status_code == 429:
                 wait = float(r.headers.get("Retry-After") or 20)
                 log.info(f"      429 ({r.text[:55].strip()}); sleep {wait:.0f}s")
@@ -370,16 +379,29 @@ class SimulatorAgent:
         t0 = time.time()
         while time.time() - t0 < self.POLL_TIMEOUT_S:
             time.sleep(self.POLL_INTERVAL_S)
-            rp = self.session.get(loc, timeout=30)
+            try:
+                rp = self.session.get(loc, timeout=30)
+            except (_rq.exceptions.RequestException, OSError) as e:
+                log.info(f"      poll net-error: {type(e).__name__}; continue")
+                continue
             if rp.status_code == 429:
                 time.sleep(20); continue
             if rp.status_code != 200:
                 continue
-            data = rp.json(); st = data.get("status", "")
+            try:
+                data = rp.json()
+            except ValueError:
+                continue
+            st = data.get("status", "")
             if st == "COMPLETE":
                 aid = data.get("alpha")
-                ra = self.session.get(
-                    f"https://api.worldquantbrain.com/alphas/{aid}", timeout=30)
+                try:
+                    ra = self.session.get(
+                        f"https://api.worldquantbrain.com/alphas/{aid}", timeout=30)
+                except (_rq.exceptions.RequestException, OSError) as e:
+                    return TrialResult(False, "", expression, expression, full,
+                                       alpha_id=aid or "",
+                                       error=f"alpha-get-neterr-{type(e).__name__}")
                 if ra.status_code != 200:
                     return TrialResult(False, "", expression, expression, full,
                                        alpha_id=aid or "",
@@ -455,7 +477,12 @@ class SimulatorAgent:
             log.info(f"   t{trial.number}: [{item.name}] sign={sign:+d} win={windows} "
                      f"u={settings['universe']} dec={settings['decay']} "
                      f"neut={settings['neutralization']} tr={settings['truncation']}")
-            res = self.submit(expr, settings)
+            try:
+                res = self.submit(expr, settings)
+            except Exception as e:  # never let a transient failure kill the study
+                log.warning(f"      submit-exception: {type(e).__name__}: {str(e)[:120]}")
+                res = TrialResult(False, item.name, expr, expr, settings,
+                                  error=f"exc-{type(e).__name__}")
             res.archetype = item.name
             logged.append(res); sink(res)
             if not res.ok:
