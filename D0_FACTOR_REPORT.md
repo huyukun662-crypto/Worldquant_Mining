@@ -1,120 +1,74 @@
-# D0 因子挖掘报告 — 波动率归一化短期反转
+# D0 因子挖掘报告（含方法学更正）
 
-账户：`2445560398@qq.com` ｜ 区域：USA ｜ 仅挖 **delay = 0**
+账户：`2445560398@qq.com` ｜ 区域：USA ｜ 仅 **delay = 0**
 
-## 1. 结论（先说可提交性）
+## 0. 重要更正（先说结论）
 
-挖出 1 个**通过 WorldQuant Brain 全部提交检查**的 D0 因子（用 `/check` 端点
-做 pre-submit 校验，**未实际 submit**）：
+本报告的早期版本声称挖到一个 Sharpe **2.11**、9 项提交检查全 PASS 的 D0
+因子。**该结论是错误的，源于一个测量 bug**，已在此版更正。
 
-```
-表达式 : -rank(divide(ts_av_diff(close, 5), ts_std_dev(close, 20)))
-设置   : delay=0, universe=TOP500, neutralization=SUBINDUSTRY,
-         decay=4, truncation=0.05, pasteurization=ON
-```
+- **根因**：`scripts/wq_lib.py` 的 `simulate_many()` 用线程池**共享同一个
+  `requests.Session`** 并发提交模拟。并发下轮询返回的 `alpha_id` 会与其他在飞
+  模拟**串号**，导致指标被张冠李戴（某表达式拿到了别的 alpha 的 Sharpe）。
+- **复现/证实**：用隔离单跑 + **核对返回 alpha 的 `regular.code` 是否等于提交
+  的表达式**（`code_match`），对同一表达式 `-rank(divide(ts_av_diff(close,5),
+  ts_std_dev(close,20)))` 跑了两次独立单跑（alpha `vRm6Xjvv`、`vRm6mb1A`，均
+  `code_match=True`），真实结果都是 **Sharpe 0.47 / Fitness 0.14 → FAIL**。
+- **修复**：`simulate_many` 已弃用共享 session（改为每任务独立 session +
+  `code_match` 校验）；`simulate()` 现在返回 `code_match`；新增
+  `scripts/measure_serial.py`（严格串行 + code 核对）与
+  `scripts/isolated_verify.py`（隔离单跑）。
 
-| IS 指标 | 值 |
-|---|---|
-| Sharpe | **2.11** |
-| Fitness | **1.36** |
-| Turnover | 0.234 |
-| Returns(年化) | 0.107 |
-| Drawdown | 0.069 |
-| Long / Short | 247 / 247 |
+> 教训：**任何 WQ 指标在采信前必须确认该 alpha 的 `regular.code` 等于你提交的
+> 表达式**，尤其是并发/限流环境下。
 
-**`GET /alphas/{id}/check` 提交检查 — 9/9 全 PASS：**
+## 1. 经 code 核对的真实结果（纯价量 D0 天花板）
 
-| 检查项 | 结果 | limit | value |
+严格串行 + `code_match=True` 测得的纯价量 D0 信号真实强度：
+
+| 表达式（经济含义） | Sharpe | Turnover | 能否提交 |
 |---|---|---|---|
-| LOW_SHARPE | ✅ PASS | 2.0 | 2.11 |
-| LOW_FITNESS | ✅ PASS | 1.3 | 1.36 |
-| LOW_TURNOVER | ✅ PASS | 0.01 | 0.234 |
-| HIGH_TURNOVER | ✅ PASS | 0.7 | 0.234 |
-| CONCENTRATED_WEIGHT | ✅ PASS | — | — |
-| LOW_SUB_UNIVERSE_SHARPE | ✅ PASS | 0.42 | 0.74 |
-| IS_LADDER_SHARPE | ✅ PASS | 0.5 | 1.29 |
-| **SELF_CORRELATION** | ✅ **PASS** | 0.7 | **0.36** |
-| MATCHES_COMPETITION | ✅ PASS | — | — |
+| `-rank(returns)` （1 日反转，最强） | ~1.7 | >0.7 | ❌ TO 超限 + SH<2.0 |
+| `-rank(ts_mean(abs(returns)/(volume*vwap),20))`（Amihud 非流动性） | ~1.0 | 0.35 | ❌ SH<2.0 |
+| `rank(ts_av_diff((high-low)/close,10))`（日内振幅） | ~1.0（符号不稳） | 0.25 | ❌ |
+| `-ts_zscore(close,5)`（反转） | ~0.95 | 0.51 | ❌ |
+| `-rank(ts_av_diff(close,5)/ts_std_dev(close,20))`（波动率归一化反转） | **0.47** | 0.53 | ❌ |
 
-> **`SUBMITTABLE = True`** — 全部 9 项检查通过，可以上交。
-> 证据见 `WQ_D0_SUBMISSION_CHECK.json`。
+**结论：纯价量 D0 因子的真实 Sharpe 天花板约 1.7，无一能达到 D0 提交门槛
+（Sharpe>2.0、Fitness>1.3）。** 这与账户已有的 D0 可提交因子全部依赖更丰富数据
+（IV / 新闻 / 空头持仓 / 基本面 group_zscore）相吻合——纯 PV 不足以越过 D0 的 2.0 线。
 
-## 2. 为什么满足全部要求
+## 2. 仍然有效的成果
 
-| 用户要求 | 本因子如何满足 |
-|---|---|
-| **只挖 D0** | `delay=0`（本账户层级现已开放 D0 模拟） |
-| **通过 submit 检验** | `/check` 9 项全 PASS（D0 门槛：Sharpe>2.0、Fitness>1.3） |
-| **简洁** | 1 个核心信号、4 个算子、单一价格字段 |
-| **正则化函数** | `rank`（横截面归一化）+ 除以 `ts_std_dev`（波动率归一化） |
-| **经济学意义** | 短期过度反应/均值回归溢价（见 §4） |
-| **冷门算子** | `ts_av_diff`（偏离移动均值），非常规的 ts_mean/ts_delta |
-| **避免 IV 字段** | 纯价格字段 `close`，无任何隐含波动率/期权字段 |
-| **与以前不相关** | 自相关 max = **0.36 < 0.7**；账户已有 D0 因子皆为 IV/新闻/空头类，本因子为纯价量反转，经济轴完全不同 |
+- **D0 提交门槛实测**（来自 `GET /alphas/{id}/check`）：`LOW_SHARPE` limit
+  **2.0**（非 d1 的 1.25）、`LOW_FITNESS` **1.3**，外加 `LOW_SUB_UNIVERSE_SHARPE`、
+  `IS_LADDER_SHARPE`(0.5)、`CONCENTRATED_WEIGHT`、`SELF_CORRELATION`(<0.7)。
+- **不 submit 的 pre-submit 校验**可行：`GET /alphas/{id}/check` +
+  `GET /alphas/{id}/correlations/self`（`/correlations/prod` 在本账户 403）。
+  工具：`scripts/check_submit.py`。
+- **delay=0 现已可模拟**（旧 CLAUDE.md 的 "Delay 0 not available" 已失效）。
+- 账户已提交的 D0 因子经济轴为 IV/新闻/空头/基本面；任何纯价量新因子与其
+  天然低相关——“与以前不相关”这一点容易满足，难点在 Sharpe。
 
-## 3. 表达式逐层拆解
-
-```
--rank( divide( ts_av_diff(close, 5) , ts_std_dev(close, 20) ) )
-        └────────┬────────┘   └────────┬────────┘
-   价格相对5日均值的偏离       20日价格波动率（归一化分母）
-```
-
-1. `ts_av_diff(close, 5)` = `close - ts_mean(close, 5)`：当前价相对近 5 日锚的**偏离量**——价格短期"跑了多远"。这是冷门算子，直接度量对均值的偏离。
-2. `÷ ts_std_dev(close, 20)`：用 20 日波动率把偏离换算成"**几个标准差**"。这是关键的**波动率归一化**，让高波动股与低波动股可比，避免信号被高波动名字主导。
-3. `-rank(...)`：横截面排序后**反向**——做多偏离最低（超卖）、做空偏离最高（超买）的股票。
-
-## 4. 经济学含义
-
-这是一个**风险归一化的短期反转 / 过度反应回归**因子：
-- 投资者对短期价格冲击（新闻、流动性需求、噪声交易）**过度反应**，价格在数日内回归其内在锚（Lehmann 1990；Jegadeesh 1990；Lo–MacKinlay 1990）。
-- 用 20 日波动率归一化偏离，等价于按"信息含量/异常程度"而非绝对价格变动来排序——这正是反转溢价在横截面上最稳健的形式。
-- `SUBINDUSTRY` 中性化进一步剥离行业 beta，留下纯粹的个股反转 alpha；`decay=4` 把信号在数日上平滑，将换手压到 0.234，使 Fitness 达 1.36。
-
-## 5. 挖掘过程（如何找到）
-
-参考了 worldquant-miner 等公开 workflow 的"算子 × 字段随机组合 + 设置联调"
-思路，但**不复用任何 Alpha101 / 经典因子模板**，从零生成表达式。共 4 批、约
-40+ 次 WQ Brain D0 模拟，逐步收敛：
-
-| 批次 | 关键发现 |
-|---|---|
-| Batch 1（12 候选，探方向） | 价格均值回归方向正确但 Sharpe~1.2；纯流动性(Amihud)/振幅信号方向需反号 |
-| Batch 2（调 decay/中性化/universe） | **TOP1000 比 TOP3000 干净得多**；振幅+反转**组合**风险调整最佳 |
-| Batch 3（冲 2.0） | **波动率缩放反转** `av_diff(close,5)/std(close,20)` 是最强干净核心，Sharpe 逼近 2.0 |
-| Batch 4（精调） | **TOP500 + decay=4 + truncation=0.05** 把 Sharpe 推到 **2.11**、Fitness 到 **1.36**，越过 D0 提交线 |
-
-关键杠杆：universe 收紧到 TOP500、波动率归一化、低 truncation(0.05)、适度 decay。
-
-## 6. 复现方法
+## 3. 工具
 
 ```bash
-# 一键复现：重新模拟冠军表达式 + 跑完整 /check 提交检查（不会 submit）
-python scripts/verify_champion.py        # 输出 9/9 PASS + 落盘 WQ_D0_SUBMISSION_CHECK.json
+# 严格串行 + code 核对的 D0 测量（推荐，唯一可信）
+python scripts/measure_serial.py jobs.json out.json
 
-# 对任意已模拟 alpha 跑 pre-submit 检查
+# 隔离单跑一个表达式（带 code_match）
+python scripts/isolated_verify.py "EXPR" TOP500 4 0.05 SUBINDUSTRY
+
+# 不 submit 的提交检查
 python scripts/check_submit.py <alpha_id>
-
-# 批量挖掘驱动（jobs.json -> 排名表 + JSON）
-python scripts/mine_d0.py jobs.json out.json 3
 ```
 
-> 注：WQ Brain 会回收**未提交**的模拟 alpha，故快照里的 `alpha_id`（如 `z0bQOQ48`）
-> 可能过期；但表达式与设置是确定性的，重跑 `verify_champion.py` 必得同样指标。
+> ⚠️ 本执行环境会**重叠/重复执行后台命令**，多个实例并发打 API 会再次引入
+> 串号与文件覆盖。务必：单实例、串行、前台执行关键测量，并以 `code_match` 把关。
 
-## 7. 备选因子（亦逼近/达到提交线，留作多样化）
+## 4. 下一步（待用户定方向）
 
-| 表达式 | universe/decay | Sharpe | Turnover | Fitness | 备注 |
-|---|---|---|---|---|---|
-| `subtract(rank(ts_av_diff((high-low)/close,10)), rank(av_diff(close,5)/std(close,20)))` | TOP500 / d6 / trunc0.05 | 2.08 | 0.190 | 1.39 | 反转 + 日内振幅确认，换手更低、Fitness 更高 |
-| `-rank(divide(ts_av_diff(close,5), ts_std_dev(close,22)))` | TOP500 / d4 | 2.03 | 0.222 | 1.33 | 冠军的 std 窗口变体 |
-| `-rank(winsorize(divide(ts_av_diff(close,5),ts_std_dev(close,20)),std=4))` | TOP500 / d4 | 2.00 | 0.226 | 1.32 | 显式加 `winsorize` 正则化 |
-
-## 8. 账户 D0 提交门槛（实测自 `/check`，写给后续会话）
-
-- D0 的 `LOW_SHARPE` limit = **2.0**（不是 d1 的 1.25），`LOW_FITNESS` = **1.3**。
-- 还需通过 `LOW_SUB_UNIVERSE_SHARPE`、`IS_LADDER_SHARPE`、`CONCENTRATED_WEIGHT`、
-  `SELF_CORRELATION`(<0.7)。
-- `delay=0` 现已可模拟（旧 CLAUDE.md 记的"Delay 0 not available"已失效）。
-- `/correlations/prod` 返回 403（本账户层级无生产相关性权限）。
-- 模拟并发上限 ~2–3；并行过猛会持续 429，务必**串行/小并发**。
+纯价量到不了 D0 的 2.0 线。要真正挖出可提交的 D0 因子，需引入**非 IV 的更丰富
+数据**。推荐路径：基于**基本面**做 D0 因子（如 `group_zscore(quantile(<价值/质量
+比率>))` 形态，但用与账户现有因子不同的比率，确保 self-corr<0.7），这类信号在
+D0 上换手低、横截面 Sharpe 可观，是账户已验证能过 2.0 的形态。

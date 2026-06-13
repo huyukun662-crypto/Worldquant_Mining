@@ -64,7 +64,13 @@ def simulate(session, expr, settings=None, poll_timeout=420, poll_interval=4):
             a = session.get(f"{API}/alphas/{aid}", timeout=30).json()
             isb = a.get("is",{}) or {}
             checks = isb.get("checks",[]) or []
+            # CRITICAL: verify the returned alpha really is THIS expression.
+            # Under concurrency/load the polled alpha id can be cross-wired;
+            # always confirm regular.code matches before trusting metrics.
+            code = (a.get("regular",{}) or {}).get("code","")
+            code_match = "".join(code.split()) == "".join(expr.split())
             return {"ok":True,"expr":expr,"settings":s,"alpha_id":aid,
+                    "code":code,"code_match":code_match,
                     "sharpe":isb.get("sharpe"),"turnover":isb.get("turnover"),
                     "fitness":isb.get("fitness"),"returns":isb.get("returns"),
                     "drawdown":isb.get("drawdown"),"margin":isb.get("margin"),
@@ -76,10 +82,20 @@ def simulate(session, expr, settings=None, poll_timeout=420, poll_interval=4):
     return {"ok":False,"expr":expr,"settings":s,"error":"poll-timeout"}
 
 def simulate_many(session, jobs, max_workers=3):
-    """jobs: list of (expr, settings_dict). Returns list of result dicts."""
+    """DEPRECATED / UNSAFE. Sharing one requests.Session across threads here
+    caused polled alpha ids to cross-wire under load (metrics attributed to the
+    wrong expression). Use serial `simulate()` calls or `scripts/measure_serial.py`
+    and ALWAYS check `code_match`. Kept only for backward compatibility; it now
+    authenticates a FRESH session per job and verifies code_match.
+    """
     out = []
+    def _run(e, st):
+        r = simulate(auth(), e, st)
+        if r.get("ok") and not r.get("code_match", True):
+            r["ok"] = False; r["error"] = f"code-mismatch (got {r.get('code')!r})"
+        return r
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
-        futs = {ex.submit(simulate, session, e, st): (e,st) for e,st in jobs}
+        futs = [ex.submit(_run, e, st) for e, st in jobs]
         for f in as_completed(futs):
             out.append(f.result())
     return out
