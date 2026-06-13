@@ -1,0 +1,4034 @@
+[
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "reverse(rank(divide(liabilities, equity)))",
+    "optimized": "reverse(rank(divide(liabilities, equity)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.05,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": -1.33,
+    "turnover": 0.0155,
+    "fitness": -1.11,
+    "returns": -0.0872,
+    "drawdown": 0.4346,
+    "margin": -0.011227,
+    "longCount": 1538,
+    "shortCount": 1487,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -1.33,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -1.11,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0155,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0155,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.72,
+        "limit": -0.58
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "vRm6b61w",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "value_plus_quality",
+    "expression": "reverse(add(zscore(rank(divide(income_beforeextra, cap))), zscore(rank(return_equity))))",
+    "optimized": "reverse(add(zscore(rank(divide(income_beforeextra, cap))), zscore(rank(return_equity))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.05,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.28,
+    "turnover": 0.0377,
+    "fitness": -0.14,
+    "returns": -0.0302,
+    "drawdown": 0.5032,
+    "margin": -0.001604,
+    "longCount": 460,
+    "shortCount": 478,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.28,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.14,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0377,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0377,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.03,
+        "limit": -0.15
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "9qRm3N6V",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "value_x_lowvol",
+    "expression": "reverse(add(zscore(rank(divide(pretax_income, cap))), zscore(reverse(rank(ts_std_dev(returns, 78))))))",
+    "optimized": "reverse(add(zscore(rank(divide(pretax_income, cap))), zscore(reverse(rank(ts_std_dev(returns, 78))))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 64,
+      "truncation": 0.05,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.1,
+    "turnover": 0.0191,
+    "fitness": -0.04,
+    "returns": -0.0182,
+    "drawdown": 0.7762,
+    "margin": -0.001897,
+    "longCount": 1423,
+    "shortCount": 1572,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.1,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.04,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0191,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0191,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.05,
+        "limit": -0.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "e7rvZAwN",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "reverse(rank(divide(liabilities, equity)))",
+    "optimized": "reverse(rank(divide(liabilities, equity)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.08,
+      "neutralization": "MARKET",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.44,
+    "turnover": 0.0142,
+    "fitness": -0.28,
+    "returns": -0.0515,
+    "drawdown": 0.4188,
+    "margin": -0.00724,
+    "longCount": 506,
+    "shortCount": 506,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.44,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.28,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0142,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0142,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.41,
+        "limit": -0.23
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "pw7Ze6xq",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "fund_growth",
+    "expression": "reverse(rank(ts_delta(sales, 167)))",
+    "optimized": "reverse(rank(ts_delta(sales, 167)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 64,
+      "truncation": 0.05,
+      "neutralization": "MARKET",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.17,
+    "turnover": 0.02,
+    "fitness": -0.06,
+    "returns": -0.0173,
+    "drawdown": 0.2967,
+    "margin": -0.001735,
+    "longCount": 1491,
+    "shortCount": 1430,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.17,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.06,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.02,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.02,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.05,
+        "limit": -0.07
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "kqKO6Jo8",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "quality_plus_revers",
+    "expression": "add(zscore(rank(return_equity)), zscore(rank(ts_delta(close, 8))))",
+    "optimized": "add(zscore(rank(return_equity)), zscore(rank(ts_delta(close, 8))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.05,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.31,
+    "turnover": 0.2023,
+    "fitness": -0.13,
+    "returns": -0.0368,
+    "drawdown": 0.4638,
+    "margin": -0.000364,
+    "longCount": 493,
+    "shortCount": 513,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.31,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.13,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2023,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2023,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.34,
+        "limit": -0.16
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "A13m8zWX",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "vol_scaled_reversal",
+    "expression": "reverse(rank(divide(ts_delta(close, 3), ts_std_dev(returns, 3))))",
+    "optimized": "reverse(rank(divide(ts_delta(close, 3), ts_std_dev(returns, 3))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.35,
+    "turnover": 0.3992,
+    "fitness": 0.76,
+    "returns": 0.1278,
+    "drawdown": 0.1154,
+    "margin": 0.00064,
+    "longCount": 1601,
+    "shortCount": 1534,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.35,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.76,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.3992,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.3992,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.07,
+        "limit": 0.58
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 6,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "Jjd1JJ1W",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "vol_scaled_reversal",
+    "expression": "rank(divide(ts_delta(close, 9), ts_std_dev(returns, 2)))",
+    "optimized": "rank(divide(ts_delta(close, 9), ts_std_dev(returns, 2)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.05,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.86,
+    "turnover": 0.3702,
+    "fitness": -0.38,
+    "returns": -0.0738,
+    "drawdown": 0.3877,
+    "margin": -0.000399,
+    "longCount": 225,
+    "shortCount": 224,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.86,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.38,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.3702,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.3702,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.71,
+        "limit": -0.41
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "3qA5mb7Q",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "fund_growth",
+    "expression": "reverse(rank(ts_delta(invested_capital, 139)))",
+    "optimized": "reverse(rank(ts_delta(invested_capital, 139)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 16,
+      "truncation": 0.05,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.18,
+    "turnover": 0.0451,
+    "fitness": 0.05,
+    "returns": 0.0085,
+    "drawdown": 0.148,
+    "margin": 0.000377,
+    "longCount": 209,
+    "shortCount": 213,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.18,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.05,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0451,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0451,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.5,
+        "limit": 0.09
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "omYrj93v",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "vol_scaled_reversal",
+    "expression": "rank(divide(ts_delta(close, 8), ts_std_dev(returns, 9)))",
+    "optimized": "rank(divide(ts_delta(close, 8), ts_std_dev(returns, 9)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": -1.26,
+    "turnover": 0.3029,
+    "fitness": -0.72,
+    "returns": -0.0988,
+    "drawdown": 0.4992,
+    "margin": -0.000652,
+    "longCount": 1527,
+    "shortCount": 1544,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -1.26,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.72,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.3029,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.3029,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.85,
+        "limit": -0.55
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "E5KLnQoP",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.01,
+    "turnover": 0.0108,
+    "fitness": 0.85,
+    "returns": 0.0881,
+    "drawdown": 0.0778,
+    "margin": 0.016254,
+    "longCount": 1540,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.01,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.85,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.83,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "1YgP3Mlm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.01,
+    "turnover": 0.0108,
+    "fitness": 0.85,
+    "returns": 0.0881,
+    "drawdown": 0.0778,
+    "margin": 0.016254,
+    "longCount": 1540,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.01,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.85,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.83,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "1YgP3Mlm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0103,
+    "fitness": 0.86,
+    "returns": 0.089,
+    "drawdown": 0.0778,
+    "margin": 0.017247,
+    "longCount": 1539,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.86,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.84,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "LLRrveMm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0103,
+    "fitness": 0.86,
+    "returns": 0.089,
+    "drawdown": 0.0778,
+    "margin": 0.017247,
+    "longCount": 1539,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.86,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.84,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "LLRrveMm",
+    "error": ""
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "poll-timeout"
+  },
+  {
+    "ok": true,
+    "archetype": "value_to_assets",
+    "expression": "rank(divide(equity, cap))",
+    "optimized": "rank(divide(equity, cap))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.07,
+    "turnover": 0.0188,
+    "fitness": 0.02,
+    "returns": 0.0094,
+    "drawdown": 0.2641,
+    "margin": 0.000996,
+    "longCount": 256,
+    "shortCount": 249,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.07,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.02,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0188,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0188,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.09,
+        "limit": 0.03
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "pw7ZLjkb",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "margin",
+    "expression": "rank(divide(income, sales))",
+    "optimized": "rank(divide(income, sales))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.1,
+    "turnover": 0.0155,
+    "fitness": 0.03,
+    "returns": 0.0126,
+    "drawdown": 0.458,
+    "margin": 0.001627,
+    "longCount": 1489,
+    "shortCount": 1446,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.1,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.03,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0155,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0155,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.02,
+        "limit": 0.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "78dMplXL",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "high_low_range",
+    "expression": "rank(divide(subtract(high, low), close))",
+    "optimized": "rank(divide(subtract(high, low), close))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.09,
+    "turnover": 0.0564,
+    "fitness": -0.04,
+    "returns": -0.0231,
+    "drawdown": 1.0329,
+    "margin": -0.000821,
+    "longCount": 1569,
+    "shortCount": 1570,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.09,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.04,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0564,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0564,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.07,
+        "limit": -0.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "88LYM5eX",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "low_liquidity",
+    "expression": "reverse(rank(divide(volume, sharesout)))",
+    "optimized": "reverse(rank(divide(volume, sharesout)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.24,
+    "turnover": 0.0417,
+    "fitness": -0.16,
+    "returns": -0.0549,
+    "drawdown": 0.8387,
+    "margin": -0.002635,
+    "longCount": 261,
+    "shortCount": 256,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.24,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.16,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0417,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0417,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.27,
+        "limit": -0.11
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "Vk85AYrM",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "value_to_assets",
+    "expression": "rank(divide(pretax_income, equity))",
+    "optimized": "rank(divide(pretax_income, equity))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 16,
+      "truncation": 0.08,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.41,
+    "turnover": 0.0225,
+    "fitness": 0.25,
+    "returns": 0.0463,
+    "drawdown": 0.3017,
+    "margin": 0.004116,
+    "longCount": 507,
+    "shortCount": 505,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.41,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.25,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0225,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0225,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": 0.17,
+        "limit": 0.22
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "YPAJR33R",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "earnings_yield_mom",
+    "expression": "rank(ts_delta(divide(income, cap), 149))",
+    "optimized": "rank(ts_delta(divide(income, cap), 149))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "MARKET",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.55,
+    "turnover": 0.0296,
+    "fitness": 0.35,
+    "returns": 0.0501,
+    "drawdown": 0.1721,
+    "margin": 0.003389,
+    "longCount": 1475,
+    "shortCount": 1469,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.55,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.35,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0296,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0296,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.6,
+        "limit": 0.24
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "78dlkEj8",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.01,
+    "turnover": 0.0108,
+    "fitness": 0.85,
+    "returns": 0.0881,
+    "drawdown": 0.0778,
+    "margin": 0.016254,
+    "longCount": 1540,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.01,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.85,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.83,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "1YgP3Mlm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0103,
+    "fitness": 0.86,
+    "returns": 0.089,
+    "drawdown": 0.0778,
+    "margin": 0.017247,
+    "longCount": 1539,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.86,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.84,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "LLRrveMm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "low_vol",
+    "expression": "reverse(rank(ts_std_dev(returns, 56)))",
+    "optimized": "reverse(rank(ts_std_dev(returns, 56)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.09,
+    "turnover": 0.0187,
+    "fitness": 0.03,
+    "returns": 0.0179,
+    "drawdown": 0.6708,
+    "margin": 0.001911,
+    "longCount": 1569,
+    "shortCount": 1570,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.09,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.03,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0187,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0187,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.03,
+        "limit": 0.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "N1O81kMp",
+    "error": ""
+  },
+  {
+    "ok": false,
+    "archetype": "quality_ratio",
+    "expression": "rank(return_assets)",
+    "optimized": "rank(return_assets)",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "poll-timeout"
+  },
+  {
+    "ok": true,
+    "archetype": "zscore_reversal",
+    "expression": "rank(ts_zscore(close, 6))",
+    "optimized": "rank(ts_zscore(close, 6))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.75,
+    "turnover": 0.2227,
+    "fitness": -0.5,
+    "returns": -0.0989,
+    "drawdown": 0.5252,
+    "margin": -0.000888,
+    "longCount": 1540,
+    "shortCount": 1546,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.75,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.5,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.2227,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.2227,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.63,
+        "limit": -0.32
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "XgKMmkva",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "value_to_price",
+    "expression": "rank(divide(retained_earnings, cap))",
+    "optimized": "rank(divide(retained_earnings, cap))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.08,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.28,
+    "turnover": 0.0211,
+    "fitness": 0.16,
+    "returns": 0.0384,
+    "drawdown": 0.3805,
+    "margin": 0.003632,
+    "longCount": 1435,
+    "shortCount": 1421,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.28,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.16,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0211,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0211,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.22,
+        "limit": 0.12
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "omYZ800J",
+    "error": ""
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "rank(divide(debt, assets))",
+    "optimized": "rank(divide(debt, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "value_plus_quality",
+    "expression": "add(zscore(rank(divide(equity, cap))), zscore(rank(return_assets)))",
+    "optimized": "add(zscore(rank(divide(equity, cap))), zscore(rank(return_assets)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 16,
+      "truncation": 0.02,
+      "neutralization": "MARKET",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "volume_shock",
+    "expression": "rank(divide(volume, ts_mean(volume, 24)))",
+    "optimized": "rank(divide(volume, ts_mean(volume, 24)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 64,
+      "truncation": 0.02,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "intraday_move",
+    "expression": "rank(divide(subtract(close, open), open))",
+    "optimized": "rank(divide(subtract(close, open), open))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.08,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "short_reversal",
+    "expression": "rank(ts_delta(close, 13))",
+    "optimized": "rank(ts_delta(close, 13))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "value_to_assets",
+    "expression": "reverse(rank(divide(income_beforeextra, cap)))",
+    "optimized": "reverse(rank(divide(income_beforeextra, cap)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 64,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "reverse(rank(divide(liabilities, assets)))",
+    "optimized": "reverse(rank(divide(liabilities, assets)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "value_plus_quality",
+    "expression": "add(zscore(rank(divide(income_beforeextra, cap))), zscore(rank(return_equity)))",
+    "optimized": "add(zscore(rank(divide(income_beforeextra, cap))), zscore(rank(return_equity)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "MARKET",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "value_x_lowvol",
+    "expression": "add(zscore(rank(divide(pretax_income, cap))), zscore(reverse(rank(ts_std_dev(returns, 26)))))",
+    "optimized": "add(zscore(rank(divide(pretax_income, cap))), zscore(reverse(rank(ts_std_dev(returns, 26)))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 64,
+      "truncation": 0.05,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "reverse(rank(divide(liabilities, equity)))",
+    "optimized": "reverse(rank(divide(liabilities, equity)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.02,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.05,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}"
+  },
+  {
+    "ok": true,
+    "archetype": "fund_growth",
+    "expression": "reverse(rank(ts_delta(sales, 48)))",
+    "optimized": "reverse(rank(ts_delta(sales, 48)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 16,
+      "truncation": 0.08,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.43,
+    "turnover": 0.0608,
+    "fitness": -0.18,
+    "returns": -0.0222,
+    "drawdown": 0.2229,
+    "margin": -0.000729,
+    "longCount": 1549,
+    "shortCount": 1463,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.43,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.18,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0608,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0608,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.7,
+        "limit": -0.19
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "MPxVm93L",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.01,
+    "turnover": 0.0108,
+    "fitness": 0.85,
+    "returns": 0.0881,
+    "drawdown": 0.0778,
+    "margin": 0.016254,
+    "longCount": 1540,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.01,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.85,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.83,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "1YgP3Mlm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.01,
+    "turnover": 0.0108,
+    "fitness": 0.85,
+    "returns": 0.0881,
+    "drawdown": 0.0778,
+    "margin": 0.016254,
+    "longCount": 1540,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.01,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.85,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0108,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.83,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "1YgP3Mlm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "quality_plus_revers",
+    "expression": "add(zscore(rank(return_equity)), zscore(rank(ts_delta(close, 20))))",
+    "optimized": "add(zscore(rank(return_equity)), zscore(rank(ts_delta(close, 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.02,
+    "turnover": 0.0934,
+    "fitness": 0.0,
+    "returns": -0.003,
+    "drawdown": 0.4662,
+    "margin": -6.4e-05,
+    "longCount": 1462,
+    "shortCount": 1566,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.0,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0934,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0934,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.07,
+        "limit": -0.01
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "wpeWgrPY",
+    "error": ""
+  },
+  {
+    "ok": false,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "returns": 0.0,
+    "drawdown": 0.0,
+    "margin": 0.0,
+    "longCount": 0,
+    "shortCount": 0,
+    "checks": [],
+    "checks_passed": 0,
+    "checks_total": 0,
+    "pending": 0,
+    "submittable": false,
+    "alpha_id": "",
+    "error": "poll-timeout"
+  },
+  {
+    "ok": true,
+    "archetype": "fund_growth",
+    "expression": "rank(ts_delta(invested_capital, 242))",
+    "optimized": "rank(ts_delta(invested_capital, 242))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 4,
+      "truncation": 0.05,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.69,
+    "turnover": 0.0354,
+    "fitness": -0.4,
+    "returns": -0.0421,
+    "drawdown": 0.2769,
+    "margin": -0.002381,
+    "longCount": 240,
+    "shortCount": 244,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.69,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.4,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0354,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0354,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.76,
+        "limit": -0.33
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "rKW8kL9E",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "value_to_assets",
+    "expression": "rank(divide(equity, cap))",
+    "optimized": "rank(divide(equity, cap))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "MARKET",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.4,
+    "turnover": 0.0152,
+    "fitness": 0.28,
+    "returns": 0.0621,
+    "drawdown": 0.3235,
+    "margin": 0.008185,
+    "longCount": 1516,
+    "shortCount": 1516,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.4,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.28,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0152,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0152,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.35,
+        "limit": 0.17
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "E5Kx3pMr",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0103,
+    "fitness": 0.86,
+    "returns": 0.089,
+    "drawdown": 0.0778,
+    "margin": 0.017247,
+    "longCount": 1539,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.86,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.84,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "LLRrveMm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "margin",
+    "expression": "reverse(rank(divide(income, sales)))",
+    "optimized": "reverse(rank(divide(income, sales)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.1,
+    "turnover": 0.0155,
+    "fitness": -0.03,
+    "returns": -0.0126,
+    "drawdown": 0.5802,
+    "margin": -0.001627,
+    "longCount": 1446,
+    "shortCount": 1489,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.1,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.03,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0155,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0155,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.02,
+        "limit": -0.04
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "RRrP03A0",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "high_low_range",
+    "expression": "rank(divide(subtract(high, low), close))",
+    "optimized": "rank(divide(subtract(high, low), close))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP500",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.03,
+    "turnover": 0.0849,
+    "fitness": 0.01,
+    "returns": 0.0062,
+    "drawdown": 0.8505,
+    "margin": 0.000147,
+    "longCount": 219,
+    "shortCount": 231,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.03,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.01,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0849,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0849,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.1,
+        "limit": 0.01
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "npWrw79a",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.08,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.01,
+    "turnover": 0.018,
+    "fitness": 0.78,
+    "returns": 0.0742,
+    "drawdown": 0.0745,
+    "margin": 0.00825,
+    "longCount": 491,
+    "shortCount": 520,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.01,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.78,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.018,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.018,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.87,
+        "limit": 0.54
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "YPAYXoQv",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0103,
+    "fitness": 0.86,
+    "returns": 0.089,
+    "drawdown": 0.0778,
+    "margin": 0.017247,
+    "longCount": 1539,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.86,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.84,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "LLRrveMm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "low_liquidity",
+    "expression": "reverse(rank(divide(volume, sharesout)))",
+    "optimized": "reverse(rank(divide(volume, sharesout)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": -0.35,
+    "turnover": 0.0421,
+    "fitness": -0.22,
+    "returns": -0.0512,
+    "drawdown": 0.6033,
+    "margin": -0.002435,
+    "longCount": 1539,
+    "shortCount": 1600,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": -0.35,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": -0.22,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0421,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0421,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "value": -0.18,
+        "limit": -0.15
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 4,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "vRmPndXG",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "leverage",
+    "expression": "rank(divide(liabilities, assets))",
+    "optimized": "rank(divide(liabilities, assets))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0103,
+    "fitness": 0.86,
+    "returns": 0.089,
+    "drawdown": 0.0778,
+    "margin": 0.017247,
+    "longCount": 1539,
+    "shortCount": 1503,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.86,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0103,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.84,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "LLRrveMm",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "value_to_assets",
+    "expression": "rank(divide(pretax_income, equity))",
+    "optimized": "rank(divide(pretax_income, equity))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.51,
+    "turnover": 0.0177,
+    "fitness": 0.35,
+    "returns": 0.06,
+    "drawdown": 0.3176,
+    "margin": 0.006776,
+    "longCount": 1482,
+    "shortCount": 1543,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.51,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.35,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0177,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0177,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.33,
+        "limit": 0.22
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "O09gwlAg",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "earnings_yield_mom",
+    "expression": "rank(ts_delta(divide(income, cap), 21))",
+    "optimized": "rank(ts_delta(divide(income, cap), 21))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.02,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 0.89,
+    "turnover": 0.0824,
+    "fitness": 0.59,
+    "returns": 0.0549,
+    "drawdown": 0.0844,
+    "margin": 0.001331,
+    "longCount": 1529,
+    "shortCount": 1519,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 0.89,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.59,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0824,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0824,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.58,
+        "limit": 0.39
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "mLXQJOQp",
+    "error": ""
+  }
+]
