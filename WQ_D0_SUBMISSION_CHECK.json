@@ -1,0 +1,42 @@
+[
+  {
+    "tag": "CHAMPION_E2_volrev",
+    "expr": "-rank(divide(ts_av_diff(close,5),ts_std_dev(close,20)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "universe": "TOP500",
+      "delay": 0,
+      "decay": 4,
+      "truncation": 0.05,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF"
+    },
+    "sim_ok": true,
+    "alpha_id": "z0bQOQ48",
+    "note": "alpha_id is a snapshot; unsubmitted simulation alphas are garbage-collected by WQ Brain. Reproduce deterministically with `python scripts/verify_champion.py` (identical metrics confirmed across runs: ergG922e -> z0bQOQ48).",
+    "sharpe": 2.11,
+    "turnover": 0.2342,
+    "fitness": 1.36,
+    "returns": 0.1072,
+    "drawdown": 0.0691,
+    "longCount": 247,
+    "shortCount": 247,
+    "checks": [
+      {"name": "LOW_SHARPE",              "result": "PASS", "limit": 2.0,  "value": 2.11},
+      {"name": "LOW_FITNESS",             "result": "PASS", "limit": 1.3,  "value": 1.36},
+      {"name": "LOW_TURNOVER",            "result": "PASS", "limit": 0.01, "value": 0.2342},
+      {"name": "HIGH_TURNOVER",           "result": "PASS", "limit": 0.7,  "value": 0.2342},
+      {"name": "CONCENTRATED_WEIGHT",     "result": "PASS", "limit": null, "value": null},
+      {"name": "LOW_SUB_UNIVERSE_SHARPE", "result": "PASS", "limit": 0.42, "value": 0.74},
+      {"name": "IS_LADDER_SHARPE",        "result": "PASS", "limit": 0.5,  "value": 1.29},
+      {"name": "SELF_CORRELATION",        "result": "PASS", "limit": 0.7,  "value": 0.36},
+      {"name": "MATCHES_COMPETITION",     "result": "PASS", "limit": null, "value": null}
+    ],
+    "self_corr_max": 0.36,
+    "submittable": true
+  }
+]
