@@ -234,6 +234,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", type=str, default=None,
                     help="Run submission check on an existing alpha_id and exit")
+    ap.add_argument("--candidates", type=str, default=None,
+                    help="JSON file: [{expr, settings}] to run instead of built-in")
     ap.add_argument("--workers", type=int, default=3)
     ap.add_argument("--out", type=str, default="D0_MINING_REPORT.json")
     args = ap.parse_args()
@@ -245,7 +247,10 @@ def main():
         print(json.dumps(res, indent=2))
         return 0
 
-    cands = default_candidates()
+    if args.candidates:
+        cands = json.load(open(args.candidates))
+    else:
+        cands = default_candidates()
     log.info(f"running {len(cands)} D0 candidates, {args.workers} concurrent")
     results = run_batch(session, cands, max_workers=args.workers)
     with open(REPO / args.out, "w") as f:
