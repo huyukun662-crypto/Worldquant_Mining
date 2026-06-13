@@ -1,420 +1,47 @@
 [
   {
     "ok": true,
-    "expression": "-rank(ts_rank(close, 5))",
+    "expression": "-rank(returns)",
     "settings": {
       "universe": "TOP3000",
-      "decay": 4,
+      "decay": 32,
       "truncation": 0.08,
       "neutralization": "SUBINDUSTRY"
     },
-    "alpha_id": "58ve2djo",
-    "sharpe": 1.05,
-    "fitness": 0.43,
-    "turnover": 0.5664,
-    "returns": 0.0942,
-    "drawdown": 0.1193,
-    "margin": 0.000333,
-    "longCount": 1525,
-    "shortCount": 1535,
-    "subuniv": 0.81,
-    "checks": [
-      {
-        "name": "LOW_SHARPE",
-        "result": "FAIL",
-        "limit": 2.0,
-        "value": 1.05
-      },
-      {
-        "name": "LOW_FITNESS",
-        "result": "FAIL",
-        "limit": 1.3,
-        "value": 0.43
-      },
-      {
-        "name": "LOW_TURNOVER",
-        "result": "PASS",
-        "limit": 0.01,
-        "value": 0.5664
-      },
-      {
-        "name": "HIGH_TURNOVER",
-        "result": "PASS",
-        "limit": 0.7,
-        "value": 0.5664
-      },
-      {
-        "name": "CONCENTRATED_WEIGHT",
-        "result": "PASS"
-      },
-      {
-        "name": "LOW_SUB_UNIVERSE_SHARPE",
-        "result": "PASS",
-        "limit": 0.45,
-        "value": 0.81
-      },
-      {
-        "name": "SELF_CORRELATION",
-        "result": "PENDING"
-      },
-      {
-        "name": "MATCHES_COMPETITION",
-        "result": "PASS",
-        "competitions": [
-          {
-            "id": "challenge",
-            "name": "Challenge"
-          },
-          {
-            "id": "IQC2026S2",
-            "name": "International Quant Championship 2026 Stage 2"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "ok": true,
-    "expression": "-rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 5))",
-    "settings": {
-      "universe": "TOP3000",
-      "decay": 8,
-      "truncation": 0.08,
-      "neutralization": "SUBINDUSTRY"
-    },
-    "alpha_id": "akOwgpwv",
-    "sharpe": 0.78,
-    "fitness": 0.36,
-    "turnover": 0.2829,
-    "returns": 0.0604,
-    "drawdown": 0.1037,
-    "margin": 0.000427,
-    "longCount": 1529,
-    "shortCount": 1537,
-    "subuniv": 0.5,
-    "checks": [
-      {
-        "name": "LOW_SHARPE",
-        "result": "FAIL",
-        "limit": 2.0,
-        "value": 0.78
-      },
-      {
-        "name": "LOW_FITNESS",
-        "result": "FAIL",
-        "limit": 1.3,
-        "value": 0.36
-      },
-      {
-        "name": "LOW_TURNOVER",
-        "result": "PASS",
-        "limit": 0.01,
-        "value": 0.2829
-      },
-      {
-        "name": "HIGH_TURNOVER",
-        "result": "PASS",
-        "limit": 0.7,
-        "value": 0.2829
-      },
-      {
-        "name": "CONCENTRATED_WEIGHT",
-        "result": "PASS"
-      },
-      {
-        "name": "LOW_SUB_UNIVERSE_SHARPE",
-        "result": "PASS",
-        "limit": 0.34,
-        "value": 0.5
-      },
-      {
-        "name": "SELF_CORRELATION",
-        "result": "PENDING"
-      },
-      {
-        "name": "MATCHES_COMPETITION",
-        "result": "PASS",
-        "competitions": [
-          {
-            "id": "challenge",
-            "name": "Challenge"
-          },
-          {
-            "id": "IQC2026S2",
-            "name": "International Quant Championship 2026 Stage 2"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "ok": true,
-    "expression": "-rank(ts_rank(close, 10))",
-    "settings": {
-      "universe": "TOP3000",
-      "decay": 8,
-      "truncation": 0.08,
-      "neutralization": "SUBINDUSTRY"
-    },
-    "alpha_id": "zqW0LVeX",
-    "sharpe": 0.87,
-    "fitness": 0.46,
-    "turnover": 0.2922,
-    "returns": 0.0818,
-    "drawdown": 0.0974,
-    "margin": 0.00056,
-    "longCount": 1523,
-    "shortCount": 1542,
-    "subuniv": 0.61,
-    "checks": [
-      {
-        "name": "LOW_SHARPE",
-        "result": "FAIL",
-        "limit": 2.0,
-        "value": 0.87
-      },
-      {
-        "name": "LOW_FITNESS",
-        "result": "FAIL",
-        "limit": 1.3,
-        "value": 0.46
-      },
-      {
-        "name": "LOW_TURNOVER",
-        "result": "PASS",
-        "limit": 0.01,
-        "value": 0.2922
-      },
-      {
-        "name": "HIGH_TURNOVER",
-        "result": "PASS",
-        "limit": 0.7,
-        "value": 0.2922
-      },
-      {
-        "name": "CONCENTRATED_WEIGHT",
-        "result": "PASS"
-      },
-      {
-        "name": "LOW_SUB_UNIVERSE_SHARPE",
-        "result": "PASS",
-        "limit": 0.38,
-        "value": 0.61
-      },
-      {
-        "name": "SELF_CORRELATION",
-        "result": "PENDING"
-      },
-      {
-        "name": "MATCHES_COMPETITION",
-        "result": "PASS",
-        "competitions": [
-          {
-            "id": "challenge",
-            "name": "Challenge"
-          },
-          {
-            "id": "IQC2026S2",
-            "name": "International Quant Championship 2026 Stage 2"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "ok": true,
-    "expression": "-rank(multiply(divide(subtract(close, low), subtract(high, low)), ts_zscore(volume, 20)))",
-    "settings": {
-      "universe": "TOP3000",
-      "decay": 8,
-      "truncation": 0.08,
-      "neutralization": "SUBINDUSTRY"
-    },
-    "alpha_id": "58ve1xkz",
-    "sharpe": -1.02,
-    "fitness": -0.35,
-    "turnover": 0.4093,
-    "returns": -0.0477,
-    "drawdown": 0.2633,
-    "margin": -0.000233,
-    "longCount": 1561,
-    "shortCount": 1501,
-    "subuniv": -0.63,
-    "checks": [
-      {
-        "name": "LOW_SHARPE",
-        "result": "FAIL",
-        "limit": 2.0,
-        "value": -1.02
-      },
-      {
-        "name": "LOW_FITNESS",
-        "result": "FAIL",
-        "limit": 1.3,
-        "value": -0.35
-      },
-      {
-        "name": "LOW_TURNOVER",
-        "result": "PASS",
-        "limit": 0.01,
-        "value": 0.4093
-      },
-      {
-        "name": "HIGH_TURNOVER",
-        "result": "PASS",
-        "limit": 0.7,
-        "value": 0.4093
-      },
-      {
-        "name": "CONCENTRATED_WEIGHT",
-        "result": "PASS"
-      },
-      {
-        "name": "LOW_SUB_UNIVERSE_SHARPE",
-        "result": "FAIL",
-        "limit": -0.44,
-        "value": -0.63
-      },
-      {
-        "name": "SELF_CORRELATION",
-        "result": "PENDING"
-      },
-      {
-        "name": "MATCHES_COMPETITION",
-        "result": "PASS",
-        "competitions": [
-          {
-            "id": "challenge",
-            "name": "Challenge"
-          },
-          {
-            "id": "IQC2026S2",
-            "name": "International Quant Championship 2026 Stage 2"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "ok": true,
-    "expression": "-zscore(ts_av_diff(vwap, 3))",
-    "settings": {
-      "universe": "TOP1000",
-      "decay": 8,
-      "truncation": 0.08,
-      "neutralization": "SUBINDUSTRY"
-    },
-    "alpha_id": "2rKWxbO8",
-    "sharpe": 0.29,
-    "fitness": 0.08,
-    "turnover": 0.4225,
-    "returns": 0.032,
-    "drawdown": 0.1488,
-    "margin": 0.000152,
-    "longCount": 494,
-    "shortCount": 467,
-    "subuniv": -0.02,
-    "checks": [
-      {
-        "name": "LOW_SHARPE",
-        "result": "FAIL",
-        "limit": 2.0,
-        "value": 0.29
-      },
-      {
-        "name": "LOW_FITNESS",
-        "result": "FAIL",
-        "limit": 1.3,
-        "value": 0.08
-      },
-      {
-        "name": "LOW_TURNOVER",
-        "result": "PASS",
-        "limit": 0.01,
-        "value": 0.4225
-      },
-      {
-        "name": "HIGH_TURNOVER",
-        "result": "PASS",
-        "limit": 0.7,
-        "value": 0.4225
-      },
-      {
-        "name": "CONCENTRATED_WEIGHT",
-        "result": "FAIL",
-        "date": "2022-06-17",
-        "limit": 0.1,
-        "value": 0.335097
-      },
-      {
-        "name": "LOW_SUB_UNIVERSE_SHARPE",
-        "result": "FAIL",
-        "limit": 0.15,
-        "value": -0.02
-      },
-      {
-        "name": "SELF_CORRELATION",
-        "result": "PENDING"
-      },
-      {
-        "name": "MATCHES_COMPETITION",
-        "result": "PASS",
-        "competitions": [
-          {
-            "id": "challenge",
-            "name": "Challenge"
-          },
-          {
-            "id": "IQC2026S2",
-            "name": "International Quant Championship 2026 Stage 2"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "ok": true,
-    "expression": "-rank(divide(subtract(close, low), subtract(high, low)))",
-    "settings": {
-      "universe": "TOP3000",
-      "decay": 16,
-      "truncation": 0.08,
-      "neutralization": "SUBINDUSTRY"
-    },
-    "alpha_id": "O09VjaKd",
-    "sharpe": 0.85,
-    "fitness": 0.35,
-    "turnover": 0.4258,
-    "returns": 0.0735,
-    "drawdown": 0.133,
-    "margin": 0.000345,
-    "longCount": 1522,
-    "shortCount": 1541,
+    "alpha_id": "6XEJQrNY",
+    "sharpe": 0.36,
+    "fitness": 0.13,
+    "turnover": 0.3309,
+    "returns": 0.046,
+    "drawdown": 0.205,
+    "margin": 0.000278,
+    "longCount": 1508,
+    "shortCount": 1557,
     "subuniv": 0.27,
     "checks": [
       {
         "name": "LOW_SHARPE",
         "result": "FAIL",
         "limit": 2.0,
-        "value": 0.85
+        "value": 0.36
       },
       {
         "name": "LOW_FITNESS",
         "result": "FAIL",
         "limit": 1.3,
-        "value": 0.35
+        "value": 0.13
       },
       {
         "name": "LOW_TURNOVER",
         "result": "PASS",
         "limit": 0.01,
-        "value": 0.4258
+        "value": 0.3309
       },
       {
         "name": "HIGH_TURNOVER",
         "result": "PASS",
         "limit": 0.7,
-        "value": 0.4258
+        "value": 0.3309
       },
       {
         "name": "CONCENTRATED_WEIGHT",
@@ -422,8 +49,8 @@
       },
       {
         "name": "LOW_SUB_UNIVERSE_SHARPE",
-        "result": "FAIL",
-        "limit": 0.37,
+        "result": "PASS",
+        "limit": 0.16,
         "value": 0.27
       },
       {
@@ -448,47 +75,47 @@
   },
   {
     "ok": true,
-    "expression": "-rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 5))",
+    "expression": "-rank(returns)",
     "settings": {
       "universe": "TOP3000",
-      "decay": 8,
+      "decay": 16,
       "truncation": 0.08,
-      "neutralization": "INDUSTRY"
+      "neutralization": "SUBINDUSTRY"
     },
-    "alpha_id": "xAnWoQ3n",
-    "sharpe": 0.73,
-    "fitness": 0.35,
-    "turnover": 0.2812,
-    "returns": 0.0646,
-    "drawdown": 0.113,
-    "margin": 0.00046,
-    "longCount": 1562,
-    "shortCount": 1569,
-    "subuniv": 0.48,
+    "alpha_id": "akOw8bg2",
+    "sharpe": 0.47,
+    "fitness": 0.17,
+    "turnover": 0.4496,
+    "returns": 0.0574,
+    "drawdown": 0.1428,
+    "margin": 0.000256,
+    "longCount": 1519,
+    "shortCount": 1547,
+    "subuniv": 0.37,
     "checks": [
       {
         "name": "LOW_SHARPE",
         "result": "FAIL",
         "limit": 2.0,
-        "value": 0.73
+        "value": 0.47
       },
       {
         "name": "LOW_FITNESS",
         "result": "FAIL",
         "limit": 1.3,
-        "value": 0.35
+        "value": 0.17
       },
       {
         "name": "LOW_TURNOVER",
         "result": "PASS",
         "limit": 0.01,
-        "value": 0.2812
+        "value": 0.4496
       },
       {
         "name": "HIGH_TURNOVER",
         "result": "PASS",
         "limit": 0.7,
-        "value": 0.2812
+        "value": 0.4496
       },
       {
         "name": "CONCENTRATED_WEIGHT",
@@ -497,8 +124,8 @@
       {
         "name": "LOW_SUB_UNIVERSE_SHARPE",
         "result": "PASS",
-        "limit": 0.32,
-        "value": 0.48
+        "limit": 0.2,
+        "value": 0.37
       },
       {
         "name": "SELF_CORRELATION",
@@ -522,60 +149,427 @@
   },
   {
     "ok": true,
-    "expression": "-zscore(divide(ts_av_diff(close, 5), ts_std_dev(close, 5)))",
+    "expression": "-rank(returns)",
+    "settings": {
+      "universe": "TOP3000",
+      "decay": 4,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "alpha_id": "0m86LXV8",
+    "sharpe": 0.38,
+    "fitness": 0.09,
+    "turnover": 0.8323,
+    "returns": 0.0435,
+    "drawdown": 0.1837,
+    "margin": 0.000105,
+    "longCount": 1532,
+    "shortCount": 1533,
+    "subuniv": 0.15,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.38
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.09
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.8323
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 0.8323
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.16,
+        "value": 0.15
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ok": true,
+    "expression": "-rank(divide(subtract(close, vwap), vwap))",
+    "settings": {
+      "universe": "TOP3000",
+      "decay": 4,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "alpha_id": "2rKWxX66",
+    "sharpe": 0.78,
+    "fitness": 0.22,
+    "turnover": 0.8348,
+    "returns": 0.0663,
+    "drawdown": 0.104,
+    "margin": 0.000159,
+    "longCount": 1528,
+    "shortCount": 1536,
+    "subuniv": -0.03,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.78
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.22
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.8348
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "FAIL",
+        "limit": 0.7,
+        "value": 0.8348
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.34,
+        "value": -0.03
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ok": true,
+    "expression": "-winsorize(zscore(returns), std=4)",
+    "settings": {
+      "universe": "TOP3000",
+      "decay": 16,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "alpha_id": "Vk85LzQw",
+    "sharpe": 0.22,
+    "fitness": 0.06,
+    "turnover": 0.4247,
+    "returns": 0.0331,
+    "drawdown": 0.2326,
+    "margin": 0.000156,
+    "longCount": 1526,
+    "shortCount": 1539,
+    "subuniv": 0.02,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.22
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.06
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.4247
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.4247
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.1,
+        "value": 0.02
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ok": true,
+    "expression": "-rank(divide(returns, ts_std_dev(returns, 20)))",
     "settings": {
       "universe": "TOP3000",
       "decay": 8,
       "truncation": 0.08,
       "neutralization": "SUBINDUSTRY"
     },
-    "alpha_id": "78dMrXX8",
-    "sharpe": -0.19,
-    "fitness": -0.05,
-    "turnover": 0.3793,
-    "returns": -0.0242,
-    "drawdown": 0.2764,
-    "margin": -0.000128,
-    "longCount": 1513,
-    "shortCount": 1553,
-    "subuniv": 0.01,
+    "alpha_id": "RRrKovdd",
+    "sharpe": 0.85,
+    "fitness": 0.32,
+    "turnover": 0.6112,
+    "returns": 0.0858,
+    "drawdown": 0.1223,
+    "margin": 0.000281,
+    "longCount": 1536,
+    "shortCount": 1530,
+    "subuniv": 0.67,
     "checks": [
       {
         "name": "LOW_SHARPE",
         "result": "FAIL",
         "limit": 2.0,
-        "value": -0.19
+        "value": 0.85
       },
       {
         "name": "LOW_FITNESS",
         "result": "FAIL",
         "limit": 1.3,
-        "value": -0.05
+        "value": 0.32
       },
       {
         "name": "LOW_TURNOVER",
         "result": "PASS",
         "limit": 0.01,
-        "value": 0.3793
+        "value": 0.6112
       },
       {
         "name": "HIGH_TURNOVER",
         "result": "PASS",
         "limit": 0.7,
-        "value": 0.3793
+        "value": 0.6112
       },
       {
         "name": "CONCENTRATED_WEIGHT",
-        "result": "FAIL",
-        "date": "2023-01-06",
-        "limit": 0.1,
-        "value": 0.116066
+        "result": "PASS"
       },
       {
         "name": "LOW_SUB_UNIVERSE_SHARPE",
         "result": "PASS",
-        "limit": -0.08,
-        "value": 0.01
+        "limit": 0.37,
+        "value": 0.67
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ok": true,
+    "expression": "-rank(returns)",
+    "settings": {
+      "universe": "TOP1000",
+      "decay": 16,
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "alpha_id": "6XEJQkQY",
+    "sharpe": 0.53,
+    "fitness": 0.21,
+    "turnover": 0.4494,
+    "returns": 0.0721,
+    "drawdown": 0.18,
+    "margin": 0.000321,
+    "longCount": 478,
+    "shortCount": 483,
+    "subuniv": 0.09,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.53
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.21
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.4494
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.4494
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "FAIL",
+        "limit": 0.28,
+        "value": 0.09
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING"
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "competitions": [
+          {
+            "id": "challenge",
+            "name": "Challenge"
+          },
+          {
+            "id": "IQC2026S2",
+            "name": "International Quant Championship 2026 Stage 2"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "ok": true,
+    "expression": "-rank(ts_rank(close, 5))",
+    "settings": {
+      "universe": "TOP3000",
+      "decay": 8,
+      "truncation": 0.02,
+      "neutralization": "SUBINDUSTRY"
+    },
+    "alpha_id": "XgKexdVX",
+    "sharpe": 0.98,
+    "fitness": 0.46,
+    "turnover": 0.4071,
+    "returns": 0.0914,
+    "drawdown": 0.1024,
+    "margin": 0.000449,
+    "longCount": 1528,
+    "shortCount": 1537,
+    "subuniv": 0.79,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "limit": 2.0,
+        "value": 0.98
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "limit": 1.3,
+        "value": 0.46
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "limit": 0.01,
+        "value": 0.4071
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "limit": 0.7,
+        "value": 0.4071
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS"
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "limit": 0.42,
+        "value": 0.79
       },
       {
         "name": "SELF_CORRELATION",

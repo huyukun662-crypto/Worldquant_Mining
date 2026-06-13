@@ -85,14 +85,19 @@ def submit_sim(session, expression: str, settings: dict,
     """Submit one simulation, poll to COMPLETE, fetch IS metrics+checks."""
     body = {"type": "REGULAR", "settings": _full_settings(settings),
             "regular": expression}
-    # POST with 429/auth retry
-    for attempt in range(6):
+    # POST with auth retry + patient backoff on the concurrent-simulation cap.
+    # CONCURRENT_SIMULATION_LIMIT_EXCEEDED is transient (a slot frees when an
+    # in-flight sim finishes) -- wait up to ~10 min rather than failing.
+    deadline = time.time() + 600
+    while True:
         r = session.post(f"{API}/simulations", json=body, timeout=30)
         if r.status_code == 401:
             session.post(f"{API}/authentication", timeout=20)
             continue
         if r.status_code == 429:
-            time.sleep(float(r.headers.get("Retry-After") or 15)); continue
+            if time.time() > deadline:
+                break
+            time.sleep(float(r.headers.get("Retry-After") or 20)); continue
         break
     if r.status_code != 201:
         return {"ok": False, "expression": expression, "settings": settings,
