@@ -161,6 +161,56 @@ per hour; budget candidates accordingly.
 The script `scripts/submit_alpha.py` calls `/simulations`, not the Submit
 Alpha endpoint, so it never touches the Submit Alpha quota.
 
+## 5-agent workflow (`mining_pipeline/agent_workflow.py`)
+
+A five-stage ("5-agent") mining pipeline for **delay=1, no-IV,
+submittable-oriented** alphas that prioritizes **low turnover and low max
+drawdown**. Invoked as `python -m mining_pipeline.agent_workflow --pool 24
+--trials 56`. The five agents:
+
+1. **FieldAgent** — curated, **non-IV** field universe (PV +
+   `fundamental6`). The entire `option` category (where implied-vol lives)
+   is excluded, and `IV_PATTERN` bans any `implied_vol*`, `*fairvol*`,
+   `vega`, etc. id. `--verify-fields` checks each id against `/data-fields`.
+2. **HypothesisAgent** — emits **original** archetypes (value, quality,
+   margin, leverage, growth, reversal, low-vol, volume-shock, intraday).
+   These are generic financial priors *constructed here* — NOT Alpha101 or
+   the classical-factor library (reuse of those stays forbidden).
+3. **GeneratorAgent** — instantiates archetypes into a diverse expression
+   pool.
+4. **SimulatorAgent** — **one joint Optuna (TPE) study** over
+   `(expression, sign, expression-windows, settings)`; each trial submits a
+   single `/simulations` job (delay fixed to 1). TPE concentrates the sim
+   budget on promising regions. The `sign` toggle lets the optimizer flip a
+   signal's direction without spending a separate base expression.
+5. **ValidatorAgent** — keeps only **submittable** results (every
+   *non-PENDING* IS check PASS, i.e. `LOW_SHARPE`, `LOW_FITNESS`,
+   `LOW/HIGH_TURNOVER`, `CONCENTRATED_WEIGHT`, `LOW_SUB_UNIVERSE_SHARPE`,
+   `MATCHES_COMPETITION`; `SELF_CORRELATION` is PENDING until real submit),
+   then ranks by low turnover + low drawdown.
+
+**Submittability ⟂ ultra-low-turnover tension.** WQ fitness =
+`sharpe · sqrt(|returns| / max(turnover, 0.125))`, and `LOW_FITNESS`
+requires fitness ≥ 1.0. A quarterly fundamental ranked cross-sectionally
+has turnover ≈ 0.02 but returns ≈ 0.04, so fitness caps near 0.17 — *not*
+submittable despite perfect turnover. So "low turnover" here means **as low
+as possible while still clearing the checks** (turnover < 0.25), not the
+absolute minimum. The objective climbs toward Sharpe ≥ 1.25 AND fitness ≥
+1.0 first, hard-penalizes turnover above 0.25, then prefers the lowest
+turnover / drawdown.
+
+**Outputs**: `WQ_AGENT_REPORT.json` (every trial, with full `checks`) and
+`WQ_SUBMITTABLE_CANDIDATES.json` (the filtered, ranked survivors).
+
+### Account tier observed on `Shu476891497@gmail.com` (id `XS45327`)
+
+Higher tier than `2445560398@qq.com`: USA/TOP3000/delay=1 exposes **8,599**
+`/data-fields` ids (vs 6,038), including the full `option` + implied-vol
+families that the workflow deliberately excludes. delay=1 simulations run
+normally; the concurrent-simulation cap is low (sequential submit + 429
+`CONCURRENT_SIMULATION_LIMIT_EXCEEDED` backoff is built into
+`SimulatorAgent.submit`).
+
 ## Local-proxy pipeline invariants (for the triage stage only)
 
 - **IS window**: 2019-01-01 → 2023-12-31 (set in `mining_pipeline/data.py`)
@@ -189,6 +239,9 @@ python -m mining_pipeline.pipeline --n 400 --backend bayes --trials 20 --seed 19
 
 # canonical mining: generate locally, submit to WQ, rank by WQ SH
 python -m mining_pipeline.wq_pipeline --n 30
+
+# 5-agent workflow: delay=1, no-IV, submittable-oriented (low TO + low maxDD)
+python -m mining_pipeline.agent_workflow --pool 24 --trials 56 --seed 7
 
 # submit a specific MINING_REPORT.json's factors to WQ Brain
 python scripts/submit_alpha.py MINING_REPORT.json
