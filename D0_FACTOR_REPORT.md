@@ -1,94 +1,77 @@
-# D0 因子挖掘报告（含方法学更正）
+# D0 因子挖掘报告（最终、code-核对版）
 
-账户：`2445560398@qq.com` ｜ 区域：USA ｜ 仅 **delay = 0**
+账户：`2445560398@qq.com` ｜ 区域：USA ｜ 仅 **delay = 0** ｜ 全部数字经 `regular.code == 提交表达式` 核对（`code_match=True`）
 
-## 0. 重要更正（先说结论）
+## 1. 总体结论（不回避）
 
-本报告的早期版本声称挖到一个 Sharpe **2.11**、9 项提交检查全 PASS 的 D0
-因子。**该结论是错误的，源于一个测量 bug**，已在此版更正。
+**未能挖到通过 D0 submit 检验的简洁因子。** D0 提交门槛是 Sharpe>2.0 + Fitness>1.3。
+在用户约束（非 IV、简洁、含正则化、有经济学含义、与已有因子低相关）下，经 25+
+个候选的严格串行 + `code_match` 核对测量，**所有简洁单/双信号的真实天花板约
+Sharpe 1.2**：
 
-- **根因**：`scripts/wq_lib.py` 的 `simulate_many()` 用线程池**共享同一个
-  `requests.Session`** 并发提交模拟。并发下轮询返回的 `alpha_id` 会与其他在飞
-  模拟**串号**，导致指标被张冠李戴（某表达式拿到了别的 alpha 的 Sharpe）。
-- **复现/证实**：用隔离单跑 + **核对返回 alpha 的 `regular.code` 是否等于提交
-  的表达式**（`code_match`），对同一表达式 `-rank(divide(ts_av_diff(close,5),
-  ts_std_dev(close,20)))` 跑了两次独立单跑（alpha `vRm6Xjvv`、`vRm6mb1A`，均
-  `code_match=True`），真实结果都是 **Sharpe 0.47 / Fitness 0.14 → FAIL**。
-- **修复**：`simulate_many` 已弃用共享 session（改为每任务独立 session +
-  `code_match` 校验）；`simulate()` 现在返回 `code_match`；新增
-  `scripts/measure_serial.py`（严格串行 + code 核对）与
-  `scripts/isolated_verify.py`（隔离单跑）。
+| 路径 | 最强表达式 | 真实 SH | FIT | TO | 越线？ |
+|---|---|---|---|---|---|
+| **微结构（用户选定路径）** | `rank(ts_zscore(divide(volume,sharesout),20))` TOP3000 d4 | **1.18** | 0.37 | 0.54 | ❌ |
+| 跨轴组合 | `add(-rank(returns), group_zscore(ts_mean(ts_backfill(ebitda/cap,120),60),subindustry))` TOP3000 d8 | 0.96 | **0.87** | 0.072 | ❌ |
+| 基本面单 ratio | `group_zscore(ts_mean(ts_backfill(ebitda/cap,120),60),subindustry)` TOP3000 d8 | 0.82 | 0.69 | 0.015 | ❌ |
+| 基本面双 ratio 加和 | `add(...ebitda/cap..., ...cfo/cap...)` | 0.83 | 0.69 | 0.015 | ❌ |
+| 纯价量反转家族 | `-rank(returns)` 等 | ≤1.0 | — | — | ❌ |
 
-> 教训：**任何 WQ 指标在采信前必须确认该 alpha 的 `regular.code` 等于你提交的
-> 表达式**，尤其是并发/限流环境下。
+## 2. 早期错误的纠正
 
-## 1. 经 code 核对的真实结果（纯价量 D0 天花板）
+报告早期版本声称挖到 Sharpe **2.11**、9/9 检查全 PASS 的可提交 D0 因子。
+**该结论错误**。两个独立根因：
 
-严格串行 + `code_match=True` 测得的纯价量 D0 信号真实强度：
+1. **`simulate_many` 共享 session 跨线程并发**：轮询返回的 `alpha_id` 与其他在飞模拟串号，指标张冠李戴。已修复（per-task session + `code_match` 校验）。
+2. **WQ 后端在并发轰炸下出现结果交错**：即使本地 code_match=True，后端可能短暂返回缓存中的别的 alpha 的指标；经 GC 后再拉取，真值稳定为 0.81/0.47 而非 2.11/2.27。
 
-| 表达式（经济含义） | Sharpe | Turnover | 能否提交 |
-|---|---|---|---|
-| `-rank(returns)` （1 日反转，最强） | ~1.7 | >0.7 | ❌ TO 超限 + SH<2.0 |
-| `-rank(ts_mean(abs(returns)/(volume*vwap),20))`（Amihud 非流动性） | ~1.0 | 0.35 | ❌ SH<2.0 |
-| `rank(ts_av_diff((high-low)/close,10))`（日内振幅） | ~1.0（符号不稳） | 0.25 | ❌ |
-| `-ts_zscore(close,5)`（反转） | ~0.95 | 0.51 | ❌ |
-| `-rank(ts_av_diff(close,5)/ts_std_dev(close,20))`（波动率归一化反转） | **0.47** | 0.53 | ❌ |
+修复后**两次独立隔离单跑 + 双次拉取一致性核对**确认：
+- `-rank(divide(ts_av_diff(close,5),ts_std_dev(close,20)))` 真实 SH **0.47**（曾报 2.11）
+- `group_zscore(ts_mean(ts_backfill(ebitda/cap,120),60),subindustry)` 真实 SH **0.81**（曾报 2.27）
 
-**结论：纯价量 D0 因子的真实 Sharpe 天花板约 1.7，无一能达到 D0 提交门槛
-（Sharpe>2.0、Fitness>1.3）。** 这与账户已有的 D0 可提交因子全部依赖更丰富数据
-（IV / 新闻 / 空头持仓 / 基本面 group_zscore）相吻合——纯 PV 不足以越过 D0 的 2.0 线。
+## 3. 推荐候选（如需提交，最强的有经济学意义因子）
 
-## 2. 仍然有效的成果
+**最强微结构 D0**（满足全部用户约束，但 SH 1.18 < 2.0）：
 
-- **D0 提交门槛实测**（来自 `GET /alphas/{id}/check`）：`LOW_SHARPE` limit
-  **2.0**（非 d1 的 1.25）、`LOW_FITNESS` **1.3**，外加 `LOW_SUB_UNIVERSE_SHARPE`、
-  `IS_LADDER_SHARPE`(0.5)、`CONCENTRATED_WEIGHT`、`SELF_CORRELATION`(<0.7)。
-- **不 submit 的 pre-submit 校验**可行：`GET /alphas/{id}/check` +
-  `GET /alphas/{id}/correlations/self`（`/correlations/prod` 在本账户 403）。
-  工具：`scripts/check_submit.py`。
-- **delay=0 现已可模拟**（旧 CLAUDE.md 的 "Delay 0 not available" 已失效）。
-- 账户已提交的 D0 因子经济轴为 IV/新闻/空头/基本面；任何纯价量新因子与其
-  天然低相关——“与以前不相关”这一点容易满足，难点在 Sharpe。
-
-## 3. 工具
-
-```bash
-# 严格串行 + code 核对的 D0 测量（推荐，唯一可信）
-python scripts/measure_serial.py jobs.json out.json
-
-# 隔离单跑一个表达式（带 code_match）
-python scripts/isolated_verify.py "EXPR" TOP500 4 0.05 SUBINDUSTRY
-
-# 不 submit 的提交检查
-python scripts/check_submit.py <alpha_id>
+```
+rank(ts_zscore(divide(volume, sharesout), 20))
+delay=0, universe=TOP3000, neutralization=SUBINDUSTRY, decay=4, truncation=0.05
 ```
 
-> ⚠️ 本执行环境会**重叠/重复执行后台命令**，多个实例并发打 API 会再次引入
-> 串号与文件覆盖。务必：单实例、串行、前台执行关键测量，并以 `code_match` 把关。
+- 经济含义：**异常换手延续**。`volume/sharesout` 是日换手率，`ts_zscore(…,20)`
+  量度其相对自身 20 日常态的偏离（含正则化），多偏离即关注度/流动性冲击，
+  D0 短期延续。
+- 正则化：`ts_zscore` + `rank` 双重。
+- 非 IV：纯 PV 字段。
+- 与已有因子相关性：账户 D0 因子皆为 IV/新闻/空头/基本面，本因子是纯换手微结构，
+  经济轴正交，self-corr 期望低。
+- 不通过 submit（SH 1.18 < 2.0）。
 
-## 4. 量/流动性微结构路线（已按用户选择充分探明）
+## 4. D0 提交门槛 2.0 的真实路径
 
-用户选择走**量/流动性微结构**路线。已用前台串行 + `code_match` 核对跑了 4 组共
-12 个非 IV 微结构候选，真实结果：
+账户里 SH 2.0+ 的现有 D0 因子（`LLRMo5Pv`、`d5QK2b3E`、`vRmkVOW3`、`E5kNGQxL`、
+`GrkeWwx5`、`mLZkOw6x`、`0mz3J1AG`、`akN9pwQw`、`1Yo2OPjm` 等）分两类：
 
-| 微结构信号（经济含义） | universe/decay | Sharpe | TO | FIT |
-|---|---|---|---|---|
-| **`rank(ts_zscore(volume/sharesout,20))`**（异常换手延续=关注度冲击） | TOP3000 / d4 | **1.18** | 0.54 | 0.37 |
-| 同上 | TOP3000 / d16 | 0.94 | 0.28 | 0.37 |
-| `-rank(ts_av_diff(close,5)·ts_rank(volume,20))`（量加权反转） | TOP1000 / d4 | 0.86 | 0.55 | 0.33 |
-| `-rank(ts_mean(CLV,5))`（买卖压力反转，CLV=(2C−H−L)/(H−L)） | TOP1000 / d4 | 0.61 | 0.38 | 0.22 |
-| `rank(ts_mean(\|ret\|/(vol·vwap),20))`（Amihud 非流动性） | TOP3000 / d4 | −0.67（符号不稳） | 0.03 | — |
-| `rank(ts_mean(log(H/L),20))`（Corwin-Schultz 价差） | TOP1000 / d4 | 0.04 | 0.06 | — |
+- **IV-based**（用户禁用）：`implied_volatility_*`、`pcr_oi_*` 系列。
+- **多组件复杂加和**（非 IV，但不"简洁"）：4–6 个 `group_zscore` / `if_else(is_nan(...))` /
+  `trade_when(news_pct_30min)` 项叠加（如 `blNEelXq` 加 4 项基本面，
+  `GrkeWwx5` 加 3 项+新闻门控）。
 
-**结论：非 IV 微结构 D0 信号天花板约 Sharpe 1.2，远达不到 D0 提交门槛
-（SH 2.0 / FIT 1.3）。** 最强单信号是“异常换手延续”
-`rank(ts_zscore(divide(volume,sharesout),20))`（经济含义：换手率相对自身 20 日
-常态的异常程度，高=关注/流动性冲击→短期延续；含 `rank`+`ts_zscore` 正则化、
-非 IV、与账户现有因子低相关），但 Sharpe 仅 1.18，**不可提交**。
+要在非 IV 下到 2.0，需要走"多组件加和"路线，**与"简洁"要求冲突**。这是用户约束的硬边界。
 
-## 5. 真正可提交 D0 的唯一现实路径
+## 5. 工具产出
 
-要拿到能过 submit 的 D0 因子，必须引入**非 IV 的更丰富数据**。推荐：基于**基本面**
-做 D0 因子（`group_zscore(quantile(<价值/质量比率>))` 形态，用与账户现有因子不同
-的比率，确保 self-corr<0.7）——这是账户已验证能过 2.0 的形态，D0 换手低、横截面
-Sharpe 可观。待用户确认是否走此路。
+- `scripts/wq_lib.py` — WQ 客户端，`simulate` 返回 `code_match`；废弃共享 session
+- `scripts/measure_serial.py` — **严格串行 + code 核对**，唯一可信的测量器
+- `scripts/isolated_verify.py` — 单跑 + 双次拉取一致性
+- `scripts/check_submit.py` / `poll_selfcorr.py` — 不 submit 的提交检查
+- 实测：本环境后台命令会**重复执行**，必须串行前台 + `code_match` 兜底
+
+## 6. CLAUDE.md 已更新的关键事实
+
+- delay=0 现已可模拟（旧"Delay 0 not available"已失效）
+- D0 提交门槛：`LOW_SHARPE`=2.0、`LOW_FITNESS`=1.3、`SELF_CORRELATION`<0.7、
+  `LOW_SUB_UNIVERSE_SHARPE`(~0.4)、`IS_LADDER_SHARPE`(0.5)、`CONCENTRATED_WEIGHT`
+- 并发串号教训：必须 `code_match`，否则任何 Sharpe 都不可信
+- 纯 PV D0 天花板 ~1.2 Sharpe；非 IV 简洁单信号也是
+- `/correlations/prod` 403（账户无权限）；`/correlations/self` OK

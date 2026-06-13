@@ -1,19 +1,29 @@
 {
-  "_summary": "All numbers below are code-verified (regular.code == submitted expression) and measured SERIALLY in the foreground to avoid the concurrency cross-wiring bug that produced earlier phantom results. NONE reach the D0 submission bar (Sharpe>2.0, Fitness>1.3). Conclusion: non-IV price-volume / microstructure D0 signals cap around Sharpe ~1.2 on this account; a submittable D0 factor requires richer data (fundamentals/news/short-interest), as in the account's existing D0 alphas.",
-  "d0_submission_thresholds": {"LOW_SHARPE": 2.0, "LOW_FITNESS": 1.3, "SELF_CORRELATION": "<0.7", "HIGH_TURNOVER": "<0.7"},
-  "microstructure_path_results": [
-    {"tag": "turn_cont_TOP3000_d4", "expr": "rank(ts_zscore(divide(volume,sharesout),20))", "universe": "TOP3000", "decay": 4, "sharpe": 1.18, "turnover": 0.544, "fitness": 0.37, "code_match": true, "note": "BEST microstructure signal: abnormal share-turnover continuation (attention/liquidity shock). Still far below 2.0."},
-    {"tag": "turn_cont_d16", "expr": "rank(ts_zscore(divide(volume,sharesout),20))", "universe": "TOP3000", "decay": 16, "sharpe": 0.94, "turnover": 0.280, "fitness": 0.37, "code_match": true},
-    {"tag": "vwrev_volwt", "expr": "-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))", "universe": "TOP1000", "decay": 4, "sharpe": 0.86, "turnover": 0.550, "fitness": 0.33, "code_match": true},
-    {"tag": "clv_buysell", "expr": "-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5))", "universe": "TOP1000", "decay": 4, "sharpe": 0.61, "turnover": 0.384, "fitness": 0.22, "code_match": true},
-    {"tag": "amihud_TOP3000", "expr": "rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20))", "universe": "TOP3000", "decay": 4, "sharpe": -0.67, "turnover": 0.027, "fitness": -0.47, "code_match": true, "note": "Amihud illiquidity; sign unstable across universes, weak."},
-    {"tag": "cs_spread", "expr": "rank(ts_mean(log(divide(high,low)),20))", "universe": "TOP1000", "decay": 4, "sharpe": 0.04, "turnover": 0.057, "fitness": 0.01, "code_match": true, "note": "Corwin-Schultz high-low spread illiquidity: noise at D0."},
-    {"tag": "rev_plus_turn", "expr": "add(-rank(returns),rank(ts_zscore(divide(volume,sharesout),20)))", "universe": "TOP1000", "decay": 2, "sharpe": 0.51, "turnover": 0.899, "fitness": 0.11, "code_match": true}
-  ],
-  "pure_pv_reversal_results": [
-    {"expr": "-rank(returns)", "universe": "TOP1000", "decay": 2, "sharpe": -0.14, "turnover": 1.087, "code_match": true, "note": "1-day reversal is NOISE at D0 (the earlier '1.7' was a contamination artifact)."},
-    {"expr": "-rank(divide(ts_av_diff(close,5),ts_std_dev(close,20)))", "universe": "TOP500", "decay": 4, "sharpe": 0.47, "fitness": 0.14, "code_match": true, "verified_runs": ["vRm6Xjvv", "vRm6mb1A"], "note": "The factor earlier falsely reported as Sharpe 2.11 / 9-PASS."}
-  ],
+  "_summary": "FINAL code-verified D0 landscape. All metrics confirmed by regular.code==submitted-expression (code_match=True), measured serially in foreground. NO non-IV simple D0 factor reaches the submission bar (Sharpe>2.0, Fitness>1.3) under the user's constraints (non-IV, simple, regularized, economic, uncorrelated).",
   "submittable": false,
-  "verdict": "No non-IV price-volume/microstructure D0 factor reaches the submission bar. Best honest result: Sharpe ~1.18 (turnover-continuation). Recommend fundamentals-based D0 for an actually-submittable factor."
+  "best_non_iv_d0_factor_found": {
+    "expr": "rank(ts_zscore(divide(volume,sharesout),20))",
+    "settings": {"universe": "TOP3000", "delay": 0, "decay": 4, "neutralization": "SUBINDUSTRY", "truncation": 0.05, "pasteurization": "ON"},
+    "sharpe": 1.18,
+    "fitness": 0.37,
+    "turnover": 0.544,
+    "code_match": true,
+    "economic_meaning": "Abnormal share-turnover continuation (attention/liquidity shock; reg by ts_zscore + rank). Non-IV, orthogonal to account's existing D0 alphas.",
+    "submittable": false,
+    "fail_reason": "LOW_SHARPE (1.18 < 2.0), LOW_FITNESS (0.37 < 1.3)"
+  },
+  "landscape_code_verified": [
+    {"path": "microstructure",  "best_expr": "rank(ts_zscore(divide(volume,sharesout),20))",                                                              "sharpe": 1.18, "fitness": 0.37},
+    {"path": "cross_axis",      "best_expr": "add(-rank(returns),group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry))",             "sharpe": 0.96, "fitness": 0.87},
+    {"path": "fundamental_1",   "best_expr": "group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)",                                  "sharpe": 0.82, "fitness": 0.69},
+    {"path": "fundamental_sum2","best_expr": "add(group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry),group_zscore(ts_mean(ts_backfill(divide(cashflow_op,cap),120),60),subindustry))", "sharpe": 0.83, "fitness": 0.69},
+    {"path": "fundamental_long","best_expr": "group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),250),120),subindustry)",                                "sharpe": 0.80, "fitness": 0.67},
+    {"path": "news_gate",       "best_expr": "trade_when(ts_rank(abs(news_pct_30min),60)>0.5,-rank(returns),-1)",                                          "sharpe": 0.34, "fitness": 0.08},
+    {"path": "pure_pv",         "best_expr": "-rank(returns)",                                                                                            "sharpe": "noise (<=1)", "fitness": "<=0"}
+  ],
+  "earlier_phantom_results_corrected": [
+    {"phantom_sharpe": 2.11, "alpha_id": "ergG922e", "expr": "-rank(divide(ts_av_diff(close,5),ts_std_dev(close,20)))", "true_sharpe_isolated": 0.47, "reproduced_runs": ["vRm6Xjvv", "vRm6mb1A"], "cause": "concurrency cross-wiring (shared requests.Session in simulate_many)"},
+    {"phantom_sharpe": 2.27, "alpha_id": "58vebvNb", "expr": "group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)", "true_sharpe_isolated": 0.81, "reproduced_runs": ["58vYvQn6"], "cause": "WQ backend cross-result during my concurrent load; metrics stabilized to 0.81 after GC + quiet re-run"}
+  ],
+  "d0_submission_thresholds": {"LOW_SHARPE": 2.0, "LOW_FITNESS": 1.3, "SELF_CORRELATION": "<0.7", "HIGH_TURNOVER": "<0.7", "LOW_SUB_UNIVERSE_SHARPE": "~0.42", "IS_LADDER_SHARPE": 0.5}
 }
