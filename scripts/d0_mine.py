@@ -151,8 +151,11 @@ def check_submission(session, alpha_id: str) -> dict:
     return {"ok": False, "error": "check-timeout-pending"}
 
 
-def run_batch(session, candidates: list[dict], max_workers: int = 3) -> list[dict]:
-    """candidates: [{expr, settings}]. Returns list of result dicts."""
+def run_batch(session, candidates: list[dict], max_workers: int = 3,
+              out_path: Path | None = None) -> list[dict]:
+    """candidates: [{expr, settings}]. Returns list of result dicts.
+    Writes partial results to out_path after EACH completion so a timeout
+    or crash never loses data."""
     results = []
     lock = threading.Lock()
 
@@ -167,12 +170,16 @@ def run_batch(session, candidates: list[dict], max_workers: int = 3) -> list[dic
                          f"{res['alpha_id']}  {c['expr'][:55]}")
             else:
                 log.info(f"   [ERR] {res['error'][:90]}  {c['expr'][:50]}")
+            results.append(res)
+            if out_path is not None:
+                with open(out_path, "w") as f:
+                    json.dump(results, f, indent=2)
         return res
 
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
         futs = [ex.submit(work, c) for c in candidates]
         for f in as_completed(futs):
-            results.append(f.result())
+            f.result()
     return results
 
 
@@ -252,8 +259,10 @@ def main():
     else:
         cands = default_candidates()
     log.info(f"running {len(cands)} D0 candidates, {args.workers} concurrent")
-    results = run_batch(session, cands, max_workers=args.workers)
-    with open(REPO / args.out, "w") as f:
+    out_path = REPO / args.out
+    results = run_batch(session, cands, max_workers=args.workers,
+                        out_path=out_path)
+    with open(out_path, "w") as f:
         json.dump(results, f, indent=2)
     surv = print_table(results)
 
