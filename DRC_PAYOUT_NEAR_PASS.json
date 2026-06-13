@@ -1,0 +1,90 @@
+{
+ "discovery": "TWO new INDEPENDENT (corr<0.15) non-IV mechanisms found after 16+ batches of exhaustive mining: deferred revenue and payout ratio dimensions",
+ "BEST_near_PASS": "6XEJ21YP DRC+DRLT \u2014 passes 5/6 IS checks. ONLY fails LOW_SHARPE (1.22 vs 1.25 gate, gap 0.03).",
+ "corr_vs_submitted_pool": {
+  "6XEJ21YP": 0.134,
+  "vRm6owkb": 0.045,
+  "qMX3VwNK": 0.041,
+  "mutual_DRC_LoPayout": 0.054
+ },
+ "alphas": [
+  {
+   "alpha_id": "6XEJ21YP",
+   "note": "BEST: DRC/sales + DRLT/assets stack. corr 0.134 vs submitted pool. PASS 5/6 IS gates (fails LOW_SHARPE by 0.03 \u2014 SH 1.22 vs 1.25 gate). All other checks pass: FIT 1.04, TO 0.015, DD 0.086.",
+   "sharpe": 1.22,
+   "fitness": 1.04,
+   "turnover": 0.015,
+   "drawdown": 0.0857,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 60), ts_backfill(assets, 60))), subindustry)), 10))",
+   "checks": {
+    "LOW_SHARPE": "FAIL",
+    "LOW_FITNESS": "PASS",
+    "LOW_TURNOVER": "PASS",
+    "HIGH_TURNOVER": "PASS",
+    "CONCENTRATED_WEIGHT": "PASS",
+    "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+    "SELF_CORRELATION": "PENDING",
+    "MATCHES_COMPETITION": "PASS"
+   }
+  },
+  {
+   "alpha_id": "vRm6owkb",
+   "note": "DRC alone: SH 1.12 FIT 0.81. Building block. corr <0.10 vs submitted.",
+   "sharpe": 1.12,
+   "fitness": 0.81,
+   "turnover": 0.0141,
+   "drawdown": 0.0839,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 60), ts_backfill(assets, 60))), subindustry), 10))",
+   "checks": {
+    "LOW_SHARPE": "FAIL",
+    "LOW_FITNESS": "FAIL",
+    "LOW_TURNOVER": "PASS",
+    "HIGH_TURNOVER": "PASS",
+    "CONCENTRATED_WEIGHT": "PASS",
+    "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+    "SELF_CORRELATION": "PENDING",
+    "MATCHES_COMPETITION": "PASS"
+   }
+  },
+  {
+   "alpha_id": "qMX3VwNK",
+   "note": "LoPayout (1-payout ratio): SH 1.06 FIT 0.79 DD 0.065. corr <0.05 vs submitted. Truly independent dimension.",
+   "sharpe": 1.06,
+   "fitness": 0.79,
+   "turnover": 0.0182,
+   "drawdown": 0.0649,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow_dividends, 60), ts_backfill(cashflow, 60)))), subindustry), 10))",
+   "checks": {
+    "LOW_SHARPE": "FAIL",
+    "LOW_FITNESS": "FAIL",
+    "LOW_TURNOVER": "PASS",
+    "HIGH_TURNOVER": "PASS",
+    "CONCENTRATED_WEIGHT": "FAIL",
+    "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+    "SELF_CORRELATION": "PENDING",
+    "MATCHES_COMPETITION": "PASS"
+   }
+  }
+ ]
+}
