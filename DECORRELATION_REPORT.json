@@ -1,0 +1,110 @@
+{
+  "task": "reduce self-correlation of fundamental alpha (was 0.7614 > 0.7 cutoff, Sharpe not 10% better)",
+  "original_alpha": "add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174))))",
+  "original_metrics_d0": {
+    "sharpe": 1.46,
+    "fitness": 1.17,
+    "turnover": 0.047,
+    "neut": "SUBINDUSTRY",
+    "alpha_id": "XgKxvNva"
+  },
+  "recommendation": {
+    "alpha_id": "pw7kGwXX",
+    "sharpe": 2.12,
+    "fitness": 1.8,
+    "turnover": 0.149,
+    "expression": "add(add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), multiply(group_zscore(ts_av_diff(close, 10), subindustry), -0.8)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -0.6))",
+    "why": "Injecting orthogonal price-volume PnL (reversal+liquidity) lifts Sharpe +45% (1.46->2.12). This passes the self-correlation check via the 'Sharpe 10%+ better than the correlated alpha' escape route with large margin, AND the orthogonal PV component lowers the raw correlation with a fundamental-based existing alpha."
+  },
+  "stay_fundamental_option": {
+    "alpha_id": "Jjdkzd7m",
+    "sharpe": 1.54,
+    "fitness": 1.18,
+    "turnover": 0.047,
+    "expression": "vector_neut(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), zscore(rank(cap)))",
+    "why": "Orthogonalizes against size (cap) - the likely common factor driving correlation - while staying purely fundamental and ultra-low turnover. Milder Sharpe lift (+5%), relies on dropping raw correlation below 0.7."
+  },
+  "all_variants": [
+    {
+      "variant": "ORIG_plus_PV_reversal_liquidity",
+      "neutralization": "SUBINDUSTRY",
+      "sharpe": 2.12,
+      "fitness": 1.8,
+      "turnover": 0.149,
+      "subuniverse": 1.43,
+      "alpha_id": "pw7kGwXX",
+      "expression": "add(add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), multiply(group_zscore(ts_av_diff(close, 10), subindustry), -0.8)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -0.6))"
+    },
+    {
+      "variant": "ORIG_plus_PV_reversal",
+      "neutralization": "SUBINDUSTRY",
+      "sharpe": 1.96,
+      "fitness": 1.73,
+      "turnover": 0.1349,
+      "subuniverse": 1.51,
+      "alpha_id": "RRrolKG1",
+      "expression": "add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), multiply(group_zscore(ts_av_diff(close, 10), subindustry), -0.6))"
+    },
+    {
+      "variant": "vector_neut_vs_cap",
+      "neutralization": "SUBINDUSTRY",
+      "sharpe": 1.54,
+      "fitness": 1.18,
+      "turnover": 0.0473,
+      "subuniverse": 1.29,
+      "alpha_id": "Jjdkzd7m",
+      "expression": "vector_neut(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), zscore(rank(cap)))"
+    },
+    {
+      "variant": "ORIG_neut_only",
+      "neutralization": "SUBINDUSTRY",
+      "sharpe": 1.46,
+      "fitness": 1.17,
+      "turnover": 0.047,
+      "subuniverse": 1.25,
+      "alpha_id": "XgKxvNva",
+      "expression": "add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174))))"
+    },
+    {
+      "variant": "group_rank_industry",
+      "neutralization": "SUBINDUSTRY",
+      "sharpe": 1.46,
+      "fitness": 1.11,
+      "turnover": 0.0496,
+      "subuniverse": 0.97,
+      "alpha_id": "1YgRKgq6",
+      "expression": "add(zscore(group_rank(divide(liabilities, assets), subindustry)), zscore(group_rank(ts_delta(divide(income, cap), 174), subindustry)))"
+    },
+    {
+      "variant": "ORIG_neut_only",
+      "neutralization": "INDUSTRY",
+      "sharpe": 1.39,
+      "fitness": 1.16,
+      "turnover": 0.0419,
+      "subuniverse": 1.2,
+      "alpha_id": "akO8QRQ9",
+      "expression": "add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174))))"
+    },
+    {
+      "variant": "ORIG_neut_only",
+      "neutralization": "MARKET",
+      "sharpe": 0.88,
+      "fitness": 0.77,
+      "turnover": 0.0335,
+      "subuniverse": 0.89,
+      "alpha_id": "E5KMz0gm",
+      "expression": "add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174))))"
+    },
+    {
+      "variant": "reweight_horizon250",
+      "neutralization": "SUBINDUSTRY",
+      "sharpe": 0.86,
+      "fitness": 0.54,
+      "turnover": 0.0499,
+      "subuniverse": 0.87,
+      "alpha_id": "Vk8LznlV",
+      "expression": "add(multiply(zscore(rank(divide(liabilities, assets))), 0.7), multiply(zscore(rank(ts_delta(divide(income, cap), 250))), 1.3))"
+    }
+  ],
+  "note": "Self-correlation is not measurable via API for un-submitted alphas; variants ranked by decorrelation mechanism and verified Sharpe/fitness at delay=0. Submit the chosen alpha to confirm the actual self-correlation."
+}
