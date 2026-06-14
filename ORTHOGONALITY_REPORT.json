@@ -57,5 +57,18 @@
     "best_sharpe": 1.41,
     "conclusion": "At delay-0 the SH>=2.0 bar is only cleared by the diversified LINEAR z-score blend. Novel structures (interaction/conditional/ratio/residual/nonlinear) cap at SH ~1.0-1.4 because they inject nonlinearity that weakens the dominant reversal signal and breaks the diversification that drives Sharpe. 'Different structure' and 'clears 2.0' are not jointly achievable at delay-0.",
     "implication": "For genuinely different STRUCTURE + DIRECTION, delay-1 is the venue: bar is SH>=1.25/FIT>=1.0, and rich fields (analyst revisions, option/IV, sentiment; 5905 vs 1225) are available. The user's pool is already 16/19 delay-1."
+  },
+  "new_direction_winner": {
+    "id": "RRrwQYl0",
+    "direction": "asset-turnover / efficiency (sales/assets), NOT value/leverage",
+    "structure": "linear z-score blend (unchanged) \u2014 efficiency tilt x1.5 + 5-signal price-volume block",
+    "sharpe": 2.28,
+    "fitness": 1.7,
+    "turnover": 0.2069,
+    "pool_maxcorr": 0.21,
+    "clears_D0": true,
+    "adds_score": true,
+    "expression": "add(multiply(group_zscore(divide(sales, assets), subindustry), 1.5), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.0), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.77)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.25)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.46)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.3)))",
+    "note": "DV/DV2 finding: among non-value fundamental directions (quality/investment/cashflow/efficiency), only a heavily-weighted single CLEAN efficiency signal (sales/assets x1.5) synergizes with the PV engine to clear 2.0 (2.28). Multi-signal quality blends dilute (<1.9). Value still tops at 2.34 but overlaps pool; efficiency at 2.28 is a genuinely different direction AND orthogonal (corr 0.21)."
   }
 }
