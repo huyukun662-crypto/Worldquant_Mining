@@ -1,0 +1,122 @@
+[
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(ts_sum(returns, 5))), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(zscore(subtract(ts_sum(returns, 252), ts_sum(returns, 21))), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 15,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.02
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(ts_std_dev(returns, 60))), subindustry), 15))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(ts_backfill(analyst_revision_rank_derivative, 10)), subindustry), group_neutralize(zscore(ts_backfill(earnings_certainty_rank_derivative, 10)), subindustry)), group_neutralize(zscore(ts_backfill(growth_potential_rank_derivative, 10)), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(signed_power(group_neutralize(zscore(ts_backfill(rp_css_dividends, 10)), subindustry), 1.17), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 2e-05
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(zscore(ts_sum(returns, 126)), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(snt_social_volume)), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(ts_backfill(rp_css_earnings, 10)), subindustry), group_neutralize(zscore(ts_backfill(rp_css_revenue, 10)), subindustry)), group_neutralize(zscore(ts_backfill(rp_css_ptg, 10)), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(divide(ts_backfill(debt, 60), ts_backfill(equity, 60)))), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(divide(ts_backfill(cash_st, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(cash_st, 60), ts_backfill(fnd6_mfma2_revt, 60))), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(divide(ts_backfill(fnd6_newa1v1300_gp, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_newa1v1300_gp, 60), ts_backfill(fnd6_mfma2_revt, 60))), subindustry)), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(reverse(zscore(parkinson_volatility_60)), subindustry), 15))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 10,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  }
+]
