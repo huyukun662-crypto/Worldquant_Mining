@@ -1,0 +1,88 @@
+[
+  {
+    "ok": true,
+    "archetype": "clr_plus_assetturn",
+    "expression": "add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 19)))), zscore(rank(divide(sales, assets))))",
+    "optimized": "add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 19)))), zscore(rank(divide(sales, assets))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 256,
+      "truncation": 0.05,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.02,
+    "turnover": 0.0313,
+    "fitness": 0.73,
+    "returns": 0.0644,
+    "drawdown": 0.1016,
+    "margin": 0.004115,
+    "longCount": 1480,
+    "shortCount": 1554,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "FAIL",
+        "value": 1.02,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "FAIL",
+        "value": 0.73,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0313,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0313,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.63,
+        "limit": 0.44
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 5,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": false,
+    "alpha_id": "Vk8bmNgA",
+    "error": ""
+  }
+]
