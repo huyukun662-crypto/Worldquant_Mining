@@ -1,0 +1,174 @@
+[
+  {
+    "ok": true,
+    "archetype": "clr_plus_assetturn",
+    "expression": "add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 5)))), zscore(rank(divide(sales, assets))))",
+    "optimized": "add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 5)))), zscore(rank(divide(sales, assets))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 32,
+      "truncation": 0.08,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.43,
+    "turnover": 0.0911,
+    "fitness": 1.27,
+    "returns": 0.0981,
+    "drawdown": 0.0799,
+    "margin": 0.002154,
+    "longCount": 1490,
+    "shortCount": 1543,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.43,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.27,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.0911,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.0911,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 0.92,
+        "limit": 0.62
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 7,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": true,
+    "alpha_id": "QPQpAd7Q",
+    "error": ""
+  },
+  {
+    "ok": true,
+    "archetype": "clr_plus_assetturn",
+    "expression": "add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 8)))), zscore(rank(divide(sales, assets))))",
+    "optimized": "add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 8)))), zscore(rank(divide(sales, assets))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 16,
+      "truncation": 0.08,
+      "neutralization": "SECTOR",
+      "pasteurization": "ON"
+    },
+    "sharpe": 1.31,
+    "turnover": 0.1207,
+    "fitness": 1.26,
+    "returns": 0.1153,
+    "drawdown": 0.0993,
+    "margin": 0.00191,
+    "longCount": 1498,
+    "shortCount": 1538,
+    "checks": [
+      {
+        "name": "LOW_SHARPE",
+        "result": "PASS",
+        "value": 1.31,
+        "limit": 1.25
+      },
+      {
+        "name": "LOW_FITNESS",
+        "result": "PASS",
+        "value": 1.26,
+        "limit": 1.0
+      },
+      {
+        "name": "LOW_TURNOVER",
+        "result": "PASS",
+        "value": 0.1207,
+        "limit": 0.01
+      },
+      {
+        "name": "HIGH_TURNOVER",
+        "result": "PASS",
+        "value": 0.1207,
+        "limit": 0.7
+      },
+      {
+        "name": "CONCENTRATED_WEIGHT",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "LOW_SUB_UNIVERSE_SHARPE",
+        "result": "PASS",
+        "value": 1.2,
+        "limit": 0.57
+      },
+      {
+        "name": "SELF_CORRELATION",
+        "result": "PENDING",
+        "value": null,
+        "limit": null
+      },
+      {
+        "name": "MATCHES_COMPETITION",
+        "result": "PASS",
+        "value": null,
+        "limit": null
+      }
+    ],
+    "checks_passed": 7,
+    "checks_total": 8,
+    "pending": 1,
+    "submittable": true,
+    "alpha_id": "E5KP2XaJ",
+    "error": ""
+  }
+]

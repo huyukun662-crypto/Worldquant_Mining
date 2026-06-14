@@ -111,3 +111,40 @@ fitness gate, which the high-turnover reversal cannot clear.
 - If LOW_FITNESS is **not** a hard gate (only LOW_SHARPE + turnover +
   self-correlation bind): `kqK6ZoXK` is a strong submittable factor —
   SH 1.57, DD 0.064, and |corr| 0.28 to the submitted leverage pool.
+
+## v6 result — SUBMITTABLE orthogonal factors (fitness gate crossed)
+
+v6 wrapped the orthogonal close-loc-in-range reversal in `ts_decay_linear`
+(cutting turnover from 0.43 to ~0.10, which lifts fitness) and blended it
+with a slow `asset_turnover` leg. **2 fully-submittable factors** result —
+every IS check passes (SH ≥ 1.25, FIT ≥ 1.0, turnover/concentration/
+sub-universe), with low turnover and low drawdown:
+
+| alpha_id | SH | TO | FIT | DD | ret | corr vs leverage |
+|---|---:|---:|---:|---:|---:|---:|
+| `E5KP2XaJ` | 1.31 | 0.121 | 1.26 | 0.099 | 0.115 | **0.43** ✅ |
+| `QPQpAd7Q` | 1.43 | 0.091 | 1.27 | 0.080 | 0.098 | 0.50 (borderline) |
+
+**`E5KP2XaJ`** — recommended NEW orthogonal submittable factor
+```
+add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 8)))),
+    zscore(rank(divide(sales, assets))))
+```
+`USA · TOP3000 · delay=1 · SECTOR · decay=16 · truncation=0.08 · pasteurization=ON`
+
+**`QPQpAd7Q`** — higher Sharpe but borderline self-correlation (0.50)
+```
+add(zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 5)))),
+    zscore(rank(divide(sales, assets))))
+```
+`USA · TOP3000 · delay=1 · INDUSTRY · decay=32 · truncation=0.08 · pasteurization=ON`
+
+The two are 0.90 correlated with each other (same archetype) — submit ONE.
+The `asset_turnover` (sales/assets) leg lifts fitness over 1.0 but shares the
+`assets` denominator with leverage, raising correlation from the pure
+reversal's 0.28 to 0.43-0.50. Purer-PV blends (reversal + low-vol / momentum)
+stayed more orthogonal but did not clear the fitness gate.
+
+### Achievable frontier (orthogonality vs submittability)
+- Most orthogonal submittable: **`E5KP2XaJ`** (corr 0.43, SH 1.31, FIT 1.26).
+- Most orthogonal overall: `kqK6ZoXK` (corr 0.28) — not submittable (FIT 0.82).
