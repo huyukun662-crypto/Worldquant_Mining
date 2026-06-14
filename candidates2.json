@@ -1,0 +1,252 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(composite_factor_score_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(analyst_revision_rank_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(earnings_certainty_rank_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(growth_potential_rank_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(relative_valuation_rank_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(cashflow_efficiency_rank_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(multi_factor_acceleration_score_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(multi_factor_static_score_derivative, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(composite_factor_score_derivative, 5)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(relative_valuation_rank_derivative, 5)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(growth_potential_rank_derivative, relative_valuation_rank_derivative), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(growth_potential_rank_derivative, relative_valuation_rank_derivative), 10)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_backfill(fscore_growth, 10)), zscore(ts_backfill(fscore_value, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_backfill(fscore_quality, 10)), zscore(ts_backfill(fscore_profitability, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "hump(zscore(ts_decay_linear(composite_factor_score_derivative, 5)), 0.01)",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "hump(zscore(ts_decay_linear(growth_potential_rank_derivative, 5)), 0.01)",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "trade_when(volume > ts_mean(volume, 20), zscore(composite_factor_score_derivative), -1)",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "trade_when(volume > ts_mean(volume, 20), zscore(growth_potential_rank_derivative), -1)",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(ts_av_diff(composite_factor_score_derivative, 20), 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(last_diff_value(multi_factor_static_score_derivative, 10), 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(beta_last_60_days_spy, 5)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(unsystematic_risk_last_60_days, 5))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(unsystematic_risk_last_60_days, 5)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(composite_factor_score_derivative, 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(growth_potential_rank_derivative, 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 12,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

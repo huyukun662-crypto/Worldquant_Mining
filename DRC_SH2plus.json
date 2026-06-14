@@ -1,0 +1,16 @@
+{
+ "ULTIMATE_CHAMP": "A138ZLjw",
+ "sharpe": 2.02,
+ "fitness": 1.38,
+ "turnover": 0.0173,
+ "drawdown": 0.0257,
+ "expr": "zscore(ts_decay_linear(signed_power(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 45), ts_backfill(assets, 45))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 45), ts_backfill(assets, 45))), subindustry)), multiply(0.4, add(group_neutralize(reverse(zscore(ts_backfill(earnings_certainty_rank_derivative, 10))), subindustry), group_neutralize(reverse(zscore(ts_backfill(analyst_revision_rank_derivative, 10))), subindustry)))), 1.17), 10))",
+ "settings": {
+  "universe": "TOP3000",
+  "delay": 1,
+  "decay": 6,
+  "neutralization": "INDUSTRY",
+  "truncation": 2e-05
+ },
+ "mechanism": "DRC[n=45] + 0.4*(ECR+ARR) signed_power 1.17 with tr=2e-05"
+}

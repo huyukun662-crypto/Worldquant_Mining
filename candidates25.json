@@ -1,0 +1,72 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(fscore_momentum, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(subtract(zscore(ts_backfill(fscore_value, 10)), add(add(zscore(ts_backfill(fscore_growth, 10)),zscore(ts_backfill(fscore_momentum, 10))),zscore(ts_backfill(fscore_quality, 10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(subtract(zscore(ts_backfill(fscore_value, 10)), add(zscore(ts_backfill(growth_potential_rank_derivative, 10)), zscore(ts_backfill(cashflow_efficiency_rank_derivative, 10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_backfill(fscore_value, 10)), zscore(ts_regression(returns, ts_backfill(fscore_value, 10), 60))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_total, 10))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

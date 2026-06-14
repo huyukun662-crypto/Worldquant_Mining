@@ -1,0 +1,52 @@
+[
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(pcr_vol_60, 5)), zscore(ts_regression(returns, ts_backfill(pcr_vol_60, 5), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(add(add(zscore(ts_backfill(pcr_vol_30, 5)), zscore(ts_backfill(pcr_vol_60, 5))), zscore(ts_backfill(pcr_vol_90, 5)))), zscore(ts_regression(returns, add(add(zscore(ts_backfill(pcr_vol_30, 5)), zscore(ts_backfill(pcr_vol_60, 5))), zscore(ts_backfill(pcr_vol_90, 5))), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(pcr_oi_60, 5)), zscore(ts_regression(returns, ts_backfill(pcr_oi_60, 5), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(add(add(zscore(ts_backfill(pcr_oi_30, 5)), zscore(ts_backfill(pcr_oi_60, 5))), zscore(ts_backfill(pcr_oi_90, 5)))), zscore(ts_regression(returns, add(add(zscore(ts_backfill(pcr_oi_30, 5)), zscore(ts_backfill(pcr_oi_60, 5))), zscore(ts_backfill(pcr_oi_90, 5))), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(add(zscore(ts_backfill(pcr_vol_60, 5)), zscore(ts_backfill(pcr_oi_60, 5)))), zscore(ts_regression(returns, add(zscore(ts_backfill(pcr_vol_60, 5)), zscore(ts_backfill(pcr_oi_60, 5))), 60))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

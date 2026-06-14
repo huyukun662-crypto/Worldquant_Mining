@@ -1,0 +1,102 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_av_diff(ts_backfill(anl4_afv4_eps_mean, 20), 60)), zscore(ts_regression(returns, ts_av_diff(ts_backfill(anl4_afv4_eps_mean, 20), 60), 45))), 15))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_av_diff(ts_backfill(anl4_afv4_eps_mean, 20), 60)), zscore(ts_regression(returns, ts_av_diff(ts_backfill(anl4_afv4_eps_mean, 20), 60), 45))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_backfill(divide(subtract(anl4_afv4_eps_high, anl4_afv4_eps_low), add(abs(anl4_afv4_eps_mean), 0.1)), 20)), zscore(ts_regression(returns, ts_backfill(divide(subtract(anl4_afv4_eps_high, anl4_afv4_eps_low), add(abs(anl4_afv4_eps_mean), 0.1)), 20), 45))), 15))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(divide(subtract(anl4_afv4_eps_high, anl4_afv4_eps_low), add(abs(anl4_afv4_eps_mean), 0.1)), 20)), zscore(ts_regression(returns, ts_backfill(divide(subtract(anl4_afv4_eps_high, anl4_afv4_eps_low), add(abs(anl4_afv4_eps_mean), 0.1)), 20), 45))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_av_diff(ts_backfill(scl12_sentiment, 10), 10)), zscore(ts_regression(returns, ts_av_diff(ts_backfill(scl12_sentiment, 10), 10), 45))), 15))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_av_diff(ts_backfill(scl12_sentiment, 10), 10)), zscore(ts_regression(returns, ts_av_diff(ts_backfill(scl12_sentiment, 10), 10), 45))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_mean(ts_backfill(snt_value, 5), 5)), zscore(ts_regression(returns, ts_mean(ts_backfill(snt_value, 5), 5), 45))), 15))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_mean(ts_backfill(snt_value, 5), 5)), zscore(ts_regression(returns, ts_mean(ts_backfill(snt_value, 5), 5), 45))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(zscore(ts_backfill(pv13_custretsig_retsig, 10)), zscore(ts_regression(returns, ts_backfill(pv13_custretsig_retsig, 10), 45))), 15))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(pv13_custretsig_retsig, 10)), zscore(ts_regression(returns, ts_backfill(pv13_custretsig_retsig, 10), 45))), 15)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 4,
+   "neutralization": "SUBINDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

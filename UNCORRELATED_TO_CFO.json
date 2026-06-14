@@ -1,0 +1,75 @@
+{
+ "goal": "PASS alphas uncorrelated to submitted CFO fundamental factor LLRNoLXM",
+ "mining_summary": "Batches 62-65 explored 36 fresh non-IV mechanism candidates (CFO momentum, ATO/EBIT margin, low-IV anomaly, IV momentum, term-change). NONE achieved PASS. The truly orthogonal-to-CFO PASS mechanisms on this account are 3 IV-derived clusters (verified |corr|<0.08 vs CFO).",
+ "pairwise_max_corr": 0.667,
+ "recommended_3_tuple": [
+  {
+   "tag": "CFO_submitted",
+   "alpha_id": "LLRNoLXM",
+   "note": "submitted CFO fundamental factor",
+   "sharpe": 1.37,
+   "fitness": 1.39,
+   "turnover": 0.0234,
+   "drawdown": 0.088,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)))), subindustry), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(fnd6_mfma2_revt, 60)))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(ebitda, 60)))), subindustry))), 10))"
+  },
+  {
+   "tag": "A_PCR",
+   "alpha_id": "d5Qj0zdw",
+   "note": "IV put/call ratio momentum (Cluster IV-A directional)",
+   "sharpe": 2.82,
+   "fitness": 3.72,
+   "turnover": 0.1043,
+   "drawdown": 0.0641,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 15,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(add(add(zscore(divide(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_call_30, 5))), zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5)))), zscore(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_call_90, 5)))), 15)))"
+  },
+  {
+   "tag": "TermSk_60_40",
+   "alpha_id": "E5KlMqmJ",
+   "note": "IV term-structure 60/40 skew blend (Cluster IV-B term)",
+   "sharpe": 1.88,
+   "fitness": 2.03,
+   "turnover": 0.1147,
+   "drawdown": 0.1039,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.6, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.4, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  },
+  {
+   "tag": "Sk_h720",
+   "alpha_id": "xAnjNEbb",
+   "note": "IV long-horizon (720d) skew (Cluster IV-C pure skew)",
+   "sharpe": 1.8,
+   "fitness": 2.03,
+   "turnover": 0.122,
+   "drawdown": 0.074,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5))), 10)))"
+  }
+ ]
+}

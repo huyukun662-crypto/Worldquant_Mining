@@ -1,0 +1,22 @@
+[
+ {
+  "name": "social_sentiment_orthogonal",
+  "alpha_id": "VkO7opr0",
+  "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_value), std=4), 10))",
+  "settings": {
+   "universe": "TOP500",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  },
+  "sharpe": 0.63,
+  "fitness": 0.28,
+  "turnover": 0.209,
+  "regularization": "winsorize(.,std=4) clips |z|>4 outliers",
+  "economic_meaning": "Social-media investor sentiment (z-score of tweet sentiment). High sentiment -> short-run return continuation (sentiment/attention premium; Antweiler-Frank 2004, Da-Engelberg-Gao 2011). Long high-sentiment, short low-sentiment.",
+  "orthogonality": "Pure social-media behavioral data, daily. Structurally uncorrelated with (a) the model16 fscore value composite (fundamental, quarterly) and (b) the option put/call IV factor (institutional hedging). Different data source + horizon.",
+  "robustness": "Sign stable & positive across TOP500/TOP3000 and decay 6/10. Single field, no ts_backfill (daily dense field).",
+  "caveat": "SH 0.63 < 1.25 LOW_SHARPE submission floor -- consistent with the established non-option ceiling on this account tier. Satisfies the requested properties (simple, regularized, economic, orthogonal) but does not by itself clear the WQ submission gate."
+ }
+]

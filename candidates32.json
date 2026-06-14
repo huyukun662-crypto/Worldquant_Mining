@@ -1,0 +1,52 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_value), std=4), 10))",
+  "settings": {
+   "universe": "TOP500",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_value), std=4), 10))",
+  "settings": {
+   "universe": "TOP200",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_value), std=4), 10))",
+  "settings": {
+   "universe": "TOP500",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_volume), std=4), 10))",
+  "settings": {
+   "universe": "TOP500",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(winsorize(zscore(snt_social_value), std=4), winsorize(zscore(snt_social_volume), std=4)), 10))",
+  "settings": {
+   "universe": "TOP500",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

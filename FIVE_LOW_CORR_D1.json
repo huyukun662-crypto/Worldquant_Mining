@@ -1,0 +1,123 @@
+{
+ "description": "Five low-correlation D1 alphas. Max pairwise IS PnL correlation = 0.320.",
+ "pairwise_correlation_max": 0.32,
+ "pairwise_matrix": {
+  "A": {
+   "A": 1.0,
+   "B": 0.079,
+   "D": 0.089,
+   "E1": -0.134,
+   "E2": 0.038
+  },
+  "B": {
+   "A": 0.079,
+   "B": 1.0,
+   "D": -0.279,
+   "E1": 0.152,
+   "E2": -0.001
+  },
+  "D": {
+   "A": 0.089,
+   "B": -0.279,
+   "D": 1.0,
+   "E1": -0.083,
+   "E2": 0.251
+  },
+  "E1": {
+   "A": -0.134,
+   "B": 0.152,
+   "D": -0.083,
+   "E1": 1.0,
+   "E2": 0.32
+  },
+  "E2": {
+   "A": 0.038,
+   "B": -0.001,
+   "D": 0.251,
+   "E1": 0.32,
+   "E2": 1.0
+  }
+ },
+ "factors": [
+  {
+   "tag": "A_PCR_directional",
+   "alpha_id": "d5Qj0zdw",
+   "economic": "Option put/call IV ratio momentum across 30/60/90-day horizons. High put/call IV -> bearish hedging demand -> reversal (reverse to long).",
+   "sharpe": 2.82,
+   "fitness": 3.72,
+   "turnover": 0.1043,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 15,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(add(add(zscore(divide(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_call_30, 5))), zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5)))), zscore(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_call_90, 5)))), 15)))"
+  },
+  {
+   "tag": "B_IVTermStructure",
+   "alpha_id": "GrolekVO",
+   "economic": "Option IV term-structure: short/long IV mean ratio (30d/180d), reversed. Inverted IV curve -> short-term stress -> underperformance (reverse to long).",
+   "sharpe": 0.86,
+   "fitness": 0.56,
+   "turnover": 0.1274,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(zscore(divide(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_180, 5))), 10)))"
+  },
+  {
+   "tag": "D_FundamentalValue",
+   "alpha_id": "pw8KvWOq",
+   "economic": "Fundamental value composite from model16 fscore: long fscore_value, short fscore_growth + relative_valuation_rank + fscore_momentum.",
+   "sharpe": 0.75,
+   "fitness": 0.56,
+   "turnover": 0.1003,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(subtract(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(relative_valuation_rank_derivative, 10))), zscore(ts_backfill(fscore_momentum, 10))), 10))"
+  },
+  {
+   "tag": "E1_SocialSentiment",
+   "alpha_id": "VkO7opr0",
+   "economic": "Social-media investor sentiment z-score, winsorized regularization. High sentiment -> short-run return continuation (Antweiler-Frank).",
+   "sharpe": 0.63,
+   "fitness": 0.28,
+   "turnover": 0.2086,
+   "settings": {
+    "universe": "TOP500",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_value), std=4), 10))"
+  },
+  {
+   "tag": "E2_SocialAttention",
+   "alpha_id": "XgK7oPXX",
+   "economic": "Social-media tweet volume z-score, winsorized regularization. High attention -> short-run continuation (Da-Engelberg-Gao FEARS-inverse).",
+   "sharpe": 0.52,
+   "fitness": 0.19,
+   "turnover": 0.1884,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(winsorize(zscore(snt_social_volume), std=4), 10))"
+  }
+ ]
+}

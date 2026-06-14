@@ -1,0 +1,107 @@
+{
+ "goal": "5 NEW PASS D1 uncorrelated with submitted pool {CFO_OPT LLRNoLXM, +ATO 2rK5O8x8, A_PCR d5Qj0zdw, Leverage_subset P01PppkL}, low TO low DD",
+ "exhaustive_search": "Batches 80-88 (9 batches, ~80 fresh candidates) explored: PV low-vol/reversal/momentum, working capital/receivable/inventory quality (both junk and quality direction), debt structure (ST/LT fractions), market risk (beta/correlation-SPY), news+social (with hump/decay TO-reduction), pure long-quality stacks (ATO/margins/Novy-Marx GP), reverse-junk-via-sales/margin, universe shift (TOP500/TOP1000). RESULT: 0 new PASS alphas with low correlation to submitted pool.",
+ "reality": "On this account in 2019-2023 IS window: non-IV PASS mechanisms cluster only into 2 groups (CFO-junk and Leverage) \u2014 both submitted. The available IV PASS pool has 6 alphas all <0.7 vs submitted but their mutual correlations cluster: max 2 mutually <0.7 (xAnjNEbb + 88Ll0ng7 at 0.407).",
+ "corr_vs_submitted": {
+  "xAnjNEbb": 0.667,
+  "88Ll0ng7": 0.258,
+  "E5KQ88Qm": 0.673,
+  "E5KlMqmJ": 0.427,
+  "9qRlMaOK": 0.468
+ },
+ "mutual_pairwise_among_5": {
+  "xAnjNEbb<->88Ll0ng7": 0.407,
+  "xAnjNEbb<->E5KQ88Qm": 0.903,
+  "xAnjNEbb<->E5KlMqmJ": 0.626,
+  "xAnjNEbb<->9qRlMaOK": 0.744,
+  "88Ll0ng7<->E5KQ88Qm": 0.526,
+  "88Ll0ng7<->E5KlMqmJ": 0.961,
+  "88Ll0ng7<->9qRlMaOK": 0.901,
+  "E5KQ88Qm<->E5KlMqmJ": 0.732,
+  "E5KQ88Qm<->9qRlMaOK": 0.765,
+  "E5KlMqmJ<->9qRlMaOK": 0.968
+ },
+ "submission_strategy_honest": "Step 1: submit xAnjNEbb (Sk_h720, SH 1.80, low DD 0.074, mutual 0.407 with next).  Step 2: submit 88Ll0ng7 (Mix_70_30, SH 1.55, lowest corr 0.258 vs submitted pool). Step 3-5: try E5KQ88Qm/E5KlMqmJ/9qRlMaOK one at a time, knowing 2-3 will likely be rejected by SELF_CORRELATION since mutual corr to xAnjNEbb or 88Ll0ng7 exceeds 0.7. Realistic gain: +2 alphas in pool, possibly +1 more via swap.",
+ "alphas": [
+  {
+   "alpha_id": "xAnjNEbb",
+   "note": "Cluster-A: Sk_h720 single IV skew. CORE recommended. Mutual 0.407 with 88Ll0ng7.",
+   "sharpe": 1.8,
+   "fitness": 2.03,
+   "turnover": 0.122,
+   "drawdown": 0.074,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "reverse(zscore(ts_decay_linear(zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5))), 10)))"
+  },
+  {
+   "alpha_id": "88Ll0ng7",
+   "note": "Cluster-B: Mix_70term_30skew. Lowest corr (0.258) vs submitted pool. CORE recommended.",
+   "sharpe": 1.55,
+   "fitness": 1.45,
+   "turnover": 0.1164,
+   "drawdown": 0.1075,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.8, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.2, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  },
+  {
+   "alpha_id": "E5KQ88Qm",
+   "note": "Cluster-A backup: Sk_h270, highest SH 2.08. Mutual 0.903 vs xAnjNEbb \u2014 only one can submit.",
+   "sharpe": 2.08,
+   "fitness": 2.69,
+   "turnover": 0.1224,
+   "drawdown": 0.1098,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(reverse(zscore(subtract(ts_backfill(implied_volatility_put_270, 5), ts_backfill(implied_volatility_call_270, 5)))), 10))"
+  },
+  {
+   "alpha_id": "E5KlMqmJ",
+   "note": "Cluster-B backup: TermSk_60_40 SH 1.88. Mutual 0.961 vs 88Ll0ng7 \u2014 only one can submit.",
+   "sharpe": 1.88,
+   "fitness": 2.03,
+   "turnover": 0.1147,
+   "drawdown": 0.1039,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 10,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08
+   },
+   "expr": "zscore(ts_decay_linear(add(multiply(0.6, zscore(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))))), multiply(0.4, zscore(reverse(add(add(zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(subtract(ts_backfill(implied_volatility_put_360, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(subtract(ts_backfill(implied_volatility_put_720, 5), ts_backfill(implied_volatility_call_720, 5)))))))), 10))"
+  },
+  {
+   "alpha_id": "9qRlMaOK",
+   "note": "Cluster-A/B hybrid: Sk1080+Ext SH 1.91. Mutual >0.74 vs all \u2014 submission long shot.",
+   "sharpe": 1.91,
+   "fitness": 2.0,
+   "turnover": 0.1322,
+   "drawdown": 0.098,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.02
+   },
+   "expr": "zscore(ts_decay_linear(add(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))), reverse(zscore(subtract(ts_backfill(implied_volatility_put_1080, 5), ts_backfill(implied_volatility_call_1080, 5))))), 10))"
+  }
+ ]
+}

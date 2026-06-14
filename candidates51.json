@@ -1,0 +1,122 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(divide(ts_backfill(ebit, 60), ts_backfill(assets, 60)), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(divide(ts_backfill(cashflow, 60), ts_backfill(debt, 60)), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60)), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(divide(ts_backfill(ebitda, 60), ts_backfill(fnd6_mfma2_revt, 60)), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(multiply(-1, divide(subtract(ts_backfill(ebit, 60), ts_backfill(cashflow, 60)), ts_backfill(assets, 60))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(multiply(-1, divide(ts_backfill(debt, 60), ts_backfill(equity, 60))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(divide(ts_backfill(cash_st, 60), ts_backfill(assets, 60)), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(zscore(anl4_adxqfv110_numest), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(zscore(anl4_adxqfv110_mean), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(group_rank(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), subindustry), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(group_neutralize(subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10))), subindustry), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(add(reverse(zscore(winsorize(zscore(ts_backfill(rp_ess_mna, 10)), std=4))), zscore(winsorize(zscore(ts_backfill(rp_css_insider, 10)), std=4))), subtract(subtract(zscore(ts_backfill(fscore_value, 10)), zscore(ts_backfill(fscore_growth, 10))), zscore(ts_backfill(fscore_momentum, 10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

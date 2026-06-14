@@ -1,0 +1,94 @@
+{
+ "BEST": "XgKxvgg1",
+ "description": "DRC family champion - DRC[90]+DRLT[90]/Assets + Xrent/Sales, tr=0.005",
+ "alphas": [
+  {
+   "alpha_id": "XgKxvgg1",
+   "note": "BEST overall: DRC+Xrent SH 1.52 FIT 1.21 DD 0.074",
+   "sharpe": 1.52,
+   "fitness": 1.21,
+   "turnover": 0.0147,
+   "drawdown": 0.0742,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(divide(ts_backfill(fnd6_xrent, 90), ts_backfill(assets, 90))), subindustry), add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry))), 10))"
+  },
+  {
+   "alpha_id": "QPQAOpeX",
+   "note": "Alt: DRC tr=0.001 SH 1.52 FIT 1.01 DD 0.055 lowest-DD",
+   "sharpe": 1.52,
+   "fitness": 1.01,
+   "turnover": 0.0136,
+   "drawdown": 0.0548,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.001
+   },
+   "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), 10))"
+  },
+  {
+   "alpha_id": "1Yg0XOZJ",
+   "note": "DRC+DRLT+LoPay SH 1.48 FIT 1.13",
+   "sharpe": 1.48,
+   "fitness": 1.13,
+   "turnover": 0.0148,
+   "drawdown": 0.0666,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), group_neutralize(reverse(zscore(divide(ts_backfill(cashflow_dividends, 90), ts_backfill(cashflow, 90)))), subindustry)), 10))"
+  },
+  {
+   "alpha_id": "vRmPLmPA",
+   "note": "Pure DRC SH 1.46 FIT 1.12 DD 0.078",
+   "sharpe": 1.46,
+   "fitness": 1.12,
+   "turnover": 0.0138,
+   "drawdown": 0.078,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), 10))"
+  }
+ ],
+ "mutual_correlation_within_family": {
+  "XgKxvgg1<->vRmPLmPA": 0.812,
+  "XgKxvgg1<->QPQAOpeX": 0.704,
+  "XgKxvgg1<->1Yg0XOZJ": 0.812,
+  "QPQAOpeX<->vRmPLmPA": 0.903,
+  "1Yg0XOZJ<->vRmPLmPA": 0.983
+ },
+ "corr_vs_submitted_pool": {
+  "XgKxvgg1": {
+   "CFO": 0.061,
+   "ATO": 0.33,
+   "APCR": 0.098,
+   "Lev": 0.022,
+   "max": 0.33
+  },
+  "QPQAOpeX": {
+   "CFO": 0.046,
+   "ATO": 0.07,
+   "APCR": 0.076,
+   "Lev": -0.023,
+   "max": 0.076
+  }
+ },
+ "recommendation": "XgKxvgg1 + QPQAOpeX MAY both pass self-corr (mutual 0.704 borderline) - try submitting both. Else submit XgKxvgg1 alone."
+}

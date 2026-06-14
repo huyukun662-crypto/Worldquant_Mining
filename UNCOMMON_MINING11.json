@@ -1,0 +1,62 @@
+[
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(add(zscore(subtract(ts_backfill(implied_volatility_mean_30,5), historical_volatility_30)), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_30, 5), 60))), 15)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "j21ZwM79",
+    "sharpe": 0.21,
+    "fitness": 0.08,
+    "turnover": 0.1497,
+    "returns": 0.0203,
+    "drawdown": 0.238,
+    "margin": 0.000271,
+    "longCount": 1420,
+    "shortCount": 1384,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "FAIL",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  },
+  {
+    "ok": true,
+    "expr": "reverse(zscore(ts_decay_linear(add(zscore(ts_backfill(implied_volatility_mean_skew_60, 5)), zscore(ts_regression(returns, ts_backfill(implied_volatility_mean_60, 5), 60))), 15)))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 4,
+      "neutralization": "SUBINDUSTRY",
+      "truncation": 0.08
+    },
+    "alpha_id": "pw86zkaX",
+    "sharpe": -0.44,
+    "fitness": -0.2,
+    "turnover": 0.1849,
+    "returns": -0.0389,
+    "drawdown": 0.4048,
+    "margin": -0.000421,
+    "longCount": 1320,
+    "shortCount": 1409,
+    "checks": {
+      "LOW_SHARPE": "FAIL",
+      "LOW_FITNESS": "FAIL",
+      "LOW_TURNOVER": "PASS",
+      "HIGH_TURNOVER": "PASS",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+      "SELF_CORRELATION": "PENDING",
+      "MATCHES_COMPETITION": "PASS"
+    }
+  }
+]

@@ -1,0 +1,102 @@
+[
+ {
+  "expr": "zscore(ts_decay_linear(reverse(add(add(zscore(divide(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_put_180, 5))), zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_put_360, 5)))), zscore(divide(ts_backfill(implied_volatility_put_90, 5), ts_backfill(implied_volatility_put_720, 5))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(add(add(zscore(divide(ts_backfill(implied_volatility_call_30, 5), ts_backfill(implied_volatility_call_180, 5))), zscore(divide(ts_backfill(implied_volatility_call_60, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(divide(ts_backfill(implied_volatility_call_90, 5), ts_backfill(implied_volatility_call_720, 5))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(add(add(add(zscore(divide(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_180, 5))), zscore(divide(ts_backfill(implied_volatility_mean_60, 5), ts_backfill(implied_volatility_mean_360, 5)))), zscore(divide(ts_backfill(implied_volatility_mean_90, 5), ts_backfill(implied_volatility_mean_720, 5)))), zscore(ts_regression(returns, zscore(divide(ts_backfill(implied_volatility_mean_60, 5), ts_backfill(implied_volatility_mean_360, 5))), 60)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(zscore(divide(ts_backfill(implied_volatility_mean_10, 5), ts_backfill(implied_volatility_mean_1080, 5)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(add(add(add(zscore(divide(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_put_360, 5))), zscore(divide(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_put_720, 5)))), zscore(divide(ts_backfill(implied_volatility_call_30, 5), ts_backfill(implied_volatility_call_360, 5)))), zscore(divide(ts_backfill(implied_volatility_call_60, 5), ts_backfill(implied_volatility_call_720, 5))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(add(add(add(zscore(divide(ts_backfill(implied_volatility_mean_20, 5), ts_backfill(implied_volatility_mean_180, 5))), zscore(divide(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_360, 5)))), zscore(divide(ts_backfill(implied_volatility_mean_60, 5), ts_backfill(implied_volatility_mean_720, 5)))), zscore(divide(ts_backfill(implied_volatility_mean_90, 5), ts_backfill(implied_volatility_mean_1080, 5))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(zscore(subtract(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_360, 5)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(add(reverse(zscore(divide(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_180, 5)))), subtract(zscore(ts_backfill(fscore_value,10)), zscore(ts_backfill(fscore_growth,10)))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(divide(zscore(subtract(ts_backfill(implied_volatility_put_30, 5), ts_backfill(implied_volatility_call_30, 5))), zscore(subtract(ts_backfill(implied_volatility_put_180, 5), ts_backfill(implied_volatility_call_180, 5))))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 10,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(reverse(add(add(zscore(divide(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_180, 5))), zscore(divide(ts_backfill(implied_volatility_mean_60, 5), ts_backfill(implied_volatility_mean_360, 5)))), zscore(divide(ts_backfill(implied_volatility_mean_90, 5), ts_backfill(implied_volatility_mean_720, 5))))), 10))",
+  "settings": {
+   "universe": "TOP500",
+   "delay": 1,
+   "decay": 15,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

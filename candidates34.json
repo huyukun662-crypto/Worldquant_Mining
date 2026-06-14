@@ -1,0 +1,42 @@
+[
+ {
+  "expr": "reverse(zscore(ts_decay_linear(zscore(divide(ts_backfill(implied_volatility_mean_30, 5), ts_backfill(implied_volatility_mean_180, 5))), 10)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "reverse(zscore(ts_decay_linear(zscore(ts_backfill(historical_volatility_60, 5)), 10)))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(zscore(subtract(ts_backfill(implied_volatility_put_60, 5), ts_backfill(implied_volatility_call_60, 5))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ },
+ {
+  "expr": "zscore(ts_decay_linear(zscore(divide(ts_backfill(parkinson_volatility_30, 5), ts_backfill(implied_volatility_mean_30, 5))), 10))",
+  "settings": {
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 6,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08
+  }
+ }
+]

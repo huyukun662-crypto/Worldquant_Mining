@@ -1,0 +1,122 @@
+[
+  {
+    "expr": "zscore(ts_decay_linear(trade_when(abs(group_neutralize(reverse(zscore(ts_backfill(earnings_certainty_rank_derivative, 10))), subindustry)), add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), -1), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(trade_when(abs(group_neutralize(reverse(zscore(ts_backfill(analyst_revision_rank_derivative, 10))), subindustry)), add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), -1), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(trade_when(abs(group_neutralize(reverse(zscore(ts_backfill(growth_potential_rank_derivative, 10))), subindustry)), add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), -1), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), multiply(0.3, group_neutralize(zscore(last_diff_value(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90)), 90)), subindustry))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), multiply(0.3, group_neutralize(reverse(zscore(divide(ts_backfill(fnd6_acqgdwl, 90), ts_backfill(assets, 90)))), subindustry))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), multiply(0.3, group_neutralize(reverse(zscore(divide(ts_backfill(fnd6_xrent, 90), ts_backfill(fnd6_mfma2_revt, 90)))), subindustry))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(zscore(last_diff_value(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90)), 90)), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(group_neutralize(ts_quantile(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90)), 252), subindustry), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(signed_power(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), 1.1), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), multiply(0.5, group_neutralize(ts_quantile(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90)), 252), subindustry))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), multiply(0.2, group_neutralize(zscore(last_diff_value(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90)), 90)), subindustry))), multiply(0.2, group_neutralize(ts_quantile(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90)), 252), subindustry))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  },
+  {
+    "expr": "zscore(ts_decay_linear(add(add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 90), ts_backfill(assets, 90))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 90), ts_backfill(assets, 90))), subindustry)), multiply(0.5, group_neutralize(reverse(zscore(ts_backfill(earnings_certainty_rank_derivative, 10))), subindustry))), 10))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 6,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.005
+    }
+  }
+]
