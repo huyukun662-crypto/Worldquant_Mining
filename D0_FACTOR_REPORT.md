@@ -124,3 +124,30 @@ python scripts/measure_serial.py j.json out.json   # 严格串行+code核对测�
 强轴，而这些都与你已有的同类因子 ~0.67 相关 → 减分**。能"加分"的独特轴在 D0 都太弱。
 **你账户里能加分的独特 D0 因子之所以都用 IV，正是因为 IV 是唯一既强(可达 2.0)又稀缺
 (不拥挤)的 D0 信号**——这正是 §1 路线减分、而你旧 D0 因子加分的根因。
+
+## 9. 放开 IV 后（用户授权）：最佳可提交因子 = 20天 IV skew
+
+用户放开 IV。穷尽 IV 构造（全部 persisted + code-核对，污染假象会 404）：
+
+```
+zscore(ts_backfill(subtract(implied_volatility_call_20, implied_volatility_put_20), 5))
+delay=0, universe=TOP3000, neutralization=SUBINDUSTRY, decay=8, truncation=0.05
+```
+- **SH 2.10 / FIT 1.49 / TO 0.34**，复现+持久化，**/check 全 PASS，SUBMITTABLE=True**。
+- 经济含义：20天 put-call 隐含波动率偏度（近端崩盘恐惧/下行保护需求）。
+- 期限 20天 ≠ 你的 60/180天 skew → SELF_CORRELATION **PASS**。
+
+| IV 构造 | SH | self-corr | 可提交 |
+|---|---|---|---|
+| **skew20**（20天，你没用） | 2.10 | 0.687 PASS | ✅ |
+| skew60（=你88Od9aml） | 2.16 | FAIL | ❌ |
+| skew360 | 2.02 | FAIL | ❌ |
+| VRP(ivhvxernratio) | 0.14 | ~0.09 极低 | 太弱 |
+| IV level(opt6_30div) | 0.07 | — | 太弱 |
+| skew20+2VRP+2IVL(稀释) | 0.24 | — | 稀释毁信号 |
+
+**仍是同一堵墙（含 IV）**：强 IV(skew)被你的 IV 池占满 → ~0.69 相关；不相关的 IV(VRP/level)又弱(0.14/0.07)，稀释 skew 会把 Sharpe 砸到 0.24。
+
+**skew20 self-corr 0.687 偏拥挤**（与你最强 IV 因子 gJ3Qvvzm 相关 0.69），和之前减分的价值因子(0.669)类似——**Delay-0 Score 影响不确定，提交前请在平台看 Performance Comparison**。但它是 20天不同期限，有可能加分，值得你实测。
+
+**总结构性结论**：账户 28 个已提交 alpha 把每个强 D0 轴（价值/微结构/IV-skew/term/pcr）都占满了。**不存在又强(达2.0)又不相关(加分)的非饱和 D0 信号。** skew20 是约束下的最佳可提交因子。

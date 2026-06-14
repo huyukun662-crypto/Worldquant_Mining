@@ -1,37 +1,29 @@
 {
-  "_summary": "SUBMITTABLE D0 factor found via multi-axis orthogonal composition. Code-verified (regular.code == submitted expression) and confirmed by isolated clean single-sim runs (NOT submitted; pre-submit /check only). The 2.0 D0 bar is reachable for a non-IV factor only by combining several orthogonal economic axes (the 'simple' single-signal ceiling is ~1.2).",
-  "champion": {
-    "expr": "add(add(add(add(add(zscore(group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)),multiply(2,zscore(ts_zscore(divide(volume,sharesout),20)))),multiply(1.5,zscore(-rank(returns)))),zscore(-rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20)))),zscore(-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5)))),zscore(-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))))",
+  "_summary": "User allowed IV. Best SUBMITTABLE D0 factor: 20-day put-call IV skew. Reproduced (alpha j2gKw6Zk re-ran to identical metrics) and PERSISTED (HTTP 200 on re-fetch). All numbers are from persisted, code-verified alphas (the contamination-inflated phantoms 404 on re-fetch).",
+  "champion_submittable": {
+    "tag": "D0_IV_SKEW20",
+    "expr": "zscore(ts_backfill(subtract(implied_volatility_call_20,implied_volatility_put_20),5))",
     "settings": {"universe": "TOP3000", "delay": 0, "decay": 8, "neutralization": "SUBINDUSTRY", "truncation": 0.05, "pasteurization": "ON"},
+    "alpha_id": "j2gKw6Zk",
     "code_match": true,
-    "verified_alphas": ["xAnEvLVp (decay8)", "qMXw7z6E (decay10)"],
-    "sharpe": 2.04,
-    "fitness": 1.44,
-    "turnover": 0.311,
-    "returns": 0.1545,
-    "self_corr_max": 0.669,
-    "checks": [
-      {"name": "LOW_SHARPE", "result": "PASS", "limit": 2.0, "value": 2.04},
-      {"name": "LOW_FITNESS", "result": "PASS", "limit": 1.3, "value": 1.44},
-      {"name": "LOW_TURNOVER", "result": "PASS"},
-      {"name": "HIGH_TURNOVER", "result": "PASS", "limit": 0.7, "value": 0.311},
-      {"name": "CONCENTRATED_WEIGHT", "result": "PASS"},
-      {"name": "LOW_SUB_UNIVERSE_SHARPE", "result": "PASS"},
-      {"name": "SELF_CORRELATION", "result": "PASS", "limit": 0.7, "value": 0.669},
-      {"name": "MATCHES_COMPETITION", "result": "PASS"}
-    ],
+    "persisted": true,
+    "reproduced": true,
+    "sharpe": 2.10,
+    "fitness": 1.49,
+    "turnover": 0.34,
+    "self_corr_max": 0.6866,
+    "self_corr_top": [["gJ3Qvvzm", 0.6866], ["vRe1Ybxv", 0.6141], ["A1nZPjeR", 0.5811], ["akN9pwQw", 0.5585]],
+    "checks": "all PASS (SELF_CORRELATION=PASS at 0.6866 < 0.70)",
     "submittable": true,
-    "alternate_decay10": {"sharpe": 2.00, "fitness": 1.50, "turnover": 0.269, "submittable": true},
-    "margin_note": "Passes all checks. Margins are thin on Sharpe (2.04 vs 2.0) and self-correlation (0.669 vs 0.70, driven by the value axis overlapping the account's ebit/cap alpha blNEelXq). Run-to-run WQ variance ~+/-0.03 Sharpe; reproduce with scripts/verify_champion.py before any real submit."
+    "economic_meaning": "20-day put-call implied-volatility skew (near-term crash-fear / downside-protection demand). Different tenor from the account's 60/180-day skew alphas.",
+    "score_caveat": "self-corr 0.6866 is borderline (top correlation 0.69 with the account's strongest IV alpha gJ3Qvvzm). Like the value factor (0.669) that lost -638 on Performance Comparison, the Delay-0 Score impact is uncertain. CHECK the Performance Comparison before submitting."
   },
-  "axes": [
-    {"name": "value (industry-neutral EBITDA yield)", "expr": "group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)", "weight": 1, "solo_sharpe": 0.82},
-    {"name": "abnormal turnover continuation", "expr": "ts_zscore(divide(volume,sharesout),20)", "weight": 2, "solo_sharpe": 1.18},
-    {"name": "short-term reversal", "expr": "-rank(returns)", "weight": 1.5, "solo_sharpe": "noise (diversifier)"},
-    {"name": "Amihud illiquidity premium", "expr": "-rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20))", "weight": 1, "solo_sharpe": 0.67},
-    {"name": "buy-sell pressure reversal (CLV)", "expr": "-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5))", "weight": 1, "solo_sharpe": 0.61},
-    {"name": "volume-weighted reversal", "expr": "-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))", "weight": 1, "solo_sharpe": 0.86}
+  "other_iv_constructions_code_verified": [
+    {"tag": "skew60", "expr": "...call_60 - put_60", "sharpe": 2.16, "self_corr": "FAIL", "note": "same tenor as account alpha 88Od9aml -> too correlated"},
+    {"tag": "skew360", "expr": "...call_360 - put_360", "sharpe": 2.02, "self_corr": "FAIL"},
+    {"tag": "vrp_ratio (opt6_ivhvxernratio)", "sharpe": 0.14, "self_corr": "~0.09 (very low)", "note": "UNCORRELATED but too WEAK to reach 2.0"},
+    {"tag": "iv_level (opt6_30div)", "sharpe": 0.07, "note": "weak"},
+    {"tag": "skew20 + 2*VRP + 2*IVL (dilution)", "sharpe": 0.24, "note": "diluting skew with weak uncorrelated IV destroys Sharpe"}
   ],
-  "single_signal_ceiling_for_reference": {"best_microstructure": 1.18, "best_fundamental": 0.82},
-  "d0_submission_thresholds": {"LOW_SHARPE": 2.0, "LOW_FITNESS": 1.3, "SELF_CORRELATION": "<0.7", "HIGH_TURNOVER": "<0.7"}
+  "structural_conclusion": "The account's 28 ACTIVE alphas saturate every STRONG D0 economic axis (value, microstructure, IV-skew/term/pcr). Any strong new D0 factor correlates ~0.6-0.7 with the pool (borderline -> uncertain/negative Delay-0 Score); every uncorrelated signal (VRP, IV-level, quality, news, analyst, social media, relationship) is too weak (<0.8) to reach the Sharpe-2.0 D0 bar. There is no strong-AND-uncorrelated non-saturated D0 signal left. skew20 (different tenor, self-corr 0.69) is the best submittable option but its score impact must be checked on the platform."
 }
