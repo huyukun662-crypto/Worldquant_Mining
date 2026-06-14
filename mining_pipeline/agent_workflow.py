@@ -399,6 +399,69 @@ class HypothesisAgent:
               win_lo=5, win_hi=60, klass="evt"),
         ]
 
+    def archetypes_orthogonal(self) -> list[Archetype]:
+        """v5 set - NON-LEVERAGE price/volume reversal & momentum signals that
+        DO clear the submission gates, but at MODERATE turnover (~0.2-0.4).
+        Use this when the leverage family has already been submitted: these are
+        orthogonal to it by construction, so they pass SELF_CORRELATION against
+        a leverage-heavy pool. Run with a relaxed --turnover-cap (e.g. 0.40);
+        the objective still prefers the lowest turnover / drawdown achievable.
+        """
+        A = Archetype
+        return [
+            # ---- reversal (the v1 vol_scaled_reversal reached SH 1.35) ----
+            A("vol_scaled_reversal", lambda r, f:
+              "rank(divide(ts_delta(close, 5), ts_std_dev(returns, 20)))",
+              win_lo=2, win_hi=15, klass="pv"),
+            A("short_reversal", lambda r, f:
+              f"rank(ts_delta({r.choice(('close','vwap'))}, 5))",
+              win_lo=2, win_hi=12, klass="pv"),
+            A("zscore_reversal", lambda r, f:
+              f"rank(ts_zscore({r.choice(('close','vwap'))}, 10))",
+              win_lo=3, win_hi=25, klass="pv"),
+            A("returns_reversal", lambda r, f:
+              "rank(ts_mean(returns, 5))", win_lo=2, win_hi=15, klass="pv"),
+            # ---- volume / liquidity dynamics ----
+            A("volume_shock", lambda r, f:
+              "rank(divide(volume, ts_mean(volume, 20)))",
+              win_lo=5, win_hi=40, klass="pv"),
+            A("dollar_volume_shock", lambda r, f:
+              "rank(divide(multiply(close, volume), ts_mean(multiply(close, volume), 20)))",
+              win_lo=5, win_hi=40, klass="pv"),
+            # ---- intraday / range ----
+            A("intraday_move", lambda r, f:
+              "rank(divide(subtract(close, open), open))", klass="pv"),
+            A("high_low_range", lambda r, f:
+              "rank(divide(subtract(high, low), close))", klass="pv"),
+            A("close_loc_in_range", lambda r, f:
+              "rank(divide(subtract(close, low), subtract(high, low)))", klass="pv"),
+            # ---- momentum (longer horizon, orthogonal to reversal) ----
+            A("momentum_long", lambda r, f:
+              "rank(ts_delta(close, 120))", win_lo=60, win_hi=252, klass="pv"),
+            A("vol_scaled_momentum", lambda r, f:
+              "rank(divide(ts_delta(close, 120), ts_std_dev(returns, 60)))",
+              win_lo=60, win_hi=252, klass="pv"),
+            # ---- reversal x volume / x lowvol combos ----
+            A("reversal_x_volume", lambda r, f:
+              "add(zscore(rank(divide(ts_delta(close, 5), ts_std_dev(returns, 20)))), "
+              "zscore(rank(divide(volume, ts_mean(volume, 20)))))",
+              win_lo=5, win_hi=40, klass="mix"),
+            A("reversal_plus_lowvol", lambda r, f:
+              "add(zscore(rank(divide(ts_delta(close, 5), ts_std_dev(returns, 20)))), "
+              "zscore(reverse(rank(ts_std_dev(returns, 60)))))",
+              win_lo=5, win_hi=60, klass="mix"),
+            # ---- a few orthogonal fundamentals/events that scored best in
+            #      v3/v4 (asset_turnover 0.89, margin_trend, net_target) for
+            #      diversity within the non-leverage sleeve ----
+            A("asset_turnover", lambda r, f:
+              "rank(divide(sales, assets))", klass="fund"),
+            A("margin_trend", lambda r, f:
+              "rank(ts_delta(divide(income, sales), 90))",
+              win_lo=40, win_hi=180, klass="fund"),
+            A("net_target_pct", lambda r, f:
+              "rank(snt1_d1_nettargetpercent)", klass="evt"),
+        ]
+
 
 # ---------------------------------------------------------------------------
 # Agent 3: GeneratorAgent - instantiate archetypes into a diverse pool
@@ -421,6 +484,7 @@ class GeneratorAgent:
             "core":    hypotheses.archetypes,
             "diverse": hypotheses.archetypes_diverse,
             "events":  hypotheses.archetypes_events,
+            "orthogonal": hypotheses.archetypes_orthogonal,
         }[source]()
 
     def generate(self, n: int, seed: int) -> list[PoolItem]:
@@ -706,11 +770,17 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--verify-fields", action="store_true",
                     help="verify curated fields against the account first")
-    ap.add_argument("--source", choices=["core", "diverse", "events"],
+    ap.add_argument("--source",
+                    choices=["core", "diverse", "events", "orthogonal"],
                     default="core",
                     help="archetype set: core (v2, leverage+pv), diverse (v3, "
                          "non-leverage fundamentals/pv), events (v4, "
-                         "analyst/news/sentiment - orthogonal to leverage)")
+                         "analyst/news/sentiment), orthogonal (v5, non-leverage "
+                         "reversal/momentum/volume - clears gates at moderate TO)")
+    ap.add_argument("--turnover-cap", type=float, default=TURNOVER_CEIL,
+                    help=f"max turnover for submittable + objective hard cap "
+                         f"(default {TURNOVER_CEIL}; relax to ~0.40 for the "
+                         f"orthogonal reversal/momentum sleeve)")
     ap.add_argument("--diverse", action="store_true",
                     help="alias for --source diverse")
     ap.add_argument("--out", type=str, default="WQ_AGENT_REPORT.json")
@@ -718,11 +788,17 @@ def main():
                     default="WQ_SUBMITTABLE_CANDIDATES.json")
     args = ap.parse_args()
 
+    # Allow relaxing the turnover cap (read by _score's hard penalty and by
+    # ValidatorAgent.select via the module global). Needed for the orthogonal
+    # reversal/momentum sleeve, which only clears fitness at moderate turnover.
+    globals()["TURNOVER_CEIL"] = args.turnover_cap
+
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
     if not cm.authenticate(auto_load=True, auto_prompt=False):
         log.error("authentication failed"); return 2
     log.info(f"[Agent0] authenticated as {cm.credentials.username}")
+    log.info(f"[config] turnover cap = {TURNOVER_CEIL}")
 
     fields = FieldAgent()
     if args.verify_fields:
