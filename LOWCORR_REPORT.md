@@ -73,3 +73,41 @@ nanHandling=OFF · instrumentType=EQUITY · maxTrade=OFF · testPeriod=P0Y0M`.
 - `WQ_LOWCORR_CANDIDATES.json` / `_all.json` — PnL-correlation selection output
 - `WQ_AGENT_REPORT_v{2,3,4}.json` — every trial with full `checks`
 - `scripts/lowcorr_select.py` — PnL-correlation basket selector
+
+## v5 update — orthogonal reversal sleeve (turnover cap relaxed to 0.40)
+
+After the leverage family was submitted, new factors must avoid leverage
+(else SELF_CORRELATION rejects them). v5 mined non-leverage reversal /
+momentum / volume signals with `--turnover-cap 0.40`.
+
+Result: 45 trials, **0 fully-submittable**, but the best near-miss is a
+genuinely orthogonal, high-Sharpe, low-drawdown signal:
+
+- `kqK6ZoXK` — `reverse(rank(divide(subtract(close, low), subtract(high, low))))`
+  (close-location-in-range reversal)
+  - SH 1.57 · TO 0.427 · FIT 0.82 · DD 0.064
+  - USA · TOP3000 · delay=1 · (settings in WQ_AGENT_REPORT_v5.json)
+  - Passes every IS check EXCEPT **LOW_FITNESS** (0.82 < 1.0). Fails only
+    because turnover (0.427) sits in the fitness denominator
+    (`fitness = sharpe·√(|ret|/max(TO,0.125))`).
+
+PnL correlation vs the submitted leverage family (max over the 7):
+
+| candidate | max \|corr\| vs leverage | mean | SH | DD |
+|---|---:|---:|---:|---:|
+| `kqK6ZoXK` | 0.28 | 0.21 | 1.57 | 0.064 |
+| `A138NAqd` | 0.26 | 0.19 | 1.20 | 0.088 |
+| `zqWn3LpX` | 0.24 | 0.16 | 1.40 | 0.064 |
+
+→ These reversals ARE orthogonal to leverage (|corr| ≤ 0.28). They are one
+shared signal among themselves (0.83-0.97). The blocker is purely the
+fitness gate, which the high-turnover reversal cannot clear.
+
+### Final assessment
+- If the target competition treats **LOW_FITNESS as a hard submit gate**:
+  no orthogonal submittable factor exists on this universe — leverage is the
+  only family that clears fitness ≥ 1.0 (its ultra-low turnover hits the
+  0.125 fitness-floor). Best orthogonal *near-miss* = `kqK6ZoXK`.
+- If LOW_FITNESS is **not** a hard gate (only LOW_SHARPE + turnover +
+  self-correlation bind): `kqK6ZoXK` is a strong submittable factor —
+  SH 1.57, DD 0.064, and |corr| 0.28 to the submitted leverage pool.
