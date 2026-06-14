@@ -192,3 +192,28 @@ SH 2.21 / FIT 1.69 / TO 0.34 / self-corr 0.672 / SUBMITTABLE=True
    保持低 self-corr → 加分。最现实。
 2. **换 region**(CHN/EUR/ASI 等)：账户在该区因子少→不拥挤。
 3. **升级账户层级**：解锁更多数据集(model 3296字段等)，找新强轴。
+
+## 12. 按 Value-score 模块找（用户截图）：Model 已锁定，根因是账户层级
+
+用户提供各数据类别的金字塔 **Value score**（高=加分多）：Model 7 / Sentiment 7 /
+Option 6 / Earnings 5 / Analyst 4 / Fundamental 4 / News 3 / Price Volume 2 /
+Social Media 2。**印证**：之前减分的因子都在低分类别（微结构=PV 2、价值=Fundamental 4）。
+
+按高分类别逐个 code-核对（D0, INDUSTRY）：
+
+| 高分类别 | 可访问? | 最强 D0 真实 SH | 结论 |
+|---|---|---|---|
+| **Model (7)** | ❌ `mdl177_*` = "unknown variable"(d0&d1) | — | **账户层级已锁定**（旧 alpha 用过但现不可用） |
+| Sentiment (7) | ✅ scl12/snt | 0.34 / -0.31 | 弱 |
+| Option (6) | ✅ opt6/opt8 | skew 2.1 | 强但拥挤(0.69)→减分 |
+| Earnings (5) | ✅ earnings4(vec_avg) | ern_move/vrp ~-0.2 | 弱 |
+
+**根因**：能加分最多的 **Model 类别（3434字段）对本账户层级锁定**（API 报 unknown
+variable，d0/d1 皆然），UI 能看到但模拟不可用——CLAUDE.md 记的"7,831 UI vs 6,038
+API field ceiling，gap 在更高层级"。可访问的高分类别要么弱(Sentiment/Earnings)、要么
+强但拥挤(Option-skew)。
+
+**最终最终结论**：用本账户**当前可访问**的数据，"D0 + Sharpe>2.0 + 不相关(加分)"
+**无解**。出路：①**解锁 Model 类别**（升级账户层级）= 真正的加分钥匙；②delay=1（门槛
+1.25，不相关弱信号 VRP/Sentiment 可达标加分）；③接受最佳但可能微减分的 D0 因子
+(IV skew INDUSTRY, 已在 PR)。
