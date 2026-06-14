@@ -40,3 +40,43 @@ fitness 4.65 远高于池子却仍减分 → 排除"质量稀释",指向**对全
 2. **转 delay-1** —— 解锁 378 分析师 + 58 情绪等未拥挤数据,且 regression_neut/
    prod-corr 往往可用;独立 delay-1 评分桶。
 3. **承认饱和,停止再加 delay-0。**
+
+---
+
+## 补充:alphaCount 拥挤代理 + 高价值模块实测(用户截图方向)
+
+WQ 数据卡的 "Value score"(高=信息量大/不拥挤)指向 Model(7)、Sentiment(7)。
+实测 delay-0:
+
+### 1. Model / Sentiment 在 delay-0 根本不存在
+delay-0 TOP3000 只有 13 个 dataset、7 个类别:Analyst, Earnings, Fundamental,
+News, Option, Price Volume, Social Media。**Model 和 Sentiment 是 delay-1 专属。**
+
+### 2. 每个字段带 alphaCount —— 这就是本地可测的"拥挤代理"
+| 字段/数据集 | alphaCount(拥挤) | 备注 |
+|---|---|---|
+| close / returns / volume (pv1) | 5095 / 3040 / 2978 | 挖烂 |
+| fundamental6 | 10,624 | 挖烂 |
+| **option8 波动率(用户IV-skew在此)** | **5,088** | 用户池子所在,拥挤 |
+| implied_volatility_call_180 / put_180 | 433 / 352 | 中度拥挤 |
+| **option6 预测波动率(131字段)** | **≈0** | 几乎无人用 |
+| pv13 关系数据 | 18-105 | 冷门 |
+
+→ 解释了减分:用户池子在 option8(5088 alphas)的拥挤偏度上,再加相关因子边际为负。
+
+### 3. 冷门高价值数据实测:全部无 edge
+- **option6 预测波动率(alphaCount≈0)**:vol-of-vol / VRP / 期限结构 / skew曲率 /
+  gamma成本 等 10 个简单构造 → |fitness| < 0.4。
+- **option6 × 偏度组合**(skew/预测波动、skew|高vol-of-vol、skew⊥vol):fitness 从
+  raw skew 的 4.65 **暴跌到 1.1-1.75**,全部跌破 2.5。冷门字段稀释 edge。
+- **pv13 供应链动量**(竞争对手/客户/合作方收益,alphaCount 18-105):|fitness|<0.4。
+
+## 终极结论(铁证)
+**在 delay-0 此账户层级,edge 与拥挤完全混杂、不可分离:**
+- 唯一有 edge 的信号 = call-put 偏度(option8,alphaCount 5088,拥挤)。
+- 每个不拥挤字段(option6 alphaCount≈0、pv13 18-105)都**没有 edge**。
+- 任何让偏度去相关的改造都把 fitness 砍到 2.5 以下。
+
+→ 想"加分"需要"高 edge ∧ 低拥挤"同时成立,而这在 delay-0 此层级**不可能**。
+**它只可能在 delay-1 成立**:那里 Model(value 7)/Sentiment(value 7)等高价值
+数据存在,且 alphaCount 代理可同样用于预筛低拥挤字段。delay-1 是唯一出路。
