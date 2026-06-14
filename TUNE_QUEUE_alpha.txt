@@ -1,0 +1,348 @@
+TUNE_QUEUE Alpha 分类结果
+================================================================================
+生成时间: 2026-06-13 15:15:58
+Alpha 总数: 41
+加分计算: IQC2026S2 Performance Comparison 的 score.after - score.before
+筛选规则: 仅当 SELF_CORRELATION=FAIL 且其余检查没有 FAIL 时，归入“仅 Self-Correlation 不满足”类别。
+注意: ERROR/PENDING 不按 FAIL 处理。当前仅有 A1OA7NNY=ERROR，按加分区间归类并保留状态。
+
+一、仅 Self-Correlation 不满足提交条件 (5 个)
+================================================================================
+
+Alpha ID: xAmpqQpw
+Performance Comparison: 16948 -> 17030，加分 82
+Self-Correlation 检查: FAIL
+其他 FAIL: 无
+设置: USA/TOP3000, Delay=1, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(rank(rank(fnd6_fopo / debt_lt)) * rank(group_zscore(ts_mean(winsorize(log(divide(debt_lt, equity)), std=4), 180), industry)), subindustry)
+
+Alpha ID: XgYZKzYx
+Performance Comparison: 16948 -> 16985，加分 37
+Self-Correlation 检查: FAIL
+其他 FAIL: 无
+设置: USA/TOP1000, Delay=1, Decay=4, Neutralization=SUBINDUSTRY, Truncation=0.08
+Alpha:
+# TOP500
+ts_rank(operating_income/cap,250)
+
+Alpha ID: om9XQ1eJ
+Performance Comparison: 16948 -> 16974，加分 26
+Self-Correlation 检查: FAIL
+其他 FAIL: 无
+设置: USA/TOP3000, Delay=1, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), subindustry)
+
+Alpha ID: 6XYkwMo7
+Performance Comparison: 16948 -> 16969，加分 21
+Self-Correlation 检查: FAIL
+其他 FAIL: 无
+设置: USA/TOP3000, Delay=1, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10), sector)
+
+Alpha ID: RRkodGnd
+Performance Comparison: 16948 -> 16969，加分 21
+Self-Correlation 检查: FAIL
+其他 FAIL: 无
+设置: USA/TOP3000, Delay=1, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)
+
+二、Performance Comparison 加分 1-50 (21 个)
+================================================================================
+
+Alpha ID: P0wagRZJ
+Performance Comparison: 11989 -> 12039，加分 50
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=8, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) - (ts_decay_linear((vwap - close) / close, 2))
+
+Alpha ID: npZRqaNw
+Performance Comparison: 11989 -> 12038，加分 49
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry), 20)
+
+Alpha ID: 88aqj1rm
+Performance Comparison: 11989 -> 12036，加分 47
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=4, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_decay_linear(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10), 15)
+
+Alpha ID: e7dp3vRl
+Performance Comparison: 11989 -> 12036，加分 47
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS, LOW_SUB_UNIVERSE_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=12, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_sum(group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry), 15)
+
+Alpha ID: KPXRgkp8
+Performance Comparison: 11989 -> 12034，加分 45
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=4, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.61 * (ts_decay_linear((vwap - close) / close, 2)) + 0.39 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10))
+
+Alpha ID: A1gdGnvW
+Performance Comparison: 11989 -> 12029，加分 40
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=12, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.31 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry)) + 0.69 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10))
+
+Alpha ID: leQOY8Gl
+Performance Comparison: 11989 -> 12029，加分 40
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=12, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.69 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.31 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
+
+Alpha ID: xAP6dwZW
+Performance Comparison: 11989 -> 12028，加分 39
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_rank(rank(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + rank(group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry)), subindustry)
+
+Alpha ID: E5rMWjXG
+Performance Comparison: 16948 -> 16986，加分 38
+Self-Correlation 检查: PENDING
+其他 FAIL: CONCENTRATED_WEIGHT, LOW_SUB_UNIVERSE_SHARPE
+设置: USA/TOP3000, Delay=1, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(rank(ts_decay_linear(ts_zscore(multi_factor_static_score_derivative, 20), 5)), industry)
+
+Alpha ID: Xg2rNRl8
+Performance Comparison: 11989 -> 12025，加分 36
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(0.29 * (-2*ts_sum(close / ts_delay(close, 1) - 1, 14)) + 0.76 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 4), 14), subindustry)), 7)
+
+Alpha ID: GrMAXlz0
+Performance Comparison: 11989 -> 12024，加分 35
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=15, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.52 * (ts_decay_linear((vwap - close) / close, 2)) + 0.48 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10))
+
+Alpha ID: KPXjeL5x
+Performance Comparison: 11989 -> 12024，加分 35
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=15, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.47 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.53 * (ts_decay_linear((vwap - close) / close, 2))
+
+Alpha ID: 88ada1wm
+Performance Comparison: 11989 -> 12022，加分 33
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=4, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.63 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.37 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
+
+Alpha ID: vReMwmRA
+Performance Comparison: 11989 -> 12020，加分 31
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+trade_when(rank(ts_decay_linear((vwap - close) / close, 2)) > 0.5, ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10), -1)
+
+Alpha ID: om32rgnn
+Performance Comparison: 11989 -> 12017，加分 28
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.44 * (group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry)) + 0.56 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10))
+
+Alpha ID: j29NbRjk
+Performance Comparison: 11989 -> 12012，加分 23
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.33 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.67 * (group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry))
+
+Alpha ID: A1OA7NNY
+Performance Comparison: 16948 -> 16969，加分 21
+Self-Correlation 检查: ERROR
+其他 FAIL: 无
+设置: USA/TOP3000, Delay=1, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), industry)), 10), industry)
+
+Alpha ID: 78abb225
+Performance Comparison: 11989 -> 12003，加分 14
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.52 * (ts_decay_linear((vwap - close) / close, 2)) + 0.48 * (group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry))
+
+Alpha ID: RR2nKQWn
+Performance Comparison: 11989 -> 11997，加分 8
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=20, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+(group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry)) - (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
+
+Alpha ID: 2razJe56
+Performance Comparison: 11989 -> 11994，加分 5
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=8, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(0.29 * (-2*ts_sum(close / ts_delay(close, 1) - 2, 14)) + 0.76 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 6), 14), subindustry)), 13)
+
+Alpha ID: 3qaLNzzP
+Performance Comparison: 11989 -> 11994，加分 5
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.69 * (group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry)) + 0.31 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
+
+三、Performance Comparison 加分 51-100 (11 个)
+================================================================================
+
+Alpha ID: YP2rzpjM
+Performance Comparison: 11989 -> 12081，加分 92
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=8, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.46 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry)) + 0.54 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10))
+
+Alpha ID: xAPXMmRg
+Performance Comparison: 11989 -> 12080，加分 91
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=15, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(0.53 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 14)) + 0.76 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 4), 26), subindustry)), 7)
+
+Alpha ID: E5gXWxP9
+Performance Comparison: 11989 -> 12068，加分 79
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_sum(group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry), 10)
+
+Alpha ID: zqPXP0WK
+Performance Comparison: 11989 -> 12059，加分 70
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=4, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(0.29 * (-2*ts_sum(close / ts_delay(close, 1) - 1, 14)) + 0.76 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 6), 26), subindustry)), 13)
+
+Alpha ID: E5gWAmb0
+Performance Comparison: 11989 -> 12057，加分 68
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(0.53 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 14)) + 0.76 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 4), 26), subindustry)), 13)
+
+Alpha ID: 9qa1POeq
+Performance Comparison: 11989 -> 12050，加分 61
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=12, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.45 * (ts_decay_linear((vwap - close) / close, 2)) + 0.55 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10))
+
+Alpha ID: Gr3NaVXP
+Performance Comparison: 16948 -> 17005，加分 57
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SUB_UNIVERSE_SHARPE
+设置: USA/TOP3000, Delay=1, Decay=4, Neutralization=SUBINDUSTRY, Truncation=0.05
+Alpha:
+group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)
+
+Alpha ID: 6XabEWWJ
+Performance Comparison: 11989 -> 12045，加分 56
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=4, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_mean(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10), 5)
+
+Alpha ID: om3OZpoJ
+Performance Comparison: 11989 -> 12044，加分 55
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=20, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.61 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.39 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
+
+Alpha ID: mLrOEl56
+Performance Comparison: 11989 -> 12042，加分 53
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=20, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.45 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.55 * (ts_decay_linear((vwap - close) / close, 2))
+
+Alpha ID: wpnME1kQ
+Performance Comparison: 11989 -> 12040，加分 51
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=20, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+ts_decay_linear(group_neutralize(ts_sum(ts_rank(implied_volatility_call_120, 30), 10), subindustry), 20)
+
+四、Performance Comparison 加分 101 及以上 (4 个)
+================================================================================
+
+Alpha ID: gJROxw8l
+Performance Comparison: 11989 -> 12323，加分 334
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS, LOW_SUB_UNIVERSE_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=30, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd2_a_sbcpnargmpmtwvadpgwepr / income, 10), -1), subindustry), 6), subindustry)
+
+Alpha ID: 78aAXkk5
+Performance Comparison: 11989 -> 12144，加分 155
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE
+设置: USA/TOP3000, Delay=0, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+group_neutralize(ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10), subindustry)
+
+Alpha ID: ZY25rLG0
+Performance Comparison: 11989 -> 12109，加分 120
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=4, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.44 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.56 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
+
+Alpha ID: vReq2RwA
+Performance Comparison: 11989 -> 12093，加分 104
+Self-Correlation 检查: PENDING
+其他 FAIL: LOW_SHARPE, LOW_FITNESS
+设置: USA/TOP3000, Delay=0, Decay=0, Neutralization=INDUSTRY, Truncation=0.08
+Alpha:
+0.45 * (ts_mean(0.41 * (-1*ts_sum(close / ts_delay(close, 1) - 1, 20)) + 0.59 * (group_rank(ts_rank(ts_delta(fnd2_a_sbcpnargtbysbpmtwpwrr, 5), 20), subindustry)), 10)) + 0.55 * (group_neutralize(ts_decay_linear(group_rank(trade_when(volume > ts_mean(volume, 20), -1 * ts_av_diff(fnd6_teq / income, 10), -1), subindustry), 6), subindustry))
