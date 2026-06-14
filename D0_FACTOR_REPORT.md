@@ -151,3 +151,27 @@ delay=0, universe=TOP3000, neutralization=SUBINDUSTRY, decay=8, truncation=0.05
 **skew20 self-corr 0.687 偏拥挤**（与你最强 IV 因子 gJ3Qvvzm 相关 0.69），和之前减分的价值因子(0.669)类似——**Delay-0 Score 影响不确定，提交前请在平台看 Performance Comparison**。但它是 20天不同期限，有可能加分，值得你实测。
 
 **总结构性结论**：账户 28 个已提交 alpha 把每个强 D0 轴（价值/微结构/IV-skew/term/pcr）都占满了。**不存在又强(达2.0)又不相关(加分)的非饱和 D0 信号。** skew20 是约束下的最佳可提交因子。
+
+## 10. 改 setting 调优（用户授权）：INDUSTRY 中性化最优
+
+固定 skew20 表达式，扫中性化（全部 persisted + 精确自相关）：
+
+| 中性化 | SH | FIT | self-corr | 可提交 |
+|---|---|---|---|---|
+| **INDUSTRY** | **2.21** | **1.69** | 0.672 | ✅ 最优 |
+| SECTOR | 2.16 | 1.70 | 0.671 | ✅ |
+| SUBINDUSTRY | 2.10 | 1.49 | 0.687 | ✅ |
+| NONE | 2.01 | 1.59 | **0.651** | ✅ 自相关最低 |
+| TOP1000/TOP500 | 1.3/0.9 | — | — | ❌ universe 收窄反而弱 |
+
+**最终交付（INDUSTRY 版）：**
+```
+zscore(ts_backfill(subtract(implied_volatility_call_20, implied_volatility_put_20), 5))
+delay=0, universe=TOP3000, neutralization=INDUSTRY, decay=8, truncation=0.05
+SH 2.21 / FIT 1.69 / TO 0.34 / self-corr 0.672 / SUBMITTABLE=True
+```
+
+改 setting 把 Sharpe/Fitness 都提升、自相关小幅下降，但**根本的 IV-skew 拥挤
+（~0.65-0.69）无法靠 setting 消除**——skew 信号本身与你 IV 池相关。self-corr 0.672
+仍偏拥挤（≈ 减分的价值因子 0.669），**Delay-0 Score 影响仍需平台实测**。若优先最低
+自相关可用 NONE 版（0.651，SH 2.01）。

@@ -3,27 +3,95 @@
   "champion_submittable": {
     "tag": "D0_IV_SKEW20",
     "expr": "zscore(ts_backfill(subtract(implied_volatility_call_20,implied_volatility_put_20),5))",
-    "settings": {"universe": "TOP3000", "delay": 0, "decay": 8, "neutralization": "SUBINDUSTRY", "truncation": 0.05, "pasteurization": "ON"},
-    "alpha_id": "j2gKw6Zk",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.05,
+      "pasteurization": "ON"
+    },
+    "alpha_id": "JjdJbxPx",
     "code_match": true,
     "persisted": true,
     "reproduced": true,
-    "sharpe": 2.10,
-    "fitness": 1.49,
+    "sharpe": 2.21,
+    "fitness": 1.69,
     "turnover": 0.34,
-    "self_corr_max": 0.6866,
-    "self_corr_top": [["gJ3Qvvzm", 0.6866], ["vRe1Ybxv", 0.6141], ["A1nZPjeR", 0.5811], ["akN9pwQw", 0.5585]],
+    "self_corr_max": 0.672,
+    "self_corr_top": [
+      [
+        "gJ3Qvvzm",
+        0.6866
+      ],
+      [
+        "vRe1Ybxv",
+        0.6141
+      ],
+      [
+        "A1nZPjeR",
+        0.5811
+      ],
+      [
+        "akN9pwQw",
+        0.5585
+      ]
+    ],
     "checks": "all PASS (SELF_CORRELATION=PASS at 0.6866 < 0.70)",
     "submittable": true,
     "economic_meaning": "20-day put-call implied-volatility skew (near-term crash-fear / downside-protection demand). Different tenor from the account's 60/180-day skew alphas.",
     "score_caveat": "self-corr 0.6866 is borderline (top correlation 0.69 with the account's strongest IV alpha gJ3Qvvzm). Like the value factor (0.669) that lost -638 on Performance Comparison, the Delay-0 Score impact is uncertain. CHECK the Performance Comparison before submitting."
   },
   "other_iv_constructions_code_verified": [
-    {"tag": "skew60", "expr": "...call_60 - put_60", "sharpe": 2.16, "self_corr": "FAIL", "note": "same tenor as account alpha 88Od9aml -> too correlated"},
-    {"tag": "skew360", "expr": "...call_360 - put_360", "sharpe": 2.02, "self_corr": "FAIL"},
-    {"tag": "vrp_ratio (opt6_ivhvxernratio)", "sharpe": 0.14, "self_corr": "~0.09 (very low)", "note": "UNCORRELATED but too WEAK to reach 2.0"},
-    {"tag": "iv_level (opt6_30div)", "sharpe": 0.07, "note": "weak"},
-    {"tag": "skew20 + 2*VRP + 2*IVL (dilution)", "sharpe": 0.24, "note": "diluting skew with weak uncorrelated IV destroys Sharpe"}
+    {
+      "tag": "skew60",
+      "expr": "...call_60 - put_60",
+      "sharpe": 2.16,
+      "self_corr": "FAIL",
+      "note": "same tenor as account alpha 88Od9aml -> too correlated"
+    },
+    {
+      "tag": "skew360",
+      "expr": "...call_360 - put_360",
+      "sharpe": 2.02,
+      "self_corr": "FAIL"
+    },
+    {
+      "tag": "vrp_ratio (opt6_ivhvxernratio)",
+      "sharpe": 0.14,
+      "self_corr": "~0.09 (very low)",
+      "note": "UNCORRELATED but too WEAK to reach 2.0"
+    },
+    {
+      "tag": "iv_level (opt6_30div)",
+      "sharpe": 0.07,
+      "note": "weak"
+    },
+    {
+      "tag": "skew20 + 2*VRP + 2*IVL (dilution)",
+      "sharpe": 0.24,
+      "note": "diluting skew with weak uncorrelated IV destroys Sharpe"
+    }
   ],
-  "structural_conclusion": "The account's 28 ACTIVE alphas saturate every STRONG D0 economic axis (value, microstructure, IV-skew/term/pcr). Any strong new D0 factor correlates ~0.6-0.7 with the pool (borderline -> uncertain/negative Delay-0 Score); every uncorrelated signal (VRP, IV-level, quality, news, analyst, social media, relationship) is too weak (<0.8) to reach the Sharpe-2.0 D0 bar. There is no strong-AND-uncorrelated non-saturated D0 signal left. skew20 (different tenor, self-corr 0.69) is the best submittable option but its score impact must be checked on the platform."
+  "structural_conclusion": "The account's 28 ACTIVE alphas saturate every STRONG D0 economic axis (value, microstructure, IV-skew/term/pcr). Any strong new D0 factor correlates ~0.6-0.7 with the pool (borderline -> uncertain/negative Delay-0 Score); every uncorrelated signal (VRP, IV-level, quality, news, analyst, social media, relationship) is too weak (<0.8) to reach the Sharpe-2.0 D0 bar. There is no strong-AND-uncorrelated non-saturated D0 signal left. skew20 (different tenor, self-corr 0.69) is the best submittable option but its score impact must be checked on the platform.",
+  "settings_sweep": {
+    "INDUSTRY": {
+      "sharpe": 2.21,
+      "fitness": 1.69,
+      "self_corr": 0.672
+    },
+    "SECTOR": {
+      "sharpe": 2.16,
+      "self_corr": 0.671
+    },
+    "SUBINDUSTRY": {
+      "sharpe": 2.1,
+      "self_corr": 0.687
+    },
+    "NONE": {
+      "sharpe": 2.01,
+      "self_corr": 0.651
+    },
+    "note": "changing neutralization improved Sharpe/fitness and marginally lowered self-corr, but the ~0.65-0.69 IV-skew crowding is fundamental and unfixable via settings."
+  }
 }

@@ -69,11 +69,11 @@ if __name__ == "__main__":
     # SUBMITTABLE D0 IV factor (user allowed IV): 20-day put-call implied-vol
     # skew. Different tenor from the account's 60/180-day skew alphas, so
     # SELF_CORRELATION PASSes. Reproduced + persisted: Sharpe ~2.10, Fitness
-    # ~1.49, self-corr ~0.687 (borderline), all /check PASS -> SUBMITTABLE.
+    # ~1.49, self-corr ~0.672 (borderline), all /check PASS -> SUBMITTABLE.
     CHAMPION = ("zscore(ts_backfill(subtract("
         "implied_volatility_call_20,implied_volatility_put_20),5))")
     CANDS = [
-        ("D0_IV_SKEW20", CHAMPION,
-         {"universe":"TOP3000","delay":0,"decay":8,"truncation":0.05,"neutralization":"SUBINDUSTRY"}),
+        ("D0_IV_SKEW20_INDUSTRY", CHAMPION,
+         {"universe":"TOP3000","delay":0,"decay":8,"truncation":0.05,"neutralization":"INDUSTRY"}),
     ]
     run(CANDS)
