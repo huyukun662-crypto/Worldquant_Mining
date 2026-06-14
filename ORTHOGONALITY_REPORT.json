@@ -1,0 +1,45 @@
+{
+  "task": "find delay-0 factor that ADDS competition score (orthogonal to submitted pool)",
+  "pool_diagnosis": {
+    "delay0_submitted": 3,
+    "theme": "implied-volatility call-put skew (3/3) + value sales/cap (1/3)",
+    "alphas": [
+      "QPEXXXaQ: IV skew/hist-vol",
+      "O0oEYx97: IV call-put skew 180d",
+      "j21EEbx9: IV skew + sales/cap"
+    ]
+  },
+  "root_cause_of_minus638": "the submitted alpha was a PURE value factor (liabilities/assets + income/cap); it overlapped the pool's existing value component (sales/cap in j21EEbx9), self-corr 0.76 -> negative marginal contribution.",
+  "key_finding": "PV-dominated hybrids measure LOW daily-PnL correlation (0.18-0.24) to the IV-skew pool because price-volume is absent from the pool. They clear D0 (SH>=2.0,FIT>=1.3) AND add score.",
+  "recommended_ADD_score": [
+    {
+      "id": "le0Y1Obe",
+      "sharpe": 2.34,
+      "fitness": 1.85,
+      "turnover": 0.1923,
+      "pool_maxcorr": 0.21,
+      "expression": "add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -0.8), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.6160000000000001)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.0)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.36800000000000005)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.24)))"
+    },
+    {
+      "id": "P01bKloJ",
+      "sharpe": 2.24,
+      "fitness": 1.67,
+      "turnover": 0.2189,
+      "pool_maxcorr": 0.18,
+      "expression": "add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.2), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.9239999999999999)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.5)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.552)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.36)))"
+    },
+    {
+      "id": "2rKxeZAJ",
+      "sharpe": 2.13,
+      "fitness": 1.74,
+      "turnover": 0.1646,
+      "pool_maxcorr": 0.24,
+      "expression": "add(add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.0)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -0.8))"
+    }
+  ],
+  "rejected_directions": {
+    "pure_quality_fundamentals_delay0": "too weak (gross profitability SH 0.43, ROA 0.27)",
+    "pure_price_volume": "caps at SH 1.93 < 2.0 bar",
+    "pure_value": "strong but correlates with pool's existing value -> -638"
+  }
+}
