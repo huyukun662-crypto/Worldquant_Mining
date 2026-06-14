@@ -93,5 +93,54 @@
       "self_corr": 0.651
     },
     "note": "changing neutralization improved Sharpe/fitness and marginally lowered self-corr, but the ~0.65-0.69 IV-skew crowding is fundamental and unfixable via settings."
+  },
+  "score_positive_champion": {
+    "tag": "D0_CROSS_3PILLAR",
+    "expr": "add(add(zscore(add(add(add(add(add(zscore(group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)),multiply(2,zscore(ts_zscore(divide(volume,sharesout),20)))),multiply(1.5,zscore(-rank(returns)))),zscore(-rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20)))),zscore(-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5)))),zscore(-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))))),multiply(2.5,zscore(ts_backfill(subtract(implied_volatility_call_20,implied_volatility_put_20),5)))),multiply(1.5,zscore(group_zscore(ts_mean(ts_backfill(rel_ret_comp,5),5),subindustry))))",
+    "settings": {
+      "universe": "TOP3000",
+      "delay": 0,
+      "decay": 8,
+      "truncation": 0.05,
+      "neutralization": "INDUSTRY",
+      "pasteurization": "ON"
+    },
+    "alpha_id": "LLRY3n3M",
+    "persisted": true,
+    "code_match": true,
+    "sharpe": 2.01,
+    "fitness": 1.34,
+    "turnover": 0.33,
+    "self_corr_max": 0.515,
+    "self_corr_top": [
+      [
+        "xAmpJe3N",
+        0.515
+      ],
+      [
+        "VkYZ5NrV",
+        0.47
+      ]
+    ],
+    "checks": "all 9 PASS (SELF_CORRELATION PASS at 0.515)",
+    "submittable": true,
+    "method": "CROSS-AXIS DILUTION: combine 3 independent pillars each correlating with a DIFFERENT existing alpha (or none): (A) value+microstructure 6-axis -> correlates with their value alpha xAmpJe3N; (B) 20d IV skew -> correlates with their IV alpha gJ3Qvvzm; (C) competitor-return momentum (rel_ret_comp, pv13) -> uncorrelated with pool. The COMBINED PnL resembles no single existing alpha, so max self-corr drops 0.67->0.594->0.515 as pillars are added.",
+    "economic_meaning": "3 pillars: cheap+liquid+mean-reverting stocks (value/microstructure) + options crash-fear skew + economic-links peer momentum.",
+    "score_rationale": "self-corr 0.515 is far below the ~0.67 that LOST -638 score; the diluted cross-data-type PnL should ADD portfolio diversity -> ADD Delay-0 Score. CHECK Performance Comparison on submit.",
+    "robust_alternative": {
+      "tag": "D0_CROSS_2AXIS (value/micro + 2x IV skew)",
+      "sharpe": 2.02,
+      "fitness": 1.45,
+      "self_corr_max": 0.594,
+      "note": "better margins, higher self-corr"
+    }
+  },
+  "cross_axis_sweep": {
+    "skew_alone": 0.672,
+    "2axis_k1": 0.654,
+    "2axis_k1.5": 0.622,
+    "2axis_k2": 0.594,
+    "3pillar": 0.515,
+    "note": "each independent pillar added dilutes the max self-correlation"
   }
 }

@@ -66,14 +66,15 @@ def run(cands, out="WQ_D0_SUBMISSION_CHECK.json"):
     return evidence
 
 if __name__ == "__main__":
-    # SUBMITTABLE D0 IV factor (user allowed IV): 20-day put-call implied-vol
-    # skew. Different tenor from the account's 60/180-day skew alphas, so
-    # SELF_CORRELATION PASSes. Reproduced + persisted: Sharpe ~2.10, Fitness
-    # ~1.49, self-corr ~0.672 (borderline), all /check PASS -> SUBMITTABLE.
-    CHAMPION = ("zscore(ts_backfill(subtract("
-        "implied_volatility_call_20,implied_volatility_put_20),5))")
+    # SUBMITTABLE D0 SCORE-POSITIVE factor: 3-pillar cross-data-type combination
+    # (value+microstructure) + 2.5*(20d IV skew) + 1.5*(competitor-return momentum).
+    # Each pillar correlates with a DIFFERENT (or no) existing alpha, so the
+    # COMBINED max self-correlation is diluted to ~0.515 (vs ~0.67 per pillar)
+    # -> adds portfolio diversity -> intended to ADD Delay-0 Score.
+    # Verified: SH 2.01, FIT 1.34, self-corr 0.515, all 9 /check PASS.
+    CHAMPION = 'add(add(zscore(add(add(add(add(add(zscore(group_zscore(ts_mean(ts_backfill(divide(ebitda,cap),120),60),subindustry)),multiply(2,zscore(ts_zscore(divide(volume,sharesout),20)))),multiply(1.5,zscore(-rank(returns)))),zscore(-rank(ts_mean(divide(abs(returns),multiply(volume,vwap)),20)))),zscore(-rank(ts_mean(divide(subtract(multiply(2,close),add(high,low)),subtract(high,low)),5)))),zscore(-rank(multiply(ts_av_diff(close,5),ts_rank(volume,20)))))),multiply(2.5,zscore(ts_backfill(subtract(implied_volatility_call_20,implied_volatility_put_20),5)))),multiply(1.5,zscore(group_zscore(ts_mean(ts_backfill(rel_ret_comp,5),5),subindustry))))'
     CANDS = [
-        ("D0_IV_SKEW20_INDUSTRY", CHAMPION,
+        ("D0_CROSS_3PILLAR", CHAMPION,
          {"universe":"TOP3000","delay":0,"decay":8,"truncation":0.05,"neutralization":"INDUSTRY"}),
     ]
     run(CANDS)
