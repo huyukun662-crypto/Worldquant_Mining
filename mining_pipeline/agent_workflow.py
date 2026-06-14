@@ -106,13 +106,29 @@ class FieldAgent:
     EXTRA = ("cogs", "inventory", "receivable", "ppent", "goodwill",
              "sga_expense", "rd_expense")
 
+    # v4 event/sentiment ids - structurally orthogonal to leverage. All
+    # confirmed on this account at (USA, TOP3000, delay=1). NONE are
+    # implied-volatility (those live in the excluded `option`/`earnings4`
+    # vol-straddle families). Sources: sentiment1, analyst4, news18.
+    SENTIMENT = ("snt1_d1_stockrank", "snt1_cored1_score",
+                 "snt1_d1_earningsrevision", "snt1_d1_netearningsrevision",
+                 "snt1_d1_earningssurprise", "snt1_d1_nettargetpercent",
+                 "snt1_d1_netrecpercent", "snt1_d1_fundamentalfocusrank",
+                 "snt1_d1_dynamicfocusrank", "weekly_equity_mood_index")
+    ANALYST = ("anl4_afv4_eps_mean", "anl4_afv4_median_eps",
+               "anl4_afv4_eps_number")
+    NEWS = ("mean_composite_sentiment_score", "mean_event_sentiment_score",
+            "mean_equity_sentiment_score", "mean_earnings_evaluation_sentiment")
+
     ALL_FUNDAMENTAL = tuple(sorted(set(
         VALUE_NUM + QUALITY + MARGIN_NUM + MARGIN_DEN +
         LEVER_NUM + LEVER_DEN + SCALE_DEN + EXTRA + ("assets",)
     )))
+    ALL_EVENTS = SENTIMENT + ANALYST + NEWS
 
     def __init__(self):
-        bad = [f for f in self.PV + self.ALL_FUNDAMENTAL if IV_PATTERN.search(f)]
+        bad = [f for f in self.PV + self.ALL_FUNDAMENTAL + self.ALL_EVENTS
+               if IV_PATTERN.search(f)]
         if bad:
             raise ValueError(f"IV field leaked into curated universe: {bad}")
 
@@ -322,6 +338,67 @@ class HypothesisAgent:
               win_lo=20, win_hi=120, klass="mix"),
         ]
 
+    def archetypes_events(self) -> list[Archetype]:
+        """v4 set - EVENT / SENTIMENT signals (analyst revisions, earnings
+        surprise/PEAD, news & analyst sentiment). Economically orthogonal to
+        the balance-sheet leverage family by construction, so PnL correlation
+        to the v2 winners should be low. No implied-vol fields (those are in
+        the excluded option / earnings-vol families). The `sign` toggle lets
+        the optimizer pick direction.
+        """
+        A = Archetype
+        return [
+            # ---- analyst EPS revisions (sentiment1 pre-built) ----
+            A("earnings_revision", lambda r, f:
+              "rank(snt1_d1_earningsrevision)", klass="evt"),
+            A("net_earnings_revision", lambda r, f:
+              "rank(snt1_d1_netearningsrevision)", klass="evt"),
+            A("earnings_surprise", lambda r, f:
+              "rank(snt1_d1_earningssurprise)", klass="evt"),
+            # ---- target-price & recommendation changes ----
+            A("net_target_pct", lambda r, f:
+              "rank(snt1_d1_nettargetpercent)", klass="evt"),
+            A("net_rec_pct", lambda r, f:
+              "rank(snt1_d1_netrecpercent)", klass="evt"),
+            # ---- composite analyst / sentiment ranks ----
+            A("stock_rank", lambda r, f: "rank(snt1_d1_stockrank)", klass="evt"),
+            A("core_score", lambda r, f: "rank(snt1_cored1_score)", klass="evt"),
+            A("fundamental_focus", lambda r, f:
+              "rank(snt1_d1_fundamentalfocusrank)", klass="evt"),
+            A("dynamic_focus", lambda r, f:
+              "rank(snt1_d1_dynamicfocusrank)", klass="evt"),
+            A("mood_index", lambda r, f:
+              "rank(weekly_equity_mood_index)", klass="evt"),
+            # ---- analyst4 EPS-estimate revision (ts change of consensus) ----
+            A("eps_estimate_revision", lambda r, f:
+              "rank(ts_delta(anl4_afv4_eps_mean, 60))",
+              win_lo=20, win_hi=120, klass="evt"),
+            A("eps_coverage_change", lambda r, f:
+              "rank(ts_delta(anl4_afv4_eps_number, 60))",
+              win_lo=20, win_hi=120, klass="evt"),
+            # ---- news sentiment (news18) - decayed level & change ----
+            A("news_sentiment", lambda r, f:
+              f"rank(ts_mean({r.choice(f.NEWS)}, 20))",
+              win_lo=5, win_hi=60, klass="evt"),
+            A("news_sentiment_chg", lambda r, f:
+              f"rank(ts_delta({r.choice(f.NEWS)}, 20))",
+              win_lo=5, win_hi=60, klass="evt"),
+            # ---- event combos (both legs event-driven -> orthogonal core) ----
+            A("revision_plus_surprise", lambda r, f:
+              "add(zscore(rank(snt1_d1_netearningsrevision)), "
+              "zscore(rank(snt1_d1_earningssurprise)))", klass="evt"),
+            A("rank_plus_revision", lambda r, f:
+              "add(zscore(rank(snt1_d1_stockrank)), "
+              "zscore(rank(snt1_d1_netearningsrevision)))", klass="evt"),
+            A("target_plus_rec", lambda r, f:
+              "add(zscore(rank(snt1_d1_nettargetpercent)), "
+              "zscore(rank(snt1_d1_netrecpercent)))", klass="evt"),
+            A("sentiment_plus_news", lambda r, f:
+              "add(zscore(rank(snt1_cored1_score)), "
+              "zscore(rank(ts_mean(mean_composite_sentiment_score, 20))))",
+              win_lo=5, win_hi=60, klass="evt"),
+        ]
+
 
 # ---------------------------------------------------------------------------
 # Agent 3: GeneratorAgent - instantiate archetypes into a diverse pool
@@ -338,10 +415,13 @@ class PoolItem:
 
 class GeneratorAgent:
     def __init__(self, fields: FieldAgent, hypotheses: HypothesisAgent,
-                 diverse: bool = False):
+                 source: str = "core"):
         self.fields = fields
-        self.archs = (hypotheses.archetypes_diverse() if diverse
-                      else hypotheses.archetypes())
+        self.archs = {
+            "core":    hypotheses.archetypes,
+            "diverse": hypotheses.archetypes_diverse,
+            "events":  hypotheses.archetypes_events,
+        }[source]()
 
     def generate(self, n: int, seed: int) -> list[PoolItem]:
         rng = random.Random(seed)
@@ -626,9 +706,13 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--verify-fields", action="store_true",
                     help="verify curated fields against the account first")
+    ap.add_argument("--source", choices=["core", "diverse", "events"],
+                    default="core",
+                    help="archetype set: core (v2, leverage+pv), diverse (v3, "
+                         "non-leverage fundamentals/pv), events (v4, "
+                         "analyst/news/sentiment - orthogonal to leverage)")
     ap.add_argument("--diverse", action="store_true",
-                    help="use the v3 non-leverage diverse archetype set "
-                         "(for mining alphas orthogonal to the leverage family)")
+                    help="alias for --source diverse")
     ap.add_argument("--out", type=str, default="WQ_AGENT_REPORT.json")
     ap.add_argument("--survivors-out", type=str,
                     default="WQ_SUBMITTABLE_CANDIDATES.json")
@@ -644,10 +728,10 @@ def main():
     if args.verify_fields:
         log.info("[FieldAgent] verifying curated non-IV fields on account ...")
         fields.verify(cm.session)
-    gen = GeneratorAgent(fields, HypothesisAgent(), diverse=args.diverse)
+    source = "diverse" if args.diverse else args.source
+    gen = GeneratorAgent(fields, HypothesisAgent(), source=source)
     pool = gen.generate(args.pool, seed=args.seed)
-    log.info(f"[GeneratorAgent] {'DIVERSE (non-leverage) ' if args.diverse else ''}"
-             f"pool of {len(pool)} expressions:")
+    log.info(f"[GeneratorAgent] source={source!r} pool of {len(pool)} expressions:")
     for it in pool:
         log.info(f"   [{it.klass}] {it.name:<20} {it.expr}")
 
