@@ -158,8 +158,17 @@ def main():
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--skip-iv", action="store_true", help="skip alphas that use IV fields")
     ap.add_argument("--only", default=None, help="comma-separated alpha_ids to tune")
+    ap.add_argument("--delays", default=None,
+                    help="restrict delay search, e.g. '1' or '0,1'")
+    ap.add_argument("--decays", default=None,
+                    help="restrict decay search, e.g. '4,8,12'")
     ap.add_argument("--out", default="TUNE_QUEUE_RESULTS.json")
     args = ap.parse_args()
+
+    if args.delays:
+        TUNE_SPACE["delay"] = [int(x) for x in args.delays.split(",")]
+    if args.decays:
+        TUNE_SPACE["decay"] = [int(x) for x in args.decays.split(",")]
 
     alphas = parse_queue(Path(args.queue))
     log.info(f"parsed {len(alphas)} alphas from {args.queue}")
