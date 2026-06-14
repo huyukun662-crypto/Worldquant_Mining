@@ -1,0 +1,69 @@
+{
+ "note": "Structurally distinct PASS alphas (within-batch unique operator patterns)",
+ "alphas": [
+  {
+   "alpha_id": "kqK60n0K",
+   "note": "trade_when(returns_cond, DRC, -1) \u2014 independent (corr<0.11 vs submitted)",
+   "sharpe": 1.48,
+   "fitness": 1.15,
+   "turnover": 0.014,
+   "drawdown": 0.0771,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(trade_when(abs(group_neutralize(reverse(zscore(ts_backfill(earnings_certainty_rank_derivative, 10))), subindustry)), add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 60), ts_backfill(assets, 60))), subindustry)), -1), 10))"
+  },
+  {
+   "alpha_id": "O09XZqkJ",
+   "note": "trade_when(ECR_cond, DRC, -1) \u2014 independent (corr<0.11 vs submitted)",
+   "sharpe": 1.44,
+   "fitness": 1.1,
+   "turnover": 0.014,
+   "drawdown": 0.0785,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(trade_when(abs(ts_sum(returns, 20)), add(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(fnd6_drlt, 60), ts_backfill(assets, 60))), subindustry)), -1), 10))"
+  },
+  {
+   "alpha_id": "LLRYdn3a",
+   "note": "signed_power(subtract(DRC, CFO), 1.2) \u2014 but corr 0.83 vs CFO submitted",
+   "sharpe": 1.38,
+   "fitness": 1.25,
+   "turnover": 0.0209,
+   "drawdown": 0.0647,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(signed_power(subtract(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60))), subindustry)), 1.2), 10))"
+  },
+  {
+   "alpha_id": "bl91qQW6",
+   "note": "subtract(DRC, CFO) + 0.3*ECR \u2014 but corr 0.83 vs CFO submitted",
+   "sharpe": 1.42,
+   "fitness": 1.24,
+   "turnover": 0.0193,
+   "drawdown": 0.0564,
+   "settings": {
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 6,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.005
+   },
+   "expr": "zscore(ts_decay_linear(add(subtract(group_neutralize(zscore(divide(ts_backfill(fnd6_drc, 60), ts_backfill(assets, 60))), subindustry), group_neutralize(zscore(divide(ts_backfill(cashflow, 60), ts_backfill(assets, 60))), subindustry)), multiply(0.3, group_neutralize(reverse(zscore(ts_backfill(earnings_certainty_rank_derivative, 10))), subindustry))), 10))"
+  }
+ ]
+}
