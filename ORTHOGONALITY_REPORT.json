@@ -1,0 +1,113 @@
+{
+  "task": "find delay-0 factor that ADDS competition score (orthogonal to submitted pool)",
+  "pool_diagnosis": {
+    "delay0_submitted": 3,
+    "theme": "implied-volatility call-put skew (3/3) + value sales/cap (1/3)",
+    "alphas": [
+      "QPEXXXaQ: IV skew/hist-vol",
+      "O0oEYx97: IV call-put skew 180d",
+      "j21EEbx9: IV skew + sales/cap"
+    ]
+  },
+  "root_cause_of_minus638": "the submitted alpha was a PURE value factor (liabilities/assets + income/cap); it overlapped the pool's existing value component (sales/cap in j21EEbx9), self-corr 0.76 -> negative marginal contribution.",
+  "key_finding": "PV-dominated hybrids measure LOW daily-PnL correlation (0.18-0.24) to the IV-skew pool because price-volume is absent from the pool. They clear D0 (SH>=2.0,FIT>=1.3) AND add score.",
+  "recommended_ADD_score": [
+    {
+      "id": "le0Y1Obe",
+      "sharpe": 2.34,
+      "fitness": 1.85,
+      "turnover": 0.1923,
+      "pool_maxcorr": 0.21,
+      "expression": "add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -0.8), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.6160000000000001)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.0)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.36800000000000005)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.24)))"
+    },
+    {
+      "id": "P01bKloJ",
+      "sharpe": 2.24,
+      "fitness": 1.67,
+      "turnover": 0.2189,
+      "pool_maxcorr": 0.18,
+      "expression": "add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.2), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.9239999999999999)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.5)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.552)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.36)))"
+    },
+    {
+      "id": "2rKxeZAJ",
+      "sharpe": 2.13,
+      "fitness": 1.74,
+      "turnover": 0.1646,
+      "pool_maxcorr": 0.24,
+      "expression": "add(add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divide(income, cap), 174)))), multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.0)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -0.8))"
+    }
+  ],
+  "rejected_directions": {
+    "pure_quality_fundamentals_delay0": "too weak (gross profitability SH 0.43, ROA 0.27)",
+    "pure_price_volume": "caps at SH 1.93 < 2.0 bar",
+    "pure_value": "strong but correlates with pool's existing value -> -638"
+  },
+  "novel_structure_finding": {
+    "tested": 14,
+    "structures": [
+      "ratio/risk-adjusted",
+      "multiplicative interaction",
+      "trade_when conditional",
+      "signed_power nonlinear",
+      "2nd-derivative acceleration",
+      "cross-series corr",
+      "vector_neut residual",
+      "novel composites of the above + new fundamentals (cash/RE/capex/inventory)"
+    ],
+    "best_sharpe": 1.41,
+    "conclusion": "At delay-0 the SH>=2.0 bar is only cleared by the diversified LINEAR z-score blend. Novel structures (interaction/conditional/ratio/residual/nonlinear) cap at SH ~1.0-1.4 because they inject nonlinearity that weakens the dominant reversal signal and breaks the diversification that drives Sharpe. 'Different structure' and 'clears 2.0' are not jointly achievable at delay-0.",
+    "implication": "For genuinely different STRUCTURE + DIRECTION, delay-1 is the venue: bar is SH>=1.25/FIT>=1.0, and rich fields (analyst revisions, option/IV, sentiment; 5905 vs 1225) are available. The user's pool is already 16/19 delay-1."
+  },
+  "new_direction_winner": {
+    "id": "RRrwQYl0",
+    "direction": "asset-turnover / efficiency (sales/assets), NOT value/leverage",
+    "structure": "linear z-score blend (unchanged) \u2014 efficiency tilt x1.5 + 5-signal price-volume block",
+    "sharpe": 2.28,
+    "fitness": 1.7,
+    "turnover": 0.2069,
+    "pool_maxcorr": 0.21,
+    "clears_D0": true,
+    "adds_score": true,
+    "expression": "add(multiply(group_zscore(divide(sales, assets), subindustry), 1.5), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.0), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.77)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.25)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.46)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.3)))",
+    "note": "DV/DV2 finding: among non-value fundamental directions (quality/investment/cashflow/efficiency), only a heavily-weighted single CLEAN efficiency signal (sales/assets x1.5) synergizes with the PV engine to clear 2.0 (2.28). Multi-signal quality blends dilute (<1.9). Value still tops at 2.34 but overlaps pool; efficiency at 2.28 is a genuinely different direction AND orthogonal (corr 0.21)."
+  },
+  "CRITICAL_FINDING_score_is_fitness_not_sharpe": {
+    "event": "Submitted RRrwQYl0 -> WQ Performance Comparison delay-0 score 12,166 -> 11,978 (CHANGE -188)",
+    "diagnosis": "NOT a correlation problem. resid_score.py shows RRrwQYl0 is genuinely orthogonal to the pool (residual Sharpe 1.79 after projecting out all 3 pool alphas jointly, R^2 0.05, maxCorr 0.21). The -188 is QUALITY DILUTION: RRrwQYl0 is high-turnover/low-margin (TO 0.207, margin 0.0011, fitness 1.70) vs the pool's low-turnover/high-margin alphas (TO 0.05-0.07, margin 0.003-0.009, fitness 2.09-3.55).",
+    "fitness_formula_reverse_engineered": "fitness = sharpe * sqrt(returns / max(turnover, 0.125))  [verified: RRrwQYl0 2.28*sqrt(0.115/0.207)=1.70; O0oEYx97 2.42*sqrt(0.27/0.125)=3.55]",
+    "WRONG_bar_used_so_far": "SH>=2.0 & FIT>=1.3 (these are WQ's stock MINIMUM checks; passing them does NOT add score)",
+    "REAL_bar_to_ADD_score": "To not dilute a high-fitness pool, a new delay-0 alpha needs fitness >= ~2.5, which requires turnover <= 0.125 AND returns >= ~0.20 AND sharpe >= 2.0. Turnover below 0.125 is clamped (no extra fitness benefit) but avoids the penalty. RETURNS is the binding constraint - need a STRONG SLOW signal, not a fast high-turnover one.",
+    "lesson": "Stop optimizing Sharpe via the fast price-volume reversal block (returns only 0.115, turnover 0.207). Target high-margin/low-turnover signal families (momentum, low-vol, slow fundamentals) heavily decayed.",
+    "pool_quality": {
+      "QPEXXXaQ": {
+        "fit": 2.09,
+        "to": 0.067,
+        "margin": 0.0033
+      },
+      "O0oEYx97": {
+        "fit": 3.55,
+        "to": 0.058,
+        "margin": 0.0094
+      },
+      "j21EEbx9": {
+        "fit": 2.49,
+        "to": 0.049,
+        "margin": 0.0078
+      }
+    }
+  },
+  "high_fitness_orthogonal_winner": {
+    "id": "Vk8b8ZVG",
+    "construction": "30-day call-put implied-vol skew, zscore(ts_mean(call_30 - put_30, 30))",
+    "why_it_works": "Pool uses 60d & 180d skew. 30d sits below the pool's 60/180d tenors so it is the most distinct (maxCorr 0.55); 90d/120d sit BETWEEN 60 and 180 so they correlate 0.82-0.85 (maxCorr 0.55 < 0.7 self-corr limit) yet fitness 4.65 >> pool avg 2.71. This is the INVERSE of RRrwQYl0 (fitness 1.70 < pool -> -188 dilution). High fitness + moderate corr -> should ADD score.",
+    "sharpe": 2.81,
+    "fitness": 4.65,
+    "turnover": 0.0835,
+    "returns": 0.3421,
+    "margin": 0.008193,
+    "pool_maxcorr": 0.55,
+    "residual_sharpe": 1.6,
+    "expression": "zscore(ts_mean(subtract(implied_volatility_call_30, implied_volatility_put_30), 30))",
+    "tenor_sweep_note": "90d/120d fitness even higher (4.96/4.68) but maxCorr 0.82-0.85 (between pool's 60/180d -> too correlated, rejected). 270/360/720d corr 0.82-0.94. 30d is the unique sweet spot: shortest tenor, most distinct from 60/180d, corr 0.55, fitness 4.65."
+  }
+}
