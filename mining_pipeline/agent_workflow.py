@@ -462,6 +462,54 @@ class HypothesisAgent:
               "rank(snt1_d1_nettargetpercent)", klass="evt"),
         ]
 
+    def archetypes_fitlift(self) -> list[Archetype]:
+        """v6 set - surgical fitness-lift for the orthogonal reversal signal.
+
+        The v5 winner kqK6ZoXK (close-location-in-range reversal) had SH 1.57,
+        DD 0.064 but failed LOW_FITNESS because turnover 0.43 sits in the
+        fitness denominator. The only fix is to CUT TURNOVER while keeping
+        Sharpe: wrap the signal in ts_decay_linear (a low-pass that smooths
+        day-to-day flips), and/or blend with a slow orthogonal leg. All
+        non-leverage -> stays orthogonal to the submitted pool.
+        """
+        A = Archetype
+        clr = "divide(subtract(close, low), subtract(high, low))"   # close loc in range
+        zr = "ts_zscore(close, 6)"                                   # zscore reversal
+        return [
+            # ---- decay-smoothed close-loc-in-range reversal (TO down) ----
+            A("clr_decay", lambda r, f:
+              f"rank(ts_decay_linear({clr}, 10))", win_lo=5, win_hi=60, klass="pv"),
+            A("clr_smooth", lambda r, f:
+              f"rank(ts_mean({clr}, 10))", win_lo=3, win_hi=40, klass="pv"),
+            # ---- decay-smoothed zscore reversal ----
+            A("zr_decay", lambda r, f:
+              f"rank(ts_decay_linear({zr}, 10))", win_lo=5, win_hi=60, klass="pv"),
+            # ---- reversal blended with slow low-TO orthogonal legs.
+            #      The reversal leg is pre-oriented with reverse() (its SH+1.57
+            #      direction); the global sign toggle still applies on top. ----
+            A("clr_plus_assetturn", lambda r, f:
+              f"add(zscore(reverse(rank(ts_decay_linear({clr}, 10)))), "
+              f"zscore(rank(divide(sales, assets))))",
+              win_lo=5, win_hi=60, klass="mix"),
+            A("clr_plus_momentum", lambda r, f:
+              f"add(zscore(reverse(rank(ts_decay_linear({clr}, 10)))), "
+              f"zscore(rank(ts_delta(close, 120))))",
+              win_lo=5, win_hi=60, klass="mix"),
+            A("clr_plus_lowvol", lambda r, f:
+              f"add(zscore(reverse(rank(ts_decay_linear({clr}, 10)))), "
+              f"zscore(reverse(rank(ts_std_dev(returns, 60)))))",
+              win_lo=5, win_hi=60, klass="mix"),
+            # ---- volume-confirmed reversal (trade only on info days -> lower TO) ----
+            A("clr_x_volume", lambda r, f:
+              f"multiply(reverse(rank(ts_decay_linear({clr}, 10))), "
+              f"rank(divide(volume, ts_mean(volume, 20))))",
+              win_lo=5, win_hi=40, klass="mix"),
+            # ---- returns reversal smoothed ----
+            A("returns_rev_decay", lambda r, f:
+              "rank(ts_decay_linear(ts_mean(returns, 5), 10))",
+              win_lo=5, win_hi=40, klass="pv"),
+        ]
+
 
 # ---------------------------------------------------------------------------
 # Agent 3: GeneratorAgent - instantiate archetypes into a diverse pool
@@ -485,6 +533,7 @@ class GeneratorAgent:
             "diverse": hypotheses.archetypes_diverse,
             "events":  hypotheses.archetypes_events,
             "orthogonal": hypotheses.archetypes_orthogonal,
+            "fitlift": hypotheses.archetypes_fitlift,
         }[source]()
 
     def generate(self, n: int, seed: int) -> list[PoolItem]:
@@ -516,7 +565,7 @@ SETTING_SPACE = {
     # weight concentration up but lifts Sharpe; 0.02-0.05 won.
     "universe":       ["TOP3000", "TOP1000"],
     "delay":          [1],
-    "decay":          [16, 32, 64, 128],
+    "decay":          [16, 32, 64, 128, 256],
     "truncation":     [0.02, 0.05, 0.08],
     "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR"],
     "pasteurization": ["ON"],
@@ -771,7 +820,7 @@ def main():
     ap.add_argument("--verify-fields", action="store_true",
                     help="verify curated fields against the account first")
     ap.add_argument("--source",
-                    choices=["core", "diverse", "events", "orthogonal"],
+                    choices=["core", "diverse", "events", "orthogonal", "fitlift"],
                     default="core",
                     help="archetype set: core (v2, leverage+pv), diverse (v3, "
                          "non-leverage fundamentals/pv), events (v4, "
