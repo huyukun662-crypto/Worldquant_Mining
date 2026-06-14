@@ -101,9 +101,14 @@ class FieldAgent:
     LEVER_DEN = ("equity", "assets")
     SCALE_DEN = ("cap", "assets", "equity")
 
+    # Extra confirmed fundamental6 ids used only by the diverse (non-leverage)
+    # archetype set: gross-profitability, accruals, asset-turnover, etc.
+    EXTRA = ("cogs", "inventory", "receivable", "ppent", "goodwill",
+             "sga_expense", "rd_expense")
+
     ALL_FUNDAMENTAL = tuple(sorted(set(
         VALUE_NUM + QUALITY + MARGIN_NUM + MARGIN_DEN +
-        LEVER_NUM + LEVER_DEN + SCALE_DEN + ("assets",)
+        LEVER_NUM + LEVER_DEN + SCALE_DEN + EXTRA + ("assets",)
     )))
 
     def __init__(self):
@@ -243,6 +248,80 @@ class HypothesisAgent:
               f"rank({r.choice(f.QUALITY)})", klass="fund"),
         ]
 
+    def archetypes_diverse(self) -> list[Archetype]:
+        """v3 set - DELIBERATELY NON-LEVERAGE archetypes, to find alphas
+        that are economically (and PnL-) orthogonal to the v2 leverage family
+        (debt/liabilities-to-assets). Spans profitability, value, growth,
+        accruals, momentum, low-vol, liquidity, seasonality + cross-family
+        combos. No debt/liabilities ratios here by construction. High decay
+        (the v2 unlock) is left to the SimulatorAgent's setting search.
+        """
+        A = Archetype
+        return [
+            # ---- profitability / quality ----
+            A("roa", lambda r, f: "rank(return_assets)", klass="fund"),
+            A("roe", lambda r, f: "rank(return_equity)", klass="fund"),
+            A("gross_profitability", lambda r, f:
+              "rank(divide(subtract(revenue, cogs), assets))", klass="fund"),
+            A("asset_turnover", lambda r, f:
+              "rank(divide(sales, assets))", klass="fund"),
+            # ---- value / earnings & sales yield ----
+            A("earnings_yield", lambda r, f:
+              f"rank(divide({r.choice(('income','operating_income','pretax_income'))}, cap))",
+              klass="fund"),
+            A("sales_yield", lambda r, f: "rank(divide(sales, cap))", klass="fund"),
+            # ---- margins ----
+            A("op_margin", lambda r, f:
+              "rank(divide(operating_income, revenue))", klass="fund"),
+            A("margin_trend", lambda r, f:
+              "rank(ts_delta(divide(income, sales), 90))",
+              win_lo=40, win_hi=180, klass="fund"),
+            # ---- growth (sign chosen by search: growth vs investment anomaly) ----
+            A("sales_growth", lambda r, f:
+              "rank(ts_delta(sales, 120))", win_lo=60, win_hi=250, klass="fund"),
+            A("asset_growth", lambda r, f:
+              "rank(ts_delta(assets, 120))", win_lo=60, win_hi=250, klass="fund"),
+            A("earn_yield_mom", lambda r, f:
+              "rank(ts_delta(divide(income, cap), 60))",
+              win_lo=20, win_hi=180, klass="fund"),
+            # ---- accruals (working capital change) ----
+            A("accruals", lambda r, f:
+              "rank(ts_delta(working_capital, 90))",
+              win_lo=40, win_hi=180, klass="fund"),
+            A("inventory_growth", lambda r, f:
+              "rank(ts_delta(inventory, 90))", win_lo=40, win_hi=180, klass="fund"),
+            # ---- price momentum / seasonality (orthogonal to fundamentals) ----
+            A("momentum_long", lambda r, f:
+              "rank(ts_delta(close, 200))", win_lo=120, win_hi=252, klass="pv"),
+            A("seasonality_annual", lambda r, f:
+              "rank(ts_delta(close, 240))", win_lo=210, win_hi=252, klass="pv"),
+            # ---- low-vol / liquidity (defensive, low DD) ----
+            A("low_vol", lambda r, f:
+              "reverse(rank(ts_std_dev(returns, 60)))",
+              win_lo=20, win_hi=120, klass="pv"),
+            A("illiquidity", lambda r, f:
+              "rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))",
+              win_lo=20, win_hi=120, klass="pv"),
+            # ---- cross-family combos (both legs non-leverage) ----
+            A("quality_plus_mom", lambda r, f:
+              "add(zscore(rank(return_assets)), zscore(rank(ts_delta(close, 200))))",
+              win_lo=120, win_hi=252, klass="mix"),
+            A("value_plus_lowvol", lambda r, f:
+              "add(zscore(rank(divide(income, cap))), "
+              "zscore(reverse(rank(ts_std_dev(returns, 60)))))",
+              win_lo=20, win_hi=120, klass="mix"),
+            A("grossprofit_plus_value", lambda r, f:
+              "add(zscore(rank(divide(subtract(revenue, cogs), assets))), "
+              "zscore(rank(divide(income, cap))))", klass="mix"),
+            A("earnyld_plus_growth", lambda r, f:
+              "add(zscore(rank(divide(income, cap))), zscore(rank(ts_delta(sales, 120))))",
+              win_lo=60, win_hi=250, klass="mix"),
+            A("quality_plus_lowvol", lambda r, f:
+              "add(zscore(rank(return_equity)), "
+              "zscore(reverse(rank(ts_std_dev(returns, 60)))))",
+              win_lo=20, win_hi=120, klass="mix"),
+        ]
+
 
 # ---------------------------------------------------------------------------
 # Agent 3: GeneratorAgent - instantiate archetypes into a diverse pool
@@ -258,9 +337,11 @@ class PoolItem:
 
 
 class GeneratorAgent:
-    def __init__(self, fields: FieldAgent, hypotheses: HypothesisAgent):
+    def __init__(self, fields: FieldAgent, hypotheses: HypothesisAgent,
+                 diverse: bool = False):
         self.fields = fields
-        self.archs = hypotheses.archetypes()
+        self.archs = (hypotheses.archetypes_diverse() if diverse
+                      else hypotheses.archetypes())
 
     def generate(self, n: int, seed: int) -> list[PoolItem]:
         rng = random.Random(seed)
@@ -545,6 +626,9 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--verify-fields", action="store_true",
                     help="verify curated fields against the account first")
+    ap.add_argument("--diverse", action="store_true",
+                    help="use the v3 non-leverage diverse archetype set "
+                         "(for mining alphas orthogonal to the leverage family)")
     ap.add_argument("--out", type=str, default="WQ_AGENT_REPORT.json")
     ap.add_argument("--survivors-out", type=str,
                     default="WQ_SUBMITTABLE_CANDIDATES.json")
@@ -560,9 +644,10 @@ def main():
     if args.verify_fields:
         log.info("[FieldAgent] verifying curated non-IV fields on account ...")
         fields.verify(cm.session)
-    gen = GeneratorAgent(fields, HypothesisAgent())
+    gen = GeneratorAgent(fields, HypothesisAgent(), diverse=args.diverse)
     pool = gen.generate(args.pool, seed=args.seed)
-    log.info(f"[GeneratorAgent] pool of {len(pool)} expressions:")
+    log.info(f"[GeneratorAgent] {'DIVERSE (non-leverage) ' if args.diverse else ''}"
+             f"pool of {len(pool)} expressions:")
     for it in pool:
         log.info(f"   [{it.klass}] {it.name:<20} {it.expr}")
 
