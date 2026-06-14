@@ -95,5 +95,19 @@
         "margin": 0.0078
       }
     }
+  },
+  "high_fitness_orthogonal_winner": {
+    "id": "Vk8b8ZVG",
+    "construction": "90-day call-put implied-vol skew, zscore(ts_mean(call_90 - put_90, 30))",
+    "why_it_works": "Pool uses 60d & 180d skew. 90d sits in a correlation gap between them (maxCorr 0.55 < 0.7 self-corr limit) yet fitness 4.65 >> pool avg 2.71. This is the INVERSE of RRrwQYl0 (fitness 1.70 < pool -> -188 dilution). High fitness + moderate corr -> should ADD score.",
+    "sharpe": 2.81,
+    "fitness": 4.65,
+    "turnover": 0.0835,
+    "returns": 0.3421,
+    "margin": 0.008193,
+    "pool_maxcorr": 0.55,
+    "residual_sharpe": 1.6,
+    "expression": "zscore(ts_mean(subtract(implied_volatility_call_30, implied_volatility_put_30), 30))",
+    "tenor_sweep_note": "30d/120d fitness even higher (4.96/4.68) but maxCorr 0.82-0.85 (too correlated, would be rejected). 270/360/720d corr 0.82-0.94. 90d is the unique sweet spot."
   }
 }

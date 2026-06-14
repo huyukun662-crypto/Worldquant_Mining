@@ -22,3 +22,16 @@ add(add(add(zscore(rank(divide(liabilities, assets))), zscore(rank(ts_delta(divi
 
 # 4) 新方向 RRrwQYl0 | SH 2.28  FIT 1.70  TO 0.207 | 与池子相关 0.21 | 方向=资产周转(效率)
 add(multiply(group_zscore(divide(sales, assets), subindustry), 1.5), add(add(add(add(multiply(group_zscore(ts_av_diff(close, 10), subindustry), -1.0), multiply(group_zscore(ts_corr(close, volume, 20), subindustry), -0.77)), multiply(group_zscore(ts_mean(divide(abs(returns), volume), 20), subindustry), -1.25)), multiply(group_zscore(ts_rank(volume, 20), subindustry), 0.46)), multiply(group_zscore(divide(subtract(close, low), subtract(high, low)), subindustry), -0.3)))
+
+
+============================================================
+高fitness正交因子 (90天 call-put 偏度; fitness 4.65 >> 池均值; 自相关 0.55 < 0.7)
+============================================================
+# 这是替代被拒的 RRrwQYl0 的正确选择:
+#   RRrwQYl0 被拒因 fitness 1.70 (低于池子) -> Performance Comparison -188 (稀释)
+#   本因子 fitness 4.65 (远高于池子 2.1-3.6) + 自相关 0.55 -> 应净加分
+# WQ: SH 2.81  FIT 4.65  TO 0.084  returns 0.342  margin 0.0082
+
+zscore(ts_mean(subtract(implied_volatility_call_30, implied_volatility_put_30), 30))
+
+# settings: TOP3000, delay=0, SUBINDUSTRY, decay=6, truncation=0.08, pasteurization=ON, FASTEXPR
