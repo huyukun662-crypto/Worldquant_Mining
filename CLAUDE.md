@@ -137,8 +137,38 @@ per hour; budget candidates accordingly.
 
 ### Account tier limits observed on `2445560398@qq.com`
 
-- `delay=0` not available for simulation (HTTP 400 "Delay 0 is not
-  available"). `wq_pipeline.SETTING_SPACE['delay'] = [1]` reflects this.
+- `delay=0` IS now available for simulation (HTTP 201). The old "Delay 0
+  not available" note is STALE — this account tier was upgraded. D0
+  factors are minable; see `D0_FACTOR_REPORT.md` and `scripts/wq_lib.py`.
+- **D0 submission thresholds are HIGHER than D1** (read from
+  `GET /alphas/{id}/check`): `LOW_SHARPE` limit = **2.0** (vs 1.25 for
+  d1), `LOW_FITNESS` limit = **1.3**, plus `LOW_SUB_UNIVERSE_SHARPE`
+  (limit ~0.42), `IS_LADDER_SHARPE` (limit 0.5), `CONCENTRATED_WEIGHT`,
+  and `SELF_CORRELATION` (< 0.7, async).
+- **Pre-submit CHECK without submitting**: `GET /alphas/{id}/check`
+  returns the full submission-check block; `GET /alphas/{id}/correlations/self`
+  returns the async self-correlation distribution. `/correlations/prod`
+  returns 403 on this tier. Use `scripts/check_submit.py <alpha_id>`.
+- **Unsubmitted simulation alphas are garbage-collected** — an
+  `alpha_id` from a /simulations run can 404 minutes later. Results are
+  still deterministic: re-run `scripts/verify_champion.py` to reproduce.
+- **Rate limit**: ~2-3 concurrent simulations. Running multiple batches
+  with `max_workers=3` in parallel (plus check pollers) triggers
+  persistent HTTP 429. Mine SERIALLY or with small concurrency.
+- **CRITICAL — alpha-id cross-wiring under concurrency**: sharing one
+  `requests.Session` across threads (old `simulate_many`) caused polled
+  `alpha` ids to cross between concurrent /simulations, so metrics got
+  attributed to the WRONG expression (a pure-PV reversal showed a phantom
+  Sharpe 2.11 that was really 0.47). ALWAYS fetch `/alphas/{id}` and
+  verify `regular.code == submitted expression` (`code_match`) before
+  trusting any Sharpe/turnover/check. Use `scripts/measure_serial.py`
+  (serial + code_match) for authoritative numbers; treat any concurrent
+  run as suspect.
+- **Pure-PV D0 ceiling**: code-verified, the best pure price-volume D0
+  reversal is ~1.7 Sharpe (raw 1-day, turnover>0.7); most are <1.0. None
+  reach the D0 submission bar (Sharpe>2.0). A submittable D0 factor needs
+  richer non-IV data (fundamentals/news/short-interest), matching the
+  account's existing D0 alphas.
 - `ILLIQUID_MINVOL1M` universe returns 0 fields on `/data-fields`.
 - USA `/data-fields` ceiling: 6,038 distinct field IDs across all
   documented universes × delays (vs the 7,831 the WQ UI advertises;
