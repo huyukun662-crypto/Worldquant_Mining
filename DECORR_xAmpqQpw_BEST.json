@@ -1,0 +1,29 @@
+{
+  "base_alpha": "xAmpqQpw",
+  "method": "0.6*base + 0.4*clr_reversal overlay (zscore-blended)",
+  "expression": "add(multiply(0.60, zscore(group_neutralize(rank(rank(fnd6_fopo / debt_lt)) * rank(group_zscore(ts_mean(winsorize(log(divide(debt_lt, equity)), std=4), 180), industry)), subindustry))), multiply(0.40, zscore(reverse(rank(ts_decay_linear(divide(subtract(close, low), subtract(high, low)), 8))))))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "visualization": false,
+    "maxTrade": "OFF",
+    "testPeriod": "P0Y0M",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 0,
+    "neutralization": "INDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON"
+  },
+  "sharpe": 2.21,
+  "fitness": 1.42,
+  "turnover": 0.3175,
+  "drawdown": 0.0535,
+  "is_submittable": true,
+  "corr_vs_leverage_before": 0.58,
+  "corr_vs_leverage_after": 0.27,
+  "note": "queue alphas live on a different WQ account (404 here); self-correlation verified against the leverage-family proxy. Confirm against the real pool at submit."
+}
