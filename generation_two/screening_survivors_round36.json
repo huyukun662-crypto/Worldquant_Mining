@@ -1,0 +1,20 @@
+[
+  {
+    "expr": "group_neutralize(ts_decay_linear(0.9 * rank(ts_corr(returns, ts_mean(returns, 1), 60)) + 0.1 * -ts_rank(close - vwap, 252), 90), industry)",
+    "success": true,
+    "sharpe": 1.52,
+    "fitness": 1.01,
+    "turnover": 0.2269,
+    "returns": 0.0993,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(ts_decay_linear(0.85 * rank(ts_corr(returns, ts_mean(returns, 1), 60)) + 0.15 * -ts_rank(close - vwap, 252), 90), industry)",
+    "success": true,
+    "sharpe": 1.52,
+    "fitness": 1.01,
+    "turnover": 0.2269,
+    "returns": 0.0993,
+    "error": ""
+  }
+]

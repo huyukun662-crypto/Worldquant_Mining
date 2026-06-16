@@ -1,0 +1,29 @@
+[
+  {
+    "expr": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.9, -1, if_else(ts_rank(returns, 252) < 0.1, 1, 0)), 60), subindustry)",
+    "success": true,
+    "sharpe": 1.58,
+    "fitness": 1.23,
+    "turnover": 0.1936,
+    "returns": 0.1174,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(ts_decay_linear(if_else(ts_rank(returns, 252) > 0.75, -1, if_else(ts_rank(returns, 252) < 0.25, 1, 0)), 60), subindustry)",
+    "success": true,
+    "sharpe": 1.57,
+    "fitness": 1.16,
+    "turnover": 0.2306,
+    "returns": 0.1256,
+    "error": ""
+  },
+  {
+    "expr": "group_neutralize(ts_decay_linear(-ts_rank(returns, 252), 60), sector)",
+    "success": true,
+    "sharpe": 1.47,
+    "fitness": 1.2,
+    "turnover": 0.2364,
+    "returns": 0.1572,
+    "error": ""
+  }
+]
