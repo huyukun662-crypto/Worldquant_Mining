@@ -125,6 +125,7 @@ def main():
     ap.add_argument("--universe", default=None)
     ap.add_argument("--decay", type=int, default=None)
     ap.add_argument("--delay", type=int, default=None)
+    ap.add_argument("--trunc", type=float, default=None)
     args = ap.parse_args()
     s = auth()
     print("authenticated", file=sys.stderr)
@@ -139,6 +140,7 @@ def main():
     if args.universe: override["universe"] = args.universe
     if args.decay is not None: override["decay"] = args.decay
     if args.delay is not None: override["delay"] = args.delay
+    if args.trunc is not None: override["truncation"] = args.trunc
 
     out = []
     for e in args.exprs:
