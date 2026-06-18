@@ -121,6 +121,29 @@ SHARPE_FLOOR = 1.25
 TURNOVER_CEILING = 0.25
 
 
+# Fine-tune batch-3: tight neighbourhood around the batch-2 near-misses. The
+# champion `rank(reverse(ts_av_diff(close, 20)))` hit SH 1.21 / TO 0.221 / DD
+# 0.079 at decay=4; turnover still has headroom, so we sweep low decays and
+# nearby windows to nudge Sharpe past 1.25 while keeping turnover < 0.25.
+SETTING_SPACE_FINETUNE = {
+    "universe":       ["TOP3000", "TOP1000"],
+    "delay":          [1],
+    "decay":          [2, 3, 4, 5, 6],
+    "truncation":     [0.05, 0.08],
+    "neutralization": ["SUBINDUSTRY", "INDUSTRY"],
+    "pasteurization": ["ON"],
+}
+
+# All four have only lookback-window literals (no semantic constants), so
+# window tuning is safe here.
+FINETUNE_FAMILIES = [
+    "rank(reverse(ts_av_diff(close, 20)))",
+    "zscore(reverse(ts_av_diff(close, 20)))",
+    "rank(reverse(ts_av_diff(vwap, 20)))",
+    "zscore(add(reverse(ts_av_diff(vwap, 20)), reverse(ts_delta(close, 5))))",
+]
+
+
 # ---------------------------------------------------------------------------
 # STAGE 2 -- GENERATOR AGENT
 # ---------------------------------------------------------------------------
@@ -403,6 +426,8 @@ def main():
                     help="skip the local parse/backtest sanity check")
     ap.add_argument("--focused", action="store_true",
                     help="batch-2: best families + combinations, lower decay")
+    ap.add_argument("--finetune", action="store_true",
+                    help="batch-3: tight decay/window sweep around batch-2 near-misses")
     args = ap.parse_args()
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
@@ -412,13 +437,21 @@ def main():
     log.info(f"authenticated as {cm.credentials.username}")
     log.info(f"STAGE1 fields (no IV): {FIELDS}")
 
-    setting_space = SETTING_SPACE_FOCUSED if args.focused else SETTING_SPACE
     rng = random.Random(args.seed)
-    if args.focused:
+    if args.finetune:
+        setting_space = SETTING_SPACE_FINETUNE
+        seeds = FINETUNE_FAMILIES[:args.n_exprs]
+        tune_windows = True
+        log.info(f"STAGE2 [FINETUNE] {len(seeds)} near-miss seeds (window tuning on):")
+    elif args.focused:
+        setting_space = SETTING_SPACE_FOCUSED
         seeds = _focused_families(args.n_exprs)
+        tune_windows = False
         log.info(f"STAGE2 [FOCUSED] {len(seeds)} best-family / combination seeds:")
     else:
+        setting_space = SETTING_SPACE
         seeds = _seed_families(rng, args.n_exprs)
+        tune_windows = True
         log.info(f"STAGE2 generated {len(seeds)} fresh low-turnover seeds:")
     for s in seeds:
         log.info(f"   {s}")
@@ -441,7 +474,7 @@ def main():
         log.info(f"=== [{i}/{len(seeds)}] {expr}")
         all_results.extend(search_one(cm.session, expr, args.trials,
                                        args.seed + i, setting_space,
-                                       tune_windows=not args.focused))
+                                       tune_windows=tune_windows))
         with open(args.out, "w") as f:
             json.dump([asdict(r) for r in all_results], f, indent=2)
 
