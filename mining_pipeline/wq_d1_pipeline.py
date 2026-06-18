@@ -94,6 +94,18 @@ SETTING_SPACE = {
     "pasteurization": ["ON"],
 }
 
+# Focused batch: batch-1 showed turnover sat at 0.03-0.10 vs the 0.25 cap, so
+# there is ample turnover headroom to spend on Sharpe. Lower decay / lighter
+# smoothing lifts Sharpe while staying well under the cap.
+SETTING_SPACE_FOCUSED = {
+    "universe":       ["TOP3000", "TOP1000"],
+    "delay":          [1],
+    "decay":          [0, 2, 4, 8],             # spend turnover headroom on Sharpe
+    "truncation":     [0.02, 0.05, 0.08],
+    "neutralization": ["INDUSTRY", "SUBINDUSTRY"],   # keep drawdown contained
+    "pasteurization": ["ON"],
+}
+
 FIXED_SETTINGS = {
     "instrumentType": "EQUITY",
     "region":         "USA",
@@ -163,6 +175,33 @@ def _seed_families(rng: random.Random, n: int) -> list[str]:
             seen.add(e)
             out.append(e)
     return out
+
+
+def _focused_families(n: int) -> list[str]:
+    """Batch-2 seeds: concentrate on the families that scored best in batch-1
+    (vwap/close mean-reversion via ts_av_diff and vol-scaled price reversal),
+    with lighter smoothing, fresh signal COMBINATIONS, plus winsorize / liquidity
+    gating to keep drawdown bounded. All operators verified accessible. Fresh
+    constructions -- no Alpha101 / classical-template reuse."""
+    fams = [
+        # best batch-1 family, lighter smoothing
+        "zscore(reverse(ts_av_diff(vwap, 20)))",
+        "rank(reverse(ts_av_diff(close, 20)))",
+        # vol-scaled reversal, no extra smoothing
+        "zscore(divide(reverse(ts_delta(open, 5)), ts_std_dev(open, 20)))",
+        # combination of two orthogonal reversals (price level + recent change)
+        "zscore(add(reverse(ts_av_diff(vwap, 20)), reverse(ts_delta(close, 5))))",
+        # winsorize to cut tail drawdown
+        "winsorize(zscore(reverse(ts_av_diff(vwap, 20))), std=4)",
+        # price reversal de-correlated from a volume-spike signal
+        "rank(subtract(reverse(ts_av_diff(close, 20)), ts_zscore(volume, 20)))",
+        # light smoothing of the mean-reversion signal
+        "zscore(ts_mean(reverse(ts_av_diff(vwap, 10)), 5))",
+        # liquidity-gated reversal (trade only when ADV is rising)
+        "trade_when(greater(adv20, ts_delay(adv20, 5)), "
+        "zscore(reverse(ts_av_diff(vwap, 20))), -1)",
+    ]
+    return fams[:n] if n < len(fams) else fams
 
 
 # ---------------------------------------------------------------------------
@@ -320,8 +359,13 @@ def _score(res: WQResult) -> float:
     return score
 
 
-def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
-    positions = integer_positions(expression)
+def search_one(session, expression: str, n_trials: int, seed: int,
+               setting_space: dict = SETTING_SPACE,
+               tune_windows: bool = True) -> list[WQResult]:
+    # When tune_windows is False the expression's integer literals are left
+    # intact -- needed for hand-crafted seeds with semantic constants
+    # (winsorize std, trade_when exit) that must not be remapped to lookbacks.
+    positions = integer_positions(expression) if tune_windows else []
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     study = optuna.create_study(direction="maximize",
                                 sampler=optuna.samplers.TPESampler(seed=seed))
@@ -329,7 +373,7 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
 
     def objective(trial):
         settings = {k: trial.suggest_categorical(k, v)
-                    for k, v in SETTING_SPACE.items()}
+                    for k, v in setting_space.items()}
         windows = {p: trial.suggest_int(f"w{p}", 5, 60) for p in positions}
         final = parameterize(expression, windows) if windows else expression
         log.info(f"   trial settings={ {k:settings[k] for k in ('universe','decay','neutralization','truncation')} } windows={windows}")
@@ -357,6 +401,8 @@ def main():
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
     ap.add_argument("--no-triage", action="store_true",
                     help="skip the local parse/backtest sanity check")
+    ap.add_argument("--focused", action="store_true",
+                    help="batch-2: best families + combinations, lower decay")
     args = ap.parse_args()
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
@@ -366,9 +412,14 @@ def main():
     log.info(f"authenticated as {cm.credentials.username}")
     log.info(f"STAGE1 fields (no IV): {FIELDS}")
 
+    setting_space = SETTING_SPACE_FOCUSED if args.focused else SETTING_SPACE
     rng = random.Random(args.seed)
-    seeds = _seed_families(rng, args.n_exprs)
-    log.info(f"STAGE2 generated {len(seeds)} fresh low-turnover seeds:")
+    if args.focused:
+        seeds = _focused_families(args.n_exprs)
+        log.info(f"STAGE2 [FOCUSED] {len(seeds)} best-family / combination seeds:")
+    else:
+        seeds = _seed_families(rng, args.n_exprs)
+        log.info(f"STAGE2 generated {len(seeds)} fresh low-turnover seeds:")
     for s in seeds:
         log.info(f"   {s}")
 
@@ -388,7 +439,9 @@ def main():
     all_results: list[WQResult] = []
     for i, expr in enumerate(seeds, 1):
         log.info(f"=== [{i}/{len(seeds)}] {expr}")
-        all_results.extend(search_one(cm.session, expr, args.trials, args.seed + i))
+        all_results.extend(search_one(cm.session, expr, args.trials,
+                                       args.seed + i, setting_space,
+                                       tune_windows=not args.focused))
         with open(args.out, "w") as f:
             json.dump([asdict(r) for r in all_results], f, indent=2)
 
