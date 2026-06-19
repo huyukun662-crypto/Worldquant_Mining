@@ -175,3 +175,21 @@ once. Best achievable depends on which check the user relaxes:
 - relax LOW_SHARPE       -> akd39vOW (SH 1.71, fresh illiq+short_interest)
 - relax CONCENTRATED_WT  -> zq9zQ391 fresh_ey (SH 2.07, short_interest)
 - free SELF_CORRELATION  -> hide/withdraw 1Y751gZm, then submit 88zAK5Kl
+
+## Update 6: theme map of the 13 submitted D0 alphas (why everything correlates)
+
+Fetched the actual expressions of all 13 ACTIVE D0 alphas. Themes occupied:
+- illiquidity/Amihud (H-L)/(C*V): 1Y751gZm, d5QK2b3E
+- short-horizon reversal ts_av_diff(close): 1Y751gZm, 1YgRP5vX
+- volume ratio vol5/vol60: d5QK2b3E
+- analyst estimate revisions est_epsr/est_fcf/est_capex: xAxOWnVW, LLRMo5Pv
+- value/leverage fundamentals liab/assets, income/cap, sales/cap: 1YgRP5vX, E5kkmL1L
+- short interest (news_short_interest / shorted_shares_count_all / nws12): vRmkVOW3, E5kNGQxL, GrkeWwx5
+- news pct moves news_pct_30/90min: vRmkVOW3, GrkeWwx5, akN9pwQw, 1Yo2OPjm
+- **IV skew (call-put IV) x5**: E5kkmL1L, mLZkOw6x, 0mz3J1AG, akN9pwQw, 1Yo2OPjm
+- sentiment snt_value: akN9pwQw
+
+The portfolio already spans the canonical high-Sharpe D0 surface. Remaining
+thin axes probed (earnings4 ORATS option dataset, delay-0):
+- option open interest momentum (aggregate_option_open_interest_2): SH -0.18 (noise)
+- [VRP / vol-term-structure / earnings-vol premium: pending]
