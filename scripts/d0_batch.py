@@ -38,10 +38,10 @@ def auth():
 def sim_one(s, expr, settings):
     st = dict(BASE); st.update(settings or {})
     body = {"type": "REGULAR", "settings": st, "regular": expr}
-    for _ in range(6):
+    for _ in range(40):
         r = s.post(f"{API}/simulations", json=body, timeout=30)
-        if r.status_code == 429:
-            time.sleep(float(r.headers.get("Retry-After") or 15)); continue
+        if r.status_code == 429 or "CONCURRENT_SIMULATION_LIMIT" in r.text:
+            time.sleep(float(r.headers.get("Retry-After") or 12)); continue
         break
     if r.status_code != 201:
         return {"ok": False, "stage": "submit", "code": r.status_code,
