@@ -1,114 +1,205 @@
-[
-  {
-    "ok": true,
-    "alpha_id": "blLEVxvM",
-    "expression": "normalize(reverse(ts_av_diff(close, 21)))",
-    "settings": {
-      "region": "USA",
-      "universe": "TOP3000",
-      "delay": 1,
+{
+  "best_factors": [
+    {
+      "rank": 1,
+      "alpha_id": "rKomaon1",
+      "note": "Pareto-dominates blLEVxvM on all 4 objectives; raises portfolio Sharpe 2.26->2.30",
+      "expression": "normalize(reverse(ts_av_diff(close, 14)))",
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 8,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 1.37,
+        "turnover": 0.2112,
+        "drawdown": 0.0708,
+        "fitness": 1.1,
+        "returns": 0.1356,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS"
+          }
+        ]
+      },
+      "self_correlation": {
+        "max": 0.3463,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5581363.0,
+          "longCount": 1384,
+          "shortCount": 1722,
+          "drawdown": 0.0348,
+          "turnover": 0.1514,
+          "returns": 0.1129,
+          "margin": 0.001491,
+          "sharpe": 2.3,
+          "fitness": 1.99
+        },
+        "pnl_delta": 564610.0,
+        "drawdown_improved": true
+      }
+    },
+    {
+      "rank": 2,
+      "alpha_id": "9qwQ5mkq",
+      "note": "highest standalone Sharpe 1.43, largest PnL contribution; turnover 0.246 near cap",
+      "expression": "normalize(reverse(ts_av_diff(close, 17)))",
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 1.43,
+        "turnover": 0.2455,
+        "drawdown": 0.0776,
+        "fitness": 1.1,
+        "returns": 0.1454,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS"
+          }
+        ]
+      },
+      "self_correlation": {
+        "max": 0.382,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5743791.0,
+          "longCount": 1384,
+          "shortCount": 1722,
+          "drawdown": 0.0339,
+          "turnover": 0.1629,
+          "returns": 0.1162,
+          "margin": 0.001426,
+          "sharpe": 2.31,
+          "fitness": 1.95
+        },
+        "pnl_delta": 727038.0,
+        "drawdown_improved": true
+      }
+    }
+  ],
+  "superseded": [
+    {
+      "alpha_id": "blLEVxvM",
+      "expression": "normalize(reverse(ts_av_diff(close, 21)))",
       "decay": 4,
-      "neutralization": "SUBINDUSTRY",
-      "truncation": 0.01,
-      "pasteurization": "ON"
+      "is": {
+        "sharpe": 1.32,
+        "turnover": 0.2178,
+        "drawdown": 0.0909,
+        "fitness": 1.04
+      }
     },
-    "is": {
-      "sharpe": 1.32,
-      "turnover": 0.2178,
-      "drawdown": 0.0909,
-      "fitness": 1.04,
-      "returns": 0.1363,
-      "checks": [
-        {
-          "name": "LOW_SHARPE",
-          "result": "PASS"
-        },
-        {
-          "name": "LOW_FITNESS",
-          "result": "PASS"
-        },
-        {
-          "name": "LOW_TURNOVER",
-          "result": "PASS"
-        },
-        {
-          "name": "HIGH_TURNOVER",
-          "result": "PASS"
-        },
-        {
-          "name": "CONCENTRATED_WEIGHT",
-          "result": "PASS"
-        },
-        {
-          "name": "LOW_SUB_UNIVERSE_SHARPE",
-          "result": "PASS"
-        },
-        {
-          "name": "SELF_CORRELATION",
-          "result": "PENDING"
-        },
-        {
-          "name": "MATCHES_COMPETITION",
-          "result": "PASS"
-        }
-      ]
-    },
-    "all_is_checks_pass_or_pending": true
-  },
-  {
-    "ok": true,
-    "alpha_id": "MPpmXdba",
-    "expression": "normalize(reverse(ts_av_diff(close, 21)))",
-    "settings": {
-      "region": "USA",
-      "universe": "TOP3000",
-      "delay": 1,
+    {
+      "alpha_id": "MPpmXdba",
+      "expression": "normalize(reverse(ts_av_diff(close, 21)))",
       "decay": 6,
-      "neutralization": "SUBINDUSTRY",
-      "truncation": 0.01,
-      "pasteurization": "ON"
-    },
-    "is": {
-      "sharpe": 1.26,
-      "turnover": 0.1866,
-      "drawdown": 0.0855,
-      "fitness": 1.04,
-      "returns": 0.1278,
-      "checks": [
-        {
-          "name": "LOW_SHARPE",
-          "result": "PASS"
-        },
-        {
-          "name": "LOW_FITNESS",
-          "result": "PASS"
-        },
-        {
-          "name": "LOW_TURNOVER",
-          "result": "PASS"
-        },
-        {
-          "name": "HIGH_TURNOVER",
-          "result": "PASS"
-        },
-        {
-          "name": "CONCENTRATED_WEIGHT",
-          "result": "PASS"
-        },
-        {
-          "name": "LOW_SUB_UNIVERSE_SHARPE",
-          "result": "PASS"
-        },
-        {
-          "name": "SELF_CORRELATION",
-          "result": "PENDING"
-        },
-        {
-          "name": "MATCHES_COMPETITION",
-          "result": "PASS"
-        }
-      ]
-    },
-    "all_is_checks_pass_or_pending": true
-  }
-]
+      "is": {
+        "sharpe": 1.26,
+        "turnover": 0.1866,
+        "drawdown": 0.0855,
+        "fitness": 1.04
+      }
+    }
+  ],
+  "spec": "D1 (delay=1), no IV fields, submittable, low turnover & low max-drawdown; Pareto-improved via window-length sweep"
+}
