@@ -52,8 +52,13 @@
 | 低波 (ts_std_dev, unsystematic_risk) | ≈0 | 失败 |
 | 低 Beta (beta_*_spy) | ≈0 | 失败 |
 | 量价 (ts_corr(close,volume,·), volume-weighted reversal) | ≤0.93 | 失败 |
+| **社媒情绪** (socialmedia12: scl12_sentiment/snt_value/buzz, cov 1.0) | ≤0.95 (FIT≤0.22) | 失败 |
+| **期权波动率** (option8: IV skew / VRP / IV 趋势, cov 0.97) | ≤0.84 | 失败 |
 
 这些虽与反转正交(相关接近 0),但 SH 远低于 1.25,无法独立通过 submit。
+**已覆盖该账号全部主要数据家族**(价量、基本面 fundamental6/model16、分析师
+analyst4、风险 model51、社媒 socialmedia12、期权 option8)—— 仅短期反转一族能过
+SH 1.25,且其所有变体彼此相关 >0.70。
 
 ### 5) 单表达式"复合/混合"也救不回来(关键)
 
