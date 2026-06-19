@@ -27,20 +27,29 @@
 - 同表达式换中性化:SUBINDUSTRY vs INDUSTRY 相关 **0.95**;vs MARKET/SECTOR 同样 >0.9。
 - 换 decay、换 universe 也都 >0.7。→ **换参数无法降相关。**
 
-### 2) 要把相关性压到 0.70 以下,必须拉长反转周期 —— 但 fitness 随之跌破 1.0
+### 2) 要把相关性压到 0.70 以下,必须拉长反转周期 —— 但 fitness 顶在 ~0.98
 
-`rank(-ts_rank(returns, N))` decay16,随 N 增大:
+`rank(-ts_rank(returns, N))`,横截面相关随 N 增大单调下降,fitness 先升后稳:
 
-| N (周期) | 与 winner 相关 | SH | Fitness | 能否 submit |
+| N (周期) | 与 winner 相关 | 最佳 SH | 最佳 Fitness | 能否 submit |
 |:---:|:---:|:---:|:---:|:---:|
 | 5   | 1.00 | 2.14 | **1.01** | ✅ (基准) |
 | 22  | 0.71 | 1.69 | 0.95 | ❌ fitness |
 | 40  | 0.65 | 1.51 | 0.84 | ❌ fitness |
 | 60  | 0.63 | 1.41 | 0.77 | ❌ fitness |
-| **120** | **0.61** | 1.54 | 0.90 | ❌ fitness |
+| 120 | 0.61 | 1.68 | 0.93 | ❌ fitness |
+| 200 | ~0.55 | 1.59 | 0.97 | ❌ fitness |
+| **250** | **0.51** | 1.57 | **0.98** | ❌ fitness(差 0.02)|
+| 300 | ~0.50 | 1.51 | 0.95 | ❌ fitness |
 
-对 r120 进一步扫 decay {16,24,32,48} 与 trunc {0.08,0.12,0.15}:fitness 顶在
-**0.90**(decay16),更高 decay 反而下降。长周期反转的 fitness 存在 ~0.90 的结构上限。
+**returns-250 (decay≈24, SUBINDUSTRY) 是最优解:与 winner 相关仅 0.51、SH 1.57,
+但 Fitness 顶在 0.98**(对 decay {16,20,22,24,28} × trunc {0.08,0.10,0.12,0.15}
+全部扫过,均 0.96–0.98,过不去 1.0)。
+
+**为何 0.98 是硬上限**:Fitness = SH·√(|ret|/max(TO,0.125))。长周期反转的年化
+收益 ret≈16%、SH≈1.55、TO≈0.40 三者强耦合 —— decay 降 TO 的同时同比例压 SH,
+乘积封顶。NONE 中性化能把 TO 压到 0.07(< 0.125 floor)使 Fitness 飙到 1.7,
+但市场方向暴露又把 SH 锁死在 ~0.94(过不了 LOW_SHARPE)。两端都差一口气。
 
 ### 3) 与反转正交的家族,信号太弱、远不到 SH 1.25
 
@@ -84,12 +93,12 @@ Sharpe、降相关):
 两个要求直接冲突:能过 fitness 的都是短反转(相关 >0.70),而相关 <0.70 的
 (长周期反转 / 正交家族)都过不了 fitness/sharpe。
 
-最接近的"低相关候选":
+最接近的"低相关候选"(经 batch18–21 细化,大幅优于早期的 r120):
 
 ```
-rank(-ts_rank(returns, 120))  decay16·SUBINDUSTRY·TOP1000   (alpha e7OA37LJ)
-  与基准相关 0.61 (< 0.70 ✓) · SH 1.54 · TO 0.46 · FIT 0.90
-  仅差 LOW_FITNESS 一项 (0.90 < 1.0)
+rank(-ts_rank(returns, 250))  decay24·SUBINDUSTRY·TOP1000   (alpha omK2rkWb)
+  与基准相关 0.51 (<< 0.70 ✓) · SH 1.57 · TO 0.43 · FIT 0.98
+  仅差 LOW_FITNESS 一项 (0.98 < 1.0,差 0.02)
 ```
 
 ### 4) 跨区域去相关也不可行
