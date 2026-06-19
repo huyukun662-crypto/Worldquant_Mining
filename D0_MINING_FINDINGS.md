@@ -156,3 +156,22 @@ reaches that Sharpe correlates ~0.9 with it. The fresh + 2.0 + concentration
 + self-corr requirements are mutually exclusive on this account/period
 without either (a) un-submitting 1Y751gZm, (b) accepting a one-check miss,
 or (c) changing region/universe.
+
+## Update 5: escape routes blocked — deadlock is final
+
+Per user direction "switch direction / region":
+- **Other regions BLOCKED**: this account has ONLY USA access. GLB/EUR/CHN/
+  ASI/JPN return HTTP 400 "Region X is not available"; delay-0 is USA-only.
+  The account's 36 SUBMITTED alphas are all USA (13 D0, 23 D1).
+- **Smaller USA universes fail both ways**: fresh_ey (short_interest) on
+  TOP1000 -> SH -0.80 (the short-interest anomaly REVERSES in large caps)
+  AND CONCENTRATED_WEIGHT still 0.5 (the 2021-06-07 sparse-update spike
+  persists regardless of universe size).
+
+FINAL: on this account (USA-only, delay-0, IQC2026 2.0 bar, 1Y751gZm already
+submitted) there is NO fresh D0 factor passing all three binding checks at
+once. Best achievable depends on which check the user relaxes:
+- relax SELF_CORRELATION -> 88zAK5Kl (SH 2.01, illiq+reversal; ~=1Y751gZm)
+- relax LOW_SHARPE       -> akd39vOW (SH 1.71, fresh illiq+short_interest)
+- relax CONCENTRATED_WT  -> zq9zQ391 fresh_ey (SH 2.07, short_interest)
+- free SELF_CORRELATION  -> hide/withdraw 1Y751gZm, then submit 88zAK5Kl
