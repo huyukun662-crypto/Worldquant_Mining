@@ -3,28 +3,86 @@
   "self_correlation_note": "self-corr measured vs the account's 19 SUBMITTED (ACTIVE) alphas via /correlations/self. Limit 0.7.",
   "submittable_factors": [
     {
-      "name": "A — illiquidity(750) + dual reversal [PRIMARY]",
+      "name": "A \u2014 illiquidity(750) + dual reversal [PRIMARY]",
       "alpha_id": "88zq7z7m",
       "expression": "add(add(-zscore(ts_decay_linear(ts_mean(divide(subtract(high,low),multiply(close,volume)),750),350)), -zscore(ts_decay_linear(ts_av_diff(close,5),5))), multiply(0.4, -zscore(ts_decay_linear(ts_av_diff(close,20),10))))",
-      "settings": {"region":"USA","universe":"TOP3000","delay":0,"neutralization":"NONE","decay":4,"truncation":0.08},
-      "sharpe": 2.05, "fitness": 3.04, "turnover": 0.105, "sub_universe_sharpe": 1.11, "self_corr": 0.485, "all_checks": "PASS"
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 0,
+        "neutralization": "NONE",
+        "decay": 4,
+        "truncation": 0.08
+      },
+      "sharpe": 2.05,
+      "fitness": 3.04,
+      "turnover": 0.105,
+      "sub_universe_sharpe": 1.11,
+      "self_corr": 0.485,
+      "all_checks": "PASS"
     },
     {
-      "name": "B — illiquidity(1000) + reversal variant [STRUCTURALLY DISTINCT]",
+      "name": "B \u2014 illiquidity(1000) + reversal variant [STRUCTURALLY DISTINCT]",
       "alpha_id": "MPpA8aKo",
       "expression": "add(add(-zscore(ts_decay_linear(ts_mean(divide(subtract(high,low),multiply(close,volume)),1000),400)), -zscore(ts_decay_linear(ts_av_diff(close,5),5))), multiply(0.5, -zscore(ts_decay_linear(ts_av_diff(close,15),8))))",
-      "settings": {"region":"USA","universe":"TOP3000","delay":0,"neutralization":"NONE","decay":4,"truncation":0.08},
-      "sharpe": 2.05, "fitness": 3.08, "turnover": 0.111, "sub_universe_sharpe": 1.19, "self_corr": 0.483, "all_checks": "PASS"
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 0,
+        "neutralization": "NONE",
+        "decay": 4,
+        "truncation": 0.08
+      },
+      "sharpe": 2.05,
+      "fitness": 3.08,
+      "turnover": 0.111,
+      "sub_universe_sharpe": 1.19,
+      "self_corr": 0.483,
+      "all_checks": "PASS"
     }
   ],
   "low_corr_diversifiers_not_yet_2sharpe": [
-    {"name":"pure fast reversal","expr":"-zscore(ts_decay_linear(ts_av_diff(close,5),5))","sharpe":0.62,"self_corr":0.40,"note":"lowest correlation; weak alone"},
-    {"name":"vwap reversal","expr":"-zscore(ts_decay_linear(ts_av_diff(vwap,10),10))","sharpe":1.0,"self_corr":"~low (reversal family)"}
+    {
+      "name": "pure fast reversal",
+      "expr": "-zscore(ts_decay_linear(ts_av_diff(close,5),5))",
+      "sharpe": 0.62,
+      "self_corr": 0.4,
+      "note": "lowest correlation; weak alone"
+    },
+    {
+      "name": "vwap reversal",
+      "expr": "-zscore(ts_decay_linear(ts_av_diff(vwap,10),10))",
+      "sharpe": 1.0,
+      "self_corr": "~low (reversal family)"
+    },
+    {
+      "name": "intraday close-position reversal (demand-pressure)",
+      "expr": "-zscore(ts_decay_linear(ts_av_diff(divide(subtract(close,low),subtract(high,low)),20),20))",
+      "sharpe": 1.01,
+      "self_corr": 0.416,
+      "note": "NEW economic mechanism (Williams %R / buying-pressure mean-reversion), distinct from close-to-close reversal and liquidity. Low corr 0.42 but high turnover (0.45); underperforms as a composite partner vs close-reversal (illiq+close-pos-rev caps ~1.4-1.76 < A/B 2.05)."
+    }
   ],
   "high_corr_avoid": [
-    {"name":"stale-price illiquidity","sharpe":1.03,"self_corr":0.73,"note":"FAILS self-corr (overlaps submitted price-autocorr factors)"},
-    {"name":"close-to-close variance","self_corr":0.91,"note":"FAILS — same family as submitted range/vol factors"}
+    {
+      "name": "stale-price illiquidity",
+      "sharpe": 1.03,
+      "self_corr": 0.73,
+      "note": "FAILS self-corr (overlaps submitted price-autocorr factors)"
+    },
+    {
+      "name": "close-to-close variance",
+      "self_corr": 0.91,
+      "note": "FAILS \u2014 same family as submitted range/vol factors"
+    },
+    {
+      "name": "intraday close-position MOMENTUM",
+      "sharpe": 0.6,
+      "self_corr": 0.84,
+      "note": "FAILS \u2014 correlates with submitted intraday-return factors"
+    }
   ],
-  "finding": "Low-correlation comes from the REVERSAL family (corr ~0.40). High Sharpe comes from Amihud illiquidity (corr 0.12). Their composite (+platform decay=4) yields SH 2.05 at corr ~0.48 — the only structure clearing the SH>2 gate while staying uncorrelated. Both submittable factors share this DNA (so correlated with each other ~0.8) but each independently passes corr<0.7 vs the submitted pool.",
-  "note": "Verified via check submit only; NOT submitted, per instruction."
+  "finding": "Low-correlation comes from the REVERSAL family (corr ~0.40). High Sharpe comes from Amihud illiquidity (corr 0.12). Their composite (+platform decay=4) yields SH 2.05 at corr ~0.48 \u2014 the only structure clearing the SH>2 gate while staying uncorrelated. Both submittable factors share this DNA (so correlated with each other ~0.8) but each independently passes corr<0.7 vs the submitted pool.",
+  "note": "Verified via check submit only; NOT submitted, per instruction.",
+  "round32_33_summary": "Explored genuinely different economics (intraday close-position/demand-pressure, OBV sign*volume, range dynamics, price-volume corr). Only close-position REVERSAL is a new low-corr source (0.42). OBV/range/price-vol-corr all weak or high-corr. Best submittable factors remain A & B (Amihud illiquidity + close-to-close reversal)."
 }
