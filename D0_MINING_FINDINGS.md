@@ -76,3 +76,49 @@ IC on this account); a rettype sweep + fresh composite around it is in
 progress. Even so, reaching a clean fresh 2.0 looks unlikely without
 leaning on the proven `est_*`/`rel_ret`/risk-model machinery, which would
 reduce novelty.
+
+## Update 2: short_interest authorized — concentration is the wall
+
+The user authorized `news_short_interest`. Best fresh construction:
+`fresh_ey` (zq9zQ391) =
+`signed_power(winsorize(add(group_zscore(ts_backfill(news_short_interest,44),
+subindustry), multiply(0.3, zscore(ts_backfill(divide(ebit,
+enterprise_value),22)))), std=4), 0.05)`
+-> **SH 2.07, FIT 3.27, TO 0.091**, neut SUBINDUSTRY, delay 0.
+`/check`: passes LOW_SHARPE(2.0), LOW_FITNESS(1.3), turnover, sub-universe;
+**FAILS CONCENTRATED_WEIGHT** (0.5 on 2021-06-07, limit 0.1).
+
+CONCENTRATED_WEIGHT is **structural** to news_short_interest: the field is
+sparse (bi-monthly, partial coverage). On 2021-06-07 only a few names have
+data -> after neutralization one name gets 50% of the book. This is why
+ALL 70+ news_short_interest alphas on this account FAIL CONCENTRATED_WEIGHT
+and remain UNSUBMITTED. Verified unfixable while keeping SH:
+  - lower truncation (0.02): no change (CW computed on neutralized weights)
+  - ts_decay_linear / decay=40: no change (not a one-day spike)
+  - nanHandling ON: no change
+  - longer ts_backfill (250): CW unchanged, SH collapses (stale)
+  - if_else(is_nan->0) + dense term: CW PASSES but SH collapses to ~1.1
+    (the SH *is* the concentration in covered names).
+
+## Update 3: dense Amihud is the submittable archetype, caps ~1.7
+
+The account's only SUBMITTED D0 alpha (1Y751gZm, SH 2.05, all checks pass)
+is dense PV, neut NONE: Amihud illiquidity (high-low)/(close*volume) over
+750d + 5/20d reversal. Dense -> CONCENTRATED_WEIGHT passes.
+
+Fresh dense Amihud (different windows) passes ALL checks except LOW_SHARPE:
+  - `-zscore(ts_decay_linear(ts_mean((H-L)/(C*V),250),100))` -> SH 1.57
+  - `-zscore(ts_decay_linear(ts_mean((H-L)/(C*V),500),200))` -> SH 1.64
+  - + 0.5*nan-safe short_interest tilt (ami_si05) -> **SH 1.71** (best dense)
+  - higher SI weight (1.5) -> SH drops to 1.36 (nan->0 dilutes the base)
+
+So the dense (CONCENTRATED_WEIGHT-passing) ceiling for FRESH signals in this
+period is ~1.7, while concentrated short_interest reaches 2.07 but fails
+CONCENTRATED_WEIGHT. The two binding submit checks (LOW_SHARPE>=2.0 AND
+CONCENTRATED_WEIGHT) are in direct tension for fresh signals.
+
+Remaining lever (in test): replicate the PROVEN dense 2.0 recipe
+(Amihud-750 + reversal, like 1Y751gZm) with different windows + a low-vol
+term for distinctiveness -> dense (CW pass) AND SH~2.0. Self-correlation vs
+the submitted 1Y751gZm is evaluated only at competition close (PENDING now),
+so cannot be confirmed this session.
