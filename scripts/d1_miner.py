@@ -48,7 +48,7 @@ def settings(universe="TOP1000", neut="SUBINDUSTRY", decay=4, trunc=0.08):
 
 def post_sim(s, expr, st):
     body = {"type": "REGULAR", "settings": st, "regular": expr}
-    for _ in range(6):
+    for _ in range(40):  # generous: tolerate long concurrency saturation
         r = s.post(f"{API}/simulations", json=body, timeout=30)
         if r.status_code == 429:
             time.sleep(float(r.headers.get("Retry-After") or 15)); continue
