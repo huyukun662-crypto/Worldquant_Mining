@@ -193,3 +193,25 @@ The portfolio already spans the canonical high-Sharpe D0 surface. Remaining
 thin axes probed (earnings4 ORATS option dataset, delay-0):
 - option open interest momentum (aggregate_option_open_interest_2): SH -0.18 (noise)
 - [VRP / vol-term-structure / earnings-vol premium: pending]
+
+## Update 7: 2.0 bar is a HARD universal submit gate; illiquidity-variant decorrelation fails
+
+`/alphas/{id}/check` on YPpZJQmw (textbook return-based Amihud + reversal):
+- LOW_SHARPE        FAIL  limit=2.0  value=1.68   <- 2.0 is the universal gate
+- MATCHES_COMPETITION PASS (separate)            <- so 2.0 is NOT competition-only
+- CONCENTRATED_WEIGHT FAIL 0.108 ; LOW_SUB_UNIVERSE_SHARPE FAIL 0.42
+- SELF_CORRELATION  PENDING (only resolved at real submit; the 0.94 figure for
+  88zAK5Kl came from an actual submit attempt, not /check)
+
+Decorrelation attempts on the proven 2.0 illiquidity factor:
+- vector_neut(88zAK5Kl, 1Y751gZm) residual -> SH 1.27 (Sharpe IS the correlated
+  illiquidity-trend component; removing correlation removes the Sharpe)
+- return-based Amihud variant -> SH 1.68 (different formula loses the Sharpe)
+- inverse-turnover variant -> (illiquidity proxy, same niche)
+
+CONCLUSION reinforced: any D0 factor strong enough to clear the 2.0 gate on this
+universe via the illiquidity premium IS 1Y751gZm; decorrelating it kills the Sharpe.
+NEXT: probe the orthogonal anomaly axes the 13 submitted alphas do NOT occupy at
+all -- intermediate momentum (12-1), 52-week-high proximity, lottery/MAX. These are
+economically orthogonal to illiquidity/reversal/short-int/IV-skew/analyst/news, so
+if any clears 2.0 its self-correlation should be low -> genuinely submittable.
