@@ -122,3 +122,37 @@ Remaining lever (in test): replicate the PROVEN dense 2.0 recipe
 term for distinctiveness -> dense (CW pass) AND SH~2.0. Self-correlation vs
 the submitted 1Y751gZm is evaluated only at competition close (PENDING now),
 so cannot be confirmed this session.
+
+## Update 4: SELF_CORRELATION is the real third wall — three-way deadlock
+
+Critical discovery: `/alphas/{id}/check` DOES return SELF_CORRELATION
+(value, vs SUBMITTED alphas) once WQ finishes computing it (async, minutes).
+The account has 1Y751gZm SUBMITTED (Amihud (H-L)/(C*V)-750 + close reversal,
+SH 2.05). This makes a THIRD binding check active.
+
+Mapped the full constraint frontier (>80 D0 sims). Four near-miss
+candidates, each failing EXACTLY ONE submit check:
+
+| alpha | construction | SH | FIT | fails |
+|---|---|---:|---:|---|
+| zq9zQ391 (fresh_ey) | short_interest + ebit/ev | 2.07 | 3.27 | CONCENTRATED_WEIGHT |
+| 88zAK5Kl | (H-L)/(C*V) illiq-500 + reversal | 2.01 | 2.73 | SELF_CORRELATION 0.94 |
+| xAxMmWep | 88zAK5Kl + 0.4*short_interest | 2.01 | 2.70 | SELF_CORRELATION 0.93 |
+| akd39vOW | illiq-500 + 0.5*short_interest | 1.71 | 2.25 | LOW_SHARPE |
+
+The three binding checks are JOINTLY UNSATISFIABLE for a fresh D0 factor:
+- **SH>=2.0 + CONCENTRATED_WEIGHT pass** => requires the (H-L)/(C*V) illiq +
+  close-reversal backbone, i.e. a 1Y751gZm clone => SELF_CORRELATION 0.93+.
+- **SH>=2.0 + low self-corr** => requires short_interest (orthogonal
+  economics) => fails CONCENTRATED_WEIGHT (sparse data, 50% single-name).
+- **CW pass + low self-corr** => achievable but SH caps ~1.7 (the SI tilt
+  needed to cut self-corr below 0.7 dilutes SH below 2.0; a structurally
+  DIFFERENT illiquidity — return-based |returns|/(C*V) + vwap reversal,
+  Xgpq22Pb — only reaches SH 1.63).
+
+ROOT CAUSE: the user has ALREADY SUBMITTED (1Y751gZm) the single best
+dense-2.0 D0 archetype for the 2019-2023 window, so any FRESH factor that
+reaches that Sharpe correlates ~0.9 with it. The fresh + 2.0 + concentration
++ self-corr requirements are mutually exclusive on this account/period
+without either (a) un-submitting 1Y751gZm, (b) accepting a one-check miss,
+or (c) changing region/universe.
