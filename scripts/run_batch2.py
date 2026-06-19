@@ -20,7 +20,7 @@ cands = [
     ("-ts_corr(close, volume, 10)",            settings("TOP500", "SUBINDUSTRY", decay=6)),
 ]
 
-s, done = run_batch(cands, max_concurrent=4)
+s, done = run_batch(cands, max_concurrent=3)
 json.dump([{k: v for k, v in d.items() if k != "st"} for d in done],
           open("batch2.json", "w"), indent=2)
 print("=== SAVED batch2.json ===")
