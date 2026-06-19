@@ -1,0 +1,28 @@
+{
+  "status": "SUBMITTABLE — all WQ Brain submission checks PASS",
+  "alpha_id": "vRLV0d83",
+  "expression": "add(add(-zscore(ts_decay_linear(ts_mean(divide(subtract(high, low), multiply(close, volume)), 750), 350)), -zscore(ts_decay_linear(ts_av_diff(close, 5), 5))), multiply(0.4, -zscore(ts_decay_linear(ts_av_diff(close, 20), 10))))",
+  "settings": {
+    "region": "USA", "universe": "TOP3000", "delay": 0,
+    "neutralization": "NONE", "truncation": 0.08, "pasteurization": "ON",
+    "decay": 0, "language": "FASTEXPR"
+  },
+  "is_metrics": {
+    "sharpe": 2.03, "fitness": 2.55, "turnover": 0.1767,
+    "returns": 0.2785, "drawdown": 0.1108, "sub_universe_sharpe": 1.02,
+    "self_correlation": 0.4685
+  },
+  "checks": {
+    "LOW_SHARPE": "PASS (2.03 >= 2.0)",
+    "LOW_FITNESS": "PASS (2.55 >= 1.3)",
+    "LOW_TURNOVER": "PASS",
+    "HIGH_TURNOVER": "PASS (0.177 < 0.7)",
+    "CONCENTRATED_WEIGHT": "PASS",
+    "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.02 >= 0.88)",
+    "MATCHES_COMPETITION": "PASS",
+    "SELF_CORRELATION": "0.4685 < 0.7 (PASS)"
+  },
+  "economic_rationale": "Liquidity-premium + dual-horizon reversal composite. Term1 = Amihud illiquidity (high-low)/(close*volume), 750d mean, 350d linear decay: short illiquid/high-impact names = harvest liquidity premium (drives main Sharpe, concentrated in small/illiquid names). Term2 = fast 5d mean-reversion (ts_av_diff close 5, decay 5): broadly effective incl. large caps -> lifts sub-universe Sharpe to 1.02. Term3 = 0.4x slow 20d reversion (decay 10): nudges main Sharpe past 2.0. All zscore-regularized, decay-smoothed. delay=0, no implied-volatility fields.",
+  "uncommon_operators": ["ts_decay_linear", "ts_av_diff"],
+  "note": "Verified via /alphas/{id} checks + /correlations/self. NOT submitted (per instruction: check only)."
+}
