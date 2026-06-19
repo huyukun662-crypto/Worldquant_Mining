@@ -215,3 +215,22 @@ NEXT: probe the orthogonal anomaly axes the 13 submitted alphas do NOT occupy at
 all -- intermediate momentum (12-1), 52-week-high proximity, lottery/MAX. These are
 economically orthogonal to illiquidity/reversal/short-int/IV-skew/analyst/news, so
 if any clears 2.0 its self-correlation should be low -> genuinely submittable.
+
+## Update 8: EXHAUSTIVE — every orthogonal axis is sub-2.0 (final)
+
+Probed every economically-distinct axis NOT occupied by the 13 submitted alphas
+(delay-0 TOP3000 SUBINDUSTRY-neutralized):
+- momentum 12-1: SH 0.03 ; momentum ratio: 0.57
+- 52-week-high (ts_rank): -0.11/-0.19 ; low idio-vol 20/60d: 0.23/0.20
+- options VRP (IV-HV): 0.14 ; option open-interest mom: -0.18
+- fundamentals value/quality: ~1.0 ceiling
+None clears the 2.0 LOW_SHARPE hard gate. The only 2.0-class D0 signals are the
+ones the 13 submitted alphas already occupy (illiquidity, IV-skew, short-interest,
+analyst). The 2.0 illiquidity factor 88zAK5Kl duplicates submitted 1Y751gZm
+(self-corr 0.94); decorrelating kills the Sharpe (vneut -> 1.27).
+
+FINAL (~100 sims): no NEW economically-distinct D0 factor on this account+universe
+clears 2.0 while passing self-correlation. A submittable factor EXISTS (88zAK5Kl,
+2.01, passes all IS checks) but is blocked solely by 0.94 self-corr to the user's
+already-submitted near-duplicate 1Y751gZm. Clean submit requires a user portfolio
+decision: retire/hide 1Y751gZm first (economically a wash).
