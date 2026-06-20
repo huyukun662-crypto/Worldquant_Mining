@@ -280,6 +280,19 @@
     },
     "NEW_LOWCORR_FACTORS": [
       {
+        "id": "gJ1qeZ0g",
+        "expr": "rank(-ts_rank(returns, 7))",
+        "univ": "TOP2000",
+        "neut": "SUBINDUSTRY",
+        "decay": 18,
+        "trunc": 0.08,
+        "sharpe": 2.34,
+        "fitness": 1.19,
+        "turnover": 0.595,
+        "selfcorr": 0.001,
+        "axis": "7-day return-rank reversal @ TOP2000 (BEST clean low-corr, SH 2.34)"
+      },
+      {
         "id": "blL28m86",
         "expr": "rank(-ts_rank(returns, 5))",
         "univ": "TOP1000",
@@ -364,6 +377,16 @@
         "turnover": 0.663,
         "note": "NEW orthogonal axis, fitness 0.95 just short - fixable"
       }
-    ]
+    ],
+    "BEST_LOWCORR": {
+      "id": "gJ1qeZ0g",
+      "sharpe": 2.34,
+      "fitness": 1.19,
+      "turnover": 0.595,
+      "selfcorr": 0.001,
+      "expr": "rank(-ts_rank(returns, 7))",
+      "univ": "TOP2000",
+      "note": "TOP2000 sweet spot for return-rank reversal"
+    }
   }
 ]
