@@ -532,6 +532,26 @@
       "axis_notes": "Axis 1 (return-rank reversal rank(-ts_rank(returns,N))): cleanest+highest, peak N=7@TOP2000 SH 2.34. Axis 2 (illiquidity+MR composite): FIT 3.08, TO 0.11. Axis 3 (close av_diff reversal): SH 1.37-1.38. All self-corr 0.001-0.013 (orthogonal).",
       "near_miss_axes": "VWAP-deviation reversal (2.01) and close-range-position reversal (2.04): NEW orthogonal axes at SH~2.0, self-corr 0.001, fitness just short (~0.86-0.95) - fixable.",
       "champion": "gJ1qeZ0g SH 2.34 / FIT 1.19 / TO 0.595 / self-corr 0.001 - rank(-ts_rank(returns,7)) @ USA/TOP2000/delay1/SUBINDUSTRY/decay18/trunc0.08"
+    },
+    "FRESH_STRUCTURE_FINDINGS": {
+      "weak_structures": {
+        "pv_corr": 1.03,
+        "pv_corr_d": 0.69,
+        "pv_rankcorr": 1.06,
+        "boll_z": 0.39,
+        "kaufman": 0.45
+      },
+      "promising": {
+        "parkinson": {
+          "id": "QPaqPE7G",
+          "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_std_dev(log(high/low),20), subindustry), 4))",
+          "sharpe": 1.19,
+          "fitness": 1.67,
+          "turnover": 0.107,
+          "note": "LOW-VOL ANOMALY, only LOW_SHARPE fail, excellent FIT/TO"
+        }
+      },
+      "conclusion_so_far": "Non-reversal new structures weak. Parkinson low-vol anomaly promising (FIT 1.67, TO 0.107)."
     }
   }
 ]
