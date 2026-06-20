@@ -1,89 +1,43 @@
-[
-  {
-    "ok": true,
-    "alpha_id": "0meJlEK1",
-    "expression": "zscore(ts_decay_linear(ts_mean(ts_std_dev(volume, 11), 44), 23))",
-    "alpha": {
-      "id": "0meJlEK1",
-      "type": "REGULAR",
-      "author": "YH61983",
+{
+  "spec": "D1 (delay=1), no IV fields, submittable, low turnover & low max-drawdown",
+  "pareto_optimized_core_factors": [
+    {
+      "rank": 1,
+      "alpha_id": "rKomaon1",
+      "family": "close mean-reversion",
+      "note": "Pareto-dominates earlier champions on all 4 objectives; portfolio Sharpe 2.26->2.30",
+      "expression": "normalize(reverse(ts_av_diff(close, 14)))",
       "settings": {
-        "instrumentType": "EQUITY",
         "region": "USA",
         "universe": "TOP3000",
         "delay": 1,
-        "decay": 0,
-        "neutralization": "INDUSTRY",
-        "truncation": 0.08,
-        "pasteurization": "ON",
-        "unitHandling": "VERIFY",
-        "nanHandling": "OFF",
-        "maxTrade": "OFF",
-        "maxPosition": "OFF",
-        "language": "FASTEXPR",
-        "visualization": false,
-        "startDate": "2019-01-01",
-        "endDate": "2023-12-31"
+        "decay": 8,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
       },
-      "regular": {
-        "code": "zscore(ts_decay_linear(ts_mean(ts_std_dev(volume, 11), 44), 23))",
-        "description": null,
-        "operatorCount": 4
-      },
-      "dateCreated": "2026-05-10T08:10:45-04:00",
-      "dateSubmitted": null,
-      "dateModified": "2026-05-10T08:10:46-04:00",
-      "name": null,
-      "favorite": false,
-      "hidden": false,
-      "color": null,
-      "category": null,
-      "tags": [],
-      "classifications": [
-        {
-          "id": "DATA_USAGE:SINGLE_DATA_SET",
-          "name": "Single Data Set Alpha"
-        }
-      ],
-      "grade": "INFERIOR",
-      "stage": "IS",
-      "status": "UNSUBMITTED",
       "is": {
-        "pnl": -1275487,
-        "bookSize": 20000000,
-        "longCount": 804,
-        "shortCount": 2333,
-        "turnover": 0.0258,
-        "returns": -0.0258,
-        "drawdown": 0.7201,
-        "margin": -0.002001,
-        "sharpe": -0.15,
-        "fitness": -0.07,
-        "startDate": "2019-01-01",
+        "sharpe": 1.37,
+        "turnover": 0.2112,
+        "drawdown": 0.0708,
+        "fitness": 1.1,
+        "returns": 0.1356,
         "checks": [
           {
             "name": "LOW_SHARPE",
-            "result": "FAIL",
-            "limit": 1.25,
-            "value": -0.15
+            "result": "PASS"
           },
           {
             "name": "LOW_FITNESS",
-            "result": "FAIL",
-            "limit": 1.0,
-            "value": -0.07
+            "result": "PASS"
           },
           {
             "name": "LOW_TURNOVER",
-            "result": "PASS",
-            "limit": 0.01,
-            "value": 0.0258
+            "result": "PASS"
           },
           {
             "name": "HIGH_TURNOVER",
-            "result": "PASS",
-            "limit": 0.7,
-            "value": 0.0258
+            "result": "PASS"
           },
           {
             "name": "CONCENTRATED_WEIGHT",
@@ -91,9 +45,7 @@
           },
           {
             "name": "LOW_SUB_UNIVERSE_SHARPE",
-            "result": "FAIL",
-            "limit": -0.06,
-            "value": -0.12
+            "result": "PASS"
           },
           {
             "name": "SELF_CORRELATION",
@@ -101,123 +53,80 @@
           },
           {
             "name": "MATCHES_COMPETITION",
-            "result": "PASS",
-            "competitions": [
-              {
-                "id": "challenge",
-                "name": "Challenge"
-              },
-              {
-                "id": "IQC2026S1",
-                "name": "International Quant Championship 2026 Stage 1"
-              }
-            ]
+            "result": "PASS"
           }
         ]
       },
-      "os": null,
-      "train": null,
-      "test": null,
-      "prod": null,
-      "competitions": null,
-      "themes": null,
-      "pyramids": null,
-      "pyramidThemes": null,
-      "team": null,
-      "origin": "PLATFORM"
+      "self_correlation": {
+        "max": 0.3463,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5581363.0,
+          "longCount": 1384,
+          "shortCount": 1722,
+          "drawdown": 0.0348,
+          "turnover": 0.1514,
+          "returns": 0.1129,
+          "margin": 0.001491,
+          "sharpe": 2.3,
+          "fitness": 1.99
+        },
+        "pnl_delta": 564610.0,
+        "drawdown_improved": true
+      }
     },
-    "local_is_sharpe": 1.3228391174249752,
-    "local_is_turnover": 0.005568395260745294,
-    "local_is_annret": 0.13697843637902735,
-    "local_os_sharpe": 1.7796138459587032,
-    "local_os_turnover": 0.005722844574071375,
-    "local_os_annret": 0.17110332776917642
-  },
-  {
-    "ok": true,
-    "alpha_id": "wpnrmoQ1",
-    "expression": "scale(ts_mean(ts_decay_linear(divide(adv20, low), 15), 20))",
-    "alpha": {
-      "id": "wpnrmoQ1",
-      "type": "REGULAR",
-      "author": "YH61983",
+    {
+      "rank": 2,
+      "alpha_id": "9qwQ5mkq",
+      "family": "close mean-reversion",
+      "note": "highest standalone Sharpe among core; +727K PnL",
+      "expression": "normalize(reverse(ts_av_diff(close, 17)))",
       "settings": {
-        "instrumentType": "EQUITY",
         "region": "USA",
         "universe": "TOP3000",
         "delay": 1,
-        "decay": 0,
-        "neutralization": "INDUSTRY",
-        "truncation": 0.08,
-        "pasteurization": "ON",
-        "unitHandling": "VERIFY",
-        "nanHandling": "OFF",
-        "maxTrade": "OFF",
-        "maxPosition": "OFF",
-        "language": "FASTEXPR",
-        "visualization": false,
-        "startDate": "2019-01-01",
-        "endDate": "2023-12-31"
+        "decay": 4,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
       },
-      "regular": {
-        "code": "scale(ts_mean(ts_decay_linear(divide(adv20, low), 15), 20))",
-        "description": null,
-        "operatorCount": 4
-      },
-      "dateCreated": "2026-05-10T08:12:13-04:00",
-      "dateSubmitted": null,
-      "dateModified": "2026-05-10T08:12:14-04:00",
-      "name": null,
-      "favorite": false,
-      "hidden": false,
-      "color": null,
-      "category": null,
-      "tags": [],
-      "classifications": [
-        {
-          "id": "DATA_USAGE:SINGLE_DATA_SET",
-          "name": "Single Data Set Alpha"
-        }
-      ],
-      "grade": "INFERIOR",
-      "stage": "IS",
-      "status": "UNSUBMITTED",
       "is": {
-        "pnl": 183163,
-        "bookSize": 20000000,
-        "longCount": 586,
-        "shortCount": 2552,
-        "turnover": 0.0326,
-        "returns": 0.0037,
-        "drawdown": 1.0524,
-        "margin": 0.000227,
-        "sharpe": 0.01,
-        "fitness": 0.0,
-        "startDate": "2019-01-01",
+        "sharpe": 1.43,
+        "turnover": 0.2455,
+        "drawdown": 0.0776,
+        "fitness": 1.1,
+        "returns": 0.1454,
         "checks": [
           {
             "name": "LOW_SHARPE",
-            "result": "FAIL",
-            "limit": 1.25,
-            "value": 0.01
+            "result": "PASS"
           },
           {
             "name": "LOW_FITNESS",
-            "result": "FAIL",
-            "limit": 1.0,
-            "value": 0.0
+            "result": "PASS"
           },
           {
             "name": "LOW_TURNOVER",
-            "result": "PASS",
-            "limit": 0.01,
-            "value": 0.0326
+            "result": "PASS"
           },
           {
             "name": "HIGH_TURNOVER",
-            "result": "PASS",
-            "limit": 0.7,
-            "value": 0.0326
+            "result": "PASS"
           },
           {
             "name": "CONCENTRATED_WEIGHT",
@@ -225,9 +134,7 @@
           },
           {
             "name": "LOW_SUB_UNIVERSE_SHARPE",
-            "result": "FAIL",
-            "limit": 0.0,
-            "value": -0.03
+            "result": "PASS"
           },
           {
             "name": "SELF_CORRELATION",
@@ -235,36 +142,248 @@
           },
           {
             "name": "MATCHES_COMPETITION",
-            "result": "PASS",
-            "competitions": [
-              {
-                "id": "challenge",
-                "name": "Challenge"
-              },
-              {
-                "id": "IQC2026S1",
-                "name": "International Quant Championship 2026 Stage 1"
-              }
-            ]
+            "result": "PASS"
           }
         ]
       },
-      "os": null,
-      "train": null,
-      "test": null,
-      "prod": null,
-      "competitions": null,
-      "themes": null,
-      "pyramids": null,
-      "pyramidThemes": null,
-      "team": null,
-      "origin": "PLATFORM"
+      "self_correlation": {
+        "max": 0.382,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5743791.0,
+          "longCount": 1384,
+          "shortCount": 1722,
+          "drawdown": 0.0339,
+          "turnover": 0.1629,
+          "returns": 0.1162,
+          "margin": 0.001426,
+          "sharpe": 2.31,
+          "fitness": 1.95
+        },
+        "pnl_delta": 727038.0,
+        "drawdown_improved": true
+      }
+    }
+  ],
+  "low_correlation_diversifiers": [
+    {
+      "rank": 1,
+      "alpha_id": "YPpwJ3lJ",
+      "family": "vwap-dislocation reversion",
+      "note": "corr 0.391 to rKomaon1; self-corr 0.143; portfolio Sharpe 2.26->2.82, DD->0.028",
+      "expression": "normalize(reverse(ts_av_diff(divide(close, vwap), 140)))",
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 64,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 1.69,
+        "turnover": 0.2493,
+        "drawdown": 0.0786,
+        "fitness": 1.35,
+        "returns": 0.1584,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS"
+          }
+        ]
+      },
+      "corr_to_champion_rKomaon1": 0.391,
+      "self_correlation": {
+        "max": 0.1432,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5953955.0,
+          "longCount": 1353,
+          "shortCount": 1752,
+          "drawdown": 0.0282,
+          "turnover": 0.1641,
+          "returns": 0.1204,
+          "margin": 0.001467,
+          "sharpe": 2.82,
+          "fitness": 2.42
+        },
+        "pnl_delta": 937202.0,
+        "drawdown_improved": true
+      }
     },
-    "local_is_sharpe": 1.2984543837526297,
-    "local_is_turnover": 0.004351896965805756,
-    "local_is_annret": 0.13806337045073894,
-    "local_os_sharpe": 1.8019215946221296,
-    "local_os_turnover": 0.004333085848303529,
-    "local_os_annret": 0.1884447442646943
-  }
-]
+    {
+      "rank": 2,
+      "alpha_id": "omKwZ2Y6",
+      "family": "vwap-dislocation reversion",
+      "note": "corr 0.395 to rKomaon1; self-corr 0.143; portfolio Sharpe 2.26->2.79",
+      "expression": "normalize(reverse(ts_av_diff(divide(close, vwap), 160)))",
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 64,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 1.65,
+        "turnover": 0.2479,
+        "drawdown": 0.078,
+        "fitness": 1.3,
+        "returns": 0.1543,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS"
+          }
+        ]
+      },
+      "corr_to_champion_rKomaon1": 0.395,
+      "self_correlation": {
+        "max": 0.1435,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5885845.0,
+          "longCount": 1353,
+          "shortCount": 1752,
+          "drawdown": 0.0276,
+          "turnover": 0.1637,
+          "returns": 0.1191,
+          "margin": 0.001455,
+          "sharpe": 2.79,
+          "fitness": 2.38
+        },
+        "pnl_delta": 869092.0,
+        "drawdown_improved": true
+      }
+    }
+  ],
+  "superseded": [
+    {
+      "alpha_id": "blLEVxvM",
+      "expression": "normalize(reverse(ts_av_diff(close, 21)))",
+      "decay": 4,
+      "is": {
+        "sharpe": 1.32,
+        "turnover": 0.2178,
+        "drawdown": 0.0909,
+        "fitness": 1.04
+      }
+    },
+    {
+      "alpha_id": "MPpmXdba",
+      "expression": "normalize(reverse(ts_av_diff(close, 21)))",
+      "decay": 6,
+      "is": {
+        "sharpe": 1.26,
+        "turnover": 0.1866,
+        "drawdown": 0.0855,
+        "fitness": 1.04
+      }
+    }
+  ]
+}
