@@ -1,19 +1,62 @@
 [
   {
-    "ok": true,
-    "alpha_id": "ZYpwLo7Z",
-    "name": "INTRA_REV intraday-reversal",
-    "expression": "zscore(ts_decay_linear(group_neutralize((-1 * ts_sum((close / open) - 1, 5)), subindustry), 10))",
-    "sharpe": 1.39,
-    "fitness": 1.2,
-    "turnover": 0.2672,
-    "returns": 0.1992,
-    "drawdown": 0.1175,
-    "sub_universe_sharpe": 0.89,
-    "self_correlation_max": 0.001,
-    "checks_passed": 7,
-    "checks_total": 8,
-    "self_correlation_check": "PENDING(computed 0.001)",
+    "discovery": "D1 intraday-reversal: fresh axis ORTHOGONAL to all 36 submitted alphas (self-corr 0.001-0.004)",
+    "expression_template": "zscore(ts_decay_linear(group_neutralize((-1 * ts_sum((close/open)-1, K)), subindustry), DECAY))",
+    "economic_rationale": "Intraday (open->close) overreaction reversal; distinct from existing overnight and close-close reversal alphas",
+    "window_scan_all_pass_IS_checks": [
+      {
+        "name": "INTRA_k1",
+        "id": "58w77oaJ",
+        "K": 1,
+        "decay": 10,
+        "sharpe": 1.5,
+        "fitness": 1.0,
+        "turnover": 0.53,
+        "selfcorr": 0.001
+      },
+      {
+        "name": "INTRA_k3",
+        "id": "LLpbx06e",
+        "K": 3,
+        "decay": 10,
+        "sharpe": 1.51,
+        "fitness": 1.23,
+        "turnover": 0.331,
+        "selfcorr": 0.001,
+        "BEST_SHARPE": true
+      },
+      {
+        "name": "INTRA_k5",
+        "id": "ZYpwLo7Z",
+        "K": 5,
+        "decay": 10,
+        "sharpe": 1.39,
+        "fitness": 1.2,
+        "turnover": 0.267,
+        "selfcorr": 0.001
+      },
+      {
+        "name": "INTRA_k8",
+        "id": "6XwPxgRO",
+        "K": 8,
+        "decay": 10,
+        "sharpe": 1.27,
+        "fitness": 1.13,
+        "turnover": 0.218,
+        "selfcorr": 0.004
+      },
+      {
+        "name": "INTRA_k10_dc20",
+        "id": "xAxwMd8W",
+        "K": 10,
+        "decay": 20,
+        "sharpe": 1.28,
+        "fitness": 1.41,
+        "turnover": 0.141,
+        "selfcorr": 0.004,
+        "BEST_FITNESS": true
+      }
+    ],
     "settings": {
       "region": "USA",
       "universe": "TOP3000",
@@ -23,29 +66,18 @@
       "truncation": 0.08,
       "pasteurization": "ON"
     },
-    "economic_rationale": "Intraday return reversal (close/open overreaction), orthogonal to existing overnight/close-close reversal alphas; self-corr 0.001 vs 36 submitted alphas",
-    "timestamp": "2026-06-20T03:58:36"
-  },
-  {
-    "ok": true,
-    "alpha_id": "LLpbx06e",
-    "name": "INTRA_REV_k3 intraday-reversal 3d (IMPROVED)",
-    "expression": "zscore(ts_decay_linear(group_neutralize((-1 * ts_sum((close / open) - 1, 3)), subindustry), 10))",
-    "sharpe": 1.51,
-    "fitness": 1.23,
-    "turnover": 0.331,
-    "self_correlation_max": 0.001,
-    "checks": "ALL PASS (FAIL=[])",
-    "settings": {
-      "region": "USA",
-      "universe": "TOP3000",
-      "delay": 1,
-      "decay": 0,
-      "neutralization": "INDUSTRY",
-      "truncation": 0.08,
-      "pasteurization": "ON"
+    "is_check_gate": "ALL variants PASS every IS check (LOW_SHARPE>1.25, LOW_FITNESS>1.0, turnover, sub-universe Sharpe). SELF_CORRELATION computed 0.001-0.004 vs 36 submitted alphas.",
+    "ceiling_finding": "Pure intraday-reversal Sharpe caps ~1.51 (peak at K=3). Overnight/Amihud/range/volume composites all DILUTE. Competition 2.0 bar not reachable on this fresh orthogonal axis.",
+    "recommended_submit": {
+      "name": "INTRA_k3",
+      "id": "LLpbx06e",
+      "reason": "best Sharpe 1.51 with FIT 1.23, fully orthogonal"
     },
-    "note": "3-day window beats 5-day base (SH 1.51 vs 1.39); still fully orthogonal",
-    "timestamp": "2026-06-20T04:05:02"
+    "recommended_submit_lowTO": {
+      "name": "INTRA_k10_dc20",
+      "id": "xAxwMd8W",
+      "reason": "FIT 1.41, turnover only 0.141, SH 1.28"
+    },
+    "timestamp": "2026-06-20T04:33:48"
   }
 ]
