@@ -584,6 +584,32 @@
         "kurt": "ts_kurtosis INACCESSIBLE"
       },
       "CONCLUSION": "Replaced reversal structures, tested ~14 fresh. WINNER: vol-of-vol GrwYrO8o (SH 1.28 CLEAN, FIT 1.74, TO 0.11, corr 0.017) low-vol anomaly, orthogonal to reversal. Parkinson near-miss (1.19/FIT 1.67). Non-vol structures (correlation/Bollinger/Kaufman/argmax) weak; skew/kurt ops unavailable. Low-vol-anomaly family is the productive NEW direction."
+    },
+    "STRUCTURE_MAP": {
+      "STRONG_structures": {
+        "price_reversal": "rank(-ts_rank(returns,N)) -> SH 2.34 clean (gJ1qeZ0g); intraday -> 2.00; av_diff -> 1.37-1.82",
+        "low_vol_anomaly": "vol-of-vol -> SH 1.28 clean (GrwYrO8o); Parkinson -> 1.19 near-miss",
+        "illiquidity_composite": "(high-low)/(close*volume)+MR -> SH 2.05-2.09 clean FIT 3.10 (88zkPkWm/wpRO6zOp)"
+      },
+      "WEAK_structures": {
+        "money_flow": -0.73,
+        "volume_accel": 0.01,
+        "win_rate": 0.67,
+        "long_momentum": 0.18,
+        "pv_corr": 1.03,
+        "pv_corr_d": 0.69,
+        "pv_rankcorr": 1.06,
+        "bollinger_z": 0.39,
+        "kaufman": 0.45,
+        "argmax": 0.43
+      },
+      "UNAVAILABLE_operators": [
+        "ts_skewness",
+        "ts_kurtosis",
+        "ts_max",
+        "ts_min"
+      ],
+      "CONCLUSION": "Only 3 structure families produce clean strong factors on USA/TOP3000/delay1: price-reversal (best SH 2.34), low-vol anomaly (vol-of-vol clean 1.28), illiquidity composites (FIT 3.10). Money-flow/volume/momentum/winrate/correlation/Bollinger/Kaufman/recency all weak (SH<1.1). Platform slowed to ~50min/sim."
     }
   }
 ]
