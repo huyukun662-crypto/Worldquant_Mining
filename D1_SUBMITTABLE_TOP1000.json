@@ -68,5 +68,18 @@
     "correlation_to_returns7": 0.59,
     "submittable": true,
     "note": "RECOMMENDED low-correlation factor (robust version). corr 0.52/0.59 to the short-reversal family (both <0.70 self-corr gate). normalize() wrapper on long reversal-220; FIT 1.02 with sub-universe SH margin (0.87 vs 0.83). Pairs with any short-reversal factor for a decorrelated 2-alpha portfolio. Earlier decay24/returns-250 version (ZYpwmZnn) also submittable at corr 0.50, FIT exactly 1.0."
+  },
+  "new_structure_factor": {
+    "alpha_id": "omKA1nll",
+    "expression": "normalize(-ts_zscore(returns, 6))",
+    "decay": 18,
+    "sharpe": 2.0,
+    "fitness": 1.01,
+    "turnover": 0.6723,
+    "sub_universe_sharpe": 1.55,
+    "self_correlation": 0.3628,
+    "submittable": true,
+    "structure": "zscore-normalized returns reversal (ts_zscore operator, NOT ts_rank)",
+    "note": "NEW structure per user request to replace ts_rank. ts_zscore(returns,N) reversal, normalize-wrapped. SH 2.0, FIT 1.01, all 8 checks PASS. Backups: normalize(-ts_zscore(returns,7)) decay22 (78w0kgv5, FIT 1.0), normalize(-ts_zscore(returns,6)) decay16 (MPpqjL3M, FIT 1.0). Vol-scaled reversal divide(-ret,ts_std_dev) was too weak (SH<=1.1)."
   }
 }
