@@ -376,6 +376,16 @@
         "fitness": 0.95,
         "turnover": 0.663,
         "note": "NEW orthogonal axis, fitness 0.95 just short - fixable"
+      },
+      {
+        "id": "wpRw3pQd",
+        "axis": "VWAP deviation reversal",
+        "expr": "zscore(ts_decay_linear(group_neutralize(-1*winsorize(close/vwap-1, std=2)/(ts_std_dev(close/vwap-1,20)+0.001), subindustry), 6))",
+        "sharpe": 2.01,
+        "fitness": 0.86,
+        "turnover": 0.675,
+        "selfcorr": 0.001,
+        "note": "NEW orthogonal axis, fitness short - fixable via coarser neut"
       }
     ],
     "BEST_LOWCORR": {
@@ -415,6 +425,113 @@
         "turnover": 0.595,
         "selfcorr": 0.001
       }
+    },
+    "LOWCORR_PORTFOLIO_FINAL": {
+      "request": "mine NEW low-correlation factors (orthogonal to user 36 submitted alphas AND to the intraday-reversal axis)",
+      "clean_submittable": [
+        {
+          "id": "gJ1qeZ0g",
+          "sh": 2.34,
+          "fit": 1.19,
+          "to": 0.595,
+          "corr": 0.001,
+          "axis": "7d return-rank reversal @TOP2000",
+          "expr": "rank(-ts_rank(returns, 7))",
+          "rank": "CHAMPION"
+        },
+        {
+          "id": "leV6aaW8",
+          "sh": 2.34,
+          "fit": 1.22,
+          "to": 0.59,
+          "corr": 0.001,
+          "axis": "7d return-rank @TOP2000 (decay variant)",
+          "expr": "rank(-ts_rank(returns, 7))"
+        },
+        {
+          "id": "kq3kabNk",
+          "sh": 2.31,
+          "fit": 1.13,
+          "corr": 0.001,
+          "axis": "6d return-rank @TOP2000",
+          "expr": "rank(-ts_rank(returns, 6))"
+        },
+        {
+          "id": "j2Zla2J9",
+          "sh": 2.25,
+          "fit": 1.05,
+          "corr": 0.001,
+          "axis": "5d return-rank @TOP2000",
+          "expr": "rank(-ts_rank(returns, 5))"
+        },
+        {
+          "id": "qMAk7NlA",
+          "sh": 2.16,
+          "fit": 1.09,
+          "corr": 0.001,
+          "axis": "8d return-rank @TOP2000",
+          "expr": "rank(-ts_rank(returns, 8))"
+        },
+        {
+          "id": "blL28m86",
+          "sh": 2.15,
+          "fit": 1.04,
+          "corr": 0.002,
+          "axis": "5d return-rank @TOP1000",
+          "expr": "rank(-ts_rank(returns, 5))"
+        },
+        {
+          "id": "npgkvGrd",
+          "sh": 2.14,
+          "fit": 1.13,
+          "corr": 0.002,
+          "axis": "7d return-rank @TOP1000 decay24",
+          "expr": "rank(-ts_rank(returns, 7))"
+        },
+        {
+          "id": "P0prgzdw",
+          "sh": 2.13,
+          "fit": 1.09,
+          "corr": 0.002,
+          "axis": "7d return-rank @TOP1000",
+          "expr": "rank(-ts_rank(returns, 7))"
+        },
+        {
+          "id": "xAxwvdrm",
+          "sh": 2.05,
+          "fit": 1.12,
+          "corr": 0.002,
+          "axis": "7d return-rank @TOP1000 INDUSTRY",
+          "expr": "rank(-ts_rank(returns, 7))"
+        },
+        {
+          "id": "88zkPkWm",
+          "sh": 2.05,
+          "fit": 3.08,
+          "to": 0.112,
+          "corr": 0.013,
+          "axis": "illiquidity (H-L)/(C*V) + multi-horizon close MR (DISTINCT axis, ultra-low turnover)"
+        },
+        {
+          "id": "Vkpw0vj5",
+          "sh": 1.37,
+          "fit": 1.1,
+          "corr": 0.001,
+          "axis": "14d close av_diff reversal (DISTINCT axis)",
+          "expr": "normalize(reverse(ts_av_diff(close, 14)))"
+        },
+        {
+          "id": "omKwW5on",
+          "sh": 1.38,
+          "fit": 1.09,
+          "corr": 0.001,
+          "axis": "multi-horizon close av_diff reversal (DISTINCT axis)"
+        }
+      ],
+      "axes_discovered": 3,
+      "axis_notes": "Axis 1 (return-rank reversal rank(-ts_rank(returns,N))): cleanest+highest, peak N=7@TOP2000 SH 2.34. Axis 2 (illiquidity+MR composite): FIT 3.08, TO 0.11. Axis 3 (close av_diff reversal): SH 1.37-1.38. All self-corr 0.001-0.013 (orthogonal).",
+      "near_miss_axes": "VWAP-deviation reversal (2.01) and close-range-position reversal (2.04): NEW orthogonal axes at SH~2.0, self-corr 0.001, fitness just short (~0.86-0.95) - fixable.",
+      "champion": "gJ1qeZ0g SH 2.34 / FIT 1.19 / TO 0.595 / self-corr 0.001 - rank(-ts_rank(returns,7)) @ USA/TOP2000/delay1/SUBINDUSTRY/decay18/trunc0.08"
     }
   }
 ]
