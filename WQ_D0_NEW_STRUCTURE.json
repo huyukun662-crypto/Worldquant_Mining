@@ -1,0 +1,25 @@
+{
+  "goal": "Replace the Amihud-illiquidity+reversal structure; mine a genuinely DIFFERENT submittable D0 structure uncorrelated with factors A/B/C.",
+  "rounds": "38-40, ~30 D0 sims exploring analyst4, fundamental6, socialmedia12 (no IV, no (high-low)/(close*volume))",
+  "best_genuinely_different_structure": {
+    "name": "social-sentiment + book-to-market value (PURE NEW DATA, zero PV)",
+    "alpha_id": "vRLnEJg3",
+    "expression": "add(-zscore(ts_decay_linear(ts_mean(scl12_sentiment,60),40)), zscore(divide(ts_backfill(bookvalue_ps,120),close)))",
+    "settings": {"region":"USA","universe":"TOP3000","delay":0,"neutralization":"SUBINDUSTRY","decay":0,"truncation":0.08},
+    "sharpe": 1.21, "turnover": 0.044, "fitness": 1.12,
+    "self_corr": 0.066,
+    "note": "self-corr 0.066 = NEARLY ZERO vs the submitted pool AND vs illiquidity factors A/B/C. Fully independent structure (sentiment overreaction + value premium). But below the SH>2 submit gate."
+  },
+  "explored_and_capped": {
+    "analyst_revision_anl4_ady_mean": 0.6,
+    "analyst_dispersion": 0.19,
+    "analyst_net_upgrades": 0.0,
+    "sentiment+value+buzz": 0.84,
+    "sentiment+value+buzz+analyst": 0.91,
+    "sentiment+value+reversal": 1.09,
+    "sentiment+value+2x_reversal": 1.06,
+    "5-signal_new_data": 0.75
+  },
+  "conclusion": "Every NON-illiquidity D0 structure caps at SH ~1.0-1.2. New-data signals (sentiment 1.06, value 0.64, analyst 0.6) are individually weak AND mutually correlated (sentiment & buzz share socialmedia12; value & cashflow share price), so composites do not diversify to SH>2. The Amihud illiquidity (high-low)/(close*volume) is the UNIQUE strong D0 engine on this TUTORIAL-tier account. A genuinely structure-replaced submittable (SH>2) factor is not achievable; the strongest fully-independent structure is sentiment+value at SH 1.21, self-corr 0.066.",
+  "note": "Verified via check submit only; NOT submitted."
+}
