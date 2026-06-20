@@ -25,5 +25,27 @@
     },
     "economic_rationale": "Intraday return reversal (close/open overreaction), orthogonal to existing overnight/close-close reversal alphas; self-corr 0.001 vs 36 submitted alphas",
     "timestamp": "2026-06-20T03:58:36"
+  },
+  {
+    "ok": true,
+    "alpha_id": "LLpbx06e",
+    "name": "INTRA_REV_k3 intraday-reversal 3d (IMPROVED)",
+    "expression": "zscore(ts_decay_linear(group_neutralize((-1 * ts_sum((close / open) - 1, 3)), subindustry), 10))",
+    "sharpe": 1.51,
+    "fitness": 1.23,
+    "turnover": 0.331,
+    "self_correlation_max": 0.001,
+    "checks": "ALL PASS (FAIL=[])",
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 1,
+      "decay": 0,
+      "neutralization": "INDUSTRY",
+      "truncation": 0.08,
+      "pasteurization": "ON"
+    },
+    "note": "3-day window beats 5-day base (SH 1.51 vs 1.39); still fully orthogonal",
+    "timestamp": "2026-06-20T04:05:02"
   }
 ]
