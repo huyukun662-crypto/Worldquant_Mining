@@ -145,6 +145,27 @@
     },
     "timestamp": "2026-06-20T04:33:48",
     "expression_template_best": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 10))",
-    "breakthrough": "Vol-normalized intraday reversal reaches SH 2.02 at decay=5 (but turnover 0.736>0.7 and fitness 0.97<1.0 fail). Tuning decay/truncation to land SH>=2.0 with all checks passing."
+    "breakthrough": "Vol-normalized intraday reversal decay-sweep: SH 2.02(dc5)/1.99(dc6)/1.66(dc7). dc6 passes turnover(0.677) but fitness 0.99 misses by 0.01. Tuning truncation 0.12-0.15 to lift fitness for clean SH~2.0.",
+    "tuning_2p0": [
+      {
+        "name": "VN_dc6_t08",
+        "id": "1Y7V1KzJ",
+        "decay": 6,
+        "truncation": 0.08,
+        "sharpe": 1.99,
+        "fitness": 0.99,
+        "turnover": 0.677,
+        "checks": "FAIL LOW_FITNESS(0.99) only; turnover now passes"
+      },
+      {
+        "name": "VN_dc7_t08",
+        "id": "58w732wN",
+        "decay": 7,
+        "sharpe": 1.66,
+        "fitness": 1.01,
+        "turnover": 0.386,
+        "checks": "all pass but SH 1.66"
+      }
+    ]
   }
 ]
