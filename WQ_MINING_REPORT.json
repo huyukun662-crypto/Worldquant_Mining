@@ -277,6 +277,69 @@
       "robustness": "Clean SH 2.00 reproduced across 4 independent configs (MARKET/NONE/INDUSTRY neut x vol-window 20/30/40), all FIT 1.00, self-corr 0.001, DD ~0.056. Two independent levers each reach clean 2.00. Caps cleanly at 2.00.",
       "universe_finding": "Smaller universe weaker: TOP1000 SH 1.74 vs TOP3000 2.00. TOP3000 optimal.",
       "DEFINITIVE": "Clean SH 2.00 is robust max (4 TOP3000 configs reproduce it). All levers exhausted: dc5 over-trades, smaller universe weaker, finer neut lower, truncation non-binding, hump freezes. RECOMMEND SUBMIT LLpbRevm (SH 2.00, FIT 1.00, TO 0.677, DD 0.056, self-corr 0.001, all checks pass)."
-    }
+    },
+    "NEW_LOWCORR_FACTORS": [
+      {
+        "id": "P0prgzdw",
+        "expr": "rank(-ts_rank(returns, 7))",
+        "univ": "TOP1000",
+        "neut": "SUBINDUSTRY",
+        "decay": 18,
+        "trunc": 0.08,
+        "sharpe": 2.13,
+        "fitness": 1.09,
+        "turnover": 0.587,
+        "drawdown": 0.057,
+        "sub_sh": 1.72,
+        "selfcorr": 0.002,
+        "axis": "7-day cross-sectional return-rank reversal"
+      },
+      {
+        "id": "88zkPkWm",
+        "expr": "add(add(-zscore(ts_decay_linear(ts_mean(divide(subtract(high, low), multiply(close, volume)), 1000), 400)), -zscore(ts_decay_linear(ts_av_diff(close, 5), 5))), multiply(0.5, -zscore(ts_decay_linear(ts_av_diff(close, 15), 8))))",
+        "univ": "TOP3000",
+        "neut": "NONE",
+        "decay": 4,
+        "trunc": 0.08,
+        "sharpe": 2.05,
+        "fitness": 3.08,
+        "turnover": 0.112,
+        "drawdown": 0.111,
+        "sub_sh": 1.19,
+        "selfcorr": 0.013,
+        "axis": "illiquidity (H-L)/(C*V) + multi-horizon close mean-reversion"
+      },
+      {
+        "id": "Vkpw0vj5",
+        "expr": "normalize(reverse(ts_av_diff(close, 14)))",
+        "univ": "TOP3000",
+        "neut": "SUBINDUSTRY",
+        "decay": 8,
+        "trunc": 0.01,
+        "sharpe": 1.37,
+        "fitness": 1.1,
+        "turnover": 0.211,
+        "drawdown": 0.071,
+        "sub_sh": 0.99,
+        "selfcorr": 0.001,
+        "axis": "14-day close av-diff reversal"
+      },
+      {
+        "id": "omKwW5on",
+        "expr": "normalize(add(reverse(ts_av_diff(close, 14)), reverse(ts_av_diff(close, 17))))",
+        "univ": "TOP3000",
+        "neut": "SUBINDUSTRY",
+        "decay": 6,
+        "trunc": 0.01,
+        "sharpe": 1.38,
+        "fitness": 1.09,
+        "turnover": 0.222,
+        "drawdown": 0.068,
+        "sub_sh": 1.01,
+        "selfcorr": 0.001,
+        "axis": "multi-horizon close av-diff reversal"
+      }
+    ],
+    "NEW_LOWCORR_NOTE": "Fresh low-corr factors orthogonal to both intraday reversal AND user 36 alphas (self-corr 0.001-0.013). Best: P0prgzdw (SH 2.13, corr 0.002), 88zkPkWm (SH 2.05, FIT 3.08, TO 0.11, corr 0.013)."
   }
 ]
