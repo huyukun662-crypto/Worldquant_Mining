@@ -179,7 +179,30 @@
         "checks": "ALL IS CHECKS PASS",
         "selfcorr": "PENDING(family 0.001-0.004)",
         "BEST_CLEAN": true
+      },
+      {
+        "name": "VN_dc6_t12",
+        "id": "6XwP1AbE",
+        "decay": 6,
+        "truncation": 0.12,
+        "sharpe": 1.99,
+        "fitness": 0.99,
+        "turnover": 0.677,
+        "NOTE": "identical to dc6_t08 -> truncation NON-BINDING"
       }
-    ]
+    ],
+    "final_conclusion": {
+      "best_clean_submittable": {
+        "id": "kq3kXxbK",
+        "sharpe": 1.95,
+        "fitness": 1.0,
+        "turnover": 0.63,
+        "drawdown": 0.057,
+        "all_IS_checks": "PASS"
+      },
+      "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 7)",
+      "fundamental_tension": "SH>=2.0 needs decay<=6 (FIT<1.0); FIT>=1.0 needs decay>=7 (SH<=1.95). Caps SH 2.02 (dc5) but cannot satisfy both. Truncation non-binding.",
+      "progression": "1.51 -> 1.71(winsorize) -> 1.82(vol-norm) -> 1.95(decay7 clean)/1.99(dc6)/2.02(dc5)"
+    }
   }
 ]
