@@ -387,6 +387,34 @@
       "expr": "rank(-ts_rank(returns, 7))",
       "univ": "TOP2000",
       "note": "TOP2000 sweet spot for return-rank reversal"
+    },
+    "RETURN_RANK_SWEEP": {
+      "axis": "rank(-ts_rank(returns, N)) return-rank reversal, delay=1, SUBINDUSTRY, decay 18",
+      "peak": "N=7 @ TOP2000 -> SH 2.34 (gJ1qeZ0g)",
+      "N_sweep_TOP2000": {
+        "N5": 2.25,
+        "N6": 2.31,
+        "N7": 2.34,
+        "N8": 2.16
+      },
+      "universe_sweep_N7": {
+        "TOP1000": 2.13,
+        "TOP2000": 2.34,
+        "TOP3000": "2.08(fit fail)"
+      },
+      "all_clean_selfcorr": "0.001-0.002",
+      "champion": {
+        "id": "gJ1qeZ0g",
+        "expr": "rank(-ts_rank(returns, 7))",
+        "univ": "TOP2000",
+        "neut": "SUBINDUSTRY",
+        "decay": 18,
+        "trunc": 0.08,
+        "sharpe": 2.34,
+        "fitness": 1.19,
+        "turnover": 0.595,
+        "selfcorr": 0.001
+      }
     }
   }
 ]
