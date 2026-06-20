@@ -280,6 +280,19 @@
     },
     "NEW_LOWCORR_FACTORS": [
       {
+        "id": "blL28m86",
+        "expr": "rank(-ts_rank(returns, 5))",
+        "univ": "TOP1000",
+        "neut": "SUBINDUSTRY",
+        "decay": 18,
+        "trunc": 0.08,
+        "sharpe": 2.15,
+        "fitness": 1.04,
+        "turnover": 0.604,
+        "selfcorr": 0.002,
+        "axis": "5-day return-rank reversal (BEST clean low-corr)"
+      },
+      {
         "id": "P0prgzdw",
         "expr": "rank(-ts_rank(returns, 7))",
         "univ": "TOP1000",
@@ -340,6 +353,17 @@
         "axis": "multi-horizon close av-diff reversal"
       }
     ],
-    "NEW_LOWCORR_NOTE": "Fresh low-corr factors orthogonal to both intraday reversal AND user 36 alphas (self-corr 0.001-0.013). Best: P0prgzdw (SH 2.13, corr 0.002), 88zkPkWm (SH 2.05, FIT 3.08, TO 0.11, corr 0.013)."
+    "NEW_LOWCORR_NOTE": "Fresh low-corr factors orthogonal to both intraday reversal AND user 36 alphas (self-corr 0.001-0.013). Best: P0prgzdw (SH 2.13, corr 0.002), 88zkPkWm (SH 2.05, FIT 3.08, TO 0.11, corr 0.013).",
+    "NEAR_MISS_NEW_AXES": [
+      {
+        "id": "kq3kNEWP",
+        "axis": "close position in daily high-low range reversal",
+        "expr": "zscore(ts_decay_linear(group_neutralize(-1*winsorize((close-low)/(high-low+0.001)-0.5, std=2), subindustry), 6))",
+        "sharpe": 2.04,
+        "fitness": 0.95,
+        "turnover": 0.663,
+        "note": "NEW orthogonal axis, fitness 0.95 just short - fixable"
+      }
+    ]
   }
 ]
