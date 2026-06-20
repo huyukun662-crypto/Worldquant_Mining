@@ -134,9 +134,8 @@
     "is_check_gate": "ALL variants PASS every IS check (LOW_SHARPE>1.25, LOW_FITNESS>1.0, turnover, sub-universe Sharpe). SELF_CORRELATION computed 0.001-0.004 vs 36 submitted alphas.",
     "ceiling_finding": "Vol-normalized winsorized intraday reversal reaches SH 1.82 (from 1.71 plain-winsorize, 1.51 raw). Approaching competition 2.0 bar; exploring decay/vol-window variants.",
     "recommended_submit": {
-      "name": "VN_dc7_t08",
-      "id": "kq3kXxbK",
-      "reason": "SH 1.95, FIT 1.00, TO 0.63, DD 0.057 - ALL IS checks pass, orthogonal, near-2.0"
+      "id": "LLpbRevm",
+      "reason": "CLEAN SH 2.00, FIT 1.00, TO 0.677, DD 0.056, self-corr 0.001 - all IS checks pass, orthogonal"
     },
     "recommended_submit_lowTO": {
       "name": "INTRA_k10_dc20",
@@ -214,6 +213,28 @@
         "all_IS_checks": "PASS",
         "self_corr": "~0.002 family",
         "KEY": "vol-norm window 30 lifts fitness to 1.00 at decay6, SH 1.99 clean"
+      },
+      "CLEAN_2P0_ACHIEVED": {
+        "id": "LLpbRevm",
+        "sharpe": 2.0,
+        "fitness": 1.0,
+        "turnover": 0.677,
+        "drawdown": 0.056,
+        "sub_universe_sharpe": 1.5,
+        "self_correlation": 0.001,
+        "self_corr_source": "DIRECTLY MEASURED",
+        "all_IS_checks": "PASS",
+        "KEY": "MARKET neutralization retains more directional return -> SH 1.99->2.00, fitness 1.00, self-corr still 0.001",
+        "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 6)",
+        "settings": {
+          "region": "USA",
+          "universe": "TOP3000",
+          "delay": 1,
+          "decay": 0,
+          "neutralization": "MARKET",
+          "truncation": 0.08,
+          "pasteurization": "ON"
+        }
       }
     }
   }
