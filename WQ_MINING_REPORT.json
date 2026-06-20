@@ -200,18 +200,20 @@
         "drawdown": 0.057,
         "all_IS_checks": "PASS"
       },
-      "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 7)",
+      "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 30)+0.001), 1), subindustry), 6)",
       "fundamental_tension": "SH>=2.0 needs decay<=6 (FIT<1.0); FIT>=1.0 needs decay>=7 (SH<=1.95). Caps SH 2.02 (dc5) but cannot satisfy both. Truncation non-binding.",
       "progression": "1.51 -> 1.71(winsorize) -> 1.82(vol-norm) -> 1.95(decay7 clean)/1.99(dc6)/2.02(dc5)",
       "hump_lever": "hump freezes intraday signal (dc5_h005: SH -0.34, TO 0.010). Turnover cannot drop without killing Sharpe. Frontier unbreakable.",
       "DEFINITIVE_BEST": {
-        "id": "kq3kXxbK",
-        "sharpe": 1.95,
+        "id": "QParlowX",
+        "sharpe": 1.99,
         "fitness": 1.0,
-        "turnover": 0.63,
-        "drawdown": 0.057,
+        "turnover": 0.678,
+        "drawdown": 0.058,
+        "sub_universe_sharpe": 1.46,
         "all_IS_checks": "PASS",
-        "self_corr": "~0.002 family"
+        "self_corr": "~0.002 family",
+        "KEY": "vol-norm window 30 lifts fitness to 1.00 at decay6, SH 1.99 clean"
       }
     }
   }
