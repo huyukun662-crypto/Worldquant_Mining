@@ -44,7 +44,12 @@
     "economic_links_customer/partner/all": "SH 0.28-0.46",
     "news_reaction_30min/120min (nws12)": "SH ~0",
     "dividend_yield (annual_dividend_yield)": "SH 0.37 (low coverage, dividend payers only)",
-    "optimal_position_indicator": "SH 0.6 (turnover 0.52)"
+    "optimal_position_indicator": "SH 0.6 (turnover 0.52)",
+    "corr_struct_high_low (ts_corr(high,low,500))": "SH 1.51 but self_corr 0.87 FAIL (dup of submitted price-price ts_corr)",
+    "corr_struct_price_autocorr (ts_corr(close,ts_delay(close,5),500))": "SH 1.62 but self_corr 0.895 FAIL (dup of submitted 88OgX1Jz)",
+    "corr_struct_return_autocorr (ts_corr(returns,ts_delay(returns,1),250))": "SH 0.43 too weak",
+    "corr_struct_vwap_volume (ts_corr(vwap,volume,750))": "SH -0.86 weak"
   },
+  "round43_correlation_structure": "ts_corr() correlation-structure factors were the last untested family. The only two that reach useful SH (high-low corr 1.51, price-autocorr 1.62) BOTH self-correlate >0.87 with ts_corr-family factors already in the submitted pool, and both still sit below the 2.0 gate. Return-autocorrelation and vwap-volume corr are too weak (SH 0.43, -0.86). Correlation-structure is therefore exhausted: no genuinely-new submittable factor.",
   "final_conclusion": "Across 42 rounds / ~190 D0 sims spanning EVERY accessible dataset (pv1, fundamental2/6, analyst4, news12, socialmedia12, pv13, earnings4[IV]), the Amihud illiquidity (high-low)/(close*volume) is the UNIQUE structure that clears SH>2 on this TUTORIAL-tier USA-TOP3000-delay0 competition. Every other structure - sentiment, value, quality, analyst revisions, economic-link (supply-chain) momentum, news drift, dividend yield - is individually weak (SH 0.3-1.2) and/or mutually correlated, so none reaches the 2.0 gate even when composited. Multiple are genuinely low-correlation (economic-links 0.095, sentiment+value 0.066) and serve as diversifiers, but are not independently submittable. RECOMMENDATION: submit factor C (illiquidity+reversal+sentiment, SH 2.09); use the low-corr structures as future combination ingredients if the account tier is upgraded."
 }
