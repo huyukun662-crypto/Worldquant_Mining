@@ -551,7 +551,24 @@
           "note": "LOW-VOL ANOMALY, only LOW_SHARPE fail, excellent FIT/TO"
         }
       },
-      "conclusion_so_far": "Non-reversal new structures weak. Parkinson low-vol anomaly promising (FIT 1.67, TO 0.107)."
+      "conclusion_so_far": "Non-reversal new structures weak. Parkinson low-vol anomaly promising (FIT 1.67, TO 0.107).",
+      "CLEAN_NEW_STRUCTURE": {
+        "id": "GrwYrO8o",
+        "structure": "vol-of-vol (volatility of volatility) low-vol anomaly",
+        "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_std_dev(ts_std_dev(returns,5),20), subindustry), 4))",
+        "univ": "TOP3000",
+        "neut": "SUBINDUSTRY",
+        "decay": 4,
+        "trunc": 0.08,
+        "sharpe": 1.28,
+        "fitness": 1.74,
+        "turnover": 0.113,
+        "drawdown": 0.4,
+        "sub_sh": 0.92,
+        "selfcorr": 0.017,
+        "all_checks": "PASS",
+        "caveat": "drawdown 0.40 high (no WQ DD gate); NEW structure orthogonal to reversal"
+      }
     }
   }
 ]
