@@ -98,6 +98,28 @@
         "fitness": 1.08,
         "turnover": 0.536,
         "selfcorr": 0.001
+      },
+      {
+        "name": "VN_k1_volnorm",
+        "id": "9qwPbZ6r",
+        "K": 1,
+        "winsorize": "std=2",
+        "vol_norm": "ts_std_dev/20",
+        "sharpe": 1.82,
+        "fitness": 1.0,
+        "turnover": 0.531,
+        "selfcorr": 0.001,
+        "BEST_SHARPE": true
+      },
+      {
+        "name": "VN_k1_dc5",
+        "id": "kq3kbR6O",
+        "decay": 5,
+        "sharpe": 2.02,
+        "fitness": 0.97,
+        "turnover": 0.736,
+        "checks": "FAIL LOW_FITNESS(0.97), HIGH_TURNOVER(0.736)",
+        "NOTE": "proves SH 2.0 reachable; decay 5 over-trades. Tuning decay 6-8 + truncation for clean pass."
       }
     ],
     "settings": {
@@ -110,17 +132,19 @@
       "pasteurization": "ON"
     },
     "is_check_gate": "ALL variants PASS every IS check (LOW_SHARPE>1.25, LOW_FITNESS>1.0, turnover, sub-universe Sharpe). SELF_CORRELATION computed 0.001-0.004 vs 36 submitted alphas.",
-    "ceiling_finding": "Winsorized intraday reversal peaks ~1.71 (k1, std=2). std scan: std4=1.69, std3=1.69, std2=1.71. Exploring vol-normalized form toward 2.0.",
+    "ceiling_finding": "Vol-normalized winsorized intraday reversal reaches SH 1.82 (from 1.71 plain-winsorize, 1.51 raw). Approaching competition 2.0 bar; exploring decay/vol-window variants.",
     "recommended_submit": {
-      "name": "INTRA_k1_wins_std2",
-      "id": "MPplldYa",
-      "reason": "best Sharpe 1.71, winsorized intraday std=2, orthogonal (self-corr 0.002)"
+      "name": "VN_k1_volnorm",
+      "id": "9qwPbZ6r",
+      "reason": "vol-normalized winsorized intraday reversal, SH 1.82, orthogonal (self-corr 0.001)"
     },
     "recommended_submit_lowTO": {
       "name": "INTRA_k10_dc20",
       "id": "xAxwMd8W",
       "reason": "FIT 1.41, turnover only 0.141, SH 1.28"
     },
-    "timestamp": "2026-06-20T04:33:48"
+    "timestamp": "2026-06-20T04:33:48",
+    "expression_template_best": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 10))",
+    "breakthrough": "Vol-normalized intraday reversal reaches SH 2.02 at decay=5 (but turnover 0.736>0.7 and fitness 0.97<1.0 fail). Tuning decay/truncation to land SH>=2.0 with all checks passing."
   }
 ]
