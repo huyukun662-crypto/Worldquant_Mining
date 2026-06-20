@@ -5,8 +5,17 @@
     "name": "social-sentiment + book-to-market value (PURE NEW DATA, zero PV)",
     "alpha_id": "vRLnEJg3",
     "expression": "add(-zscore(ts_decay_linear(ts_mean(scl12_sentiment,60),40)), zscore(divide(ts_backfill(bookvalue_ps,120),close)))",
-    "settings": {"region":"USA","universe":"TOP3000","delay":0,"neutralization":"SUBINDUSTRY","decay":0,"truncation":0.08},
-    "sharpe": 1.21, "turnover": 0.044, "fitness": 1.12,
+    "settings": {
+      "region": "USA",
+      "universe": "TOP3000",
+      "delay": 0,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 0,
+      "truncation": 0.08
+    },
+    "sharpe": 1.21,
+    "turnover": 0.044,
+    "fitness": 1.12,
     "self_corr": 0.066,
     "note": "self-corr 0.066 = NEARLY ZERO vs the submitted pool AND vs illiquidity factors A/B/C. Fully independent structure (sentiment overreaction + value premium). But below the SH>2 submit gate."
   },
@@ -21,5 +30,21 @@
     "5-signal_new_data": 0.75
   },
   "conclusion": "Every NON-illiquidity D0 structure caps at SH ~1.0-1.2. New-data signals (sentiment 1.06, value 0.64, analyst 0.6) are individually weak AND mutually correlated (sentiment & buzz share socialmedia12; value & cashflow share price), so composites do not diversify to SH>2. The Amihud illiquidity (high-low)/(close*volume) is the UNIQUE strong D0 engine on this TUTORIAL-tier account. A genuinely structure-replaced submittable (SH>2) factor is not achievable; the strongest fully-independent structure is sentiment+value at SH 1.21, self-corr 0.066.",
-  "note": "Verified via check submit only; NOT submitted."
+  "note": "Verified via check submit only; NOT submitted.",
+  "explored_structures_full_map": {
+    "_comment": "Rounds 38-42, ~50 D0 sims across ALL non-PV datasets. self_corr vs submitted pool in (). All NON-illiquidity structures cap SH~1.2.",
+    "illiquidity_AMIHUD [the only SH>2 engine]": "SH 2.05 (corr 0.12) -> factors A/B/C",
+    "social_sentiment_smoothed": "SH 1.06 (corr 0.22)",
+    "sentiment+book_value [best pure-new-data]": "SH 1.21 (corr 0.066)",
+    "fundamental_book_to_market": "SH 0.64 (corr 0.37)",
+    "fundamental_EBIT/EV, EBITDA/assets": "SH ~0",
+    "analyst_revision (anl4_ady_mean)": "SH 0.6",
+    "analyst_dispersion / net-upgrades / numest": "SH 0.0-0.19",
+    "economic_links_competitor_momentum (pv13 rel_ret_comp)": "SH 0.61 (corr 0.095!) - Cohen-Frazzini, genuinely new but weak+high-turnover",
+    "economic_links_customer/partner/all": "SH 0.28-0.46",
+    "news_reaction_30min/120min (nws12)": "SH ~0",
+    "dividend_yield (annual_dividend_yield)": "SH 0.37 (low coverage, dividend payers only)",
+    "optimal_position_indicator": "SH 0.6 (turnover 0.52)"
+  },
+  "final_conclusion": "Across 42 rounds / ~190 D0 sims spanning EVERY accessible dataset (pv1, fundamental2/6, analyst4, news12, socialmedia12, pv13, earnings4[IV]), the Amihud illiquidity (high-low)/(close*volume) is the UNIQUE structure that clears SH>2 on this TUTORIAL-tier USA-TOP3000-delay0 competition. Every other structure - sentiment, value, quality, analyst revisions, economic-link (supply-chain) momentum, news drift, dividend yield - is individually weak (SH 0.3-1.2) and/or mutually correlated, so none reaches the 2.0 gate even when composited. Multiple are genuinely low-correlation (economic-links 0.095, sentiment+value 0.066) and serve as diversifiers, but are not independently submittable. RECOMMENDATION: submit factor C (illiquidity+reversal+sentiment, SH 2.09); use the low-corr structures as future combination ingredients if the account tier is upgraded."
 }
