@@ -48,15 +48,13 @@ FAST_FIELDS = ("close", "open", "high", "low", "volume", "vwap", "returns")
 SLOW_FIELDS = ("cap", "sharesout", "adv20")           # slow -> low turnover
 ALL_FIELDS = FAST_FIELDS + SLOW_FIELDS
 
-# Operators chosen to produce slow, well-behaved signals.
-TS_SMOOTH = ("ts_mean", "ts_decay_linear", "ts_rank", "ts_zscore", "ts_av_diff")
-TS_SIGNAL = ("ts_delta", "ts_std_dev", "ts_returns", "ts_av_diff",
-             "ts_arg_max", "ts_arg_min", "ts_corr")
-CS_WRAP = ("rank", "zscore", "normalize")
-UNARY = ("", "", "-")                                  # bias toward no-negate
+# Wrap mostly with `rank` (uniform weights) -> avoids CONCENTRATED_WEIGHT.
+CS_WRAP = ("rank", "rank", "rank", "zscore")
+UNARY = ("", "-")
 
-# Longer windows -> slower signal -> lower turnover.
-WINDOWS = (20, 40, 60, 120, 240)
+# Moderate windows: long enough for low turnover (~0.05-0.20), short enough
+# that the alpha doesn't trip WQ's LOW_TURNOVER check (turnover too small).
+WINDOWS = (10, 20, 40, 60, 120)
 
 
 @dataclass
@@ -91,49 +89,56 @@ def _load(p: Path, name: str):
 # Fresh expression generation (no template reuse)
 # ---------------------------------------------------------------------------
 def _core(rng: random.Random) -> str:
-    """Build a slow signal core."""
-    kind = rng.random()
-    if kind < 0.30:
-        # smoothed level/return of a single field
-        f = rng.choice(ALL_FIELDS)
-        op = rng.choice(TS_SMOOTH)
-        return f"{op}({f}, {rng.choice(WINDOWS)})"
-    if kind < 0.55:
-        # long-horizon change (slow reversal/momentum)
-        f = rng.choice(FAST_FIELDS)
-        op = rng.choice(("ts_delta", "ts_av_diff", "ts_returns"))
-        return f"{op}({f}, {rng.choice(WINDOWS)})"
-    if kind < 0.75:
-        # ratio of two slow aggregates of two fields
-        a, b = rng.sample(ALL_FIELDS, 2)
-        w = rng.choice(WINDOWS)
-        return f"divide(ts_mean({a}, {w}), ts_mean({b}, {w}))"
-    if kind < 0.90:
-        # time-series correlation (slow co-movement)
-        a, b = rng.sample(FAST_FIELDS, 2)
-        return f"ts_corr({a}, {b}, {rng.choice(WINDOWS)})"
-    # smoothed volatility / dispersion
-    f = rng.choice(FAST_FIELDS)
-    return f"ts_std_dev({f}, {rng.choice(WINDOWS)})"
+    """Build one fresh, economically-motivated signal core (composed from
+    scratch -- NOT copied from Alpha101 / the classical-factor library).
+
+    All structures are normalized by a same-horizon scale where it helps
+    (so cross-sectional weights stay diffuse -> avoids CONCENTRATED_WEIGHT)
+    and use moderate horizons (-> low but non-zero turnover)."""
+    w = rng.choice(WINDOWS)
+    kind = rng.randint(0, 8)
+    if kind == 0:
+        # volatility-normalized reversal (mean-reversion of price move)
+        return f"divide(-ts_delta(close, {w}), ts_std_dev(returns, {w}))"
+    if kind == 1:
+        # volatility-normalized momentum
+        return f"divide(ts_delta(close, {w}), ts_std_dev(returns, {w}))"
+    if kind == 2:
+        # low-volatility anomaly (slow, defensive -> low drawdown)
+        return f"-ts_std_dev(returns, {w})"
+    if kind == 3:
+        # distance from own moving average (slow reversal)
+        return f"divide(close, ts_mean(close, {w}))"
+    if kind == 4:
+        # price-volume divergence
+        return f"-ts_corr(close, volume, {w})"
+    if kind == 5:
+        # liquidity / share-turnover (slow)
+        return f"-ts_mean(divide(volume, sharesout), {w})"
+    if kind == 6:
+        # smoothed intraday range (illiquidity / risk proxy)
+        return f"-ts_mean(divide(subtract(high, low), close), {w})"
+    if kind == 7:
+        # de-meaned volume pressure normalized by its own dispersion
+        return f"divide(ts_av_diff(volume, {w}), ts_std_dev(volume, {w}))"
+    # smoothed return (slow trend)
+    return f"ts_mean(returns, {w})"
 
 
-def generate(n: int, seed: int, target_tvr: float) -> list[str]:
+def generate(n: int, seed: int, target_tvr: float = 0.0) -> list[str]:
     rng = random.Random(seed)
     out, seen = [], set()
     guard = 0
-    while len(out) < n and guard < n * 50:
+    while len(out) < n and guard < n * 60:
         guard += 1
         core = _core(rng)
-        # optionally combine two cores for richness
-        if rng.random() < 0.35:
-            op = rng.choice(("subtract", "add", "divide"))
-            core = f"{op}({core}, {_core(rng)})"
+        # occasionally blend two cores for richness (kept rank-friendly)
+        if rng.random() < 0.30:
+            op = rng.choice(("add", "subtract"))
+            core = f"{op}(rank({core}), rank({_core(rng)}))"
         sign = rng.choice(UNARY)
         wrap = rng.choice(CS_WRAP)
-        # Extra smoothing pass keeps turnover low (this account has no
-        # ts_target_tvr_decay operator). Larger smoothing window -> slower.
-        sw = rng.choice((10, 20, 40))
-        expr = f"{sign}{wrap}(ts_mean(winsorize({core}, std=4), {sw}))"
+        expr = f"{sign}{wrap}(winsorize({core}, std=4))"
         if expr in seen:
             continue
         seen.add(expr)
@@ -228,8 +233,9 @@ def main():
     ap.add_argument("--universe", type=str, default="TOP3000")
     ap.add_argument("--neutralization", type=str, default="SUBINDUSTRY")
     ap.add_argument("--truncation", type=float, default=0.08)
-    ap.add_argument("--decay", type=int, default=6,
-                    help="simulation decay (extra turnover damping)")
+    ap.add_argument("--decay", type=int, default=0,
+                    help="simulation decay (extra turnover damping; keep low "
+                         "so turnover does not fall below WQ's LOW_TURNOVER floor)")
     ap.add_argument("--max-turnover", type=float, default=0.25,
                     help="survivor turnover ceiling")
     ap.add_argument("--workers", type=int, default=2, help="concurrent simulations")
