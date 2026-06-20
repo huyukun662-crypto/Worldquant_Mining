@@ -234,3 +234,18 @@ clears 2.0 while passing self-correlation. A submittable factor EXISTS (88zAK5Kl
 2.01, passes all IS checks) but is blocked solely by 0.94 self-corr to the user's
 already-submitted near-duplicate 1Y751gZm. Clean submit requires a user portfolio
 decision: retire/hide 1Y751gZm first (economically a wash).
+
+## Update 9: pivot to delay-1 — unexplored Model datasets
+
+User chose "换方向挖" -> mine delay=1. Mapped the 23 submitted D1 alphas:
+occupied = reversal (many), leverage, cashflow/quality, value(ebit/cap),
+IV-skew (gJ3Qvvzm 2.76, WjNe3zmj, 2rvOwEqw, 88Od9aml), mdl177 analyst-sensitivity
+model (RRN516od 2.70, QPnW5LWQ 2.17), pcr_oi, liquidity-risk-model, vol-weighted
+reversal (VkXjKN7b 2.19). The 2.70 from mdl177 shows the Model category is POWERFUL.
+
+D1 Model datasets (mostly UNused by the 23): model77 (3256 fields!),
+model16 "Fundamental Scores" (24 ready-made composites: fscore_total/value/
+quality/momentum + multi_factor_* derivatives), model17 "Analyst Estimate
+Factors" (43: earnings surprise/revision/recs), model51 "Systematic Risk"
+(beta/BAB), model53 "Creditworthiness". model16/17/51 are MATRIX-typed
+ready-made alpha scores, orthogonal to the 23 submitted -> testing for 2.0.
