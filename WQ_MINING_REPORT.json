@@ -55,6 +55,49 @@
         "turnover": 0.141,
         "selfcorr": 0.004,
         "BEST_FITNESS": true
+      },
+      {
+        "name": "INTRA_k1_wins",
+        "id": "MPpllLA9",
+        "K": 1,
+        "decay": 10,
+        "winsorize": "std=4",
+        "sharpe": 1.69,
+        "fitness": 1.1,
+        "turnover": 0.533,
+        "selfcorr": 0.001,
+        "NOTE": "winsorize boosts k1 1.50->1.69"
+      },
+      {
+        "name": "INTRA_k2_wins",
+        "id": "kq3kkJzL",
+        "K": 2,
+        "winsorize": "std=4",
+        "sharpe": 1.62,
+        "fitness": 1.19,
+        "turnover": 0.392,
+        "selfcorr": 0.001
+      },
+      {
+        "name": "INTRA_k1_wins_std2",
+        "id": "MPplldYa",
+        "K": 1,
+        "winsorize": "std=2",
+        "sharpe": 1.71,
+        "fitness": 1.07,
+        "turnover": 0.541,
+        "selfcorr": 0.002,
+        "BEST_SHARPE": true
+      },
+      {
+        "name": "INTRA_k1_wins_std3",
+        "id": "rKo66wjJ",
+        "K": 1,
+        "winsorize": "std=3",
+        "sharpe": 1.69,
+        "fitness": 1.08,
+        "turnover": 0.536,
+        "selfcorr": 0.001
       }
     ],
     "settings": {
@@ -67,11 +110,11 @@
       "pasteurization": "ON"
     },
     "is_check_gate": "ALL variants PASS every IS check (LOW_SHARPE>1.25, LOW_FITNESS>1.0, turnover, sub-universe Sharpe). SELF_CORRELATION computed 0.001-0.004 vs 36 submitted alphas.",
-    "ceiling_finding": "Pure intraday-reversal Sharpe caps ~1.51 (peak at K=3). Overnight/Amihud/range/volume composites all DILUTE. Competition 2.0 bar not reachable on this fresh orthogonal axis.",
+    "ceiling_finding": "Winsorized intraday reversal peaks ~1.71 (k1, std=2). std scan: std4=1.69, std3=1.69, std2=1.71. Exploring vol-normalized form toward 2.0.",
     "recommended_submit": {
-      "name": "INTRA_k3",
-      "id": "LLpbx06e",
-      "reason": "best Sharpe 1.51 with FIT 1.23, fully orthogonal"
+      "name": "INTRA_k1_wins_std2",
+      "id": "MPplldYa",
+      "reason": "best Sharpe 1.71, winsorized intraday std=2, orthogonal (self-corr 0.002)"
     },
     "recommended_submit_lowTO": {
       "name": "INTRA_k10_dc20",
