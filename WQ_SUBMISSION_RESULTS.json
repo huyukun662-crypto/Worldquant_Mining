@@ -1,9 +1,11 @@
 {
-  "best_factors": [
+  "spec": "D1 (delay=1), no IV fields, submittable, low turnover & low max-drawdown",
+  "pareto_optimized_core_factors": [
     {
       "rank": 1,
       "alpha_id": "rKomaon1",
-      "note": "Pareto-dominates blLEVxvM on all 4 objectives; raises portfolio Sharpe 2.26->2.30",
+      "family": "close mean-reversion",
+      "note": "Pareto-dominates earlier champions on all 4 objectives; portfolio Sharpe 2.26->2.30",
       "expression": "normalize(reverse(ts_av_diff(close, 14)))",
       "settings": {
         "region": "USA",
@@ -91,7 +93,8 @@
     {
       "rank": 2,
       "alpha_id": "9qwQ5mkq",
-      "note": "highest standalone Sharpe 1.43, largest PnL contribution; turnover 0.246 near cap",
+      "family": "close mean-reversion",
+      "note": "highest standalone Sharpe among core; +727K PnL",
       "expression": "normalize(reverse(ts_av_diff(close, 17)))",
       "settings": {
         "region": "USA",
@@ -177,6 +180,188 @@
       }
     }
   ],
+  "low_correlation_diversifiers": [
+    {
+      "rank": 1,
+      "alpha_id": "YPpwJ3lJ",
+      "family": "vwap-dislocation reversion",
+      "note": "corr 0.391 to rKomaon1; self-corr 0.143; portfolio Sharpe 2.26->2.82, DD->0.028",
+      "expression": "normalize(reverse(ts_av_diff(divide(close, vwap), 140)))",
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 64,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 1.69,
+        "turnover": 0.2493,
+        "drawdown": 0.0786,
+        "fitness": 1.35,
+        "returns": 0.1584,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS"
+          }
+        ]
+      },
+      "corr_to_champion_rKomaon1": 0.391,
+      "self_correlation": {
+        "max": 0.1432,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5953955.0,
+          "longCount": 1353,
+          "shortCount": 1752,
+          "drawdown": 0.0282,
+          "turnover": 0.1641,
+          "returns": 0.1204,
+          "margin": 0.001467,
+          "sharpe": 2.82,
+          "fitness": 2.42
+        },
+        "pnl_delta": 937202.0,
+        "drawdown_improved": true
+      }
+    },
+    {
+      "rank": 2,
+      "alpha_id": "omKwZ2Y6",
+      "family": "vwap-dislocation reversion",
+      "note": "corr 0.395 to rKomaon1; self-corr 0.143; portfolio Sharpe 2.26->2.79",
+      "expression": "normalize(reverse(ts_av_diff(divide(close, vwap), 160)))",
+      "settings": {
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 64,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.01,
+        "pasteurization": "ON"
+      },
+      "is": {
+        "sharpe": 1.65,
+        "turnover": 0.2479,
+        "drawdown": 0.078,
+        "fitness": 1.3,
+        "returns": 0.1543,
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS"
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS"
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS"
+          }
+        ]
+      },
+      "corr_to_champion_rKomaon1": 0.395,
+      "self_correlation": {
+        "max": 0.1435,
+        "pass": true
+      },
+      "performance_comparison": {
+        "before": {
+          "bookSize": 20000000,
+          "pnl": 5016753.0,
+          "longCount": 1266,
+          "shortCount": 1857,
+          "drawdown": 0.0448,
+          "turnover": 0.1215,
+          "returns": 0.1015,
+          "margin": 0.00167,
+          "sharpe": 2.26,
+          "fitness": 2.04
+        },
+        "after": {
+          "bookSize": 20000000,
+          "pnl": 5885845.0,
+          "longCount": 1353,
+          "shortCount": 1752,
+          "drawdown": 0.0276,
+          "turnover": 0.1637,
+          "returns": 0.1191,
+          "margin": 0.001455,
+          "sharpe": 2.79,
+          "fitness": 2.38
+        },
+        "pnl_delta": 869092.0,
+        "drawdown_improved": true
+      }
+    }
+  ],
   "superseded": [
     {
       "alpha_id": "blLEVxvM",
@@ -200,6 +385,5 @@
         "fitness": 1.04
       }
     }
-  ],
-  "spec": "D1 (delay=1), no IV fields, submittable, low turnover & low max-drawdown; Pareto-improved via window-length sweep"
+  ]
 }
