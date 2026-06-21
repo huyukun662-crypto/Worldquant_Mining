@@ -35,10 +35,13 @@ mine_d1 = importlib.util.module_from_spec(_spec); sys.modules["mine_d1"] = mine_
 _spec.loader.exec_module(mine_d1)
 
 REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6",
-              "D_88z6bZEq": "88z6bZEq"}
+              "D_88z6bZEq": "88z6bZEq", "E_d5x78JRv": "d5x78JRv"}
 CORR_CEILING = 0.50          # "low correlation" target
 
-BASE = {"universe": "TOP3000", "truncation": 0.08}
+BASE = {"truncation": 0.08}
+
+A_EXPR = ("rank(winsorize(add(rank(-ts_corr(close, volume, 20)), "
+          "rank(divide(-ts_delta(close, 10), ts_std_dev(returns, 10)))), std=4))")
 
 # Sign-corrected component building blocks (directed so each has +Sharpe).
 C = {
@@ -68,16 +71,15 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # B is binding (it's a SUBINDUSTRY reversal+flow mix). Decorrelate from B
-    # via NEUTRALIZATION axis (MARKET/SECTOR) + non-B-shared components.
-    ("mixbal_mkt",     blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "MARKET", "decay": 10}),
-    ("mixbal_sec",     blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "SECTOR", "decay": 10}),
-    ("mixvc_mkt",      blend("vcspread", "amihud", "turnover", "gap"),      {**BASE, "neutralization": "MARKET", "decay": 12}),
-    # non-B-shared components (volz, rngtrend, cppos NOT in B) + trret, on MARKET
-    ("nonB_mkt",       blend("trret", "volz", "rngtrend", "cppos"),         {**BASE, "neutralization": "MARKET", "decay": 10}),
-    ("nonB_sub",       blend("trret", "volz", "rngtrend", "cppos", "gap"),  {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("mixvc_sec",      blend("vcspread", "volz", "rngtrend", "cppos"),      {**BASE, "neutralization": "SECTOR", "decay": 12}),
-    ("mixbal_none",    blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "NONE", "decay": 10}),
+    # UNIVERSE axis: same strong edges on TOP1000/TOP500 (different stock set ->
+    # mechanically decorrelated from the TOP3000 references A/B/D/E).
+    ("Aexpr_t1k",      A_EXPR,                                              {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    ("pvflow_t1k_sec", blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 8}),
+    ("flow_t1k",       blend("amihud", "issuance", "turnover", "volz"),     {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 6}),
+    ("mixbal_t1k_sub", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("mixbal_t1k_mkt", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "MARKET", "decay": 10}),
+    ("pvflow_t500_sec",blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 8}),
+    ("Aexpr_t1k_mkt",  A_EXPR,                                              {**BASE, "universe": "TOP1000", "neutralization": "MARKET", "decay": 8}),
 ]
 
 
@@ -136,7 +138,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT5.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT6.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
