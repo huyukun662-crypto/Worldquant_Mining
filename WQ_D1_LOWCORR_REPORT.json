@@ -1,0 +1,130 @@
+[
+  {
+    "name": "trret_d16",
+    "expression": "-rank(ts_rank(returns, 60))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 1.52,
+    "turnover": 0.4627,
+    "fitness": 0.81,
+    "drawdown": 0.0566,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "leVzpwz8",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "vcspread_d16",
+    "expression": "rank(ts_delta(subtract(vwap, close), 20))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": false,
+    "sharpe": 0.0,
+    "turnover": 0.0,
+    "fitness": 0.0,
+    "drawdown": 0.0,
+    "submittable": false,
+    "failed_checks": [],
+    "alpha_id": "",
+    "error": "submit-429: {\"detail\":\"CONCURRENT_SIMULATION_LIMIT_EXCEEDED\"}",
+    "corr": {}
+  },
+  {
+    "name": "px_meanrev_d8",
+    "expression": "rank(add(add(-rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60))), -rank(ts_av_diff(close, 60))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 8
+    },
+    "ok": true,
+    "sharpe": 0.84,
+    "turnover": 0.1084,
+    "fitness": 0.69,
+    "drawdown": 0.1461,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "vRLz85zQ",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "px_meanrev_d16",
+    "expression": "rank(add(add(-rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60))), -rank(ts_av_diff(close, 60))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.76,
+    "turnover": 0.0826,
+    "fitness": 0.59,
+    "drawdown": 0.156,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "npgz9vw3",
+    "error": "",
+    "corr": {}
+  }
+]
