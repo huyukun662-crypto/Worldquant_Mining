@@ -623,6 +623,24 @@
         "note": "STRONG new structure FIT 3.26; fixable via winsorize/rank"
       },
       "accel": 0.73
+    },
+    "NEW_STRUCTURE_CLEAN_FACTOR": {
+      "id": "pw6EREV3",
+      "structure": "higher-moment composite: skewness(3rd-moment) + vol-of-vol, zscore-summed",
+      "expr": "zscore(ts_decay_linear(add(zscore(group_neutralize(-1*ts_mean(signed_power(returns,3),20), subindustry)), zscore(group_neutralize(-1*ts_std_dev(ts_std_dev(returns,5),20), subindustry))), 4))",
+      "univ": "TOP3000",
+      "neut": "SUBINDUSTRY",
+      "decay": 4,
+      "trunc": 0.08,
+      "delay": 1,
+      "sharpe": 1.72,
+      "fitness": 2.94,
+      "turnover": 0.126,
+      "drawdown": 0.285,
+      "sub_sh": 1.27,
+      "selfcorr": 0.017,
+      "all_checks": "PASS",
+      "insight": "skew3 alone fails CONCENTRATED_WEIGHT (edge in extreme-skew outliers). Adding broad vol-of-vol dilutes concentration -> passes AND diversification boosts SH to 1.72 (>both components), DD to 0.285. NEW structure (higher-moment composite), orthogonal."
     }
   }
 ]
