@@ -703,11 +703,26 @@
           "turnover": 0.124,
           "selfcorr": 0.017,
           "note": "4th-moment/lottery anomaly NEW, same blend recipe"
+        },
+        {
+          "id": "akdl5R1W",
+          "blend": "price-change skewness + vol-of-vol",
+          "sharpe": 1.26,
+          "fitness": 1.65,
+          "turnover": 0.118,
+          "selfcorr": 0.017
         }
       ],
       "skew3_standalone": "omKv67wv SH 1.58 FIT 3.26 but CONCENTRATED_WEIGHT; only blending fixes cleanly",
       "optimal_blend": "1:1 skew3+vol-of-vol @ trunc 0.08 -> pw6EREV3 SH 1.72 champion",
-      "generalization": "Moment-blend generalizes: 3rd moment (1.72) AND 4th moment (1.64) both clean when blended with vol-of-vol."
+      "generalization": "Moment-blend generalizes: 3rd moment (1.72) AND 4th moment (1.64) both clean when blended with vol-of-vol.",
+      "weak_submoments": {
+        "downside_semivariance": 0.44,
+        "semivar_blend": 0.77,
+        "semivar_ratio": 0.57,
+        "co_skewness": -0.13
+      },
+      "moments_tested": "3rd skew(returns)->1.72; 4th kurtosis(returns)->1.64; 3rd skew(price-change)->1.26; downside-semivar/co-skew weak"
     },
     "SESSION_FINAL": "4 distinct structure families mined clean: price-reversal (gJ1qeZ0g 2.34), illiquidity-composite (wpRO6zOp 2.09), higher-moment composite (pw6EREV3 1.72 NEW), low-vol anomaly (GrwYrO8o 1.28). delay=1, self-corr <=0.02."
   }
