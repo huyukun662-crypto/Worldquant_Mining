@@ -53,6 +53,7 @@ C = {
     "turnover": "rank(ts_mean(divide(volume, sharesout), 60))",                           # share turnover
     "volz":     "rank(ts_zscore(volume, 60))",                                            # abnormal volume
     "rngtrend": "rank(ts_delta(divide(subtract(high, low), close), 40))",                 # range trend
+    "gap":      "rank(ts_mean(divide(open, ts_delay(close, 1)), 20))",                    # overnight-gap reversal
 }
 
 
@@ -67,20 +68,19 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # pv-corr microstructure + flow (different mix than A/B/D)
-    ("pvcorr_flow",      blend("pvcorr", "amihud", "volz", "turnover"),         {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # pv-corr + flow, wider blend with intraday position & gap-like range
-    ("pvcorr_wide",      blend("pvcorr", "amihud", "cppos", "volz", "rngtrend"),{**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # price av_diff reversal + flow (reversal flavored differently than A)
-    ("avdiff_flow",      blend("avdiff", "amihud", "issuance", "volz"),         {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # close-position + flow (intraday microstructure + liquidity)
-    ("cppos_flow",       blend("cppos", "turnover", "volz", "issuance"),        {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # pv-corr + price z reversal (microstructure + statistical reversal)
-    ("pvcorr_pricez",    blend("pvcorr", "pricez", "amihud"),                   {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # flow blend dropping B-shared amihud/issuance to lower corr with B/D
-    ("flow_volcentric",  blend("volz", "turnover", "rngtrend", "cppos"),        {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # SECTOR-neutralized pv-corr+flow (decorrelate via neutralization axis)
-    ("pvcorr_flow_sec",  blend("pvcorr", "amihud", "volz", "turnover"),         {**BASE, "neutralization": "SECTOR", "decay": 6}),
+    # trret = 60d rank reversal (DIFFERENT construction than A's 10d vol-norm),
+    # diversified with low-turnover non-flow signals to lift fitness & decorrelate
+    ("trret_div_d12",    blend("trret", "gap", "turnover", "cppos"),    {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("trret_div2_d12",   blend("trret", "avdiff", "gap"),               {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("trret_pricez_d12", blend("trret", "pricez", "gap"),               {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
+    # vwap-close spread (strong) diversified, no pv-corr / no heavy flow
+    ("vcspread_div_d12", blend("vcspread", "gap", "turnover", "cppos"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
+    # statistical reversal + intraday/range (no pv-corr, no flow)
+    ("pricez_intraday",  blend("pricez", "cppos", "gap", "rngtrend"),   {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # av_diff reversal + intraday + light flow
+    ("avdiff_intraday",  blend("avdiff", "cppos", "gap", "volz"),       {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # trret on MARKET neutralization (decorrelate via neutralization axis)
+    ("trret_div_mkt",    blend("trret", "gap", "turnover", "cppos"),    {**BASE, "neutralization": "MARKET", "decay": 12}),
 ]
 
 
@@ -139,7 +139,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT2.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT3.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
