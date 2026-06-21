@@ -68,15 +68,16 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # BALANCED reversal+flow mixes -> aim to sit OFF the reversal/flow plane,
-    # landing < 0.5 vs A (reversal), D (flow) AND B (the mix in the middle).
-    ("mix_balanced",   blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("mix_balanced2",  blend("trret", "turnover", "volz", "gap"),           {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("mix_trret_amih", blend("trret", "amihud", "gap"),                     {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("mix_vc_flow",    blend("vcspread", "amihud", "turnover", "gap"),      {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("mix_av_flow",    blend("avdiff", "turnover", "volz", "gap"),          {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("mix_wide",       blend("trret", "amihud", "turnover", "volz", "cppos", "gap"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("mix_vc_flow2",   blend("vcspread", "amihud", "issuance", "volz"),     {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
+    # B is binding (it's a SUBINDUSTRY reversal+flow mix). Decorrelate from B
+    # via NEUTRALIZATION axis (MARKET/SECTOR) + non-B-shared components.
+    ("mixbal_mkt",     blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "MARKET", "decay": 10}),
+    ("mixbal_sec",     blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "SECTOR", "decay": 10}),
+    ("mixvc_mkt",      blend("vcspread", "amihud", "turnover", "gap"),      {**BASE, "neutralization": "MARKET", "decay": 12}),
+    # non-B-shared components (volz, rngtrend, cppos NOT in B) + trret, on MARKET
+    ("nonB_mkt",       blend("trret", "volz", "rngtrend", "cppos"),         {**BASE, "neutralization": "MARKET", "decay": 10}),
+    ("nonB_sub",       blend("trret", "volz", "rngtrend", "cppos", "gap"),  {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("mixvc_sec",      blend("vcspread", "volz", "rngtrend", "cppos"),      {**BASE, "neutralization": "SECTOR", "decay": 12}),
+    ("mixbal_none",    blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "NONE", "decay": 10}),
 ]
 
 
@@ -135,7 +136,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT4.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT5.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
