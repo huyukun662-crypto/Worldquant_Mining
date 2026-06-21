@@ -95,5 +95,29 @@
     "submittable": true,
     "structure": "dollar-volume-weighted reversal (multiply(returns,volume) inside ts_rank) -- avoids ts_zscore/plain-returns form",
     "note": "Another NEW structure per user request. Highest fitness of any factor (1.16), SH 2.21, all 8 checks PASS. Backups same family: divide(returns,adv20) (XgpPq1A8, FIT 1.09), divide(returns,cap) (Wjpnk1Zj, FIT 1.06). All ~0.90-0.97 correlated to the base reversal anomaly (different expressions, same signal). Bollinger close/ts_mean and close/vwap forms were weak (SH<=1.5, FIT<=0.54)."
+  },
+  "new_structure_factor_3": {
+    "alpha_id": "78wQZn61",
+    "expression": "normalize(group_neutralize(-ts_rank(returns, 7), subindustry))",
+    "decay": 18,
+    "sharpe": 2.06,
+    "fitness": 1.06,
+    "turnover": 0.5923,
+    "sub_universe_sharpe": 1.68,
+    "self_correlation": 0.3766,
+    "submittable": true,
+    "structure": "group_neutralize operator (within-subindustry demean) -- different structure"
+  },
+  "new_structure_factor_4": {
+    "alpha_id": "O0pkrPdJ",
+    "expression": "normalize(group_rank(-ts_rank(returns, 7), sector))",
+    "decay": 18,
+    "sharpe": 2.02,
+    "fitness": 1.0,
+    "turnover": 0.5881,
+    "sub_universe_sharpe": 1.73,
+    "self_correlation": 0.3642,
+    "submittable": true,
+    "structure": "group_rank operator (within-sector ranking) -- different structure"
   }
 }
