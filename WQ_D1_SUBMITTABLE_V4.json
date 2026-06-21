@@ -1,0 +1,43 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "D \u2014 flow / liquidity (low-correlation with A and B)",
+  "structure": "Pure flow/liquidity factor with NO price reversal/direction. Blends 4 sign-corrected signals: Amihud illiquidity (|ret|/(close*volume)), net share issuance (delta sharesout), share turnover (volume/sharesout), abnormal volume (z-score of volume). Economically orthogonal to the reversal-driven Families A and B.",
+  "fields_used": [
+    "returns",
+    "close",
+    "volume",
+    "sharesout"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "alpha_id": "88z6bZEq",
+  "expression": "rank(add(add(add(-rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "decay": 6,
+    "pasteurization": "ON",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "language": "FASTEXPR"
+  },
+  "is": {
+    "sharpe": 1.45,
+    "turnover": 0.1544,
+    "fitness": 1.03,
+    "drawdown": 0.0508,
+    "returns": 0.0776
+  },
+  "all_checks_pass": true,
+  "self_correlation": "PENDING (evaluated at Submit)",
+  "submittable": true,
+  "daily_pnl_correlation": {
+    "vs_A_58w3aOKM": 0.001,
+    "vs_B_58w9r6E6": 0.375
+  },
+  "note": "max|corr| = 0.375 < 0.50 target. Near-zero correlation with Family A. The 0.375 with Family B reflects shared Amihud/issuance/turnover components; the volume-z-score component is unique to this factor."
+}

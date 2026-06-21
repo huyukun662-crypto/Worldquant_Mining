@@ -126,5 +126,105 @@
     "alpha_id": "npgz9vw3",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "flow_d6",
+    "expression": "rank(add(add(add(-rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 6
+    },
+    "ok": true,
+    "sharpe": 1.45,
+    "turnover": 0.1544,
+    "fitness": 1.03,
+    "drawdown": 0.0508,
+    "submittable": true,
+    "failed_checks": [],
+    "alpha_id": "88z6bZEq",
+    "error": "",
+    "corr": {
+      "A_58w3aOKM": 0.001,
+      "B_58w9r6E6": 0.375
+    },
+    "max_abs_corr": 0.375
+  },
+  {
+    "name": "trret_rng_d16",
+    "expression": "rank(add(add(-rank(ts_rank(returns, 60)), rank(ts_delta(divide(subtract(high, low), close), 40))), rank(ts_mean(divide(volume, sharesout), 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.66,
+    "turnover": 0.1687,
+    "fitness": 0.45,
+    "drawdown": 0.2306,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "j2ZwEmgo",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "px_meanrev_mkt",
+    "expression": "rank(add(add(-rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60))), -rank(ts_av_diff(close, 60))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "universe": "TOP3000",
+      "truncation": 0.08,
+      "neutralization": "MARKET",
+      "decay": 8
+    },
+    "ok": true,
+    "sharpe": 0.51,
+    "turnover": 0.0999,
+    "fitness": 0.41,
+    "drawdown": 0.22,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "mL8z3Z8E",
+    "error": "",
+    "corr": {}
   }
 ]
