@@ -1,0 +1,179 @@
+[
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(equity/cap, 40)) - rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "58w6aYj6",
+  "sharpe": 1.27,
+  "turnover": 0.294,
+  "fitness": 0.86,
+  "returns": 0.1354,
+  "drawdown": 0.1095,
+  "margin": 0.000921,
+  "longCount": 467,
+  "shortCount": 472,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(sales/cap, 40)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "vRLz5PJb",
+  "sharpe": 1.49,
+  "turnover": 0.1429,
+  "fitness": 1.17,
+  "returns": 0.0877,
+  "drawdown": 0.0699,
+  "margin": 0.001228,
+  "longCount": 473,
+  "shortCount": 476,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(sales/cap, 40)) - rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "WjpXNRxN",
+  "sharpe": 1.14,
+  "turnover": 0.2933,
+  "fitness": 0.75,
+  "returns": 0.1259,
+  "drawdown": 0.1143,
+  "margin": 0.000858,
+  "longCount": 475,
+  "shortCount": 479,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": false,
+  "expr": "rank(ts_rank(ebit/(cap + debt - cash), 40)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "err": "sim-WARNING:Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:1,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(equity/cap, 40)) + rank(ts_rank(ebit/equity, 40)) - rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "rKozAkRo",
+  "sharpe": 1.53,
+  "turnover": 0.2635,
+  "fitness": 1.1,
+  "returns": 0.1372,
+  "drawdown": 0.0861,
+  "margin": 0.001041,
+  "longCount": 460,
+  "shortCount": 463,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(equity/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "6XwqaLm7",
+  "sharpe": 1.56,
+  "turnover": 0.1754,
+  "fitness": 1.16,
+  "returns": 0.0976,
+  "drawdown": 0.0636,
+  "margin": 0.001112,
+  "longCount": 459,
+  "shortCount": 464,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ }
+]

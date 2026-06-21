@@ -1,6 +1,31 @@
 {
-  "summary": "Five submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all five can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "summary": "Six submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all six can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "factor_6_booktoprice_plus_roe": {
+    "expression": "rank(ts_rank(equity/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+    "rationale": "Book-to-price value + ROE profitability -- a quality-value combo with NO revision and NO reversal leg, giving it near-zero correlation to the revision-heavy F3 (0.09) and value-reversal F2 footprint, and the lowest max-correlation (0.62) of the later factors. Distinct from F1 (which uses cashflow-yield not B/P) and F5 (which pairs B/P with revision, not ROE).",
+    "alpha_id": "6XwqaLm7",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.56, "fitness": 1.16, "turnover": 0.1754, "returns": 0.0976,
+      "drawdown": 0.0636, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.56 > 1.25)", "LOW_FITNESS": "PASS (1.16 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1754)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (0.90 > 0.83)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.62, "factor2": 0.60, "factor3": 0.09, "factor4": 0.20, "factor5": 0.61},
+    "submittable": true
+  },
   "correlation_matrix": {
+    "F6_6XwqaLm7_vs_F1": 0.62, "F6_6XwqaLm7_vs_F2": 0.60, "F6_6XwqaLm7_vs_F3": 0.09,
+    "F6_6XwqaLm7_vs_F4": 0.20, "F6_6XwqaLm7_vs_F5": 0.61,
     "F1_QPajYRKg_vs_F2_1Y7mEOGm": 0.599,
     "F1_QPajYRKg_vs_F3_leVz6Y17": -0.151,
     "F2_1Y7mEOGm_vs_F3_leVz6Y17": 0.352,
