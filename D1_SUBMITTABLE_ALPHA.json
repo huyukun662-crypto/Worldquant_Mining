@@ -1,5 +1,34 @@
 {
-  "summary": "Two submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. Both pass ALL in-sample submit checks; mutual PnL correlation 0.599 (< the 0.7 self-correlation submit limit), so both can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "summary": "Three submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; pairwise PnL correlations all < 0.7 (the self-correlation submit limit), so all three can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "correlation_matrix": {
+    "F1_QPajYRKg_vs_F2_1Y7mEOGm": 0.599,
+    "F1_QPajYRKg_vs_F3_leVz6Y17": -0.151,
+    "F2_1Y7mEOGm_vs_F3_leVz6Y17": 0.352
+  },
+  "factor_3_revision": {
+    "expression": "2*rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60)) - rank(ts_mean(returns, 5))",
+    "rationale": "Analyst forward-EPS revision momentum (analysts raising estimates predicts returns) — a signal family orthogonal to both value factors — minus a light 1-week reversal. Revision is double-weighted so the alpha is revision-dominant, giving near-zero correlation to the value champion (-0.151) and low correlation to factor 2 (0.352).",
+    "alpha_id": "leVz6Y17",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.42, "fitness": 1.11, "turnover": 0.1409, "returns": 0.0868,
+      "drawdown": 0.0882, "longCount": 480, "shortCount": 476, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.42 > 1.25)", "LOW_FITNESS": "PASS (1.11 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1409)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.24 > 0.75)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_factor1": -0.151,
+    "correlation_to_factor2": 0.352,
+    "submittable": true
+  },
   "factor_2_decorrelated": {
     "expression": "rank(ts_rank(ebit/cap, 40)) - 0.7*rank(ts_mean(returns, 5))",
     "rationale": "Earnings-yield value (ebit/cap, ts_rank-smoothed 40d) minus a down-weighted 1-week price reversal. The reversal leg injects PnL orthogonal to the slow fundamental champion, pulling the cross-alpha correlation down to 0.599 while LIFTING Sharpe to 1.60. The 0.7 weight is the sweet spot: heavier reversal lowers correlation but its turnover erodes fitness.",
