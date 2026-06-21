@@ -21,6 +21,14 @@
     "note": "Rounds 49-51. BEST genuinely-different-structure factor found across all 51 rounds. Combines 3 orthogonal NON-price-microstructure anomalies: social-media sentiment overreaction (scl12_sentiment), value premium (book/price), and abnormal-turnover reversal (delta of share turnover). Contains NO Amihud illiquidity and NO price reversal -> structurally distinct from A/B/C. Passes ALL submit checks (turnover 0.046<0.7, fitness 1.42>1.3, concentrated-weight OK, self_corr 0.399<0.7) EXCEPT LOW_SHARPE (1.45 < 2.0). Sibling 88zrRjPa (sentiment 1.3x weight) = SH 1.42, FIT 1.50, self_corr 0.381. This is the structural CEILING for non-illiquidity D0 factors on this tutorial tier: ~1.45.",
     "prior_best": "vRLnEJg3 sentiment+value SH 1.21 self_corr 0.066 (superseded; adding abnormal-turnover lifted SH 1.21->1.45 at the cost of self_corr 0.066->0.399, still well below 0.7)"
   },
+  "rounds_52_54_push_to_submit_standard": {
+    "_comment": "Goal: reach the SUBMIT/PUSH standard (SH>2.0 + all checks + self_corr<0.7) with a NON-A/B/C structure. ~16 D0 sims.",
+    "diversification_ceiling_math": "Combining k weak signals each SH~0.8 with mutual corr rho gives composite SH ~ 0.8*sqrt(k/(1+(k-1)rho)). Observed plateau at 1.45 implies rho~0.3 among sentiment/value/turnover/IVOL/asset-growth -> asymptote 0.8/sqrt(0.3)=1.46. Adding MORE same-family weak signals DILUTES (round52: +assetgrowth 1.39, +analyst 1.35, +IVOL 1.18). Pure-different-structure CANNOT reach 2.0.",
+    "factor_D_illiquidity_plus_newblock_NO_reversal": "illiquidity engine + (value+abnTO+sentiment) block, no price reversal: SH 1.69-1.75 (LLp60kO1=1.75). The new block is weaker than reversal, so it slightly DILUTES the ~1.8 illiquidity engine instead of lifting it.",
+    "factor_Dprime_illiquidity_plus_reversal_plus_newblock": "illiquidity + reversal + (value+abnTO[+sentiment]): SH 1.63-1.76, turnover rises to 0.11-0.13. The value+abnTO block is counterproductive for SH on top of the illiq+reversal core (which alone = factor A 2.05).",
+    "conclusion": "The SH>2 push standard is reached ONLY by the illiquidity+reversal(+sentiment) structure (factors A/B/C). Every attempt to fold the genuinely-different low-corr block (value + abnormal-turnover) into a submittable factor DILUTES SH below 2.0 and raises turnover. There is no second, structurally-distinct factor that meets the push standard on this tutorial tier.",
+    "factor_C_CONFIRMED_submittable": "O0pwMKog SH 2.09, FIT 3.10, TO 0.103, self_corr 0.492 (<0.7 MEASURED) -> passes ALL 8 submit checks. This is THE push-standard factor."
+  },
   "explored_and_capped": {
     "analyst_revision_anl4_ady_mean": 0.6,
     "analyst_dispersion": 0.19,
