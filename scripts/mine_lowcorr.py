@@ -71,15 +71,14 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # UNIVERSE axis: same strong edges on TOP1000/TOP500 (different stock set ->
-    # mechanically decorrelated from the TOP3000 references A/B/D/E).
-    ("Aexpr_t1k",      A_EXPR,                                              {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("pvflow_t1k_sec", blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 8}),
-    ("flow_t1k",       blend("amihud", "issuance", "turnover", "volz"),     {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 6}),
-    ("mixbal_t1k_sub", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("mixbal_t1k_mkt", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "MARKET", "decay": 10}),
-    ("pvflow_t500_sec",blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 8}),
-    ("Aexpr_t1k_mkt",  A_EXPR,                                              {**BASE, "universe": "TOP1000", "neutralization": "MARKET", "decay": 8}),
+    # TOP1000 near-misses pushed with more DECAY (lower turnover -> higher fitness),
+    # to clear the fitness floor while staying decorrelated from the TOP3000 set.
+    ("mixbal_t1k_d16", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("mixbal_t1k_d22", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 22}),
+    ("mixbal_t1k_sec", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
+    ("pvflow_t1k_d14", blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
+    ("pvflow_t1k_d20", blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 20}),
+    ("mixbal_t1k_ind", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY", "decay": 16}),
 ]
 
 
@@ -138,7 +137,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT6.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT7.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
