@@ -2,22 +2,24 @@
   "goal": "Replace the Amihud-illiquidity+reversal structure; mine a genuinely DIFFERENT submittable D0 structure uncorrelated with factors A/B/C.",
   "rounds": "38-40, ~30 D0 sims exploring analyst4, fundamental6, socialmedia12 (no IV, no (high-low)/(close*volume))",
   "best_genuinely_different_structure": {
-    "name": "social-sentiment + book-to-market value (PURE NEW DATA, zero PV)",
-    "alpha_id": "vRLnEJg3",
-    "expression": "add(-zscore(ts_decay_linear(ts_mean(scl12_sentiment,60),40)), zscore(divide(ts_backfill(bookvalue_ps,120),close)))",
+    "name": "social-sentiment(overreaction) + book-to-market(value) + abnormal-turnover(reversal) -- 3-anomaly composite, ZERO illiquidity, ZERO price-reversal, genuinely different from factors A/B/C",
+    "alpha_id": "KPb6gd1g",
+    "expression": "add(add(multiply(2.0, -zscore(ts_decay_linear(ts_mean(scl12_sentiment, 60), 40))), zscore(ts_backfill(divide(bookvalue_ps, close), 60))), multiply(0.5, zscore(ts_decay_linear(ts_delta(divide(volume, sharesout), 60), 20))))",
     "settings": {
       "region": "USA",
       "universe": "TOP3000",
       "delay": 0,
       "neutralization": "SUBINDUSTRY",
-      "decay": 0,
-      "truncation": 0.08
+      "decay": 4,
+      "truncation": 0.08,
+      "pasteurization": "ON"
     },
-    "sharpe": 1.21,
-    "turnover": 0.044,
-    "fitness": 1.12,
-    "self_corr": 0.066,
-    "note": "self-corr 0.066 = NEARLY ZERO vs the submitted pool AND vs illiquidity factors A/B/C. Fully independent structure (sentiment overreaction + value premium). But below the SH>2 submit gate."
+    "sharpe": 1.45,
+    "turnover": 0.046,
+    "fitness": 1.42,
+    "self_corr": 0.399,
+    "note": "Rounds 49-51. BEST genuinely-different-structure factor found across all 51 rounds. Combines 3 orthogonal NON-price-microstructure anomalies: social-media sentiment overreaction (scl12_sentiment), value premium (book/price), and abnormal-turnover reversal (delta of share turnover). Contains NO Amihud illiquidity and NO price reversal -> structurally distinct from A/B/C. Passes ALL submit checks (turnover 0.046<0.7, fitness 1.42>1.3, concentrated-weight OK, self_corr 0.399<0.7) EXCEPT LOW_SHARPE (1.45 < 2.0). Sibling 88zrRjPa (sentiment 1.3x weight) = SH 1.42, FIT 1.50, self_corr 0.381. This is the structural CEILING for non-illiquidity D0 factors on this tutorial tier: ~1.45.",
+    "prior_best": "vRLnEJg3 sentiment+value SH 1.21 self_corr 0.066 (superseded; adding abnormal-turnover lifted SH 1.21->1.45 at the cost of self_corr 0.066->0.399, still well below 0.7)"
   },
   "explored_and_capped": {
     "analyst_revision_anl4_ady_mean": 0.6,
