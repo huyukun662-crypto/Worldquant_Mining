@@ -610,6 +610,19 @@
         "ts_min"
       ],
       "CONCLUSION": "Only 3 structure families produce clean strong factors on USA/TOP3000/delay1: price-reversal (best SH 2.34), low-vol anomaly (vol-of-vol clean 1.28), illiquidity composites (FIT 3.10). Money-flow/volume/momentum/winrate/correlation/Bollinger/Kaufman/recency all weak (SH<1.1). Platform slowed to ~50min/sim."
+    },
+    "STRUCT4_FINDINGS": {
+      "skew3_PROMISING": {
+        "id": "omKv67wv",
+        "structure": "skewness/3rd-moment reversal via signed_power(returns,3)",
+        "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_mean(signed_power(returns,3),20), subindustry), 4))",
+        "sharpe": 1.58,
+        "fitness": 3.26,
+        "turnover": 0.188,
+        "only_fail": "CONCENTRATED_WEIGHT",
+        "note": "STRONG new structure FIT 3.26; fixable via winsorize/rank"
+      },
+      "accel": 0.73
     }
   }
 ]
