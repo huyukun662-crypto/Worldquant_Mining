@@ -724,6 +724,28 @@
       },
       "moments_tested": "3rd skew(returns)->1.72; 4th kurtosis(returns)->1.64; 3rd skew(price-change)->1.26; downside-semivar/co-skew weak"
     },
-    "SESSION_FINAL": "4 distinct structure families mined clean: price-reversal (gJ1qeZ0g 2.34), illiquidity-composite (wpRO6zOp 2.09), higher-moment composite (pw6EREV3 1.72 NEW), low-vol anomaly (GrwYrO8o 1.28). delay=1, self-corr <=0.02."
+    "SESSION_FINAL": "4 distinct structure families mined clean: price-reversal (gJ1qeZ0g 2.34), illiquidity-composite (wpRO6zOp 2.09), higher-moment composite (pw6EREV3 1.72 NEW), low-vol anomaly (GrwYrO8o 1.28). delay=1, self-corr <=0.02.",
+    "NEW_FUNDAMENTAL_FAMILY": {
+      "description": "Fundamental value+quality family (5th orthogonal axis) - fundamental data, MAXIMALLY orthogonal to all price/volume factors.",
+      "SUBMITTABLE_LOWCORR": {
+        "id": "d5xmG6LX",
+        "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+        "univ": "TOP1000",
+        "neut": "SUBINDUSTRY",
+        "delay": 1,
+        "sharpe": 1.5,
+        "fitness": 1.02,
+        "turnover": 0.17,
+        "drawdown": 0.077,
+        "selfcorr": 0.002,
+        "all_checks": "PASS",
+        "why": "value(cashflow yield)+quality(EBIT/equity), ts_rank(.,40). Submittable AND low-corr(0.002) with all previous price-based factors."
+      },
+      "key_lever": "ts_rank(ratio,40) time-series rank makes raw fundamental ratios work (simple rank ~1.0; ts_rank 1.50).",
+      "weak_simple_ratios": {
+        "sales_yield": 1.04,
+        "cf_yield": 0.75
+      }
+    }
   }
 ]
