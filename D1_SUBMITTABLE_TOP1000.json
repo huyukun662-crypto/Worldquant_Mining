@@ -1,0 +1,123 @@
+{
+  "common_settings": {
+    "region": "USA",
+    "universe": "TOP1000",
+    "delay": 1,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "instrumentType": "EQUITY",
+    "language": "FASTEXPR"
+  },
+  "note": "All confirmed SUBMITTABLE via GET /alphas/{id}/check (not submitted). TOP1000 (not TOP3000), all 8 checks PASS, Fitness>=1.0.",
+  "factors": [
+    {
+      "alpha_id": "78wq9jqQ",
+      "expression": "rank(-ts_rank(returns, 7))",
+      "decay": 18,
+      "sharpe": 2.13,
+      "fitness": 1.09,
+      "turnover": 0.5868,
+      "sub_universe_sharpe": 1.72,
+      "self_correlation": 0.3639,
+      "submittable": true
+    },
+    {
+      "alpha_id": "Grw0Jwdx",
+      "expression": "rank(-ts_rank(returns, 5))",
+      "decay": 20,
+      "sharpe": 2.15,
+      "fitness": 1.06,
+      "turnover": 0.5857,
+      "sub_universe_sharpe": 1.54,
+      "self_correlation": 0.3295,
+      "submittable": true
+    },
+    {
+      "alpha_id": "VkpwJM9A",
+      "expression": "rank(-ts_rank(returns, 8))",
+      "decay": 20,
+      "sharpe": 1.98,
+      "fitness": 1.02,
+      "turnover": 0.5618,
+      "sub_universe_sharpe": 1.55,
+      "self_correlation": 0.3932,
+      "submittable": true
+    },
+    {
+      "alpha_id": "e7OJnAYJ",
+      "expression": "rank(-ts_rank(returns, 5))",
+      "decay": 16,
+      "sharpe": 2.14,
+      "fitness": 1.01,
+      "turnover": 0.6246,
+      "sub_universe_sharpe": 1.59,
+      "self_correlation": 0.3128,
+      "submittable": true
+    }
+  ],
+  "low_correlation_factor": {
+    "alpha_id": "j2ZlYQdE",
+    "expression": "normalize(-ts_rank(returns, 220))",
+    "decay": 22,
+    "sharpe": 1.57,
+    "fitness": 1.02,
+    "turnover": 0.3976,
+    "sub_universe_sharpe": 0.87,
+    "self_correlation": 0.4503,
+    "correlation_to_returns5_winner": 0.52,
+    "correlation_to_returns7": 0.59,
+    "submittable": true,
+    "note": "RECOMMENDED low-correlation factor (robust version). corr 0.52/0.59 to the short-reversal family (both <0.70 self-corr gate). normalize() wrapper on long reversal-220; FIT 1.02 with sub-universe SH margin (0.87 vs 0.83). Pairs with any short-reversal factor for a decorrelated 2-alpha portfolio. Earlier decay24/returns-250 version (ZYpwmZnn) also submittable at corr 0.50, FIT exactly 1.0."
+  },
+  "new_structure_factor": {
+    "alpha_id": "omKA1nll",
+    "expression": "normalize(-ts_zscore(returns, 6))",
+    "decay": 18,
+    "sharpe": 2.0,
+    "fitness": 1.01,
+    "turnover": 0.6723,
+    "sub_universe_sharpe": 1.55,
+    "self_correlation": 0.3628,
+    "submittable": true,
+    "structure": "zscore-normalized returns reversal (ts_zscore operator, NOT ts_rank)",
+    "note": "NEW structure per user request to replace ts_rank. ts_zscore(returns,N) reversal, normalize-wrapped. SH 2.0, FIT 1.01, all 8 checks PASS. Backups: normalize(-ts_zscore(returns,7)) decay22 (78w0kgv5, FIT 1.0), normalize(-ts_zscore(returns,6)) decay16 (MPpqjL3M, FIT 1.0). Vol-scaled reversal divide(-ret,ts_std_dev) was too weak (SH<=1.1)."
+  },
+  "new_structure_factor_2": {
+    "alpha_id": "6Xw3x8XG",
+    "expression": "normalize(-ts_rank(multiply(returns, volume), 6))",
+    "decay": 18,
+    "sharpe": 2.21,
+    "fitness": 1.16,
+    "turnover": 0.5947,
+    "sub_universe_sharpe": 1.78,
+    "self_correlation": 0.3695,
+    "correlation_to_ts_rank_winner": 0.9,
+    "submittable": true,
+    "structure": "dollar-volume-weighted reversal (multiply(returns,volume) inside ts_rank) -- avoids ts_zscore/plain-returns form",
+    "note": "Another NEW structure per user request. Highest fitness of any factor (1.16), SH 2.21, all 8 checks PASS. Backups same family: divide(returns,adv20) (XgpPq1A8, FIT 1.09), divide(returns,cap) (Wjpnk1Zj, FIT 1.06). All ~0.90-0.97 correlated to the base reversal anomaly (different expressions, same signal). Bollinger close/ts_mean and close/vwap forms were weak (SH<=1.5, FIT<=0.54)."
+  },
+  "new_structure_factor_3": {
+    "alpha_id": "78wQZn61",
+    "expression": "normalize(group_neutralize(-ts_rank(returns, 7), subindustry))",
+    "decay": 18,
+    "sharpe": 2.06,
+    "fitness": 1.06,
+    "turnover": 0.5923,
+    "sub_universe_sharpe": 1.68,
+    "self_correlation": 0.3766,
+    "submittable": true,
+    "structure": "group_neutralize operator (within-subindustry demean) -- different structure"
+  },
+  "new_structure_factor_4": {
+    "alpha_id": "O0pkrPdJ",
+    "expression": "normalize(group_rank(-ts_rank(returns, 7), sector))",
+    "decay": 18,
+    "sharpe": 2.02,
+    "fitness": 1.0,
+    "turnover": 0.5881,
+    "sub_universe_sharpe": 1.73,
+    "self_correlation": 0.3642,
+    "submittable": true,
+    "structure": "group_rank operator (within-sector ranking) -- different structure"
+  }
+}
