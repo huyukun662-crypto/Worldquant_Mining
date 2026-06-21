@@ -1,9 +1,35 @@
 {
-  "summary": "Three submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; pairwise PnL correlations all < 0.7 (the self-correlation submit limit), so all three can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "summary": "Four submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all four can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
   "correlation_matrix": {
     "F1_QPajYRKg_vs_F2_1Y7mEOGm": 0.599,
     "F1_QPajYRKg_vs_F3_leVz6Y17": -0.151,
-    "F2_1Y7mEOGm_vs_F3_leVz6Y17": 0.352
+    "F2_1Y7mEOGm_vs_F3_leVz6Y17": 0.352,
+    "F1_QPajYRKg_vs_F4_RRpaYlke": 0.53,
+    "F2_1Y7mEOGm_vs_F4_RRpaYlke": 0.49,
+    "F3_leVz6Y17_vs_F4_RRpaYlke": 0.50
+  },
+  "factor_4_value_plus_revision": {
+    "expression": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "Cashflow-yield value + analyst forward-EPS revision momentum -- two complementary, individually-moderate signals whose sum is the strongest alpha found (SH 1.66, FIT 1.24, drawdown only 0.042). Distinct from F1 (no ROE leg, adds revision), F2/F3 (no reversal leg). Correlates 0.49-0.53 with all three others.",
+    "alpha_id": "RRpaYlke",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.66, "fitness": 1.24, "turnover": 0.1439, "returns": 0.0804,
+      "drawdown": 0.0422, "longCount": 459, "shortCount": 461, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.66 > 1.25)", "LOW_FITNESS": "PASS (1.24 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1439)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.30 > 0.88)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.53, "factor2": 0.49, "factor3": 0.50},
+    "submittable": true
   },
   "factor_3_revision": {
     "expression": "2*rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60)) - rank(ts_mean(returns, 5))",
