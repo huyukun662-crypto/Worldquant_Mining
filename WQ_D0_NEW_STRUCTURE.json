@@ -29,6 +29,13 @@
     "conclusion": "The SH>2 push standard is reached ONLY by the illiquidity+reversal(+sentiment) structure (factors A/B/C). Every attempt to fold the genuinely-different low-corr block (value + abnormal-turnover) into a submittable factor DILUTES SH below 2.0 and raises turnover. There is no second, structurally-distinct factor that meets the push standard on this tutorial tier.",
     "factor_C_CONFIRMED_submittable": "O0pwMKog SH 2.09, FIT 3.10, TO 0.103, self_corr 0.492 (<0.7 MEASURED) -> passes ALL 8 submit checks. This is THE push-standard factor."
   },
+  "rounds_55_56_low_corr_AND_submittable": {
+    "_comment": "Goal: a factor that is BOTH submittable (SH>2) AND lower-correlated with the previous/submitted pool than Factor C's 0.492. ~10 D0 sims.",
+    "alternative_illiquidity_engines": "Classic Amihud |returns|/(close*volume) SH 0.99; |returns|/(vwap*volume) SH 1.32; (high-low)/(vwap*volume) SH 1.71 BUT self_corr 0.512 (vwap~=close, same structure, does NOT decorrelate); 1/turnover (sharesout/volume) SH 0.89; inverse dollar-volume SH 0.01; classic Amihud 250-window SH 0.91. CONCLUSION: only the (high-low)/dollar-volume RANGE structure reaches SH>1.7, and all its variants self-correlate ~0.51 with the pool's existing illiquidity alphas (0mA0o6q6, 88OgX1Jz).",
+    "decorrelation_transforms": "ts_rank of illiquidity KILLS the signal (SH 0.49 / 0.75 - rank discards the magnitude that drives the alpha). Reducing illiquidity weight to 0.7x + heavy sentiment/value -> SH 1.44. Heavy value(0.8)+abnTO(0.8) block on illiq+reversal -> SH 1.48, turnover 0.117.",
+    "correlation_floor": "The self-correlation FLOOR for any submittable (SH>2) D0 factor on this account is ~0.49, because the pool already contains illiquidity-type alphas and the (high-low)/dollar-volume engine is the ONLY structure reaching SH>2. Every attempt to push corr below ~0.49 (rank transform, weight reduction, heavy orthogonal tilt) drops SH below 2.0. Corr and SH move TOGETHER - they cannot be decoupled because the same illiquidity exposure drives both.",
+    "answer": "Factor C (O0pwMKog) sits at the joint optimum: SH 2.09 (submittable) AND self_corr 0.492 (passes the <0.7 low-correlation gate, and is at the achievable correlation floor). It is simultaneously 'submittable' and 'low-correlation with the previous factors'. No factor exists on this tier that is submittable with materially lower correlation. The genuinely-different-structure KPb6gd1g (SH 1.45, self_corr 0.399) has LOWER correlation but is NOT submittable (SH<2)."
+  },
   "explored_and_capped": {
     "analyst_revision_anl4_ady_mean": 0.6,
     "analyst_dispersion": 0.19,
