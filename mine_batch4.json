@@ -1,0 +1,281 @@
+[
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/cap, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "NONE"
+  },
+  "alpha_id": "d5xmK8J2",
+  "sharpe": 0.94,
+  "turnover": 0.0572,
+  "fitness": 1.72,
+  "returns": 0.4184,
+  "drawdown": 0.6235,
+  "margin": 0.014631,
+  "longCount": 995,
+  "shortCount": 0,
+  "grade": "GOOD",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/cap, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "MARKET"
+  },
+  "alpha_id": "WjpdLdKG",
+  "sharpe": 0.73,
+  "turnover": 0.1311,
+  "fitness": 0.58,
+  "returns": 0.0822,
+  "drawdown": 0.2404,
+  "margin": 0.001254,
+  "longCount": 504,
+  "shortCount": 491,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/cap, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SECTOR"
+  },
+  "alpha_id": "xAxQ1PGJ",
+  "sharpe": 0.85,
+  "turnover": 0.1329,
+  "fitness": 0.66,
+  "returns": 0.0793,
+  "drawdown": 0.2063,
+  "margin": 0.001193,
+  "longCount": 499,
+  "shortCount": 496,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "zq9jr9qV",
+  "sharpe": 1.41,
+  "turnover": 0.1271,
+  "fitness": 1.08,
+  "returns": 0.0751,
+  "drawdown": 0.0853,
+  "margin": 0.001182,
+  "longCount": 447,
+  "shortCount": 455,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SUB_UNIVERSE_SHARPE"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) - rank(ts_delta(assets, 250))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "O0pkJGW7",
+  "sharpe": 0.65,
+  "turnover": 0.1041,
+  "fitness": 0.37,
+  "returns": 0.0399,
+  "drawdown": 0.1358,
+  "margin": 0.000766,
+  "longCount": 434,
+  "shortCount": 443,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) - rank(ts_delta(close, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "0m7djrOr",
+  "sharpe": 1.24,
+  "turnover": 0.2028,
+  "fitness": 0.84,
+  "returns": 0.0923,
+  "drawdown": 0.1042,
+  "margin": 0.00091,
+  "longCount": 461,
+  "shortCount": 461,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) - rank(ts_std_dev(returns, 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "P0p6MorJ",
+  "sharpe": 0.27,
+  "turnover": 0.1137,
+  "fitness": 0.15,
+  "returns": 0.0362,
+  "drawdown": 0.256,
+  "margin": 0.000636,
+  "longCount": 469,
+  "shortCount": 453,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS",
+   "LOW_SUB_UNIVERSE_SHARPE"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/cap, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 20,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "wpR193ll",
+  "sharpe": 0.96,
+  "turnover": 0.1038,
+  "fitness": 0.69,
+  "returns": 0.0649,
+  "drawdown": 0.1585,
+  "margin": 0.001251,
+  "longCount": 458,
+  "shortCount": 463,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ }
+]
