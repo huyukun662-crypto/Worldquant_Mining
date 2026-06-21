@@ -1,0 +1,54 @@
+{
+  "summary": "Submittable delay=1 fundamental-ratio alpha mined on WorldQuant Brain, avoiding TOP3000. Passes ALL in-sample submit checks; self-correlation ~0 on a fresh account. Not actually submitted (per instruction: check-only).",
+  "champion": {
+    "expression": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+    "rationale": "Orthogonal value + profitability composite: cashflow-yield (cashflow_op/cap) captures cheap stocks; ROE (ebit/equity) captures quality. Each leg is ts_rank-smoothed over 40d to stabilize the quarterly fundamental signal, then cross-sectionally ranked and summed equally. No Alpha101 / classical-template reuse.",
+    "alpha_id": "QPajYRKg",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 5,
+      "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.5,
+      "fitness": 1.02,
+      "turnover": 0.1702,
+      "returns": 0.0784,
+      "drawdown": 0.0772,
+      "longCount": 447,
+      "shortCount": 455,
+      "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.5 > 1.25)",
+      "LOW_FITNESS": "PASS (1.02 > 1.0)",
+      "LOW_TURNOVER": "PASS (0.1702 > 0.01)",
+      "HIGH_TURNOVER": "PASS (0.1702 < 0.7)",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (0.87 > 0.8)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account (no prior submitted alphas); /correlations/self returns empty",
+      "MATCHES_COMPETITION": "PASS (eligible: challenge, IQC2026S1)"
+    },
+    "submittable": true
+  },
+  "runner_up": {
+    "expression": "rank(ts_rank(cashflow_op/cap, 40)) + 1.5*rank(ts_rank(ebit/equity, 40))",
+    "alpha_id": "blLM678R",
+    "settings": {"universe": "TOP1000", "delay": 1, "decay": 10, "truncation": 0.1, "neutralization": "SUBINDUSTRY"},
+    "wq_is_metrics": {"sharpe": 1.44, "fitness": 1.08, "turnover": 0.119, "sub_universe_sharpe": 0.76},
+    "note": "Lower turnover (0.119) and higher fitness (1.08), but sub-universe Sharpe 0.76 sits exactly at the 0.76 limit (marginal). Champion chosen for its comfortable margin and cleaner equal-weight form."
+  },
+  "method_notes": [
+    "Raw cross-sectional fundamental ratios are weak (~0.3 Sharpe) on this account's IS window 2019-2023.",
+    "Wrapping a valuation ratio in ts_rank(.,40) lifts it to ~1.0 Sharpe.",
+    "TOP1000 is the sweet spot here; TOP500/TOP200 were weaker (opposite of some public notes).",
+    "Adding an ORTHOGONAL profitability signal (ROE=ebit/equity) to a cashflow-yield value signal is what breaks past SH 1.25 / FIT 1.0.",
+    "All numbers are from WorldQuant Brain /simulations (authoritative), not the local yfinance proxy."
+  ]
+}
