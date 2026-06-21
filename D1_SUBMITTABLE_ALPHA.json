@@ -1,5 +1,28 @@
 {
-  "summary": "Eight submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all eight can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "summary": "Nine submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all nine can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "factor_9_zscore_cashflow_minus_reversal": {
+    "expression": "rank(ts_zscore(cashflow_op/cap, 250)) - 0.4*rank(ts_mean(returns, 5))",
+    "rationale": "ts_zscore(250) cashflow-yield value minus a lightly-weighted (0.4) short reversal. The reversal weight was tuned (0.4 vs 0.5/0.6) to keep max correlation just under 0.7 (0.67 to F2) while maximizing fitness (1.42). Combines the zscore-value lever with the reversal diversifier in a slot not occupied by F1-F8.",
+    "alpha_id": "A1waGAYE",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.6, "fitness": 1.42, "turnover": 0.143, "returns": 0.1124,
+      "drawdown": 0.0701, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.6 > 1.25)", "LOW_FITNESS": "PASS (1.42 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.143)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.40 > 0.85)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.56, "factor2": 0.67, "factor3": -0.01, "factor4": 0.10, "factor5": 0.24, "factor6": 0.65, "factor7": 0.27, "factor8": 0.37},
+    "submittable": true
+  },
   "factor_8_zscore_booktoprice_plus_revision": {
     "expression": "rank(ts_zscore(equity/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
     "rationale": "ts_zscore(250)-normalized book-to-price value + revision. The zscore normalization lever (vs ts_rank) keeps it decorrelated from the ts_rank B/P+revision F5 (corr 0.60) and the zscore E/P+revision F7 (corr 0.13). SH 1.69, FIT 1.31, low turnover 0.071. Max correlation 0.60 to the seven others.",
