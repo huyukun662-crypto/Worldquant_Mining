@@ -34,13 +34,15 @@ _spec = importlib.util.spec_from_file_location("mine_d1", REPO / "scripts" / "mi
 mine_d1 = importlib.util.module_from_spec(_spec); sys.modules["mine_d1"] = mine_d1
 _spec.loader.exec_module(mine_d1)
 
-REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6"}
+REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6",
+              "D_88z6bZEq": "88z6bZEq"}
 CORR_CEILING = 0.50          # "low correlation" target
 
 BASE = {"universe": "TOP3000", "truncation": 0.08}
 
 # Sign-corrected component building blocks (directed so each has +Sharpe).
 C = {
+    "pvcorr":   "rank(-ts_corr(close, volume, 20))",                                      # price-volume divergence
     "trret":    "-rank(ts_rank(returns, 60))",                                            # 60d rank reversal
     "vcspread": "rank(ts_delta(subtract(vwap, close), 20))",                              # vwap-close spread mom
     "pricez":   "-rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60)))",  # price z reversal
@@ -65,18 +67,20 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # different reversal *construction* (rank-reversal), decayed for turnover
-    ("trret_d16",        C["trret"],                         {**BASE, "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("vcspread_d16",     C["vcspread"],                      {**BASE, "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # price mean-reversion family (no volume, no vwap, no microstructure)
-    ("px_meanrev_d8",    blend("pricez", "avdiff", "cppos"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("px_meanrev_d16",   blend("pricez", "avdiff", "cppos"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # flow / liquidity-only (non-reversal) blend
-    ("flow_d6",          blend("amihud", "issuance", "turnover", "volz"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # rank-reversal + range trend (mix of orthogonal drivers)
-    ("trret_rng_d16",    blend("trret", "rngtrend", "turnover"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # MARKET-neutralized variant of the px mean-reversion (decorrelate via settings)
-    ("px_meanrev_mkt",   blend("pricez", "avdiff", "cppos"), {**BASE, "neutralization": "MARKET", "decay": 8}),
+    # pv-corr microstructure + flow (different mix than A/B/D)
+    ("pvcorr_flow",      blend("pvcorr", "amihud", "volz", "turnover"),         {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # pv-corr + flow, wider blend with intraday position & gap-like range
+    ("pvcorr_wide",      blend("pvcorr", "amihud", "cppos", "volz", "rngtrend"),{**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # price av_diff reversal + flow (reversal flavored differently than A)
+    ("avdiff_flow",      blend("avdiff", "amihud", "issuance", "volz"),         {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # close-position + flow (intraday microstructure + liquidity)
+    ("cppos_flow",       blend("cppos", "turnover", "volz", "issuance"),        {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # pv-corr + price z reversal (microstructure + statistical reversal)
+    ("pvcorr_pricez",    blend("pvcorr", "pricez", "amihud"),                   {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # flow blend dropping B-shared amihud/issuance to lower corr with B/D
+    ("flow_volcentric",  blend("volz", "turnover", "rngtrend", "cppos"),        {**BASE, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # SECTOR-neutralized pv-corr+flow (decorrelate via neutralization axis)
+    ("pvcorr_flow_sec",  blend("pvcorr", "amihud", "volz", "turnover"),         {**BASE, "neutralization": "SECTOR", "decay": 6}),
 ]
 
 
@@ -135,7 +139,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT2.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
