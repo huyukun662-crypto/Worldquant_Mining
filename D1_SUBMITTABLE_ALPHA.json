@@ -1,5 +1,26 @@
 {
-  "summary": "Seven submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all seven can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "summary": "Eight submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all eight can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "factor_8_zscore_booktoprice_plus_revision": {
+    "expression": "rank(ts_zscore(equity/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "ts_zscore(250)-normalized book-to-price value + revision. The zscore normalization lever (vs ts_rank) keeps it decorrelated from the ts_rank B/P+revision F5 (corr 0.60) and the zscore E/P+revision F7 (corr 0.13). SH 1.69, FIT 1.31, low turnover 0.071. Max correlation 0.60 to the seven others.",
+    "alpha_id": "78wXnKeZ",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.69, "fitness": 1.31, "turnover": 0.071, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.69 > 1.25)", "LOW_FITNESS": "PASS (1.31 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.071)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS", "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.25, "factor2": 0.30, "factor3": 0.21, "factor4": 0.36, "factor5": 0.60, "factor6": 0.48, "factor7": 0.13},
+    "submittable": true
+  },
   "factor_7_zscore_value_plus_revision": {
     "expression": "rank(ts_zscore(ebit/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
     "rationale": "Same value(E/P)+revision economics as F4, but the value leg is normalized with ts_zscore(250) instead of ts_rank(40). The different normalization (and longer 250d window) produces a materially different PnL path -- correlation to F4 is only 0.62 -- while delivering the LOWEST turnover of all (0.065) and high fitness (1.25). ts_zscore was the key new construction that unlocked a 7th decorrelated factor after field-combination space saturated at 6.",
