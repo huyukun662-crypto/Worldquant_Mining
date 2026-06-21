@@ -746,6 +746,23 @@
         "sales_yield": 1.04,
         "cf_yield": 0.75
       }
+    },
+    "BRAND_NEW_SUBMITTABLE": {
+      "id": "VkplKZeV",
+      "expr": "rank(ts_rank(ebit/cap, 40)) - 0.7*rank(ts_mean(returns, 5))",
+      "univ": "TOP1000",
+      "neut": "SUBINDUSTRY",
+      "decay": 5,
+      "delay": 1,
+      "trunc": 0.08,
+      "sharpe": 1.6,
+      "fitness": 1.05,
+      "turnover": 0.265,
+      "drawdown": 0.098,
+      "selfcorr": 0.001,
+      "all_checks": "PASS",
+      "structure": "EBIT-yield (value, ebit/cap ts_rank-40) MINUS 5-day reversal",
+      "why": "BRAND NEW, different from used cashflow_op/cap+ebit/equity; submittable; self-corr 0.001"
     }
   }
 ]
