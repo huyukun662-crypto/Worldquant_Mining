@@ -1,0 +1,183 @@
+[
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebit/cap, 40)) - rank(ts_corr(close, volume, 20))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "9qw6r98d",
+  "sharpe": 0.85,
+  "turnover": 0.1973,
+  "fitness": 0.43,
+  "returns": 0.0495,
+  "drawdown": 0.0973,
+  "margin": 0.000502,
+  "longCount": 471,
+  "shortCount": 471,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_zscore(ebit/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "xAxzkRbm",
+  "sharpe": 1.53,
+  "turnover": 0.0651,
+  "fitness": 1.25,
+  "returns": 0.0833,
+  "drawdown": 0.0739,
+  "margin": 0.002558,
+  "longCount": 469,
+  "shortCount": 470,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(equity/cap, 40)) * rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "xAxzk1Wq",
+  "sharpe": 1.61,
+  "turnover": 0.1513,
+  "fitness": 1.21,
+  "returns": 0.0859,
+  "drawdown": 0.0486,
+  "margin": 0.001136,
+  "longCount": 407,
+  "shortCount": 527,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ },
+ {
+  "ok": true,
+  "expr": "group_rank(ebit/cap, sector) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "2r7ZL5p8",
+  "sharpe": 0.63,
+  "turnover": 0.0427,
+  "fitness": 0.44,
+  "returns": 0.061,
+  "drawdown": 0.1383,
+  "margin": 0.002857,
+  "longCount": 473,
+  "shortCount": 466,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "trade_when(ts_delta(anl4_afv4_eps_mean, 20) > 0, rank(ts_rank(equity/cap, 40)), -1)",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "akdPn8M5",
+  "sharpe": 1.12,
+  "turnover": 0.1035,
+  "fitness": 0.77,
+  "returns": 0.0585,
+  "drawdown": 0.0599,
+  "margin": 0.00113,
+  "longCount": 425,
+  "shortCount": 423,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": false,
+  "expr": "rank(ts_mean(abs(returns)/(volume*close+1), 60)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "err": "sim-WARNING:Incompatible unit for input of \"add\" at index 1, expected \"Unit[CSPrice:2,CSShare:1]\", found \"Unit[]\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+ }
+]

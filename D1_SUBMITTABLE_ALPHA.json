@@ -1,5 +1,28 @@
 {
-  "summary": "Six submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all six can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "summary": "Seven submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all seven can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "factor_7_zscore_value_plus_revision": {
+    "expression": "rank(ts_zscore(ebit/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "Same value(E/P)+revision economics as F4, but the value leg is normalized with ts_zscore(250) instead of ts_rank(40). The different normalization (and longer 250d window) produces a materially different PnL path -- correlation to F4 is only 0.62 -- while delivering the LOWEST turnover of all (0.065) and high fitness (1.25). ts_zscore was the key new construction that unlocked a 7th decorrelated factor after field-combination space saturated at 6.",
+    "alpha_id": "xAxzkRbm",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.53, "fitness": 1.25, "turnover": 0.0651, "returns": 0.0833,
+      "drawdown": 0.0739, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.53 > 1.25)", "LOW_FITNESS": "PASS (1.25 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.0651)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.45 > 0.81)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.45, "factor2": 0.30, "factor3": 0.30, "factor4": 0.62, "factor5": 0.26, "factor6": 0.12},
+    "submittable": true
+  },
   "factor_6_booktoprice_plus_roe": {
     "expression": "rank(ts_rank(equity/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
     "rationale": "Book-to-price value + ROE profitability -- a quality-value combo with NO revision and NO reversal leg, giving it near-zero correlation to the revision-heavy F3 (0.09) and value-reversal F2 footprint, and the lowest max-correlation (0.62) of the later factors. Distinct from F1 (which uses cashflow-yield not B/P) and F5 (which pairs B/P with revision, not ROE).",
