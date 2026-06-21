@@ -51,5 +51,26 @@
     "corr_struct_vwap_volume (ts_corr(vwap,volume,750))": "SH -0.86 weak"
   },
   "round43_correlation_structure": "ts_corr() correlation-structure factors were the last untested family. The only two that reach useful SH (high-low corr 1.51, price-autocorr 1.62) BOTH self-correlate >0.87 with ts_corr-family factors already in the submitted pool, and both still sit below the 2.0 gate. Return-autocorrelation and vwap-volume corr are too weak (SH 0.43, -0.86). Correlation-structure is therefore exhausted: no genuinely-new submittable factor.",
-  "final_conclusion": "Across 42 rounds / ~190 D0 sims spanning EVERY accessible dataset (pv1, fundamental2/6, analyst4, news12, socialmedia12, pv13, earnings4[IV]), the Amihud illiquidity (high-low)/(close*volume) is the UNIQUE structure that clears SH>2 on this TUTORIAL-tier USA-TOP3000-delay0 competition. Every other structure - sentiment, value, quality, analyst revisions, economic-link (supply-chain) momentum, news drift, dividend yield - is individually weak (SH 0.3-1.2) and/or mutually correlated, so none reaches the 2.0 gate even when composited. Multiple are genuinely low-correlation (economic-links 0.095, sentiment+value 0.066) and serve as diversifiers, but are not independently submittable. RECOMMENDATION: submit factor C (illiquidity+reversal+sentiment, SH 2.09); use the low-corr structures as future combination ingredients if the account tier is upgraded."
+  "rounds_44_48_classic_anomalies": {
+    "_comment": "Rounds 44-48, ~28 D0 sims. Systematically tested EVERY remaining classic cross-sectional anomaly mechanism distinct from Amihud illiquidity. ALL cap below SH 1.0.",
+    "pv1_vwap_close_reversal": "SH 0.28",
+    "pv1_midterm_reversal_delta60": "SH 0.16",
+    "pv1_lowvol_std_returns_60": "SH 0.61",
+    "pv1_volume_shock_vs_mean60": "SH -0.52",
+    "pv1_longterm_momentum_delta250": "SH -0.17",
+    "pv1_parkinson_vol_(high-low)/close": "SH 0.53  [KEY: vs Amihud (high-low)/(close*volume) SH 1.8 -> the volume divisor IS the signal; pure range vol is NOT]",
+    "fundamental_SUBIND_assetgrowth/ROA/EBITDA-assets/capex/cashflow/leverage": "SH ~0 (SUBINDUSTRY neut kills fundamental dispersion)",
+    "fundamental_MARKET_ROA": "SH 0.15",
+    "fundamental_MARKET_cashflow/assets": "SH 0.31",
+    "fundamental_MARKET_net_equity": "SH 0.92",
+    "fundamental_MARKET_assetgrowth": "SH 0.57",
+    "fundamental_MARKET_EBITDA/EV": "SH 0.34",
+    "fundamental_MARKET_book/price_value": "SH 0.49",
+    "IVOL_market_60 / subindustry_60 / market_20 [Ang anomaly]": "SH 0.53 / 0.62 / 0.62",
+    "turnover_volume/sharesout": "SH 0.32",
+    "size_premium_-cap": "SH -0.04",
+    "abnormal_turnover_delta(volume/sharesout,60)": "SH 0.81",
+    "defensive_multi_anomaly_composites (IVOL+abnTO+value+assetgrowth, 2-5 signals)": "SH 0.52-0.60 (orthogonal-looking weak signals do NOT diversify up; mutually correlated)"
+  },
+  "final_conclusion": "Across 48 rounds / ~220 D0 sims spanning EVERY accessible dataset (pv1, fundamental2/6, analyst4, news12, socialmedia12, pv13, earnings4[IV]) AND every classic cross-sectional anomaly mechanism (reversal/momentum at 5/20/60/250-day, low-vol, IVOL[Ang], turnover, abnormal-turnover, size, value, profitability/ROA, asset-growth[Cooper-Gulen-Schill], cashflow-quality, leverage, BAB, Parkinson vol, correlation-structure, defensive composites) under both SUBINDUSTRY and MARKET neutralization, the Amihud illiquidity (high-low)/(close*volume) is the UNIQUE structure that clears SH>2 on this TUTORIAL-tier USA-TOP3000-delay0 competition. KEY INSIGHT: Parkinson range-vol (high-low)/close alone scores only SH 0.53, while Amihud (high-low)/(close*volume) scores SH 1.8 - the volume divisor (price-impact / illiquidity) IS the alpha, not the range. Every genuinely-different structure caps SH 0.0-0.9 individually and does NOT diversify upward when composited (the weak signals are mutually correlated). RECOMMENDATION: submit factor C (illiquidity+reversal+sentiment, SH 2.09). A second independently-submittable factor of a DIFFERENT structure is not achievable on this account tier; the low-corr structures (sentiment+value 0.066, economic-links 0.095, IVOL) remain future combination ingredients if the tier is upgraded (more operators: ts_max/ts_skewness/ts_entropy unlock lottery/tail anomalies; more datasets unlock shortinterest/institutional/insider)."
 }
