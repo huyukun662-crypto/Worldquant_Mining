@@ -68,19 +68,15 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # trret = 60d rank reversal (DIFFERENT construction than A's 10d vol-norm),
-    # diversified with low-turnover non-flow signals to lift fitness & decorrelate
-    ("trret_div_d12",    blend("trret", "gap", "turnover", "cppos"),    {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("trret_div2_d12",   blend("trret", "avdiff", "gap"),               {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("trret_pricez_d12", blend("trret", "pricez", "gap"),               {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
-    # vwap-close spread (strong) diversified, no pv-corr / no heavy flow
-    ("vcspread_div_d12", blend("vcspread", "gap", "turnover", "cppos"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
-    # statistical reversal + intraday/range (no pv-corr, no flow)
-    ("pricez_intraday",  blend("pricez", "cppos", "gap", "rngtrend"),   {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # av_diff reversal + intraday + light flow
-    ("avdiff_intraday",  blend("avdiff", "cppos", "gap", "volz"),       {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # trret on MARKET neutralization (decorrelate via neutralization axis)
-    ("trret_div_mkt",    blend("trret", "gap", "turnover", "cppos"),    {**BASE, "neutralization": "MARKET", "decay": 12}),
+    # BALANCED reversal+flow mixes -> aim to sit OFF the reversal/flow plane,
+    # landing < 0.5 vs A (reversal), D (flow) AND B (the mix in the middle).
+    ("mix_balanced",   blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("mix_balanced2",  blend("trret", "turnover", "volz", "gap"),           {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("mix_trret_amih", blend("trret", "amihud", "gap"),                     {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("mix_vc_flow",    blend("vcspread", "amihud", "turnover", "gap"),      {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("mix_av_flow",    blend("avdiff", "turnover", "volz", "gap"),          {**BASE, "neutralization": "SUBINDUSTRY", "decay": 8}),
+    ("mix_wide",       blend("trret", "amihud", "turnover", "volz", "cppos", "gap"), {**BASE, "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("mix_vc_flow2",   blend("vcspread", "amihud", "issuance", "volz"),     {**BASE, "neutralization": "SUBINDUSTRY", "decay": 12}),
 ]
 
 
@@ -139,7 +135,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT3.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT4.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
