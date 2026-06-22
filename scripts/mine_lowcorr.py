@@ -87,18 +87,18 @@ C["volstd_z"]   = "-rank(ts_zscore(ts_std_dev(returns, 20), 120))"  # vol regime
 
 INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp")
 
+EREC = ("trret", "amihud", "turnover", "volz", "gap")  # E / mixbal recipe
+
 CANDIDATES = [
-    # 7th factor: decorrelate from G too. G = intraday + amihud(+vcspread) on SUBIND.
-    # (a) intraday + pvcorr (different driver than G's amihud) -> lower corr w/ G
-    ("intra_pvc_am",   blend(*INTRADAY7, "pvcorr", "amihud"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("intra_pvc_d8",   blend(*INTRADAY7, "pvcorr"),            {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # (b) intraday + amihud on SECTOR (different neutralization than G's SUBIND)
-    ("intra_am_sec8",  blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 8}),
-    ("intra_am_vc_sec",blend(*INTRADAY7, "amihud", "vcspread"),{**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 8}),
-    # (c) intraday + trret (reversal) -> ties G to a different secondary driver
-    ("intra_trret_d8", blend(*INTRADAY7, "trret"),            {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    # (d) intraday + pricez (statistical reversal) on SECTOR
-    ("intra_pricez_s", blend(*INTRADAY7, "pricez"),           {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 8}),
+    # 7th factor = NEW axis x UNIVERSE lever. Run the strong intraday+amihud (G)
+    # recipe and the E recipe on TOP1000 -> decorrelated from their TOP3000 twins.
+    ("intra_am_t1k_d8",  blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    ("intra_am_t1k_d12", blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("intra_amvc_t1k",   blend(*INTRADAY7, "amihud", "vcspread"),{**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    ("intra_am_t1k_sec", blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP1000", "neutralization": "SECTOR",      "decay": 8}),
+    # E recipe on TOP1000 (decorrelate from E via universe)
+    ("erec_t1k_sub",     blend(*EREC),                           {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("erec_t1k_ind",     blend(*EREC),                           {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY",    "decay": 10}),
 ]
 
 
@@ -158,7 +158,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT14.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT15.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
