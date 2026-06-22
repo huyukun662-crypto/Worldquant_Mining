@@ -1,0 +1,52 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "H \u2014 pvcorr + reversal/flow on TOP1000 (high-Sharpe, low-corr \u22640.60)",
+  "structure": "pv-corr (price-volume divergence) + 60d rank reversal + Amihud illiquidity + share turnover + abnormal-volume z-score + overnight-gap reversal, on TOP1000/SUBINDUSTRY with decay 18. Highest-Sharpe low-corr factor in the basket. Correlation ceiling relaxed to 0.60 (user-approved): binds only on E at 0.58 (shares E's reversal/flow components); <0.5 vs all of A, B, D, F, G.",
+  "fields_used": [
+    "close",
+    "volume",
+    "returns",
+    "sharesout",
+    "open"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "alpha_id": "78wa9R3Q",
+  "expression": "rank(add(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_rank(returns, 60))), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "pasteurization": "ON",
+    "visualization": false,
+    "maxTrade": "OFF",
+    "testPeriod": "P0Y0M",
+    "delay": 1,
+    "truncation": 0.08,
+    "universe": "TOP1000",
+    "neutralization": "SUBINDUSTRY",
+    "decay": 18
+  },
+  "is": {
+    "sharpe": 1.54,
+    "turnover": 0.129,
+    "fitness": 1.24,
+    "drawdown": 0.0485,
+    "returns": 0.0837
+  },
+  "all_checks_pass": true,
+  "self_correlation": "PENDING (evaluated at Submit)",
+  "submittable": true,
+  "daily_pnl_correlation": {
+    "A_58w3aOKM": 0.141,
+    "B_58w9r6E6": 0.222,
+    "D_88z6bZEq": 0.297,
+    "E_d5x78JRv": 0.582,
+    "F_0m7QR858": 0.484,
+    "G_LLpgPEja": 0.099
+  },
+  "max_abs_corr": 0.582,
+  "note": "Highest Sharpe (1.54) of all 7 factors. Max|corr| 0.58 vs E only (\u22640.60 user-approved ceiling); <0.50 vs A/B/D/F/G."
+}
