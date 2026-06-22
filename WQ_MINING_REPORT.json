@@ -1171,5 +1171,59 @@
    "sharpe_2020": 2.77,
    "note": "Regime-complementary: the only found factor BOTH 2020-positive AND real self-corr<0.7 => positive marginal contribution."
   }
+ },
+ {
+  "scan": "NOVEL-STRUCTURE round + high-value recovery (per '继续挖其他的' / '换一个module')",
+  "BREAKTHROUGH_submittable": [
+   {
+    "id": "WjpNW2Qd",
+    "module": "OPTION (high-value, score 6) -- satisfies '换一个module'",
+    "expression": "zscore(ts_backfill(ts_delta(implied_volatility_call_60, 10), 250))",
+    "settings": {
+     "region": "USA",
+     "universe": "TOP1000",
+     "delay": 1,
+     "decay": 128,
+     "neutralization": "SUBINDUSTRY",
+     "truncation": 0.01,
+     "pasteurization": "ON"
+    },
+    "is_sharpe": 1.31,
+    "turnover": 0.122,
+    "fitness": 1.51,
+    "fails": [],
+    "real_selfcorr": 0.418,
+    "sharpe_2020": 1.67,
+    "verdict": "FULLY SUBMITTABLE: clean IS + self-corr 0.418<0.7 + 2020 POSITIVE (+1.67 => positive marginal contribution). First clean high-value-module factor; implied-vol-call 10d momentum, backfilled, heavy decay (128) for low turnover.",
+    "economic_rationale": "Slow-moving option-implied-volatility momentum: stocks whose 60d call IV is rising tend to keep outperforming; orthogonal to price-volume/reversal families."
+   }
+  ],
+  "near_clean_composite": {
+   "id": "akdN2J12",
+   "expression": "zscore(ts_decay_linear(group_neutralize(add(-1*ts_corr(close,volume,5), -1*ts_zscore((close-vwap)/(vwap+0.001),20)), subindustry), 6))",
+   "settings": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 0,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08
+   },
+   "is_sharpe": 2.11,
+   "turnover": 0.54,
+   "fitness": 0.97,
+   "fails": [
+    "LOW_FITNESS"
+   ],
+   "real_selfcorr": 0.614,
+   "sharpe_2020": 2.62,
+   "note": "pv-divergence + VWAP-reversal composite. SH 2.11, self-corr 0.614<0.7, 2020 +2.62. Only LOW_FITNESS (turnover 0.54). Decay sweep underway to push fitness>1.0 for full clean."
+  },
+  "novel_structures_failed": {
+   "pv_divergence_family": "-ts_corr(close,volume,N): peaks SH 1.21 @ w5/subind/decay6 across 21 variants; never clean standalone",
+   "vwap_reversal_QPanmwnX": "-(close-vwap)/vwap: SH 1.57 but TO 0.678, self-corr 0.749>0.7 (fails self-corr); good only as composite leg",
+   "others": "gap_rev 0.40, vol_rev 0.47, price_accel 0.63, turn_rev -0.06, lottery/range_comp timed out, dvol_shock 0.44, option iv-delta/skew/ts all <0.4"
+  },
+  "platform_note": "WQ sims took 30-55min each this session; several pollers timed out locally but sims COMPLETED on WQ side -- recovered via /users/self/alphas. Container also restarted mid-run (ephemeral env)."
  }
 ]
