@@ -197,5 +197,39 @@
     "alpha_id": "YPp2eVJw",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "lowvol_pure",
+    "expression": "rank(-rank(ts_std_dev(returns, 120)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP3000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 20
+    },
+    "ok": true,
+    "sharpe": 0.14,
+    "turnover": 0.0177,
+    "fitness": 0.07,
+    "drawdown": 0.6989,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "3q7a8LQP",
+    "error": "",
+    "corr": {}
   }
 ]
