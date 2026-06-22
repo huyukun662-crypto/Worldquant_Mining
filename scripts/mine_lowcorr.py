@@ -72,18 +72,16 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # TOP500 universe: even smaller stock set; pair F's known recipe with high decay
+    # Re-run the 3 lost candidates (POST-429 timed out in batch 8)
     ("pvflow_t500_d20",  blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 20}),
     ("pvflow_t500_d24",  blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 24}),
-    # TOP1000 with DIFFERENT driver mixes (push corr with F lower than 0.4)
     ("flow_t1k_sec_d14", blend("amihud", "issuance", "turnover", "volz"),     {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
-    ("trret_t1k_sec_d16",blend("trret", "amihud", "volz", "gap"),             {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 16}),
-    # B's 6-idea recipe on TOP1000 (B variant on smaller universe)
-    ("bvariant_t1k",     blend("pvcorr", "amihud", "issuance", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # vcspread + flow on TOP1000 (different reversal flavor than B/E)
-    ("vcflow_t1k_sec",   blend("vcspread", "amihud", "turnover", "gap"),      {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 16}),
-    # TOPSP500 universe (largest cap; very different from TOP3000 reversal)
-    ("pvflow_sp500",     blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOPSP500", "neutralization": "SECTOR", "decay": 16}),
+    # NEW: TOP500 with stronger 6-way blend (compensates for fitness loss on small univ)
+    ("widemix_t500_d18", blend("pvcorr", "amihud", "issuance", "turnover", "volz", "gap"), {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 18}),
+    # NEW: TOP1000 A-style microstructure (vol-normalized 10d reversal)
+    ("amicro_t1k_d10",   ("rank(divide(-ts_delta(close, 10), ts_std_dev(returns, 10)))"),  {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 10}),
+    # NEW: TOP1000 wide blend on INDUSTRY (different neutralization vs F's SECTOR)
+    ("widemix_t1k_ind",  blend("pvcorr", "amihud", "issuance", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY", "decay": 16}),
 ]
 
 
@@ -142,7 +140,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT8.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT9.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25

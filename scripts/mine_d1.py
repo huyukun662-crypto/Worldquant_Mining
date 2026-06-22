@@ -169,12 +169,13 @@ def submit(session, expr: str, settings: dict,
     s.update(settings)
     body = {"type": "REGULAR", "settings": s, "regular": expr}
 
-    for _ in range(5):
+    for attempt in range(40):  # tolerate long concurrent-sim contention
         r = session.post("https://api.worldquantbrain.com/simulations",
                          json=body, timeout=30)
         if r.status_code == 429:
-            wait = float(r.headers.get("Retry-After") or 30)
-            log.info(f"   429 on POST; sleep {wait:.0f}s"); time.sleep(wait); continue
+            wait = float(r.headers.get("Retry-After") or 60)
+            log.info(f"   429 on POST (#{attempt}); sleep {wait:.0f}s")
+            time.sleep(wait); continue
         break
     if r.status_code != 201:
         return Result(False, expr, s, error=f"submit-{r.status_code}: {r.text[:200]}")
