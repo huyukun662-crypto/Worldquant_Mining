@@ -35,7 +35,8 @@ mine_d1 = importlib.util.module_from_spec(_spec); sys.modules["mine_d1"] = mine_
 _spec.loader.exec_module(mine_d1)
 
 REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6",
-              "D_88z6bZEq": "88z6bZEq", "E_d5x78JRv": "d5x78JRv"}
+              "D_88z6bZEq": "88z6bZEq", "E_d5x78JRv": "d5x78JRv",
+              "F_0m7QR858": "0m7QR858"}
 CORR_CEILING = 0.50          # "low correlation" target
 
 BASE = {"truncation": 0.08}
@@ -71,14 +72,18 @@ def blend(*keys: str) -> str:
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
 CANDIDATES = [
-    # TOP1000 near-misses pushed with more DECAY (lower turnover -> higher fitness),
-    # to clear the fitness floor while staying decorrelated from the TOP3000 set.
-    ("mixbal_t1k_d16", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("mixbal_t1k_d22", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 22}),
-    ("mixbal_t1k_sec", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
-    ("pvflow_t1k_d14", blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
-    ("pvflow_t1k_d20", blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 20}),
-    ("mixbal_t1k_ind", blend("trret", "amihud", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY", "decay": 16}),
+    # TOP500 universe: even smaller stock set; pair F's known recipe with high decay
+    ("pvflow_t500_d20",  blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 20}),
+    ("pvflow_t500_d24",  blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 24}),
+    # TOP1000 with DIFFERENT driver mixes (push corr with F lower than 0.4)
+    ("flow_t1k_sec_d14", blend("amihud", "issuance", "turnover", "volz"),     {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
+    ("trret_t1k_sec_d16",blend("trret", "amihud", "volz", "gap"),             {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 16}),
+    # B's 6-idea recipe on TOP1000 (B variant on smaller universe)
+    ("bvariant_t1k",     blend("pvcorr", "amihud", "issuance", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    # vcspread + flow on TOP1000 (different reversal flavor than B/E)
+    ("vcflow_t1k_sec",   blend("vcspread", "amihud", "turnover", "gap"),      {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 16}),
+    # TOPSP500 universe (largest cap; very different from TOP3000 reversal)
+    ("pvflow_sp500",     blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOPSP500", "neutralization": "SECTOR", "decay": 16}),
 ]
 
 
@@ -137,7 +142,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT7.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT8.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
