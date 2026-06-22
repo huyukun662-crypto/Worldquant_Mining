@@ -88,18 +88,16 @@ WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap
                "+ -rank(ts_corr(vwap, volume, 5)), 10)")
 
 CANDIDATES = [
-    # Longer decay under SUB
-    (WIN_DECAY10, SUB),
-    # Quad-horizon stack under SUB
-    (QUAD, SUB),
-    # SUB + tighter truncation 0.05
-    (BEST_PV, {"neutralization": "SUBINDUSTRY", "truncation": 0.05}),
-    # SUB + decay=10 + winsorize wrapper
-    (f"winsorize({WIN_DECAY10}, std=3)", SUB),
-    # Two-leg pure mean-rev + corr10, longer corr 60
-    ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 60)), 5)", SUB),
-    # Smoothed pre-rank under SUB (smaller TO -> higher FIT)
-    ("ts_decay_linear(-rank(ts_mean(ts_av_diff(vwap, 10), 3)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 5)", SUB),
+    # delay=1 baseline -- standard academic setting, usually easier to break SH
+    (BEST_PV, {"delay": 1}),
+    (BEST_PV, {"delay": 1, "neutralization": "SUBINDUSTRY"}),
+    (WIN_DECAY10, {"delay": 1, "neutralization": "SUBINDUSTRY"}),
+    # Truncation 0.10 (more) vs 0.05 (less)
+    (WIN_DECAY10, {"delay": 1, "neutralization": "SUBINDUSTRY", "truncation": 0.10}),
+    # decay built-in (apart from expression decay)
+    (WIN_DECAY10, {"delay": 1, "neutralization": "SUBINDUSTRY", "decay": 4}),
+    # quad-corr with delay=1 SUB
+    (QUAD, {"delay": 1, "neutralization": "SUBINDUSTRY"}),
 ]
 
 

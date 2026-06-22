@@ -1,0 +1,69 @@
+{
+  "alpha_id": "GrwM2KnO",
+  "duplicate_alpha_id": "WjpaZxZd",
+  "expression": "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 0,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "maxTrade": "OFF"
+  },
+  "is_checks": {
+    "LOW_SHARPE": {
+      "result": "PASS",
+      "value": 1.48,
+      "limit": 1.25
+    },
+    "LOW_FITNESS": {
+      "result": "PASS",
+      "value": 1.01,
+      "limit": 1.0
+    },
+    "LOW_TURNOVER": {
+      "result": "PASS",
+      "value": 0.208,
+      "limit": 0.01
+    },
+    "HIGH_TURNOVER": {
+      "result": "PASS",
+      "value": 0.208,
+      "limit": 0.7
+    },
+    "CONCENTRATED_WEIGHT": {
+      "result": "PASS"
+    },
+    "LOW_SUB_UNIVERSE_SHARPE": {
+      "result": "PASS",
+      "value": 0.8,
+      "limit": 0.64
+    },
+    "SELF_CORRELATION": {
+      "result": "PASS",
+      "value": 0.5908,
+      "limit": 0.7
+    },
+    "MATCHES_COMPETITION": {
+      "result": "PASS",
+      "competitions": [
+        "Challenge",
+        "IQC2026S2"
+      ]
+    }
+  },
+  "is_metrics": {
+    "sharpe": 1.48,
+    "fitness": 1.01,
+    "turnover": 0.208,
+    "returns": 0.0961,
+    "drawdown": 0.0615
+  },
+  "economic_story": "Short-horizon VWAP mean reversion combined with price-volume correlation breakdown (informed-flow divergence proxy), regularized by ts_decay_linear=10 which lowers turnover from 0.30 to 0.21 and lifts fitness above the 1.0 bar.",
+  "note_on_delay": "At delay=0 the same expression scored SH=1.48 FIT=1.03 but the LOW_SHARPE check limit is 2.0 (vs 1.25 at delay=1), so D=0 still fails Submit. Per user instruction (\"setting\u53ef\u4ee5\u6539 \u9664\u4e86region\"), delay was opened."
+}
