@@ -967,7 +967,7 @@
       "why": "TRIPLE PASS: SH 2.25 + self-corr 0.598 + 2020 +2.77 (complementary to higher-moment pool). return-rank N=5 @ TOP2000."
     },
     "REGIME_COMPLEMENTARY_SCAN": {
-      "method": "triple filter for POSITIVE marginal contribution: clean + real self-corr<0.7 + 2020 Sharpe>0.3 (complementary to higher-moment pool that collapses in 2020)",
+      "method": "triple filter: clean + real self-corr<0.7 + 2020 Sharpe>0.3 (positive marginal contribution)",
       "PASS_all3": [
         {
           "id": "j2Zla2J9",
@@ -995,17 +995,17 @@
           "sh2020": 2.11
         }
       ],
-      "FAIL_selfcorr_despite_2020positive": {
-        "intra_mkt(LLpbRevm)": {
+      "FAIL_corr_despite_2020pos": {
+        "intra_mkt": {
           "sh2020": 2.9,
           "corr": 0.793
         },
-        "illiq(9qw9z7Me)": {
+        "illiq": {
           "sh2020": 1.88,
           "corr": 0.887
         }
       },
-      "conclusion": "return-rank reversal is the ONLY family both 2020-positive AND self-corr<0.7. Intraday-reversal (0.793) and illiquidity (0.887) are 2020-positive but too correlated with pool. The 3 return-rank variants are mutually correlated - submit ONE (j2Zla2J9 best). For a 2nd complementary factor need a different structure that is BOTH 2020-positive AND low-corr (still searching: longmom, hl_range pending)."
+      "conclusion": "return-rank reversal = only family both 2020-positive AND corr<0.7. Submit ONE (j2Zla2J9). longmom/hl_range pending for a 2nd different-structure complement."
     }
   }
 ]
