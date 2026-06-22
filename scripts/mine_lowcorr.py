@@ -161,18 +161,17 @@ def tilted(tkey: str, w: float) -> str:
 
 H_SET = {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}
 
-# BATCH 24: value tilt is the best (least-diluting AND fastest to decorrelate
-# from H). The knee where SH>1.25 AND max corr<0.5 sits at value w~0.58 (w060:
-# SH 1.23, maxcorr 0.484; w045: SH 1.38, maxcorr 0.62). To clear SH 1.25 AT the
-# low-corr weight, lift SH via DECAY tuning (base pvcerec: decay18 SH1.54 >
-# decay24 1.47, so lower decay -> higher SH; TO has headroom, w060/d18 was 0.12).
-# Sweep value tilt w {0.50, 0.55} x decay {12, 14, 16, 18}. corr computed for SH>1.0.
+# BATCH 25: value tilt. Batch 24 confirmed corr_H is WEIGHT-driven (w050 -> 0.585
+# at any decay) and decay only buys Sharpe. corr_H crosses 0.5 around w~0.60
+# (w060/d18: SH 1.23, corr_H 0.484). So push weight to 0.58-0.64 to get corr_H<0.5
+# AND use low decay (12/14) to lift SH back over 1.25. Predicted winner ~w062/d12:
+# SH ~1.33, corr_H ~0.466. corr computed for every SH>1.0 alpha.
 def tilted_d(tkey: str, w: float, decay: int):
     expr = f"rank(add({PVC_BASE}, multiply({w}, {TILT[tkey]})))"
     return (f"pvc_{tkey}_w{int(w*100):03d}_d{decay:02d}", expr,
             {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": decay})
-for w in (0.50, 0.55):
-    for decay in (12, 14, 16, 18):
+for w in (0.58, 0.60, 0.62, 0.64):
+    for decay in (12, 14):
         CANDIDATES.append(tilted_d("val", w, decay))
 
 _UNUSED_BATCH21 = [
@@ -237,7 +236,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT24.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT25.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
