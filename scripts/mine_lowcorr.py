@@ -36,7 +36,7 @@ _spec.loader.exec_module(mine_d1)
 
 REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6",
               "D_88z6bZEq": "88z6bZEq", "E_d5x78JRv": "d5x78JRv",
-              "F_0m7QR858": "0m7QR858"}
+              "F_0m7QR858": "0m7QR858", "G_LLpgPEja": "LLpgPEja"}
 CORR_CEILING = 0.50          # "low correlation" target
 
 BASE = {"truncation": 0.08}
@@ -88,16 +88,17 @@ C["volstd_z"]   = "-rank(ts_zscore(ts_std_dev(returns, 20), 120))"  # vol regime
 INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp")
 
 CANDIDATES = [
-    # Closest near-miss intra_amih_d12 SH=1.23/FIT=0.97. Add 1 more driver and try
-    # lower decay (less signal degradation) + winsorize wrappers (clean tails -> fit)
-    ("intra_am_vc",     blend(*INTRADAY7, "amihud", "vcspread"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("intra_am_iss",    blend(*INTRADAY7, "amihud", "issuance"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("intra_am_tov",    blend(*INTRADAY7, "amihud", "turnover"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("intra_amih_d8",   blend(*INTRADAY7, "amihud"),              {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("intra_amih_d10",  blend(*INTRADAY7, "amihud"),              {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    # Winsorized wrappers (clean tails -> higher fitness)
-    ("intra_am_win_d10", "rank(winsorize(" + blend(*INTRADAY7, "amihud")[5:-1] + ", std=4))",
-                                                                  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    # 7th factor: decorrelate from G too. G = intraday + amihud(+vcspread) on SUBIND.
+    # (a) intraday + pvcorr (different driver than G's amihud) -> lower corr w/ G
+    ("intra_pvc_am",   blend(*INTRADAY7, "pvcorr", "amihud"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    ("intra_pvc_d8",   blend(*INTRADAY7, "pvcorr"),            {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # (b) intraday + amihud on SECTOR (different neutralization than G's SUBIND)
+    ("intra_am_sec8",  blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 8}),
+    ("intra_am_vc_sec",blend(*INTRADAY7, "amihud", "vcspread"),{**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 8}),
+    # (c) intraday + trret (reversal) -> ties G to a different secondary driver
+    ("intra_trret_d8", blend(*INTRADAY7, "trret"),            {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    # (d) intraday + pricez (statistical reversal) on SECTOR
+    ("intra_pricez_s", blend(*INTRADAY7, "pricez"),           {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 8}),
 ]
 
 
@@ -157,7 +158,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT13.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT14.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
