@@ -1225,5 +1225,30 @@
    "others": "gap_rev 0.40, vol_rev 0.47, price_accel 0.63, turn_rev -0.06, lottery/range_comp timed out, dvol_shock 0.44, option iv-delta/skew/ts all <0.4"
   },
   "platform_note": "WQ sims took 30-55min each this session; several pollers timed out locally but sims COMPLETED on WQ side -- recovered via /users/self/alphas. Container also restarted mid-run (ephemeral env)."
+ },
+ {
+  "scan": "fitness-fix of akdN2J12 composite -> FULLY CLEAN new-structure submittable",
+  "BREAKTHROUGH_submittable": {
+   "id": "pw6n7l6x",
+   "structure": "NEW: pv-divergence + VWAP-reversal composite (orthogonal to reversal/higher-moment pool)",
+   "expression": "zscore(ts_decay_linear(group_neutralize(add(-1*ts_corr(close,volume,5), -1*ts_zscore((close-vwap)/(vwap+0.001),20)), subindustry), 12))",
+   "settings": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 0,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON"
+   },
+   "is_sharpe": 1.97,
+   "turnover": 0.386,
+   "fitness": 1.04,
+   "fails": [],
+   "real_selfcorr": 0.583,
+   "sharpe_2020": 1.79,
+   "verdict": "FULLY SUBMITTABLE: clean IS + self-corr 0.583<0.7 + 2020 POSITIVE (+1.79). Internal decay 12 (vs 6) cut turnover 0.54->0.39, lifted fitness 0.97->1.04 to clear LOW_FITNESS while keeping SH 1.97.",
+   "fix_note": "derived from akdN2J12 (SH2.11 but LOW_FITNESS@TO0.54) by raising ts_decay_linear window 6->12."
+  }
  }
 ]
