@@ -160,9 +160,14 @@ def tilted(tkey: str, w: float) -> str:
     return f"rank(add({PVC_BASE}, multiply({w}, {TILT[tkey]})))"
 
 H_SET = {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}
-for tkey in ("val", "gp", "ptp", "vq"):
-    for w in (0.75, 1.5):
-        CANDIDATES.append((f"pvc_{tkey}_w{int(w*100):03d}", tilted(tkey, w), dict(H_SET)))
+
+# BATCH 23: SMALL-weight sweep on the two least-diluting tilts (value, ptp) plus
+# the value+quality composite, to map where SH stays >1.25 AND corr_E drops <0.5.
+# corr is now computed for every SH>1.0 alpha so we see the full tradeoff curve.
+_B23 = [("val", 0.30), ("val", 0.45), ("val", 0.60), ("val", 0.75),
+        ("ptp", 0.30), ("ptp", 0.45), ("vq", 0.30), ("vq", 0.45)]
+for tkey, w in _B23:
+    CANDIDATES.append((f"pvc_{tkey}_w{int(w*100):03d}", tilted(tkey, w), dict(H_SET)))
 
 _UNUSED_BATCH21 = [
 ]
@@ -213,7 +218,9 @@ def main():
         if r.ok:
             log.info(f"   SH={r.sharpe:+.3f} TO={r.turnover:.3f} FIT={r.fitness:+.3f} "
                      f"DD={r.drawdown:.3f} sub={r.submittable} fail={r.failed_checks}")
-            if r.submittable:
+            # Compute corr for any decent-Sharpe alpha (not just submittable) so
+            # we can map the SH-vs-corr_E tradeoff of the tilt-weight sweep.
+            if r.alpha_id and r.sharpe is not None and r.sharpe > 1.0:
                 cp = fetch_pnl(cm.session, r.alpha_id)
                 for rn, rp in ref_pnl.items():
                     rec["corr"][rn] = round(corr(cp, rp), 3)
@@ -224,7 +231,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT22.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT23.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
