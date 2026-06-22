@@ -800,6 +800,60 @@
         "structure": "book-to-market value + analyst EPS revision momentum",
         "why": "BRAND NEW, different from all previous; submittable; self-corr 0.002; TO 0.07, DD 0.038"
       }
-    ]
+    ],
+    "CORRECTED_SELFCORR_NOTE": "CRITICAL FIX: prior self-corr values were read from WRONG column (last col ~0.001, a negligible field). REAL self-correlation is column index 5 of /correlations/self records. Re-measured vs current submitted pool:",
+    "REAL_SELFCORR": {
+      "omKvxe9m": {
+        "sc": 0.576,
+        "sh": 1.64,
+        "struct": "kurtosis+vol-of-vol",
+        "submit": "PASS - safest margin"
+      },
+      "pw6EREV3": {
+        "sc": 0.591,
+        "sh": 1.72,
+        "struct": "skewness+vol-of-vol",
+        "submit": "PASS"
+      },
+      "gJ1qeZ0g": {
+        "sc": 0.649,
+        "sh": 2.34,
+        "struct": "return-rank reversal",
+        "submit": "PASS-tight"
+      },
+      "MPpXaVZL": {
+        "sc": 0.653,
+        "sh": 1.68,
+        "struct": "skewness+Parkinson",
+        "submit": "PASS-tight"
+      },
+      "GrwYrO8o": {
+        "sc": 0.655,
+        "sh": 1.28,
+        "struct": "vol-of-vol",
+        "submit": "PASS-tight"
+      },
+      "blL20ONp": {
+        "sc": 0.703,
+        "struct": "VWAP reversion",
+        "submit": "FAIL"
+      },
+      "VkplKZeV": {
+        "sc": 0.727,
+        "struct": "value+reversal",
+        "submit": "FAIL"
+      },
+      "wpRO6zOp": {
+        "sc": 0.987,
+        "struct": "illiquidity",
+        "submit": "FAIL"
+      },
+      "88zkPkWm": {
+        "sc": 0.989,
+        "struct": "illiquidity+MR",
+        "submit": "FAIL"
+      }
+    },
+    "RECOMMENDED_SUBMIT_REAL": "omKvxe9m (kurtosis+vol-of-vol, SH 1.64, REAL self-corr 0.576) - safest. pw6EREV3 (skewness, 0.591) next. Submitted pool already saturated with reversal/illiquidity factors."
   }
 ]
