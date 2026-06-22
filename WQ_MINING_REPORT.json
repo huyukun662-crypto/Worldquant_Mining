@@ -748,21 +748,22 @@
       }
     },
     "BRAND_NEW_SUBMITTABLE": {
-      "id": "1Y7mXbX6",
-      "expr": "rank(ts_zscore(equity/cap,250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean,20),60))",
-      "univ": "TOP1000",
+      "id": "blL20ONp",
+      "expr": "normalize(reverse(ts_av_diff(divide(close, vwap), 140)))",
+      "univ": "TOP3000",
       "neut": "SUBINDUSTRY",
-      "decay": 5,
+      "decay": 64,
+      "trunc": 0.01,
       "delay": 1,
-      "trunc": 0.08,
       "sharpe": 1.69,
-      "fitness": 1.31,
-      "turnover": 0.071,
-      "drawdown": 0.038,
-      "selfcorr": 0.002,
+      "fitness": 1.35,
+      "turnover": 0.249,
+      "drawdown": 0.079,
+      "selfcorr": 0.001,
       "all_checks": "PASS",
-      "structure": "book-to-market value + analyst EPS revision momentum",
-      "why": "BRAND NEW, different from all previous; submittable; self-corr 0.002; TO 0.07, DD 0.038"
+      "structure": "long-horizon (140d) close/VWAP mean-reversion",
+      "why": "distinct from delivered factors; VWAP-relative long-window; self-corr 0.001",
+      "also_weak": "short-interest + social-sentiment axes no signal on this universe"
     },
     "BRAND_NEW_SUBMITTABLE_LIST": [
       {
@@ -781,6 +782,23 @@
         "all_checks": "PASS",
         "structure": "EBIT-yield (value, ebit/cap ts_rank-40) MINUS 5-day reversal",
         "why": "BRAND NEW, different from used cashflow_op/cap+ebit/equity; submittable; self-corr 0.001"
+      },
+      {
+        "id": "1Y7mXbX6",
+        "expr": "rank(ts_zscore(equity/cap,250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean,20),60))",
+        "univ": "TOP1000",
+        "neut": "SUBINDUSTRY",
+        "decay": 5,
+        "delay": 1,
+        "trunc": 0.08,
+        "sharpe": 1.69,
+        "fitness": 1.31,
+        "turnover": 0.071,
+        "drawdown": 0.038,
+        "selfcorr": 0.002,
+        "all_checks": "PASS",
+        "structure": "book-to-market value + analyst EPS revision momentum",
+        "why": "BRAND NEW, different from all previous; submittable; self-corr 0.002; TO 0.07, DD 0.038"
       }
     ]
   }
