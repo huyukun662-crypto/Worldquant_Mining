@@ -138,22 +138,33 @@ C["news_snt"]  = "rank(ts_mean(news_ls, 20))"                 # news long-short 
 C["si_short"]  = "-rank(mdl177_5shortsentimentfactor_sht_int)"          # crowded-short -> short
 C["dtc_short"] = "-rank(mdl177_5shortsentimentfactor_days_to_cover)"    # days-to-cover -> short
 
-CANDIDATES = [
-    # Analyst earnings-revision momentum (the strongest documented standalone).
-    ("rev_pure",   blend("rev_fy1", "rev_fy2", "rev_mag", "rev_rankd"), {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    ("rev_fast",   blend("rev_fy1", "rev_mag", "rev_rankd"),            {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 4}),
-    # Revisions + price-target upside (analyst optimism composite).
-    ("rev_ptp",    blend("rev_fy1", "rev_rankd", "ptp_up"),            {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # Sentiment / news.
-    ("sent_news",  blend("snt_soc", "news_snt"),                        {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # Short-interest crowding (positioning).
-    ("short_crowd", blend("si_short", "dtc_short"),                     {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # Multi-signal analyst+positioning composite.
-    ("anl_pos",    blend("rev_fy1", "rev_rankd", "ptp_up", "si_short"), {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # Revisions composite, SECTOR-neutralized variant.
-    ("rev_sec",    blend("rev_fy1", "rev_fy2", "rev_mag", "rev_rankd"), {**BASE, "universe": T3, "neutralization": "SECTOR",      "decay": 6}),
-    # Revisions + sentiment cross-driver.
-    ("rev_sent",   blend("rev_fy1", "rev_rankd", "snt_soc"),           {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+CANDIDATES = []
+
+# ---------------------------------------------------------------------------
+# BATCH 22: STRONG price-volume base + weak ORTHOGONAL tilt.
+# pvcerec (pvcorr + E-recipe) on TOP1000/SUBIND/decay18 = SH 1.54 but corr 0.58
+# with E (shares E's reversal/flow recipe). Batches 20-21 showed value/quality
+# and analyst signals are ~0 corr with E but too weak standalone. So ADD a small
+# weighted value/quality/target tilt to the strong base: the tilt rotates the
+# combined factor away from E's direction (pushing corr <0.5) while the P-V base
+# keeps Sharpe high. Sweep tilt TYPE x WEIGHT to find SH>1.25 AND corr_E<0.5.
+# ---------------------------------------------------------------------------
+PVC_BASE = blend(*PVCEREC)                       # rank in [0,1], SH 1.54 base
+TILT = {
+    "val":  blend("val_cfp", "val_ey"),          # cashflow + earnings yield (value)
+    "gp":   "rank(divide(operating_income, assets))",   # gross profitability (quality)
+    "ptp":  "rank(divide(anl4_ptp_mean, close))",       # analyst target upside
+    "vq":   blend("val_cfp", "q_gp"),            # value + quality composite
+}
+def tilted(tkey: str, w: float) -> str:
+    return f"rank(add({PVC_BASE}, multiply({w}, {TILT[tkey]})))"
+
+H_SET = {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}
+for tkey in ("val", "gp", "ptp", "vq"):
+    for w in (0.75, 1.5):
+        CANDIDATES.append((f"pvc_{tkey}_w{int(w*100):03d}", tilted(tkey, w), dict(H_SET)))
+
+_UNUSED_BATCH21 = [
 ]
 
 
@@ -213,7 +224,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT21.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT22.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
