@@ -1,0 +1,120 @@
+[
+ {
+  "ok": false,
+  "expr": "rank(ts_rank(ebit/cap, 40)) - rank(ts_max(returns, 21))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "err": "sim-ERROR:Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+ },
+ {
+  "ok": false,
+  "expr": "rank(ts_rank(cashflow_op/cap, 40)) - rank(ts_max(returns, 21))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "err": "sim-ERROR:Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+ },
+ {
+  "ok": false,
+  "expr": "-rank(ts_max(returns, 21))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "err": "sim-ERROR:Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebit/cap, 40)) - rank(ts_delay(close, 21) / ts_delay(close, 252))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "3q76n3LP",
+  "sharpe": 0.4,
+  "turnover": 0.1064,
+  "fitness": 0.25,
+  "returns": 0.0484,
+  "drawdown": 0.1996,
+  "margin": 0.000911,
+  "longCount": 460,
+  "shortCount": 462,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": false,
+  "expr": "rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60)) - rank(ts_max(returns, 21))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "err": "sim-ERROR:Attempted to use inaccessible or unknown operator \"ts_max\". <linkToCommonErrorMessages>Learn more</linkToCommonErrorMessages>"
+ },
+ {
+  "ok": true,
+  "expr": "-rank(ts_delay(close, 21) / ts_delay(close, 252))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "88z6K6Ez",
+  "sharpe": 0.06,
+  "turnover": 0.0435,
+  "fitness": 0.02,
+  "returns": 0.0089,
+  "drawdown": 0.2428,
+  "margin": 0.000408,
+  "longCount": 461,
+  "shortCount": 467,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ }
+]

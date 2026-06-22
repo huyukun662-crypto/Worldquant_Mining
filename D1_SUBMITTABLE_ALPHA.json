@@ -1,0 +1,254 @@
+{
+  "summary": "Nine submittable delay=1 alphas mined on WorldQuant Brain, avoiding TOP3000. All pass ALL in-sample submit checks; every pairwise PnL correlation < 0.7 (the self-correlation submit limit), so all nine can coexist in a submitted pool. Not actually submitted (per instruction: check-only).",
+  "factor_9_zscore_cashflow_minus_reversal": {
+    "expression": "rank(ts_zscore(cashflow_op/cap, 250)) - 0.4*rank(ts_mean(returns, 5))",
+    "rationale": "ts_zscore(250) cashflow-yield value minus a lightly-weighted (0.4) short reversal. The reversal weight was tuned (0.4 vs 0.5/0.6) to keep max correlation just under 0.7 (0.67 to F2) while maximizing fitness (1.42). Combines the zscore-value lever with the reversal diversifier in a slot not occupied by F1-F8.",
+    "alpha_id": "A1waGAYE",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.6, "fitness": 1.42, "turnover": 0.143, "returns": 0.1124,
+      "drawdown": 0.0701, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.6 > 1.25)", "LOW_FITNESS": "PASS (1.42 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.143)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.40 > 0.85)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.56, "factor2": 0.67, "factor3": -0.01, "factor4": 0.10, "factor5": 0.24, "factor6": 0.65, "factor7": 0.27, "factor8": 0.37},
+    "submittable": true
+  },
+  "factor_8_zscore_booktoprice_plus_revision": {
+    "expression": "rank(ts_zscore(equity/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "ts_zscore(250)-normalized book-to-price value + revision. The zscore normalization lever (vs ts_rank) keeps it decorrelated from the ts_rank B/P+revision F5 (corr 0.60) and the zscore E/P+revision F7 (corr 0.13). SH 1.69, FIT 1.31, low turnover 0.071. Max correlation 0.60 to the seven others.",
+    "alpha_id": "78wXnKeZ",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.69, "fitness": 1.31, "turnover": 0.071, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.69 > 1.25)", "LOW_FITNESS": "PASS (1.31 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.071)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS", "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.25, "factor2": 0.30, "factor3": 0.21, "factor4": 0.36, "factor5": 0.60, "factor6": 0.48, "factor7": 0.13},
+    "submittable": true
+  },
+  "factor_7_zscore_value_plus_revision": {
+    "expression": "rank(ts_zscore(ebit/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "Same value(E/P)+revision economics as F4, but the value leg is normalized with ts_zscore(250) instead of ts_rank(40). The different normalization (and longer 250d window) produces a materially different PnL path -- correlation to F4 is only 0.62 -- while delivering the LOWEST turnover of all (0.065) and high fitness (1.25). ts_zscore was the key new construction that unlocked a 7th decorrelated factor after field-combination space saturated at 6.",
+    "alpha_id": "xAxzkRbm",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.53, "fitness": 1.25, "turnover": 0.0651, "returns": 0.0833,
+      "drawdown": 0.0739, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.53 > 1.25)", "LOW_FITNESS": "PASS (1.25 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.0651)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.45 > 0.81)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.45, "factor2": 0.30, "factor3": 0.30, "factor4": 0.62, "factor5": 0.26, "factor6": 0.12},
+    "submittable": true
+  },
+  "factor_6_booktoprice_plus_roe": {
+    "expression": "rank(ts_rank(equity/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+    "rationale": "Book-to-price value + ROE profitability -- a quality-value combo with NO revision and NO reversal leg, giving it near-zero correlation to the revision-heavy F3 (0.09) and value-reversal F2 footprint, and the lowest max-correlation (0.62) of the later factors. Distinct from F1 (which uses cashflow-yield not B/P) and F5 (which pairs B/P with revision, not ROE).",
+    "alpha_id": "6XwqaLm7",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.56, "fitness": 1.16, "turnover": 0.1754, "returns": 0.0976,
+      "drawdown": 0.0636, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.56 > 1.25)", "LOW_FITNESS": "PASS (1.16 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1754)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (0.90 > 0.83)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.62, "factor2": 0.60, "factor3": 0.09, "factor4": 0.20, "factor5": 0.61},
+    "submittable": true
+  },
+  "correlation_matrix": {
+    "F6_6XwqaLm7_vs_F1": 0.62, "F6_6XwqaLm7_vs_F2": 0.60, "F6_6XwqaLm7_vs_F3": 0.09,
+    "F6_6XwqaLm7_vs_F4": 0.20, "F6_6XwqaLm7_vs_F5": 0.61,
+    "F1_QPajYRKg_vs_F2_1Y7mEOGm": 0.599,
+    "F1_QPajYRKg_vs_F3_leVz6Y17": -0.151,
+    "F2_1Y7mEOGm_vs_F3_leVz6Y17": 0.352,
+    "F1_QPajYRKg_vs_F4_RRpaYlke": 0.53,
+    "F2_1Y7mEOGm_vs_F4_RRpaYlke": 0.49,
+    "F3_leVz6Y17_vs_F4_RRpaYlke": 0.50,
+    "F5_xAxzPVzm_vs_F1": 0.19,
+    "F5_xAxzPVzm_vs_F2": 0.49,
+    "F5_xAxzPVzm_vs_F3": 0.68,
+    "F5_xAxzPVzm_vs_F4": 0.61
+  },
+  "factor_5_booktoprice_plus_revision": {
+    "expression": "rank(ts_rank(equity/cap, 40)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "Book-to-price value (equity/cap, a DIFFERENT value flavor than the earnings-yield used in F1/F2/F4) + analyst EPS-revision momentum. The B/P value axis is the key to a 5th decorrelated factor -- it is the strongest alpha found (SH 1.78, FIT 1.45) and stays < 0.7 to all four others (max 0.68 vs F3).",
+    "alpha_id": "xAxzPVzm",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.78, "fitness": 1.45, "turnover": 0.1464, "returns": 0.0972,
+      "drawdown": 0.0633, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.78 > 1.25)", "LOW_FITNESS": "PASS (1.45 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1464)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.33 > 0.94)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.19, "factor2": 0.49, "factor3": 0.68, "factor4": 0.61},
+    "submittable": true,
+    "alternative_lower_corr": "6XwqaLm7 = rank(ts_rank(equity/cap,40)) + rank(ts_rank(ebit/equity,40)) [B/P + ROE], SH 1.56 FIT 1.16, max corr 0.62 -- safer margin if a larger correlation buffer is preferred."
+  },
+  "factor_4_value_plus_revision": {
+    "expression": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+    "rationale": "Cashflow-yield value + analyst forward-EPS revision momentum -- two complementary, individually-moderate signals whose sum is the strongest alpha found (SH 1.66, FIT 1.24, drawdown only 0.042). Distinct from F1 (no ROE leg, adds revision), F2/F3 (no reversal leg). Correlates 0.49-0.53 with all three others.",
+    "alpha_id": "RRpaYlke",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.66, "fitness": 1.24, "turnover": 0.1439, "returns": 0.0804,
+      "drawdown": 0.0422, "longCount": 459, "shortCount": 461, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.66 > 1.25)", "LOW_FITNESS": "PASS (1.24 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1439)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.30 > 0.88)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_others": {"factor1": 0.53, "factor2": 0.49, "factor3": 0.50},
+    "submittable": true
+  },
+  "factor_3_revision": {
+    "expression": "2*rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60)) - rank(ts_mean(returns, 5))",
+    "rationale": "Analyst forward-EPS revision momentum (analysts raising estimates predicts returns) — a signal family orthogonal to both value factors — minus a light 1-week reversal. Revision is double-weighted so the alpha is revision-dominant, giving near-zero correlation to the value champion (-0.151) and low correlation to factor 2 (0.352).",
+    "alpha_id": "leVz6Y17",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.42, "fitness": 1.11, "turnover": 0.1409, "returns": 0.0868,
+      "drawdown": 0.0882, "longCount": 480, "shortCount": 476, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.42 > 1.25)", "LOW_FITNESS": "PASS (1.11 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.1409)", "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.24 > 0.75)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_factor1": -0.151,
+    "correlation_to_factor2": 0.352,
+    "submittable": true
+  },
+  "factor_2_decorrelated": {
+    "expression": "rank(ts_rank(ebit/cap, 40)) - 0.7*rank(ts_mean(returns, 5))",
+    "rationale": "Earnings-yield value (ebit/cap, ts_rank-smoothed 40d) minus a down-weighted 1-week price reversal. The reversal leg injects PnL orthogonal to the slow fundamental champion, pulling the cross-alpha correlation down to 0.599 while LIFTING Sharpe to 1.60. The 0.7 weight is the sweet spot: heavier reversal lowers correlation but its turnover erodes fitness.",
+    "alpha_id": "1Y7mEOGm",
+    "settings": {
+      "instrumentType": "EQUITY", "region": "USA", "universe": "TOP1000",
+      "delay": 1, "decay": 5, "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY", "pasteurization": "ON", "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.6, "fitness": 1.05, "turnover": 0.2648, "returns": 0.1137,
+      "drawdown": 0.0976, "longCount": 470, "shortCount": 473, "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.6 > 1.25)",
+      "LOW_FITNESS": "PASS (1.05 > 1.0)",
+      "LOW/HIGH_TURNOVER": "PASS (0.2648)",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (1.38 > 0.85)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account",
+      "MATCHES_COMPETITION": "PASS (challenge, IQC2026S1)"
+    },
+    "correlation_to_champion": 0.599,
+    "submittable": true
+  },
+  "champion": {
+    "expression": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+    "rationale": "Orthogonal value + profitability composite: cashflow-yield (cashflow_op/cap) captures cheap stocks; ROE (ebit/equity) captures quality. Each leg is ts_rank-smoothed over 40d to stabilize the quarterly fundamental signal, then cross-sectionally ranked and summed equally. No Alpha101 / classical-template reuse.",
+    "alpha_id": "QPajYRKg",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "universe": "TOP1000",
+      "delay": 1,
+      "decay": 5,
+      "truncation": 0.1,
+      "neutralization": "SUBINDUSTRY",
+      "pasteurization": "ON",
+      "language": "FASTEXPR"
+    },
+    "wq_is_metrics": {
+      "sharpe": 1.5,
+      "fitness": 1.02,
+      "turnover": 0.1702,
+      "returns": 0.0784,
+      "drawdown": 0.0772,
+      "longCount": 447,
+      "shortCount": 455,
+      "grade": "AVERAGE"
+    },
+    "checks": {
+      "LOW_SHARPE": "PASS (1.5 > 1.25)",
+      "LOW_FITNESS": "PASS (1.02 > 1.0)",
+      "LOW_TURNOVER": "PASS (0.1702 > 0.01)",
+      "HIGH_TURNOVER": "PASS (0.1702 < 0.7)",
+      "CONCENTRATED_WEIGHT": "PASS",
+      "LOW_SUB_UNIVERSE_SHARPE": "PASS (0.87 > 0.8)",
+      "SELF_CORRELATION": "PENDING -> ~0 on fresh account (no prior submitted alphas); /correlations/self returns empty",
+      "MATCHES_COMPETITION": "PASS (eligible: challenge, IQC2026S1)"
+    },
+    "submittable": true
+  },
+  "runner_up": {
+    "expression": "rank(ts_rank(cashflow_op/cap, 40)) + 1.5*rank(ts_rank(ebit/equity, 40))",
+    "alpha_id": "blLM678R",
+    "settings": {"universe": "TOP1000", "delay": 1, "decay": 10, "truncation": 0.1, "neutralization": "SUBINDUSTRY"},
+    "wq_is_metrics": {"sharpe": 1.44, "fitness": 1.08, "turnover": 0.119, "sub_universe_sharpe": 0.76},
+    "note": "Lower turnover (0.119) and higher fitness (1.08), but sub-universe Sharpe 0.76 sits exactly at the 0.76 limit (marginal). Champion chosen for its comfortable margin and cleaner equal-weight form."
+  },
+  "method_notes": [
+    "Raw cross-sectional fundamental ratios are weak (~0.3 Sharpe) on this account's IS window 2019-2023.",
+    "Wrapping a valuation ratio in ts_rank(.,40) lifts it to ~1.0 Sharpe.",
+    "TOP1000 is the sweet spot here; TOP500/TOP200 were weaker (opposite of some public notes).",
+    "Adding an ORTHOGONAL profitability signal (ROE=ebit/equity) to a cashflow-yield value signal is what breaks past SH 1.25 / FIT 1.0.",
+    "All numbers are from WorldQuant Brain /simulations (authoritative), not the local yfinance proxy."
+  ]
+}

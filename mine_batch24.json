@@ -1,0 +1,144 @@
+[
+ {
+  "ok": true,
+  "expr": "rank(ts_mean((anl4_af_eps_value - anl4_afv4_eps_mean) / abs(anl4_afv4_eps_mean), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "mL8zXKA5",
+  "sharpe": 0.08,
+  "turnover": 0.02,
+  "fitness": 0.02,
+  "returns": 0.0088,
+  "drawdown": 0.272,
+  "margin": 0.000882,
+  "longCount": 458,
+  "shortCount": 478,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS",
+   "LOW_SUB_UNIVERSE_SHARPE"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebit/cap, 40)) + rank(ts_mean((anl4_af_eps_value - anl4_afv4_eps_mean) / abs(anl4_afv4_eps_mean), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "E5waKzxK",
+  "sharpe": 0.55,
+  "turnover": 0.1467,
+  "fitness": 0.33,
+  "returns": 0.052,
+  "drawdown": 0.1437,
+  "margin": 0.000709,
+  "longCount": 468,
+  "shortCount": 456,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebit/cap, 40)) - 2*rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 10,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "78wXdR0v",
+  "sharpe": 1.18,
+  "turnover": 0.2363,
+  "fitness": 0.81,
+  "returns": 0.1103,
+  "drawdown": 0.0813,
+  "margin": 0.000934,
+  "longCount": 470,
+  "shortCount": 472,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_mean((anl4_af_eps_value - anl4_afv4_eps_mean) / abs(anl4_afv4_eps_mean), 60)) - rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "kq3m3x1k",
+  "sharpe": 0.98,
+  "turnover": 0.2466,
+  "fitness": 0.61,
+  "returns": 0.0941,
+  "drawdown": 0.1578,
+  "margin": 0.000763,
+  "longCount": 473,
+  "shortCount": 464,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS",
+   "LOW_SUB_UNIVERSE_SHARPE"
+  ]
+ }
+]

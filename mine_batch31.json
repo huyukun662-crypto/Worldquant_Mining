@@ -1,0 +1,167 @@
+[
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebitda/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "vRLJQOgr",
+  "sharpe": 1.33,
+  "turnover": 0.1671,
+  "fitness": 0.88,
+  "returns": 0.0739,
+  "drawdown": 0.0883,
+  "margin": 0.000885,
+  "longCount": 428,
+  "shortCount": 436,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_zscore(ebitda/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "LLplQKq2",
+  "sharpe": 1.59,
+  "turnover": 0.0671,
+  "fitness": 1.31,
+  "returns": 0.0853,
+  "drawdown": 0.0617,
+  "margin": 0.002542,
+  "longCount": 439,
+  "shortCount": 441,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_zscore(sales/cap, 250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "omK9dklb",
+  "sharpe": 1.17,
+  "turnover": 0.0705,
+  "fitness": 0.87,
+  "returns": 0.0684,
+  "drawdown": 0.1043,
+  "margin": 0.001939,
+  "longCount": 470,
+  "shortCount": 474,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_zscore(ebitda/cap, 250)) - 0.4*rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "2r7nY3bN",
+  "sharpe": 1.3,
+  "turnover": 0.1475,
+  "fitness": 1.08,
+  "returns": 0.1016,
+  "drawdown": 0.1053,
+  "margin": 0.001378,
+  "longCount": 442,
+  "shortCount": 441,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebitda/cap, 40)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "gJ1PPj6v",
+  "sharpe": 1.45,
+  "turnover": 0.1428,
+  "fitness": 1.1,
+  "returns": 0.0821,
+  "drawdown": 0.0552,
+  "margin": 0.001151,
+  "longCount": 439,
+  "shortCount": 442,
+  "grade": "AVERAGE",
+  "checks": {
+   "LOW_SHARPE": "PASS",
+   "LOW_FITNESS": "PASS",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": []
+ }
+]

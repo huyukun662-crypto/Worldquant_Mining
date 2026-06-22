@@ -1,0 +1,213 @@
+[
+ {
+  "ok": true,
+  "expr": "group_rank(ebit/cap, subindustry) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "58wqYZV6",
+  "sharpe": 0.61,
+  "turnover": 0.0401,
+  "fitness": 0.4,
+  "returns": 0.0539,
+  "drawdown": 0.1164,
+  "margin": 0.002691,
+  "longCount": 474,
+  "shortCount": 466,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_mean(ts_delta(anl4_afv4_cfps_mean, 20), 60)) - rank(ts_mean(returns, 5))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "omK9Z8qn",
+  "sharpe": 1.08,
+  "turnover": 0.2287,
+  "fitness": 0.63,
+  "returns": 0.0776,
+  "drawdown": 0.0811,
+  "margin": 0.000679,
+  "longCount": 413,
+  "shortCount": 407,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_mean(ts_delta(anl4_afv4_eps_mean, 20), 120)) - rank(ts_mean(returns, 10))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "Grw39V1G",
+  "sharpe": 0.96,
+  "turnover": 0.1655,
+  "fitness": 0.67,
+  "returns": 0.0797,
+  "drawdown": 0.1019,
+  "margin": 0.000962,
+  "longCount": 482,
+  "shortCount": 475,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "FAIL",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS",
+   "LOW_SUB_UNIVERSE_SHARPE"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "trade_when(volume > adv20, rank(ts_zscore(ebit/cap, 250)), -1)",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "leVR17e7",
+  "sharpe": 0.77,
+  "turnover": 0.0664,
+  "fitness": 0.51,
+  "returns": 0.0553,
+  "drawdown": 0.1406,
+  "margin": 0.001667,
+  "longCount": 466,
+  "shortCount": 465,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebit/cap, 40)) + rank(ts_mean(ts_delta(anl4_afv4_div_mean, 20), 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "0m7K5zpv",
+  "sharpe": 1.19,
+  "turnover": 0.1441,
+  "fitness": 0.71,
+  "returns": 0.0511,
+  "drawdown": 0.0805,
+  "margin": 0.000709,
+  "longCount": 435,
+  "shortCount": 432,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ },
+ {
+  "ok": true,
+  "expr": "rank(ts_rank(ebit/cap, 40)) + rank(ts_delta(anl4_afv4_eps_number, 60))",
+  "settings": {
+   "universe": "TOP1000",
+   "delay": 1,
+   "decay": 5,
+   "truncation": 0.1,
+   "neutralization": "SUBINDUSTRY"
+  },
+  "alpha_id": "wpRJWZzY",
+  "sharpe": 0.99,
+  "turnover": 0.1571,
+  "fitness": 0.57,
+  "returns": 0.0523,
+  "drawdown": 0.088,
+  "margin": 0.000666,
+  "longCount": 465,
+  "shortCount": 471,
+  "grade": "INFERIOR",
+  "checks": {
+   "LOW_SHARPE": "FAIL",
+   "LOW_FITNESS": "FAIL",
+   "LOW_TURNOVER": "PASS",
+   "HIGH_TURNOVER": "PASS",
+   "CONCENTRATED_WEIGHT": "PASS",
+   "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+   "SELF_CORRELATION": "PENDING",
+   "MATCHES_COMPETITION": "PASS"
+  },
+  "fail": [
+   "LOW_SHARPE",
+   "LOW_FITNESS"
+  ]
+ }
+]
