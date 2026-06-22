@@ -89,16 +89,18 @@ INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_d
 
 EREC = ("trret", "amihud", "turnover", "volz", "gap")  # E / mixbal recipe
 
+PVCEREC = ("pvcorr",) + EREC  # the SH 1.54 winning recipe (pvcorr + E recipe)
+
 CANDIDATES = [
-    # trret carries the strength but ties to E. Swap trret -> vcspread (a DIFFERENT
-    # strong reversal construction) to keep SH>1.25 / FIT>1.0 while cutting E-corr.
-    ("pvc_vc_a",   blend("pvcorr", "vcspread", "amihud", "turnover", "gap"),  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_vc_b",   blend("pvcorr", "vcspread", "amihud", "volz", "cppos40"),  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_vc_c",   blend("pvcorr", "vcspread", "amihud", "gap", "issuance"),  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_avd",    blend("pvcorr", "avdiff", "amihud", "gap", "turnover"),    {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # keep trret but decorrelate from E via universe+neut (E is TOP3000/SECTOR)
-    ("erecpvc_t3k_ind", blend("pvcorr", *EREC),                              {**BASE, "universe": "TOP3000", "neutralization": "INDUSTRY", "decay": 14}),
-    ("pvc_vc_t3k_ind",  blend("pvcorr", "vcspread", "amihud", "turnover", "gap"), {**BASE, "universe": "TOP3000", "neutralization": "INDUSTRY", "decay": 14}),
+    # erec_t1k_d18_pvc (TOP1000/SUBIND) = SUBMITTABLE SH1.54/FIT1.24, only E binds
+    # at 0.58. E is SECTOR-neutralized -> change THIS one's neutralization to break
+    # the E correlation while keeping the winning recipe + universe.
+    ("pvcerec_t1k_ind", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY",    "decay": 18}),
+    ("pvcerec_t1k_mkt", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "MARKET",      "decay": 18}),
+    ("pvcerec_t1k_sub_t04", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.04, "decay": 18}),
+    ("pvcerec_t1k_sub_t15", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.15, "decay": 18}),
+    ("pvcerec_t1k_sub_d24", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 24}),
+    ("pvcerec_t1k_none",    blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "NONE",       "decay": 18}),
 ]
 
 
@@ -158,7 +160,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT18.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT19.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
