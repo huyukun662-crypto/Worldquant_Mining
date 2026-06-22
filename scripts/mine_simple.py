@@ -27,37 +27,36 @@ FIXED = {
     "pasteurization": "ON",
 }
 
-# Curated simple candidates - reversal, mean-reversion, vol, VWAP spread
+# Curated simple candidates - reversal, mean-reversion, vol, VWAP spread.
+# Smoke test showed -ts_rank(returns,5) has SH=1.4-1.87 but TO=0.75-0.93,
+# fitness<1. Need slower windows + heavy decay to crush turnover and lift fit.
 CANDIDATES = [
-    # Short-term reversal family
+    # Slower-window reversal (turnover-friendly)
     "-ts_rank(returns, 5)",
-    "-ts_returns(close, 5)",
-    "-rank(ts_delta(close, 5))",
-    "-rank(returns)",
-    # Mean-reversion z-score
-    "-(close - ts_mean(close, 10)) / (ts_std_dev(close, 10) + 0.001)",
+    "-ts_rank(returns, 10)",
+    "-ts_rank(returns, 20)",
+    "-ts_returns(close, 10)",
+    # Mean-reversion z-score - longer windows
     "-ts_zscore(close, 20)",
+    "-ts_zscore(close, 60)",
+    "-(close - ts_mean(close, 20)) / (ts_std_dev(close, 20) + 0.001)",
     # Volume/price correlation (smart money)
     "-rank(ts_corr(close, volume, 10))",
-    "rank(ts_corr(rank(close), rank(volume), 10))",
-    # VWAP spread (intraday liquidity)
+    "-rank(ts_corr(close, volume, 20))",
+    # VWAP / liquidity
+    "-rank(ts_delta(vwap, 5))",
     "rank((vwap - close) / vwap)",
-    "-rank(ts_delta(vwap, 4))",
-    # Volatility / range
+    # Volatility/range
     "-ts_zscore(ts_std_dev(returns, 20), 60)",
-    # Intraday position
+    # Intraday position (slow-changing daily)
     "rank((open - close) / (high - low + 0.001))",
-    # Reversal * volume shock
-    "-ts_rank(returns, 5) * ts_rank(volume, 10)",
-    # Volume-weighted reversal
-    "-rank(returns) * rank(ts_mean(volume, 5))",
 ]
 
-# Per-candidate setting variants. Keep small.
+# Per-candidate setting variants. Heavy decay to suppress turnover.
 SETTINGS_VARIANTS = [
-    {"universe": "TOP1000", "neutralization": "INDUSTRY", "truncation": 0.08, "decay": 4},
-    {"universe": "TOP500",  "neutralization": "INDUSTRY", "truncation": 0.08, "decay": 4},
-    {"universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.05, "decay": 8},
+    {"universe": "TOP1000", "neutralization": "INDUSTRY",    "truncation": 0.08, "decay": 32},
+    {"universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.05, "decay": 64},
+    {"universe": "TOP500",  "neutralization": "INDUSTRY",    "truncation": 0.10, "decay": 16},
 ]
 
 POLL_TIMEOUT_S = 700
