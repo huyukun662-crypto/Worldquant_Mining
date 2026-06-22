@@ -231,5 +231,39 @@
     "alpha_id": "3q7a8LQP",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "vq_lowvol",
+    "expression": "rank(add(add(rank(divide(cashflow_op, cap)), rank(divide(operating_income, assets))), -rank(ts_std_dev(returns, 120))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP3000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 10
+    },
+    "ok": true,
+    "sharpe": 0.21,
+    "turnover": 0.0253,
+    "fitness": 0.11,
+    "drawdown": 0.5975,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "YPp2RNbl",
+    "error": "",
+    "corr": {}
   }
 ]

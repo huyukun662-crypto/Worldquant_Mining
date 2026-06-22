@@ -118,20 +118,42 @@ C["mom121"]   = "rank(divide(ts_delay(close, 21), ts_delay(close, 252)))"   # 12
 C["lowvol"]   = "-rank(ts_std_dev(returns, 120))"             # low-volatility anomaly
 
 T3 = "TOP3000"
+
+# ---------------------------------------------------------------------------
+# BATCH 21: analyst-revision / sentiment / news / short-interest axis.
+# Batch 20 proved slow fundamentals + long-mom/low-vol can't reach SH 1.25 on
+# this tier. These delay=1 fields are documented standalone alpha sources
+# (post-earnings/analyst drift, sentiment, crowded-short) and are economically
+# orthogonal to BOTH the price-volume families (A-H) AND slow fundamentals.
+# Sign convention: upward revisions / target upside / positive sentiment = LONG;
+# high short interest / days-to-cover = SHORT.
+# ---------------------------------------------------------------------------
+C["rev_fy1"]   = "rank(net_num_revisions_fy1)"                 # net up-minus-down FY1 revisions
+C["rev_fy2"]   = "rank(net_num_revisions_fy2)"                 # net FY2 revisions
+C["rev_mag"]   = "rank(earnings_revision_magnitude)"          # size of revisions
+C["rev_rankd"] = "rank(analyst_revision_rank_derivative)"     # revision-rank momentum
+C["ptp_up"]    = "rank(divide(anl4_ptp_mean, close))"        # mean price-target upside
+C["snt_soc"]   = "rank(snt_social_value)"                     # signed social sentiment
+C["news_snt"]  = "rank(ts_mean(news_ls, 20))"                 # news long-short signal
+C["si_short"]  = "-rank(mdl177_5shortsentimentfactor_sht_int)"          # crowded-short -> short
+C["dtc_short"] = "-rank(mdl177_5shortsentimentfactor_days_to_cover)"    # days-to-cover -> short
+
 CANDIDATES = [
-    # Fundamental value blends (slow -> low turnover, helps TO<0.25 gate).
-    ("val_pure",   blend("val_cfp", "val_ey", "val_bp", "val_sp"), {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    ("qual_pure",  blend("q_gp", "q_roe", "q_lev", "q_accr"),      {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # Value + Quality combo (classic robust factor), two neutralizations.
-    ("valqual_sub", blend("val_cfp", "val_ey", "q_gp", "q_lev"),   {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    ("valqual_sec", blend("val_cfp", "val_ey", "q_gp", "q_lev"),   {**BASE, "universe": T3, "neutralization": "SECTOR",      "decay": 6}),
-    # Value + Quality + Growth.
-    ("vqg_sub",    blend("val_cfp", "q_gp", "q_lev", "g_sales"),   {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
-    # Long-horizon momentum + low-vol (technical, new horizon).
-    ("mom_lowvol", blend("mom121", "lowvol"),                       {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 20}),
-    ("lowvol_pure", blend("lowvol",),                               {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 20}),
-    # Fundamental value/quality blended with low-vol (cross-driver hybrid).
-    ("vq_lowvol",  blend("val_cfp", "q_gp", "lowvol"),             {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 10}),
+    # Analyst earnings-revision momentum (the strongest documented standalone).
+    ("rev_pure",   blend("rev_fy1", "rev_fy2", "rev_mag", "rev_rankd"), {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    ("rev_fast",   blend("rev_fy1", "rev_mag", "rev_rankd"),            {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 4}),
+    # Revisions + price-target upside (analyst optimism composite).
+    ("rev_ptp",    blend("rev_fy1", "rev_rankd", "ptp_up"),            {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # Sentiment / news.
+    ("sent_news",  blend("snt_soc", "news_snt"),                        {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # Short-interest crowding (positioning).
+    ("short_crowd", blend("si_short", "dtc_short"),                     {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # Multi-signal analyst+positioning composite.
+    ("anl_pos",    blend("rev_fy1", "rev_rankd", "ptp_up", "si_short"), {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # Revisions composite, SECTOR-neutralized variant.
+    ("rev_sec",    blend("rev_fy1", "rev_fy2", "rev_mag", "rev_rankd"), {**BASE, "universe": T3, "neutralization": "SECTOR",      "decay": 6}),
+    # Revisions + sentiment cross-driver.
+    ("rev_sent",   blend("rev_fy1", "rev_rankd", "snt_soc"),           {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
 ]
 
 
@@ -191,7 +213,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT20.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT21.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
