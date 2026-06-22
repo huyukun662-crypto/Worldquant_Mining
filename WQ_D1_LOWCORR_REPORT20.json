@@ -163,5 +163,39 @@
     "alpha_id": "wpRnr2Q1",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "mom_lowvol",
+    "expression": "rank(add(rank(divide(ts_delay(close, 21), ts_delay(close, 252))), -rank(ts_std_dev(returns, 120))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP3000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 20
+    },
+    "ok": true,
+    "sharpe": -0.02,
+    "turnover": 0.025,
+    "fitness": 0.0,
+    "drawdown": 0.5851,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "YPp2eVJw",
+    "error": "",
+    "corr": {}
   }
 ]
