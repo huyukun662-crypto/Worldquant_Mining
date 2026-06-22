@@ -164,5 +164,38 @@
     "alpha_id": "78wKpV21",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "vwap_only",
+    "expression": "rank(add(add(add(-rank(ts_mean(divide(close, vwap), 10)), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_std_dev(divide(close, vwap), 40))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP3000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 10
+    },
+    "ok": true,
+    "sharpe": 0.82,
+    "turnover": 0.1191,
+    "fitness": 0.55,
+    "drawdown": 0.114,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "6XwYkE5L",
+    "error": "",
+    "corr": {}
   }
 ]

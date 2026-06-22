@@ -85,17 +85,19 @@ C["adv_ratio"]  = "rank(divide(volume, ts_mean(volume, 240)))"  # 240d volume ra
 C["gap60"]      = "rank(ts_mean(divide(open, ts_delay(close, 1)), 60))"
 C["volstd_z"]   = "-rank(ts_zscore(ts_std_dev(returns, 20), 120))"  # vol regime z-score (low vol)
 
+INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp")
+
 CANDIDATES = [
-    # INTRADAY/MICROSTRUCTURE-only blend (no reversal, no flow): cppos + rng + vwap
-    ("intraday_only", blend("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp"), {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("intraday_sec",  blend("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp"), {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 10}),
-    # LOW-VOL anomaly + long-horizon (different time scale than A/B/D/E/F)
-    ("lowvol_long",   blend("lowvol120", "mom240", "vwap40", "gap60"),                                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("lowvol_long_s", blend("lowvol120", "mom240", "vwap40", "gap60"),                                {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 12}),
-    # MOMENTUM-style: long mom + low vol + 240d volume ratio (no reversal)
-    ("mom_lowvol",    blend("mom240", "lowvol120", "volstd_z", "adv_ratio"),                          {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
-    # VWAP-CENTRIC (multiple horizons + dispersion)
-    ("vwap_only",     blend("vwap_pos", "vwap40", "vwap_disp", "gap"),                                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    # 1. intraday_only with HIGHER DECAY -> lift fitness over 1.0
+    ("intra_d16",       blend(*INTRADAY7),                          {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("intra_d20",       blend(*INTRADAY7),                          {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 20}),
+    ("intra_sec_d16",   blend(*INTRADAY7),                          {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 16}),
+    # 2. intraday + 1 strong driver (amihud) to lift Sharpe; intraday 7/8 weight
+    ("intra_amih_d12",  blend(*INTRADAY7, "amihud"),                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("intra_amih_d16",  blend(*INTRADAY7, "amihud"),                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("intra_amih_sec",  blend(*INTRADAY7, "amihud"),                {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 12}),
+    # 3. intraday + pvcorr (uses a driver different from D)
+    ("intra_pvc_d12",   blend(*INTRADAY7, "pvcorr"),                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
 ]
 
 
@@ -155,7 +157,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT11.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT12.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
