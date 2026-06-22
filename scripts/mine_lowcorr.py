@@ -88,16 +88,16 @@ C["volstd_z"]   = "-rank(ts_zscore(ts_std_dev(returns, 20), 120))"  # vol regime
 INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp")
 
 CANDIDATES = [
-    # 1. intraday_only with HIGHER DECAY -> lift fitness over 1.0
-    ("intra_d16",       blend(*INTRADAY7),                          {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("intra_d20",       blend(*INTRADAY7),                          {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 20}),
-    ("intra_sec_d16",   blend(*INTRADAY7),                          {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 16}),
-    # 2. intraday + 1 strong driver (amihud) to lift Sharpe; intraday 7/8 weight
-    ("intra_amih_d12",  blend(*INTRADAY7, "amihud"),                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("intra_amih_d16",  blend(*INTRADAY7, "amihud"),                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("intra_amih_sec",  blend(*INTRADAY7, "amihud"),                {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 12}),
-    # 3. intraday + pvcorr (uses a driver different from D)
-    ("intra_pvc_d12",   blend(*INTRADAY7, "pvcorr"),                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    # Closest near-miss intra_amih_d12 SH=1.23/FIT=0.97. Add 1 more driver and try
+    # lower decay (less signal degradation) + winsorize wrappers (clean tails -> fit)
+    ("intra_am_vc",     blend(*INTRADAY7, "amihud", "vcspread"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("intra_am_iss",    blend(*INTRADAY7, "amihud", "issuance"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("intra_am_tov",    blend(*INTRADAY7, "amihud", "turnover"),  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("intra_amih_d8",   blend(*INTRADAY7, "amihud"),              {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 8}),
+    ("intra_amih_d10",  blend(*INTRADAY7, "amihud"),              {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    # Winsorized wrappers (clean tails -> higher fitness)
+    ("intra_am_win_d10", "rank(winsorize(" + blend(*INTRADAY7, "amihud")[5:-1] + ", std=4))",
+                                                                  {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
 ]
 
 
@@ -157,7 +157,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT12.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT13.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
