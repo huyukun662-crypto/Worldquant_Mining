@@ -71,17 +71,22 @@ def blend(*keys: str) -> str:
 
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
+# Use B's WINNING 6-idea recipe (its B variant hit SH 1.53 on TOP3000), exposed
+# to TOP1000 with TRUNCATION axis decorrelation (looser truncation -> more
+# concentrated positions -> different PnL than F's 0.08).
+B_RECIPE = ("vwap_pos", "amihud", "gap", "issuance", "longrev", "turnover")
+C["vwap_pos"] = "-rank(ts_mean(divide(close, vwap), 10))"
+C["longrev"]  = "-rank(ts_delta(close, 120))"
+
 CANDIDATES = [
-    # Re-run the 3 lost candidates (POST-429 timed out in batch 8)
-    ("pvflow_t500_d20",  blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 20}),
-    ("pvflow_t500_d24",  blend("pvcorr", "amihud", "volz", "turnover"),       {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 24}),
-    ("flow_t1k_sec_d14", blend("amihud", "issuance", "turnover", "volz"),     {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 14}),
-    # NEW: TOP500 with stronger 6-way blend (compensates for fitness loss on small univ)
-    ("widemix_t500_d18", blend("pvcorr", "amihud", "issuance", "turnover", "volz", "gap"), {**BASE, "universe": "TOP500",  "neutralization": "SECTOR", "decay": 18}),
-    # NEW: TOP1000 A-style microstructure (vol-normalized 10d reversal)
-    ("amicro_t1k_d10",   ("rank(divide(-ts_delta(close, 10), ts_std_dev(returns, 10)))"),  {**BASE, "universe": "TOP1000", "neutralization": "SECTOR", "decay": 10}),
-    # NEW: TOP1000 wide blend on INDUSTRY (different neutralization vs F's SECTOR)
-    ("widemix_t1k_ind",  blend("pvcorr", "amihud", "issuance", "turnover", "volz", "gap"), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY", "decay": 16}),
+    # TOP1000 + B's 6-idea recipe, sweep truncation + neutralization
+    ("brec_t1k_sec_t04",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "SECTOR",      "truncation": 0.04, "decay": 12}),
+    ("brec_t1k_sec_t12",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "SECTOR",      "truncation": 0.12, "decay": 12}),
+    ("brec_t1k_ind_t08",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY",    "truncation": 0.08, "decay": 12}),
+    ("brec_t1k_sub_t08",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.08, "decay": 12}),
+    # Truncation-only decorrelation on TOP3000 (a known-strong B recipe with t=0.04)
+    ("brec_t3k_sub_t04",  blend(*B_RECIPE), {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "truncation": 0.04, "decay": 16}),
+    ("brec_t3k_mkt_t08",  blend(*B_RECIPE), {**BASE, "universe": "TOP3000", "neutralization": "MARKET",      "truncation": 0.08, "decay": 16}),
 ]
 
 
@@ -140,7 +145,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT9.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT10.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
