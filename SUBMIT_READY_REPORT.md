@@ -1,62 +1,109 @@
 # Submit-Ready Factor Mining Report
 
 **Account**: 2841262992@qq.com (DH58557)
-**Run**: 2026-06-22, 39 simulations on WorldQuant Brain `/simulations`, delay=1, NO TOP3000.
-**Method**: curated simple finance-grounded candidates × {TOP1000/TOP500} × {INDUSTRY/SUBINDUSTRY} × heavy decay (16/32/64). No Alpha101 / classical template reuse.
+**Run**: 2026-06-22, 137 simulations on WorldQuant Brain `/simulations`, delay=1, NO TOP3000.
 
-## Survivors (all WQ `is.checks` PASS + self-correlation < 0.7)
+## Final recommendation
 
-Ranked by WQ Brain IS Sharpe:
-
-| # | alpha_id | expression | universe | neut | decay | SH | TO | FIT | RET | DD | max self-corr |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | **A1wgAdZE** | `-ts_rank(returns, 5)` | TOP1000 | INDUSTRY | 32 | **2.07** | 0.509 | **1.18** | 0.165 | 0.07 | 0.351 |
-| 2 | KPbX1kNN | `-ts_rank(returns, 10)` | TOP1000 | SUBINDUSTRY | 64 | 1.93 | 0.393 | 1.18 | 0.146 | 0.06 | 0.431 |
-| 3 | MPpKrmOr | `-ts_rank(returns, 5)`  | TOP1000 | SUBINDUSTRY | 64 | 1.90 | 0.367 | 1.05 | 0.112 | 0.04 | 0.327 |
-| 4 | blLowo5m | `-ts_rank(returns, 10)` | TOP1000 | INDUSTRY | 32 | 1.77 | 0.493 | 1.07 | 0.180 | 0.11 | 0.462 |
-| 5 | P0pwVlzp | `-ts_rank(returns, 10)` | TOP500  | INDUSTRY | 16 | 1.75 | 0.565 | 1.00 | 0.183 | 0.09 | 0.395 |
-| 6 | omK3dgzk | `-ts_rank(returns, 20)` | TOP1000 | SUBINDUSTRY | 64 | 1.62 | 0.356 | 1.04 | 0.148 | 0.07 | 0.476 |
-
-## Recommended factor to submit
-
-**Alpha ID `A1wgAdZE`** — best IS Sharpe (2.07), best fitness (1.18), low drawdown (0.07):
+**Alpha `blLNVogM`** (or equivalent `JjpnYpJm`):
 
 ```
-expression:  -ts_rank(returns, 5)
+expression:
+  zscore(ts_backfill(ts_delta(implied_volatility_call_60, 10), 250))
+
 settings:
   region:         USA
   universe:       TOP1000
   delay:          1
-  neutralization: INDUSTRY
-  truncation:     0.08
-  decay:          32
+  neutralization: SUBINDUSTRY
+  truncation:     0.01
+  decay:          128
   pasteurization: ON
+  nanHandling:    OFF      (ON gives identical result, both work)
 ```
 
-Backup candidate **`KPbX1kNN`** (`-ts_rank(returns, 10)` @ TOP1000/SUBINDUSTRY/decay=64) has nearly identical SH (1.93) with a more conservative turnover (0.39) and is structurally less correlated with #1 (different window), so it's a good diversifier.
+**Metrics**
 
-## Submit checks (all PASS — verified pre-submit)
+| metric | value |
+|---|---|
+| IS Sharpe | **1.31** (> 1.25 ✅) |
+| IS Fitness | **1.51** (> 1.0 ✅) |
+| IS Turnover | 0.122 |
+| IS Returns | (in alpha record) |
+| max self-correlation | 0.172 (< 0.7 ✅) |
+| WQ Brain `is.checks` | **all PASS** |
 
-For `A1wgAdZE`:
+The factor is a **pure Option-implied-volatility momentum signal** —
+structurally orthogonal to the earlier PV-reversal survivors. Economic
+intuition: a rising call-IV at the 60-day expiry signals informed-trader
+demand for upside exposure; we rank that change cross-sectionally,
+forward-fill stale option quotes 250 trading days so the support spans
+TOP1000 (not just the ~30-40% of names with daily option flow — that was
+the CONCENTRATED_WEIGHT trap), then `zscore` to give a unit-vol signal.
+
+## Final submit checks (all PASS, no PENDING)
+
+For `blLNVogM`:
 
 | check | result | value | limit |
 |---|---|---|---|
-| LOW_SHARPE | PASS | 2.07 | > 1.25 |
-| LOW_FITNESS | PASS | 1.18 | > 1.0 |
-| LOW_TURNOVER | PASS | 0.509 | > 0.01 |
-| HIGH_TURNOVER | PASS | 0.509 | < 0.7 |
+| LOW_SHARPE | PASS | 1.31 | > 1.25 |
+| LOW_FITNESS | PASS | 1.51 | > 1.0 |
+| LOW_TURNOVER | PASS | 0.122 | > 0.01 |
+| HIGH_TURNOVER | PASS | 0.122 | < 0.7 |
 | CONCENTRATED_WEIGHT | PASS | - | - |
 | LOW_SUB_UNIVERSE_SHARPE | PASS | - | - |
-| MATCHES_COMPETITION | PASS | challenge, IQC2026S1 | - |
-| SELF_CORRELATION | PASS (verified via `/alphas/{id}/correlations/self`) | max 0.351 | < 0.7 |
+| MATCHES_COMPETITION | PASS | challenge / IQC2026S1 | - |
+| SELF_CORRELATION | PASS (verified via `/alphas/{id}/correlations/self`) | max 0.172 | < 0.7 |
 
-All boxes ticked. Ready for manual submit via WQ web UI.
+## Three survivors (all PASS-ALL, ranked by IS Sharpe)
 
-## Key insight that unlocked the result
+| # | alpha_id | expression | univ | trunc | nan | SH | FIT | TO | self-corr |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | **blLNVogM** | `zscore(ts_backfill(ts_delta(implied_volatility_call_60, 10), 250))` | TOP1000 | 0.01 | OFF | 1.31 | 1.51 | 0.122 | 0.172 |
+| 2 | JjpnYpJm | same as #1 | TOP1000 | 0.01 | ON | 1.31 | 1.51 | 0.122 | 0.172 |
+| 3 | QPanqgmg | `… + 0.3 * zscore(-ts_rank(returns, 10))` (hybrid with PV reversal) | TOP1000 | 0.05 | ON | 1.25 | 1.43 | 0.154 | 0.203 |
 
-Smoke test on 3 quick candidates revealed `-ts_rank(returns, 5)` had strong signal (SH 1.4–1.87 at decay=4) but failed HIGH_TURNOVER (0.75–0.93) and LOW_FITNESS (0.45–0.79). The fix was simply to crank `decay` to 32–64. That suppresses daily portfolio rebalancing without killing the underlying short-term reversal signal, lifting fitness above 1.0 and dropping turnover under 0.7. All 6 survivors come from the `-ts_rank(returns, N)` family — the same finance idea (short-term cross-sectional reversal) at three different lookbacks. Other ideas tested (mean-reversion z-score, price-volume correlation, VWAP delta, vol-of-vol, intraday position) either lacked Sharpe or hit unit-incompatibility errors.
+All three are submit-eligible. **#1 is the recommended factor** —
+pure Option signal, lowest correlation to existing alphas, highest
+fitness.
+
+## How the mining loop got here
+
+This was a 6-module search, ~137 WQ Brain simulations total:
+
+| module | category | candidates | trials | PASS-ALL |
+|---|---|---|---|---|
+| 1 | PV reversal | 14 | 39 | 6 |
+| 2 | Option / News (naive) | 12 | 36 | 0 |
+| 3 | Option signal-flip + Fundamental crosses | 8 | 16 | 0 |
+| 4 | IV-momentum heavy-decay amplification | 8 | 24 | 0 |
+| 5 | Fix CONCENTRATED via wrapper / trunc | 6 | 18 | 0 |
+| 6 | Fix CONCENTRATED via ts_backfill(250) + nanHandling | 8 | 8 | **3** |
+
+Key insight per module:
+- **M2 → M3**: negative Sharpe on `ts_delta(implied_volatility_call_30, 5)`
+  meant the signal was real but inverted — flip sign.
+- **M3 → M4**: SH 1.10, FIT 0.63 → switched to `implied_volatility_call_60`
+  with delta=10 horizon and decay=128 → SH 1.30, FIT 0.97.
+- **M4 → M5/M6**: every variant cleared LOW_SHARPE / LOW_FITNESS but
+  failed CONCENTRATED_WEIGHT because option data covers only ~30-40% of
+  TOP1000. Fix: `ts_backfill(., 250)` forward-fills stale option signals,
+  spreading the alpha across all names so the weight stops concentrating.
+
+## Module-1 survivors (kept as diversifiers)
+
+For reference, the 6 PV-reversal alphas from Module 1 are still
+submit-eligible (independent search dimension). Top:
+
+- `A1wgAdZE`: `-ts_rank(returns, 5)` TOP1000/INDUSTRY/decay=32 — SH=2.07 FIT=1.18 TO=0.51
+
+These remain available if you want a 2-factor portfolio (Option IV + PV
+reversal) — their self-correlation against each other should be near 0
+by construction.
 
 ## Files
 
-- `MINE_ROUND2.json` — full 39-trial results (gitignored)
-- `scripts/mine_simple.py` — the miner driver
+- `MINE_MOD6_RESULTS.json` — module-6 raw results
+- `MINE_ROUND2.json` — module-1 raw results
+- `scripts/mine_module{1..6}.py` — staged miners (each module learns from the previous)
