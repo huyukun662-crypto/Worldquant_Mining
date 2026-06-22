@@ -31,13 +31,15 @@ def _load(p, name):
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
 
 
-def submit(session, expr, lock):
-    body = {"type": "REGULAR", "settings": dict(D0_SETTINGS), "regular": expr}
+def submit(session, item, lock):
+    expr, overrides = (item, {}) if isinstance(item, str) else item
+    s = dict(D0_SETTINGS); s.update(overrides)
+    body = {"type": "REGULAR", "settings": s, "regular": expr}
     with lock:
         r = session.post("https://api.worldquantbrain.com/simulations", json=body, timeout=30)
     if r.status_code != 201:
         return {"ok": False, "stage": "submit", "status": r.status_code,
-                "body": r.text[:300], "expression": expr}
+                "body": r.text[:300], "expression": expr, "settings": overrides}
     loc = r.headers.get("Location")
     t0 = time.time()
     while time.time() - t0 < POLL_TIMEOUT_S:
@@ -56,13 +58,13 @@ def submit(session, expr, lock):
                     "alpha": ra.json() if ra.status_code == 200 else {}}
         if st in ("ERROR", "FAILED", "WARNING"):
             return {"ok": False, "stage": "sim", "status": st,
-                    "message": d.get("message", "")[:300], "expression": expr}
-    return {"ok": False, "stage": "timeout", "expression": expr}
+                    "message": d.get("message", "")[:300], "expression": expr, "settings": overrides}
+    return {"ok": False, "stage": "timeout", "expression": expr, "settings": overrides}
 
 
 def summarize(r):
     if not r.get("ok"):
-        return f"  ERR  {r.get('stage')}: {r.get('message') or r.get('body','')[:120]}  | {r['expression']}"
+        return f"  ERR  {r.get('stage')}: {r.get('message') or r.get('body','')[:120]}  | {r.get('expression','')}"
     a = r["alpha"]; is_ = a.get("is", {}) or {}
     sh = is_.get("sharpe"); to = is_.get("turnover")
     fit = is_.get("fitness"); ret = is_.get("returns"); dd = is_.get("drawdown")
@@ -76,18 +78,28 @@ def summarize(r):
             f"            expr={r['expression']}")
 
 
+BEST_PV = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) "
+           "+ -rank(ts_corr(vwap, volume, 5)), 5)")
+
+SUB = {"neutralization": "SUBINDUSTRY"}
+QUAD = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) "
+        "+ -rank(ts_corr(vwap, volume, 5)) + -rank(ts_corr(vwap, volume, 44)), 5)")
+WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) "
+               "+ -rank(ts_corr(vwap, volume, 5)), 10)")
+
 CANDIDATES = [
-    # Extend corr window further (44, 60)
-    "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 44)), 5)",
-    "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 60)), 5)",
-    # Triple-horizon stack
-    "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 5)",
-    # Use sector-relative regularizer to fight LOW_SUB_UNIVERSE_SHARPE
-    "ts_decay_linear(-group_rank(ts_av_diff(vwap, 10), sector) + -rank(ts_corr(vwap, volume, 22)), 5)",
-    # Heavier decay
-    "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)), 10)",
-    # Best combo + winsorize regularizer
-    "winsorize(ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)), 5), std=3)",
+    # Longer decay under SUB
+    (WIN_DECAY10, SUB),
+    # Quad-horizon stack under SUB
+    (QUAD, SUB),
+    # SUB + tighter truncation 0.05
+    (BEST_PV, {"neutralization": "SUBINDUSTRY", "truncation": 0.05}),
+    # SUB + decay=10 + winsorize wrapper
+    (f"winsorize({WIN_DECAY10}, std=3)", SUB),
+    # Two-leg pure mean-rev + corr10, longer corr 60
+    ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 60)), 5)", SUB),
+    # Smoothed pre-rank under SUB (smaller TO -> higher FIT)
+    ("ts_decay_linear(-rank(ts_mean(ts_av_diff(vwap, 10), 3)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 5)", SUB),
 ]
 
 
