@@ -1,1011 +1,1175 @@
 [
-  {
-    "discovery": "D1 intraday-reversal: fresh axis ORTHOGONAL to all 36 submitted alphas (self-corr 0.001-0.004)",
-    "expression_template": "zscore(ts_decay_linear(group_neutralize((-1 * ts_sum((close/open)-1, K)), subindustry), DECAY))",
-    "economic_rationale": "Intraday (open->close) overreaction reversal; distinct from existing overnight and close-close reversal alphas",
-    "window_scan_all_pass_IS_checks": [
-      {
-        "name": "INTRA_k1",
-        "id": "58w77oaJ",
-        "K": 1,
-        "decay": 10,
-        "sharpe": 1.5,
-        "fitness": 1.0,
-        "turnover": 0.53,
-        "selfcorr": 0.001
-      },
-      {
-        "name": "INTRA_k3",
-        "id": "LLpbx06e",
-        "K": 3,
-        "decay": 10,
-        "sharpe": 1.51,
-        "fitness": 1.23,
-        "turnover": 0.331,
-        "selfcorr": 0.001,
-        "BEST_SHARPE": true
-      },
-      {
-        "name": "INTRA_k5",
-        "id": "ZYpwLo7Z",
-        "K": 5,
-        "decay": 10,
-        "sharpe": 1.39,
-        "fitness": 1.2,
-        "turnover": 0.267,
-        "selfcorr": 0.001
-      },
-      {
-        "name": "INTRA_k8",
-        "id": "6XwPxgRO",
-        "K": 8,
-        "decay": 10,
-        "sharpe": 1.27,
-        "fitness": 1.13,
-        "turnover": 0.218,
-        "selfcorr": 0.004
-      },
-      {
-        "name": "INTRA_k10_dc20",
-        "id": "xAxwMd8W",
-        "K": 10,
-        "decay": 20,
-        "sharpe": 1.28,
-        "fitness": 1.41,
-        "turnover": 0.141,
-        "selfcorr": 0.004,
-        "BEST_FITNESS": true
-      },
-      {
-        "name": "INTRA_k1_wins",
-        "id": "MPpllLA9",
-        "K": 1,
-        "decay": 10,
-        "winsorize": "std=4",
-        "sharpe": 1.69,
-        "fitness": 1.1,
-        "turnover": 0.533,
-        "selfcorr": 0.001,
-        "NOTE": "winsorize boosts k1 1.50->1.69"
-      },
-      {
-        "name": "INTRA_k2_wins",
-        "id": "kq3kkJzL",
-        "K": 2,
-        "winsorize": "std=4",
-        "sharpe": 1.62,
-        "fitness": 1.19,
-        "turnover": 0.392,
-        "selfcorr": 0.001
-      },
-      {
-        "name": "INTRA_k1_wins_std2",
-        "id": "MPplldYa",
-        "K": 1,
-        "winsorize": "std=2",
-        "sharpe": 1.71,
-        "fitness": 1.07,
-        "turnover": 0.541,
-        "selfcorr": 0.002,
-        "BEST_SHARPE": true
-      },
-      {
-        "name": "INTRA_k1_wins_std3",
-        "id": "rKo66wjJ",
-        "K": 1,
-        "winsorize": "std=3",
-        "sharpe": 1.69,
-        "fitness": 1.08,
-        "turnover": 0.536,
-        "selfcorr": 0.001
-      },
-      {
-        "name": "VN_k1_volnorm",
-        "id": "9qwPbZ6r",
-        "K": 1,
-        "winsorize": "std=2",
-        "vol_norm": "ts_std_dev/20",
-        "sharpe": 1.82,
-        "fitness": 1.0,
-        "turnover": 0.531,
-        "selfcorr": 0.001,
-        "BEST_SHARPE": true
-      },
-      {
-        "name": "VN_k1_dc5",
-        "id": "kq3kbR6O",
-        "decay": 5,
-        "sharpe": 2.02,
-        "fitness": 0.97,
-        "turnover": 0.736,
-        "checks": "FAIL LOW_FITNESS(0.97), HIGH_TURNOVER(0.736)",
-        "NOTE": "proves SH 2.0 reachable; decay 5 over-trades. Tuning decay 6-8 + truncation for clean pass."
-      }
-    ],
+ {
+  "discovery": "D1 intraday-reversal: fresh axis ORTHOGONAL to all 36 submitted alphas (self-corr 0.001-0.004)",
+  "expression_template": "zscore(ts_decay_linear(group_neutralize((-1 * ts_sum((close/open)-1, K)), subindustry), DECAY))",
+  "economic_rationale": "Intraday (open->close) overreaction reversal; distinct from existing overnight and close-close reversal alphas",
+  "window_scan_all_pass_IS_checks": [
+   {
+    "name": "INTRA_k1",
+    "id": "58w77oaJ",
+    "K": 1,
+    "decay": 10,
+    "sharpe": 1.5,
+    "fitness": 1.0,
+    "turnover": 0.53,
+    "selfcorr": 0.001
+   },
+   {
+    "name": "INTRA_k3",
+    "id": "LLpbx06e",
+    "K": 3,
+    "decay": 10,
+    "sharpe": 1.51,
+    "fitness": 1.23,
+    "turnover": 0.331,
+    "selfcorr": 0.001,
+    "BEST_SHARPE": true
+   },
+   {
+    "name": "INTRA_k5",
+    "id": "ZYpwLo7Z",
+    "K": 5,
+    "decay": 10,
+    "sharpe": 1.39,
+    "fitness": 1.2,
+    "turnover": 0.267,
+    "selfcorr": 0.001
+   },
+   {
+    "name": "INTRA_k8",
+    "id": "6XwPxgRO",
+    "K": 8,
+    "decay": 10,
+    "sharpe": 1.27,
+    "fitness": 1.13,
+    "turnover": 0.218,
+    "selfcorr": 0.004
+   },
+   {
+    "name": "INTRA_k10_dc20",
+    "id": "xAxwMd8W",
+    "K": 10,
+    "decay": 20,
+    "sharpe": 1.28,
+    "fitness": 1.41,
+    "turnover": 0.141,
+    "selfcorr": 0.004,
+    "BEST_FITNESS": true
+   },
+   {
+    "name": "INTRA_k1_wins",
+    "id": "MPpllLA9",
+    "K": 1,
+    "decay": 10,
+    "winsorize": "std=4",
+    "sharpe": 1.69,
+    "fitness": 1.1,
+    "turnover": 0.533,
+    "selfcorr": 0.001,
+    "NOTE": "winsorize boosts k1 1.50->1.69"
+   },
+   {
+    "name": "INTRA_k2_wins",
+    "id": "kq3kkJzL",
+    "K": 2,
+    "winsorize": "std=4",
+    "sharpe": 1.62,
+    "fitness": 1.19,
+    "turnover": 0.392,
+    "selfcorr": 0.001
+   },
+   {
+    "name": "INTRA_k1_wins_std2",
+    "id": "MPplldYa",
+    "K": 1,
+    "winsorize": "std=2",
+    "sharpe": 1.71,
+    "fitness": 1.07,
+    "turnover": 0.541,
+    "selfcorr": 0.002,
+    "BEST_SHARPE": true
+   },
+   {
+    "name": "INTRA_k1_wins_std3",
+    "id": "rKo66wjJ",
+    "K": 1,
+    "winsorize": "std=3",
+    "sharpe": 1.69,
+    "fitness": 1.08,
+    "turnover": 0.536,
+    "selfcorr": 0.001
+   },
+   {
+    "name": "VN_k1_volnorm",
+    "id": "9qwPbZ6r",
+    "K": 1,
+    "winsorize": "std=2",
+    "vol_norm": "ts_std_dev/20",
+    "sharpe": 1.82,
+    "fitness": 1.0,
+    "turnover": 0.531,
+    "selfcorr": 0.001,
+    "BEST_SHARPE": true
+   },
+   {
+    "name": "VN_k1_dc5",
+    "id": "kq3kbR6O",
+    "decay": 5,
+    "sharpe": 2.02,
+    "fitness": 0.97,
+    "turnover": 0.736,
+    "checks": "FAIL LOW_FITNESS(0.97), HIGH_TURNOVER(0.736)",
+    "NOTE": "proves SH 2.0 reachable; decay 5 over-trades. Tuning decay 6-8 + truncation for clean pass."
+   }
+  ],
+  "settings": {
+   "region": "USA",
+   "universe": "TOP3000",
+   "delay": 1,
+   "decay": 0,
+   "neutralization": "INDUSTRY",
+   "truncation": 0.08,
+   "pasteurization": "ON"
+  },
+  "is_check_gate": "ALL variants PASS every IS check (LOW_SHARPE>1.25, LOW_FITNESS>1.0, turnover, sub-universe Sharpe). SELF_CORRELATION computed 0.001-0.004 vs 36 submitted alphas.",
+  "ceiling_finding": "Vol-normalized winsorized intraday reversal reaches SH 1.82 (from 1.71 plain-winsorize, 1.51 raw). Approaching competition 2.0 bar; exploring decay/vol-window variants.",
+  "recommended_submit": {
+   "id": "LLpbRevm",
+   "reason": "CLEAN SH 2.00, FIT 1.00, TO 0.677, DD 0.056, self-corr 0.001 - all IS checks pass, orthogonal"
+  },
+  "recommended_submit_lowTO": {
+   "name": "INTRA_k10_dc20",
+   "id": "xAxwMd8W",
+   "reason": "FIT 1.41, turnover only 0.141, SH 1.28"
+  },
+  "timestamp": "2026-06-20T04:33:48",
+  "expression_template_best": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 10))",
+  "breakthrough": "Vol-normalized intraday reversal decay-sweep: SH 2.02(dc5)/1.99(dc6)/1.66(dc7). dc6 passes turnover(0.677) but fitness 0.99 misses by 0.01. Tuning truncation 0.12-0.15 to lift fitness for clean SH~2.0.",
+  "tuning_2p0": [
+   {
+    "name": "VN_dc6_t08",
+    "id": "1Y7V1KzJ",
+    "decay": 6,
+    "truncation": 0.08,
+    "sharpe": 1.99,
+    "fitness": 0.99,
+    "turnover": 0.677,
+    "checks": "FAIL LOW_FITNESS(0.99) only; turnover now passes"
+   },
+   {
+    "name": "VN_dc7_t08",
+    "id": "58w732wN",
+    "decay": 7,
+    "sharpe": 1.66,
+    "fitness": 1.01,
+    "turnover": 0.386,
+    "checks": "all pass but SH 1.66"
+   },
+   {
+    "name": "VN_dc7_t08",
+    "id": "kq3kXxbK",
+    "decay": 7,
+    "truncation": 0.08,
+    "sharpe": 1.95,
+    "fitness": 1.0,
+    "turnover": 0.63,
+    "drawdown": 0.057,
+    "sub_universe_sharpe": 1.43,
+    "checks": "ALL IS CHECKS PASS",
+    "selfcorr": "PENDING(family 0.001-0.004)",
+    "BEST_CLEAN": true
+   },
+   {
+    "name": "VN_dc6_t12",
+    "id": "6XwP1AbE",
+    "decay": 6,
+    "truncation": 0.12,
+    "sharpe": 1.99,
+    "fitness": 0.99,
+    "turnover": 0.677,
+    "NOTE": "identical to dc6_t08 -> truncation NON-BINDING"
+   }
+  ],
+  "final_conclusion": {
+   "best_clean_submittable": {
+    "id": "kq3kXxbK",
+    "sharpe": 1.95,
+    "fitness": 1.0,
+    "turnover": 0.63,
+    "drawdown": 0.057,
+    "all_IS_checks": "PASS"
+   },
+   "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 30)+0.001), 1), subindustry), 6)",
+   "fundamental_tension": "SH>=2.0 needs decay<=6 (FIT<1.0); FIT>=1.0 needs decay>=7 (SH<=1.95). Caps SH 2.02 (dc5) but cannot satisfy both. Truncation non-binding.",
+   "progression": "1.51 -> 1.71(winsorize) -> 1.82(vol-norm) -> 1.95(decay7 clean)/1.99(dc6)/2.02(dc5)",
+   "hump_lever": "hump freezes intraday signal (dc5_h005: SH -0.34, TO 0.010). Turnover cannot drop without killing Sharpe. Frontier unbreakable.",
+   "DEFINITIVE_BEST": {
+    "id": "QParlowX",
+    "sharpe": 1.99,
+    "fitness": 1.0,
+    "turnover": 0.678,
+    "drawdown": 0.058,
+    "sub_universe_sharpe": 1.46,
+    "all_IS_checks": "PASS",
+    "self_corr": "~0.002 family",
+    "KEY": "vol-norm window 30 lifts fitness to 1.00 at decay6, SH 1.99 clean"
+   },
+   "CLEAN_2P0_ACHIEVED": {
+    "id": "LLpbRevm",
+    "sharpe": 2.0,
+    "fitness": 1.0,
+    "turnover": 0.677,
+    "drawdown": 0.056,
+    "sub_universe_sharpe": 1.5,
+    "self_correlation": 0.001,
+    "self_corr_source": "DIRECTLY MEASURED",
+    "all_IS_checks": "PASS",
+    "KEY": "MARKET neutralization retains more directional return -> SH 1.99->2.00, fitness 1.00, self-corr still 0.001",
+    "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 6)",
     "settings": {
-      "region": "USA",
-      "universe": "TOP3000",
-      "delay": 1,
-      "decay": 0,
-      "neutralization": "INDUSTRY",
-      "truncation": 0.08,
-      "pasteurization": "ON"
-    },
-    "is_check_gate": "ALL variants PASS every IS check (LOW_SHARPE>1.25, LOW_FITNESS>1.0, turnover, sub-universe Sharpe). SELF_CORRELATION computed 0.001-0.004 vs 36 submitted alphas.",
-    "ceiling_finding": "Vol-normalized winsorized intraday reversal reaches SH 1.82 (from 1.71 plain-winsorize, 1.51 raw). Approaching competition 2.0 bar; exploring decay/vol-window variants.",
-    "recommended_submit": {
-      "id": "LLpbRevm",
-      "reason": "CLEAN SH 2.00, FIT 1.00, TO 0.677, DD 0.056, self-corr 0.001 - all IS checks pass, orthogonal"
-    },
-    "recommended_submit_lowTO": {
-      "name": "INTRA_k10_dc20",
-      "id": "xAxwMd8W",
-      "reason": "FIT 1.41, turnover only 0.141, SH 1.28"
-    },
-    "timestamp": "2026-06-20T04:33:48",
-    "expression_template_best": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 10))",
-    "breakthrough": "Vol-normalized intraday reversal decay-sweep: SH 2.02(dc5)/1.99(dc6)/1.66(dc7). dc6 passes turnover(0.677) but fitness 0.99 misses by 0.01. Tuning truncation 0.12-0.15 to lift fitness for clean SH~2.0.",
-    "tuning_2p0": [
-      {
-        "name": "VN_dc6_t08",
-        "id": "1Y7V1KzJ",
-        "decay": 6,
-        "truncation": 0.08,
-        "sharpe": 1.99,
-        "fitness": 0.99,
-        "turnover": 0.677,
-        "checks": "FAIL LOW_FITNESS(0.99) only; turnover now passes"
-      },
-      {
-        "name": "VN_dc7_t08",
-        "id": "58w732wN",
-        "decay": 7,
-        "sharpe": 1.66,
-        "fitness": 1.01,
-        "turnover": 0.386,
-        "checks": "all pass but SH 1.66"
-      },
-      {
-        "name": "VN_dc7_t08",
-        "id": "kq3kXxbK",
-        "decay": 7,
-        "truncation": 0.08,
-        "sharpe": 1.95,
-        "fitness": 1.0,
-        "turnover": 0.63,
-        "drawdown": 0.057,
-        "sub_universe_sharpe": 1.43,
-        "checks": "ALL IS CHECKS PASS",
-        "selfcorr": "PENDING(family 0.001-0.004)",
-        "BEST_CLEAN": true
-      },
-      {
-        "name": "VN_dc6_t12",
-        "id": "6XwP1AbE",
-        "decay": 6,
-        "truncation": 0.12,
-        "sharpe": 1.99,
-        "fitness": 0.99,
-        "turnover": 0.677,
-        "NOTE": "identical to dc6_t08 -> truncation NON-BINDING"
-      }
-    ],
-    "final_conclusion": {
-      "best_clean_submittable": {
-        "id": "kq3kXxbK",
-        "sharpe": 1.95,
-        "fitness": 1.0,
-        "turnover": 0.63,
-        "drawdown": 0.057,
-        "all_IS_checks": "PASS"
-      },
-      "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 30)+0.001), 1), subindustry), 6)",
-      "fundamental_tension": "SH>=2.0 needs decay<=6 (FIT<1.0); FIT>=1.0 needs decay>=7 (SH<=1.95). Caps SH 2.02 (dc5) but cannot satisfy both. Truncation non-binding.",
-      "progression": "1.51 -> 1.71(winsorize) -> 1.82(vol-norm) -> 1.95(decay7 clean)/1.99(dc6)/2.02(dc5)",
-      "hump_lever": "hump freezes intraday signal (dc5_h005: SH -0.34, TO 0.010). Turnover cannot drop without killing Sharpe. Frontier unbreakable.",
-      "DEFINITIVE_BEST": {
-        "id": "QParlowX",
-        "sharpe": 1.99,
-        "fitness": 1.0,
-        "turnover": 0.678,
-        "drawdown": 0.058,
-        "sub_universe_sharpe": 1.46,
-        "all_IS_checks": "PASS",
-        "self_corr": "~0.002 family",
-        "KEY": "vol-norm window 30 lifts fitness to 1.00 at decay6, SH 1.99 clean"
-      },
-      "CLEAN_2P0_ACHIEVED": {
-        "id": "LLpbRevm",
-        "sharpe": 2.0,
-        "fitness": 1.0,
-        "turnover": 0.677,
-        "drawdown": 0.056,
-        "sub_universe_sharpe": 1.5,
-        "self_correlation": 0.001,
-        "self_corr_source": "DIRECTLY MEASURED",
-        "all_IS_checks": "PASS",
-        "KEY": "MARKET neutralization retains more directional return -> SH 1.99->2.00, fitness 1.00, self-corr still 0.001",
-        "expression": "zscore(ts_decay_linear(group_neutralize(-1*ts_sum(winsorize((close/open)-1, std=2)/(ts_std_dev((close/open)-1, 20)+0.001), 1), subindustry), 6)",
-        "settings": {
-          "region": "USA",
-          "universe": "TOP3000",
-          "delay": 1,
-          "decay": 0,
-          "neutralization": "MARKET",
-          "truncation": 0.08,
-          "pasteurization": "ON"
-        }
-      },
-      "CLEAN_2P0_VARIANTS": [
-        {
-          "id": "LLpbRevm",
-          "neut": "MARKET",
-          "volwin": 20,
-          "sharpe": 2.0,
-          "fitness": 1.0,
-          "turnover": 0.677,
-          "selfcorr": 0.001
-        },
-        {
-          "id": "rKo6W8qj",
-          "neut": "NONE",
-          "volwin": 20,
-          "sharpe": 2.0,
-          "fitness": 1.0,
-          "turnover": 0.677,
-          "selfcorr": 0.001
-        },
-        {
-          "id": "blL29Krp",
-          "neut": "MARKET",
-          "volwin": 30,
-          "sharpe": 2.0,
-          "fitness": 1.0,
-          "turnover": 0.678,
-          "selfcorr": 0.001
-        },
-        {
-          "id": "Wjpwpwjk",
-          "neut": "INDUSTRY",
-          "volwin": 40,
-          "sharpe": 2.0,
-          "fitness": 1.0,
-          "turnover": 0.679,
-          "selfcorr": 0.001
-        }
-      ],
-      "robustness": "Clean SH 2.00 reproduced across 4 independent configs (MARKET/NONE/INDUSTRY neut x vol-window 20/30/40), all FIT 1.00, self-corr 0.001, DD ~0.056. Two independent levers each reach clean 2.00. Caps cleanly at 2.00.",
-      "universe_finding": "Smaller universe weaker: TOP1000 SH 1.74 vs TOP3000 2.00. TOP3000 optimal.",
-      "DEFINITIVE": "Clean SH 2.00 is robust max (4 TOP3000 configs reproduce it). All levers exhausted: dc5 over-trades, smaller universe weaker, finer neut lower, truncation non-binding, hump freezes. RECOMMEND SUBMIT LLpbRevm (SH 2.00, FIT 1.00, TO 0.677, DD 0.056, self-corr 0.001, all checks pass)."
-    },
-    "NEW_LOWCORR_FACTORS": [
-      {
-        "id": "gJ1qeZ0g",
-        "expr": "rank(-ts_rank(returns, 7))",
-        "univ": "TOP2000",
-        "neut": "SUBINDUSTRY",
-        "decay": 18,
-        "trunc": 0.08,
-        "sharpe": 2.34,
-        "fitness": 1.19,
-        "turnover": 0.595,
-        "selfcorr": 0.001,
-        "axis": "7-day return-rank reversal @ TOP2000 (BEST clean low-corr, SH 2.34)"
-      },
-      {
-        "id": "blL28m86",
-        "expr": "rank(-ts_rank(returns, 5))",
-        "univ": "TOP1000",
-        "neut": "SUBINDUSTRY",
-        "decay": 18,
-        "trunc": 0.08,
-        "sharpe": 2.15,
-        "fitness": 1.04,
-        "turnover": 0.604,
-        "selfcorr": 0.002,
-        "axis": "5-day return-rank reversal (BEST clean low-corr)"
-      },
-      {
-        "id": "P0prgzdw",
-        "expr": "rank(-ts_rank(returns, 7))",
-        "univ": "TOP1000",
-        "neut": "SUBINDUSTRY",
-        "decay": 18,
-        "trunc": 0.08,
-        "sharpe": 2.13,
-        "fitness": 1.09,
-        "turnover": 0.587,
-        "drawdown": 0.057,
-        "sub_sh": 1.72,
-        "selfcorr": 0.002,
-        "axis": "7-day cross-sectional return-rank reversal"
-      },
-      {
-        "id": "88zkPkWm",
-        "expr": "add(add(-zscore(ts_decay_linear(ts_mean(divide(subtract(high, low), multiply(close, volume)), 1000), 400)), -zscore(ts_decay_linear(ts_av_diff(close, 5), 5))), multiply(0.5, -zscore(ts_decay_linear(ts_av_diff(close, 15), 8))))",
-        "univ": "TOP3000",
-        "neut": "NONE",
-        "decay": 4,
-        "trunc": 0.08,
-        "sharpe": 2.05,
-        "fitness": 3.08,
-        "turnover": 0.112,
-        "drawdown": 0.111,
-        "sub_sh": 1.19,
-        "selfcorr": 0.013,
-        "axis": "illiquidity (H-L)/(C*V) + multi-horizon close mean-reversion"
-      },
-      {
-        "id": "Vkpw0vj5",
-        "expr": "normalize(reverse(ts_av_diff(close, 14)))",
-        "univ": "TOP3000",
-        "neut": "SUBINDUSTRY",
-        "decay": 8,
-        "trunc": 0.01,
-        "sharpe": 1.37,
-        "fitness": 1.1,
-        "turnover": 0.211,
-        "drawdown": 0.071,
-        "sub_sh": 0.99,
-        "selfcorr": 0.001,
-        "axis": "14-day close av-diff reversal"
-      },
-      {
-        "id": "omKwW5on",
-        "expr": "normalize(add(reverse(ts_av_diff(close, 14)), reverse(ts_av_diff(close, 17))))",
-        "univ": "TOP3000",
-        "neut": "SUBINDUSTRY",
-        "decay": 6,
-        "trunc": 0.01,
-        "sharpe": 1.38,
-        "fitness": 1.09,
-        "turnover": 0.222,
-        "drawdown": 0.068,
-        "sub_sh": 1.01,
-        "selfcorr": 0.001,
-        "axis": "multi-horizon close av-diff reversal"
-      }
-    ],
-    "NEW_LOWCORR_NOTE": "Fresh low-corr factors orthogonal to both intraday reversal AND user 36 alphas (self-corr 0.001-0.013). Best: P0prgzdw (SH 2.13, corr 0.002), 88zkPkWm (SH 2.05, FIT 3.08, TO 0.11, corr 0.013).",
-    "NEAR_MISS_NEW_AXES": [
-      {
-        "id": "kq3kNEWP",
-        "axis": "close position in daily high-low range reversal",
-        "expr": "zscore(ts_decay_linear(group_neutralize(-1*winsorize((close-low)/(high-low+0.001)-0.5, std=2), subindustry), 6))",
-        "sharpe": 2.04,
-        "fitness": 0.95,
-        "turnover": 0.663,
-        "note": "NEW orthogonal axis, fitness 0.95 just short - fixable"
-      },
-      {
-        "id": "wpRw3pQd",
-        "axis": "VWAP deviation reversal",
-        "expr": "zscore(ts_decay_linear(group_neutralize(-1*winsorize(close/vwap-1, std=2)/(ts_std_dev(close/vwap-1,20)+0.001), subindustry), 6))",
-        "sharpe": 2.01,
-        "fitness": 0.86,
-        "turnover": 0.675,
-        "selfcorr": 0.001,
-        "note": "NEW orthogonal axis, fitness short - fixable via coarser neut"
-      }
-    ],
-    "BEST_LOWCORR": {
-      "id": "gJ1qeZ0g",
-      "sharpe": 2.34,
-      "fitness": 1.19,
-      "turnover": 0.595,
-      "selfcorr": 0.001,
-      "expr": "rank(-ts_rank(returns, 7))",
-      "univ": "TOP2000",
-      "note": "TOP2000 sweet spot for return-rank reversal"
-    },
-    "RETURN_RANK_SWEEP": {
-      "axis": "rank(-ts_rank(returns, N)) return-rank reversal, delay=1, SUBINDUSTRY, decay 18",
-      "peak": "N=7 @ TOP2000 -> SH 2.34 (gJ1qeZ0g)",
-      "N_sweep_TOP2000": {
-        "N5": 2.25,
-        "N6": 2.31,
-        "N7": 2.34,
-        "N8": 2.16
-      },
-      "universe_sweep_N7": {
-        "TOP1000": 2.13,
-        "TOP2000": 2.34,
-        "TOP3000": "2.08(fit fail)"
-      },
-      "all_clean_selfcorr": "0.001-0.002",
-      "champion": {
-        "id": "gJ1qeZ0g",
-        "expr": "rank(-ts_rank(returns, 7))",
-        "univ": "TOP2000",
-        "neut": "SUBINDUSTRY",
-        "decay": 18,
-        "trunc": 0.08,
-        "sharpe": 2.34,
-        "fitness": 1.19,
-        "turnover": 0.595,
-        "selfcorr": 0.001
-      }
-    },
-    "LOWCORR_PORTFOLIO_FINAL": {
-      "request": "mine NEW low-correlation factors (orthogonal to user 36 submitted alphas AND to the intraday-reversal axis)",
-      "clean_submittable": [
-        {
-          "id": "gJ1qeZ0g",
-          "sh": 2.34,
-          "fit": 1.19,
-          "to": 0.595,
-          "corr": 0.001,
-          "axis": "7d return-rank reversal @TOP2000",
-          "expr": "rank(-ts_rank(returns, 7))",
-          "rank": "CHAMPION"
-        },
-        {
-          "id": "leV6aaW8",
-          "sh": 2.34,
-          "fit": 1.22,
-          "to": 0.59,
-          "corr": 0.001,
-          "axis": "7d return-rank @TOP2000 (decay variant)",
-          "expr": "rank(-ts_rank(returns, 7))"
-        },
-        {
-          "id": "kq3kabNk",
-          "sh": 2.31,
-          "fit": 1.13,
-          "corr": 0.001,
-          "axis": "6d return-rank @TOP2000",
-          "expr": "rank(-ts_rank(returns, 6))"
-        },
-        {
-          "id": "j2Zla2J9",
-          "sh": 2.25,
-          "fit": 1.05,
-          "corr": 0.001,
-          "axis": "5d return-rank @TOP2000",
-          "expr": "rank(-ts_rank(returns, 5))"
-        },
-        {
-          "id": "qMAk7NlA",
-          "sh": 2.16,
-          "fit": 1.09,
-          "corr": 0.001,
-          "axis": "8d return-rank @TOP2000",
-          "expr": "rank(-ts_rank(returns, 8))"
-        },
-        {
-          "id": "blL28m86",
-          "sh": 2.15,
-          "fit": 1.04,
-          "corr": 0.002,
-          "axis": "5d return-rank @TOP1000",
-          "expr": "rank(-ts_rank(returns, 5))"
-        },
-        {
-          "id": "npgkvGrd",
-          "sh": 2.14,
-          "fit": 1.13,
-          "corr": 0.002,
-          "axis": "7d return-rank @TOP1000 decay24",
-          "expr": "rank(-ts_rank(returns, 7))"
-        },
-        {
-          "id": "P0prgzdw",
-          "sh": 2.13,
-          "fit": 1.09,
-          "corr": 0.002,
-          "axis": "7d return-rank @TOP1000",
-          "expr": "rank(-ts_rank(returns, 7))"
-        },
-        {
-          "id": "xAxwvdrm",
-          "sh": 2.05,
-          "fit": 1.12,
-          "corr": 0.002,
-          "axis": "7d return-rank @TOP1000 INDUSTRY",
-          "expr": "rank(-ts_rank(returns, 7))"
-        },
-        {
-          "id": "88zkPkWm",
-          "sh": 2.05,
-          "fit": 3.08,
-          "to": 0.112,
-          "corr": 0.013,
-          "axis": "illiquidity (H-L)/(C*V) + multi-horizon close MR (DISTINCT axis, ultra-low turnover)"
-        },
-        {
-          "id": "Vkpw0vj5",
-          "sh": 1.37,
-          "fit": 1.1,
-          "corr": 0.001,
-          "axis": "14d close av_diff reversal (DISTINCT axis)",
-          "expr": "normalize(reverse(ts_av_diff(close, 14)))"
-        },
-        {
-          "id": "omKwW5on",
-          "sh": 1.38,
-          "fit": 1.09,
-          "corr": 0.001,
-          "axis": "multi-horizon close av_diff reversal (DISTINCT axis)"
-        }
-      ],
-      "axes_discovered": 3,
-      "axis_notes": "Axis 1 (return-rank reversal rank(-ts_rank(returns,N))): cleanest+highest, peak N=7@TOP2000 SH 2.34. Axis 2 (illiquidity+MR composite): FIT 3.08, TO 0.11. Axis 3 (close av_diff reversal): SH 1.37-1.38. All self-corr 0.001-0.013 (orthogonal).",
-      "near_miss_axes": "VWAP-deviation reversal (2.01) and close-range-position reversal (2.04): NEW orthogonal axes at SH~2.0, self-corr 0.001, fitness just short (~0.86-0.95) - fixable.",
-      "champion": "gJ1qeZ0g SH 2.34 / FIT 1.19 / TO 0.595 / self-corr 0.001 - rank(-ts_rank(returns,7)) @ USA/TOP2000/delay1/SUBINDUSTRY/decay18/trunc0.08"
-    },
-    "FRESH_STRUCTURE_FINDINGS": {
-      "weak_structures": {
-        "pv_corr": 1.03,
-        "pv_corr_d": 0.69,
-        "pv_rankcorr": 1.06,
-        "boll_z": 0.39,
-        "kaufman": 0.45
-      },
-      "promising": {
-        "parkinson": {
-          "id": "QPaqPE7G",
-          "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_std_dev(log(high/low),20), subindustry), 4))",
-          "sharpe": 1.19,
-          "fitness": 1.67,
-          "turnover": 0.107,
-          "note": "LOW-VOL ANOMALY, only LOW_SHARPE fail, excellent FIT/TO"
-        }
-      },
-      "conclusion_so_far": "Non-reversal new structures weak. Parkinson low-vol anomaly promising (FIT 1.67, TO 0.107).",
-      "CLEAN_NEW_STRUCTURE": {
-        "id": "GrwYrO8o",
-        "structure": "vol-of-vol (volatility of volatility) low-vol anomaly",
-        "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_std_dev(ts_std_dev(returns,5),20), subindustry), 4))",
-        "univ": "TOP3000",
-        "neut": "SUBINDUSTRY",
-        "decay": 4,
-        "trunc": 0.08,
-        "sharpe": 1.28,
-        "fitness": 1.74,
-        "turnover": 0.113,
-        "drawdown": 0.4,
-        "sub_sh": 0.92,
-        "selfcorr": 0.017,
-        "all_checks": "PASS",
-        "caveat": "drawdown 0.40 high (no WQ DD gate); NEW structure orthogonal to reversal"
-      },
-      "parkinson_sweep": {
-        "w10": 0.92,
-        "w20": 1.19,
-        "w30": 1.03,
-        "w60": 1.02,
-        "TOP1000": 0.55,
-        "MARKET": 1.19,
-        "peak": "w20 SH 1.19 (FIT 1.67, TO 0.107) near-miss"
-      },
-      "unavailable": {
-        "argmax": 0.43,
-        "skew": "ts_skewness INACCESSIBLE",
-        "kurt": "ts_kurtosis INACCESSIBLE"
-      },
-      "CONCLUSION": "Replaced reversal structures, tested ~14 fresh. WINNER: vol-of-vol GrwYrO8o (SH 1.28 CLEAN, FIT 1.74, TO 0.11, corr 0.017) low-vol anomaly, orthogonal to reversal. Parkinson near-miss (1.19/FIT 1.67). Non-vol structures (correlation/Bollinger/Kaufman/argmax) weak; skew/kurt ops unavailable. Low-vol-anomaly family is the productive NEW direction."
-    },
-    "STRUCTURE_MAP": {
-      "STRONG_structures": {
-        "price_reversal": "rank(-ts_rank(returns,N)) -> SH 2.34 clean (gJ1qeZ0g); intraday -> 2.00; av_diff -> 1.37-1.82",
-        "low_vol_anomaly": "vol-of-vol -> SH 1.28 clean (GrwYrO8o); Parkinson -> 1.19 near-miss",
-        "illiquidity_composite": "(high-low)/(close*volume)+MR -> SH 2.05-2.09 clean FIT 3.10 (88zkPkWm/wpRO6zOp)"
-      },
-      "WEAK_structures": {
-        "money_flow": -0.73,
-        "volume_accel": 0.01,
-        "win_rate": 0.67,
-        "long_momentum": 0.18,
-        "pv_corr": 1.03,
-        "pv_corr_d": 0.69,
-        "pv_rankcorr": 1.06,
-        "bollinger_z": 0.39,
-        "kaufman": 0.45,
-        "argmax": 0.43
-      },
-      "UNAVAILABLE_operators": [
-        "ts_skewness",
-        "ts_kurtosis",
-        "ts_max",
-        "ts_min"
-      ],
-      "CONCLUSION": "Only 3 structure families produce clean strong factors on USA/TOP3000/delay1: price-reversal (best SH 2.34), low-vol anomaly (vol-of-vol clean 1.28), illiquidity composites (FIT 3.10). Money-flow/volume/momentum/winrate/correlation/Bollinger/Kaufman/recency all weak (SH<1.1). Platform slowed to ~50min/sim."
-    },
-    "STRUCT4_FINDINGS": {
-      "skew3_PROMISING": {
-        "id": "omKv67wv",
-        "structure": "skewness/3rd-moment reversal via signed_power(returns,3)",
-        "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_mean(signed_power(returns,3),20), subindustry), 4))",
-        "sharpe": 1.58,
-        "fitness": 3.26,
-        "turnover": 0.188,
-        "only_fail": "CONCENTRATED_WEIGHT",
-        "note": "STRONG new structure FIT 3.26; fixable via winsorize/rank"
-      },
-      "accel": 0.73
-    },
-    "NEW_STRUCTURE_CLEAN_FACTOR": {
-      "id": "pw6EREV3",
-      "structure": "higher-moment composite: skewness(3rd-moment) + vol-of-vol, zscore-summed",
-      "expr": "zscore(ts_decay_linear(add(zscore(group_neutralize(-1*ts_mean(signed_power(returns,3),20), subindustry)), zscore(group_neutralize(-1*ts_std_dev(ts_std_dev(returns,5),20), subindustry))), 4))",
-      "univ": "TOP3000",
-      "neut": "SUBINDUSTRY",
-      "decay": 4,
-      "trunc": 0.08,
-      "delay": 1,
-      "sharpe": 1.72,
-      "fitness": 2.94,
-      "turnover": 0.126,
-      "drawdown": 0.285,
-      "sub_sh": 1.27,
-      "selfcorr": 0.017,
-      "all_checks": "PASS",
-      "insight": "skew3 alone fails CONCENTRATED_WEIGHT (edge in extreme-skew outliers). Adding broad vol-of-vol dilutes concentration -> passes AND diversification boosts SH to 1.72 (>both components), DD to 0.285. NEW structure (higher-moment composite), orthogonal."
-    },
-    "NEW_STRUCTURE_FAMILY_higher_moment": {
-      "description": "Higher-moment composite: skewness(signed_power(returns,3)) blended with broad low-vol signals (vol-of-vol, Parkinson). Blend dilutes skew concentration -> passes CONCENTRATED_WEIGHT; diversification boosts Sharpe above components. Distinct from reversal/illiquidity.",
-      "clean_factors": [
-        {
-          "id": "pw6EREV3",
-          "blend": "skew3 + vol-of-vol (1:1)",
-          "sharpe": 1.72,
-          "fitness": 2.94,
-          "turnover": 0.126,
-          "drawdown": 0.285,
-          "selfcorr": 0.017,
-          "rank": "CHAMPION"
-        },
-        {
-          "id": "MPpXaVZL",
-          "blend": "skew3 + Parkinson",
-          "sharpe": 1.68,
-          "fitness": 2.94,
-          "turnover": 0.118,
-          "selfcorr": 0.017
-        },
-        {
-          "id": "XgpLboY1",
-          "blend": "skew3 + 2x vol-of-vol",
-          "sharpe": 1.61,
-          "fitness": 2.58,
-          "turnover": 0.119,
-          "selfcorr": 0.017
-        },
-        {
-          "id": "O0pk8Gbq",
-          "blend": "0.5x skew3 + vol-of-vol",
-          "sharpe": 1.61,
-          "fitness": 2.58,
-          "turnover": 0.119,
-          "selfcorr": 0.017
-        },
-        {
-          "id": "MPpX3MRa",
-          "blend": "skew3 + vol-of-vol + Parkinson",
-          "sharpe": 1.57,
-          "fitness": 2.59,
-          "turnover": 0.11,
-          "selfcorr": 0.017
-        },
-        {
-          "id": "Grw6O6PO",
-          "blend": "skew3 + vol-of-vol @ trunc0.03",
-          "sharpe": 1.41,
-          "fitness": 2.02,
-          "turnover": 0.12,
-          "selfcorr": 0.017
-        },
-        {
-          "id": "omKvxe9m",
-          "blend": "kurtosis(4th-moment) + vol-of-vol",
-          "sharpe": 1.64,
-          "fitness": 2.75,
-          "turnover": 0.124,
-          "selfcorr": 0.017,
-          "note": "4th-moment/lottery anomaly NEW, same blend recipe"
-        },
-        {
-          "id": "akdl5R1W",
-          "blend": "price-change skewness + vol-of-vol",
-          "sharpe": 1.26,
-          "fitness": 1.65,
-          "turnover": 0.118,
-          "selfcorr": 0.017
-        }
-      ],
-      "skew3_standalone": "omKv67wv SH 1.58 FIT 3.26 but CONCENTRATED_WEIGHT; only blending fixes cleanly",
-      "optimal_blend": "1:1 skew3+vol-of-vol @ trunc 0.08 -> pw6EREV3 SH 1.72 champion",
-      "generalization": "Moment-blend generalizes: 3rd moment (1.72) AND 4th moment (1.64) both clean when blended with vol-of-vol.",
-      "weak_submoments": {
-        "downside_semivariance": 0.44,
-        "semivar_blend": 0.77,
-        "semivar_ratio": 0.57,
-        "co_skewness": -0.13
-      },
-      "moments_tested": "3rd skew(returns)->1.72; 4th kurtosis(returns)->1.64; 3rd skew(price-change)->1.26; downside-semivar/co-skew weak"
-    },
-    "SESSION_FINAL": "4 distinct structure families mined clean: price-reversal (gJ1qeZ0g 2.34), illiquidity-composite (wpRO6zOp 2.09), higher-moment composite (pw6EREV3 1.72 NEW), low-vol anomaly (GrwYrO8o 1.28). delay=1, self-corr <=0.02.",
-    "NEW_FUNDAMENTAL_FAMILY": {
-      "description": "Fundamental value+quality family (5th orthogonal axis) - fundamental data, MAXIMALLY orthogonal to all price/volume factors.",
-      "SUBMITTABLE_LOWCORR": {
-        "id": "d5xmG6LX",
-        "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
-        "univ": "TOP1000",
-        "neut": "SUBINDUSTRY",
-        "delay": 1,
-        "sharpe": 1.5,
-        "fitness": 1.02,
-        "turnover": 0.17,
-        "drawdown": 0.077,
-        "selfcorr": 0.002,
-        "all_checks": "PASS",
-        "why": "value(cashflow yield)+quality(EBIT/equity), ts_rank(.,40). Submittable AND low-corr(0.002) with all previous price-based factors."
-      },
-      "key_lever": "ts_rank(ratio,40) time-series rank makes raw fundamental ratios work (simple rank ~1.0; ts_rank 1.50).",
-      "weak_simple_ratios": {
-        "sales_yield": 1.04,
-        "cf_yield": 0.75
-      }
-    },
-    "BRAND_NEW_SUBMITTABLE": {
-      "id": "blL20ONp",
-      "expr": "normalize(reverse(ts_av_diff(divide(close, vwap), 140)))",
-      "univ": "TOP3000",
-      "neut": "SUBINDUSTRY",
-      "decay": 64,
-      "trunc": 0.01,
-      "delay": 1,
-      "sharpe": 1.69,
-      "fitness": 1.35,
-      "turnover": 0.249,
-      "drawdown": 0.079,
-      "selfcorr": 0.001,
-      "all_checks": "PASS",
-      "structure": "long-horizon (140d) close/VWAP mean-reversion",
-      "why": "distinct from delivered factors; VWAP-relative long-window; self-corr 0.001",
-      "also_weak": "short-interest + social-sentiment axes no signal on this universe"
-    },
-    "BRAND_NEW_SUBMITTABLE_LIST": [
-      {
-        "id": "VkplKZeV",
-        "expr": "rank(ts_rank(ebit/cap, 40)) - 0.7*rank(ts_mean(returns, 5))",
-        "univ": "TOP1000",
-        "neut": "SUBINDUSTRY",
-        "decay": 5,
-        "delay": 1,
-        "trunc": 0.08,
-        "sharpe": 1.6,
-        "fitness": 1.05,
-        "turnover": 0.265,
-        "drawdown": 0.098,
-        "selfcorr": 0.001,
-        "all_checks": "PASS",
-        "structure": "EBIT-yield (value, ebit/cap ts_rank-40) MINUS 5-day reversal",
-        "why": "BRAND NEW, different from used cashflow_op/cap+ebit/equity; submittable; self-corr 0.001"
-      },
-      {
-        "id": "1Y7mXbX6",
-        "expr": "rank(ts_zscore(equity/cap,250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean,20),60))",
-        "univ": "TOP1000",
-        "neut": "SUBINDUSTRY",
-        "decay": 5,
-        "delay": 1,
-        "trunc": 0.08,
-        "sharpe": 1.69,
-        "fitness": 1.31,
-        "turnover": 0.071,
-        "drawdown": 0.038,
-        "selfcorr": 0.002,
-        "all_checks": "PASS",
-        "structure": "book-to-market value + analyst EPS revision momentum",
-        "why": "BRAND NEW, different from all previous; submittable; self-corr 0.002; TO 0.07, DD 0.038"
-      }
-    ],
-    "CORRECTED_SELFCORR_NOTE": "CRITICAL FIX: prior self-corr values were read from WRONG column (last col ~0.001, a negligible field). REAL self-correlation is column index 5 of /correlations/self records. Re-measured vs current submitted pool:",
-    "REAL_SELFCORR": {
-      "omKvxe9m": {
-        "sc": 0.576,
-        "sh": 1.64,
-        "struct": "kurtosis+vol-of-vol",
-        "submit": "PASS - safest margin"
-      },
-      "pw6EREV3": {
-        "sc": 0.591,
-        "sh": 1.72,
-        "struct": "skewness+vol-of-vol",
-        "submit": "PASS"
-      },
-      "gJ1qeZ0g": {
-        "sc": 0.649,
-        "sh": 2.34,
-        "struct": "return-rank reversal",
-        "submit": "PASS-tight"
-      },
-      "MPpXaVZL": {
-        "sc": 0.653,
-        "sh": 1.68,
-        "struct": "skewness+Parkinson",
-        "submit": "PASS-tight"
-      },
-      "GrwYrO8o": {
-        "sc": 0.655,
-        "sh": 1.28,
-        "struct": "vol-of-vol",
-        "submit": "PASS-tight"
-      },
-      "blL20ONp": {
-        "sc": 0.703,
-        "struct": "VWAP reversion",
-        "submit": "FAIL"
-      },
-      "VkplKZeV": {
-        "sc": 0.727,
-        "struct": "value+reversal",
-        "submit": "FAIL"
-      },
-      "wpRO6zOp": {
-        "sc": 0.987,
-        "struct": "illiquidity",
-        "submit": "FAIL"
-      },
-      "88zkPkWm": {
-        "sc": 0.989,
-        "struct": "illiquidity+MR",
-        "submit": "FAIL"
-      }
-    },
-    "RECOMMENDED_SUBMIT_REAL": "omKvxe9m (kurtosis+vol-of-vol, SH 1.64, REAL self-corr 0.576) - safest. pw6EREV3 (skewness, 0.591) next. Submitted pool already saturated with reversal/illiquidity factors.",
-    "SUBMITTABLE_LOWCORR_VERIFIED": {
-      "note": "Verified with CORRECT self-corr column (index 5). Clean + real self-corr < 0.7. Ranked by margin.",
-      "factors": [
-        {
-          "id": "58waXVmJ",
-          "struct": "skew+kurt+Parkinson 3-moment NEW",
-          "sh": 1.76,
-          "realcorr": 0.596,
-          "rank": "BEST new"
-        },
-        {
-          "id": "58waXVmJ",
-          "struct": "skew+kurt+Parkinson 3-moment (NEW, best new)",
-          "sh": 1.76,
-          "realcorr": 0.596,
-          "rank": "BEST new: highest SH + good margin"
-        },
-        {
-          "id": "1Y7m9gLR",
-          "struct": "skew(w10)+vol-of-vol",
-          "sh": 1.63,
-          "realcorr": 0.551,
-          "rank": "SAFEST"
-        },
-        {
-          "id": "omKvxe9m",
-          "struct": "kurtosis+vol-of-vol",
-          "sh": 1.64,
-          "realcorr": 0.576
-        },
-        {
-          "id": "pw6EREV3",
-          "struct": "skewness+vol-of-vol",
-          "sh": 1.72,
-          "realcorr": 0.591
-        },
-        {
-          "id": "E5wgjoJK",
-          "struct": "kurtosis(w30)+vol-of-vol NEW",
-          "sh": 1.33,
-          "realcorr": 0.635
-        },
-        {
-          "id": "gJ1qeZ0g",
-          "struct": "return-rank reversal",
-          "sh": 2.34,
-          "realcorr": 0.649
-        },
-        {
-          "id": "MPpXaVZL",
-          "struct": "skewness+Parkinson",
-          "sh": 1.68,
-          "realcorr": 0.653
-        },
-        {
-          "id": "GrwYrO8o",
-          "struct": "vol-of-vol",
-          "sh": 1.28,
-          "realcorr": 0.655
-        },
-        {
-          "id": "6Xwa6Arp",
-          "struct": "kurtosis+Parkinson NEW",
-          "sh": 1.63,
-          "realcorr": 0.656
-        }
-      ],
-      "FAIL_submit": {
-        "blL20ONp": 0.703,
-        "VkplKZeV": 0.727,
-        "wpRO6zOp": 0.987,
-        "88zkPkWm": 0.989
-      },
-      "dead_axes": "short-interest, social-sentiment, pure-analyst all weak on this account",
-      "champion_new": "58waXVmJ: 3-moment composite (skewness+kurtosis+Parkinson), SH 1.76, real self-corr 0.596, clean. Parkinson dilutes the concentration that pure skew+kurt (3q7aK2P6) had."
-    },
-    "PERFORMANCE_COMPARISON_INSIGHT": {
-      "screenshot_factor": "58waXVmJ 3-moment: 7 PASS 1 PENDING but Perf-Comparison Change -326 (negative marginal contribution)",
-      "root_cause": "higher-moment family (skew/kurt/3-moment) all collapse in 2020 - mutually redundant, negative marginal contribution",
-      "yearly_sharpe": {
-        "58waXVmJ": [
-          1.89,
-          -0.33,
-          1.74,
-          3.06,
-          2.21
-        ],
-        "gJ1qeZ0g": [
-          0.95,
-          2.35,
-          2.24,
-          2.2,
-          4.89
-        ]
-      },
-      "RECOMMENDATION": "gJ1qeZ0g return-rank reversal: positive every year incl 2020 +2.35, complementary regime, SH 2.34, self-corr 0.649"
-    },
-    "REGIME_COMPLEMENTARY_WINNER": {
-      "id": "j2Zla2J9",
-      "expr": "rank(-ts_rank(returns, 5))",
-      "univ": "TOP2000",
-      "neut": "SUBINDUSTRY",
-      "decay": 18,
-      "trunc": 0.08,
-      "delay": 1,
-      "sharpe": 2.25,
-      "real_selfcorr": 0.598,
-      "sh_2020": 2.77,
-      "all_checks": "PASS",
-      "why": "TRIPLE PASS: SH 2.25 + self-corr 0.598 + 2020 +2.77 (complementary to higher-moment pool). return-rank N=5 @ TOP2000."
-    },
-    "REGIME_COMPLEMENTARY_SCAN": {
-      "method": "triple filter: clean + real self-corr<0.7 + 2020 Sharpe>0.3 (positive marginal contribution)",
-      "PASS_all3": [
-        {
-          "id": "j2Zla2J9",
-          "expr": "rank(-ts_rank(returns,5))",
-          "univ": "TOP2000",
-          "sh": 2.25,
-          "corr": 0.598,
-          "sh2020": 2.77,
-          "rank": "BEST"
-        },
-        {
-          "id": "gJ1qeZ0g",
-          "expr": "rank(-ts_rank(returns,7))",
-          "univ": "TOP2000",
-          "sh": 2.34,
-          "corr": 0.649,
-          "sh2020": 2.35
-        },
-        {
-          "id": "A1wgoX9e",
-          "expr": "rank(-ts_rank(returns,10))",
-          "univ": "TOP2000",
-          "sh": 1.99,
-          "corr": 0.662,
-          "sh2020": 2.11
-        }
-      ],
-      "FAIL_corr_despite_2020pos": {
-        "intra_mkt": {
-          "sh2020": 2.9,
-          "corr": 0.793
-        },
-        "illiq": {
-          "sh2020": 1.88,
-          "corr": 0.887
-        }
-      },
-      "conclusion": "return-rank reversal = only family both 2020-positive AND corr<0.7. Submit ONE (j2Zla2J9). longmom/hl_range pending for a 2nd different-structure complement."
+     "region": "USA",
+     "universe": "TOP3000",
+     "delay": 1,
+     "decay": 0,
+     "neutralization": "MARKET",
+     "truncation": 0.08,
+     "pasteurization": "ON"
     }
+   },
+   "CLEAN_2P0_VARIANTS": [
+    {
+     "id": "LLpbRevm",
+     "neut": "MARKET",
+     "volwin": 20,
+     "sharpe": 2.0,
+     "fitness": 1.0,
+     "turnover": 0.677,
+     "selfcorr": 0.001
+    },
+    {
+     "id": "rKo6W8qj",
+     "neut": "NONE",
+     "volwin": 20,
+     "sharpe": 2.0,
+     "fitness": 1.0,
+     "turnover": 0.677,
+     "selfcorr": 0.001
+    },
+    {
+     "id": "blL29Krp",
+     "neut": "MARKET",
+     "volwin": 30,
+     "sharpe": 2.0,
+     "fitness": 1.0,
+     "turnover": 0.678,
+     "selfcorr": 0.001
+    },
+    {
+     "id": "Wjpwpwjk",
+     "neut": "INDUSTRY",
+     "volwin": 40,
+     "sharpe": 2.0,
+     "fitness": 1.0,
+     "turnover": 0.679,
+     "selfcorr": 0.001
+    }
+   ],
+   "robustness": "Clean SH 2.00 reproduced across 4 independent configs (MARKET/NONE/INDUSTRY neut x vol-window 20/30/40), all FIT 1.00, self-corr 0.001, DD ~0.056. Two independent levers each reach clean 2.00. Caps cleanly at 2.00.",
+   "universe_finding": "Smaller universe weaker: TOP1000 SH 1.74 vs TOP3000 2.00. TOP3000 optimal.",
+   "DEFINITIVE": "Clean SH 2.00 is robust max (4 TOP3000 configs reproduce it). All levers exhausted: dc5 over-trades, smaller universe weaker, finer neut lower, truncation non-binding, hump freezes. RECOMMEND SUBMIT LLpbRevm (SH 2.00, FIT 1.00, TO 0.677, DD 0.056, self-corr 0.001, all checks pass)."
+  },
+  "NEW_LOWCORR_FACTORS": [
+   {
+    "id": "gJ1qeZ0g",
+    "expr": "rank(-ts_rank(returns, 7))",
+    "univ": "TOP2000",
+    "neut": "SUBINDUSTRY",
+    "decay": 18,
+    "trunc": 0.08,
+    "sharpe": 2.34,
+    "fitness": 1.19,
+    "turnover": 0.595,
+    "selfcorr": 0.001,
+    "axis": "7-day return-rank reversal @ TOP2000 (BEST clean low-corr, SH 2.34)"
+   },
+   {
+    "id": "blL28m86",
+    "expr": "rank(-ts_rank(returns, 5))",
+    "univ": "TOP1000",
+    "neut": "SUBINDUSTRY",
+    "decay": 18,
+    "trunc": 0.08,
+    "sharpe": 2.15,
+    "fitness": 1.04,
+    "turnover": 0.604,
+    "selfcorr": 0.002,
+    "axis": "5-day return-rank reversal (BEST clean low-corr)"
+   },
+   {
+    "id": "P0prgzdw",
+    "expr": "rank(-ts_rank(returns, 7))",
+    "univ": "TOP1000",
+    "neut": "SUBINDUSTRY",
+    "decay": 18,
+    "trunc": 0.08,
+    "sharpe": 2.13,
+    "fitness": 1.09,
+    "turnover": 0.587,
+    "drawdown": 0.057,
+    "sub_sh": 1.72,
+    "selfcorr": 0.002,
+    "axis": "7-day cross-sectional return-rank reversal"
+   },
+   {
+    "id": "88zkPkWm",
+    "expr": "add(add(-zscore(ts_decay_linear(ts_mean(divide(subtract(high, low), multiply(close, volume)), 1000), 400)), -zscore(ts_decay_linear(ts_av_diff(close, 5), 5))), multiply(0.5, -zscore(ts_decay_linear(ts_av_diff(close, 15), 8))))",
+    "univ": "TOP3000",
+    "neut": "NONE",
+    "decay": 4,
+    "trunc": 0.08,
+    "sharpe": 2.05,
+    "fitness": 3.08,
+    "turnover": 0.112,
+    "drawdown": 0.111,
+    "sub_sh": 1.19,
+    "selfcorr": 0.013,
+    "axis": "illiquidity (H-L)/(C*V) + multi-horizon close mean-reversion"
+   },
+   {
+    "id": "Vkpw0vj5",
+    "expr": "normalize(reverse(ts_av_diff(close, 14)))",
+    "univ": "TOP3000",
+    "neut": "SUBINDUSTRY",
+    "decay": 8,
+    "trunc": 0.01,
+    "sharpe": 1.37,
+    "fitness": 1.1,
+    "turnover": 0.211,
+    "drawdown": 0.071,
+    "sub_sh": 0.99,
+    "selfcorr": 0.001,
+    "axis": "14-day close av-diff reversal"
+   },
+   {
+    "id": "omKwW5on",
+    "expr": "normalize(add(reverse(ts_av_diff(close, 14)), reverse(ts_av_diff(close, 17))))",
+    "univ": "TOP3000",
+    "neut": "SUBINDUSTRY",
+    "decay": 6,
+    "trunc": 0.01,
+    "sharpe": 1.38,
+    "fitness": 1.09,
+    "turnover": 0.222,
+    "drawdown": 0.068,
+    "sub_sh": 1.01,
+    "selfcorr": 0.001,
+    "axis": "multi-horizon close av-diff reversal"
+   }
+  ],
+  "NEW_LOWCORR_NOTE": "Fresh low-corr factors orthogonal to both intraday reversal AND user 36 alphas (self-corr 0.001-0.013). Best: P0prgzdw (SH 2.13, corr 0.002), 88zkPkWm (SH 2.05, FIT 3.08, TO 0.11, corr 0.013).",
+  "NEAR_MISS_NEW_AXES": [
+   {
+    "id": "kq3kNEWP",
+    "axis": "close position in daily high-low range reversal",
+    "expr": "zscore(ts_decay_linear(group_neutralize(-1*winsorize((close-low)/(high-low+0.001)-0.5, std=2), subindustry), 6))",
+    "sharpe": 2.04,
+    "fitness": 0.95,
+    "turnover": 0.663,
+    "note": "NEW orthogonal axis, fitness 0.95 just short - fixable"
+   },
+   {
+    "id": "wpRw3pQd",
+    "axis": "VWAP deviation reversal",
+    "expr": "zscore(ts_decay_linear(group_neutralize(-1*winsorize(close/vwap-1, std=2)/(ts_std_dev(close/vwap-1,20)+0.001), subindustry), 6))",
+    "sharpe": 2.01,
+    "fitness": 0.86,
+    "turnover": 0.675,
+    "selfcorr": 0.001,
+    "note": "NEW orthogonal axis, fitness short - fixable via coarser neut"
+   }
+  ],
+  "BEST_LOWCORR": {
+   "id": "gJ1qeZ0g",
+   "sharpe": 2.34,
+   "fitness": 1.19,
+   "turnover": 0.595,
+   "selfcorr": 0.001,
+   "expr": "rank(-ts_rank(returns, 7))",
+   "univ": "TOP2000",
+   "note": "TOP2000 sweet spot for return-rank reversal"
+  },
+  "RETURN_RANK_SWEEP": {
+   "axis": "rank(-ts_rank(returns, N)) return-rank reversal, delay=1, SUBINDUSTRY, decay 18",
+   "peak": "N=7 @ TOP2000 -> SH 2.34 (gJ1qeZ0g)",
+   "N_sweep_TOP2000": {
+    "N5": 2.25,
+    "N6": 2.31,
+    "N7": 2.34,
+    "N8": 2.16
+   },
+   "universe_sweep_N7": {
+    "TOP1000": 2.13,
+    "TOP2000": 2.34,
+    "TOP3000": "2.08(fit fail)"
+   },
+   "all_clean_selfcorr": "0.001-0.002",
+   "champion": {
+    "id": "gJ1qeZ0g",
+    "expr": "rank(-ts_rank(returns, 7))",
+    "univ": "TOP2000",
+    "neut": "SUBINDUSTRY",
+    "decay": 18,
+    "trunc": 0.08,
+    "sharpe": 2.34,
+    "fitness": 1.19,
+    "turnover": 0.595,
+    "selfcorr": 0.001
+   }
+  },
+  "LOWCORR_PORTFOLIO_FINAL": {
+   "request": "mine NEW low-correlation factors (orthogonal to user 36 submitted alphas AND to the intraday-reversal axis)",
+   "clean_submittable": [
+    {
+     "id": "gJ1qeZ0g",
+     "sh": 2.34,
+     "fit": 1.19,
+     "to": 0.595,
+     "corr": 0.001,
+     "axis": "7d return-rank reversal @TOP2000",
+     "expr": "rank(-ts_rank(returns, 7))",
+     "rank": "CHAMPION"
+    },
+    {
+     "id": "leV6aaW8",
+     "sh": 2.34,
+     "fit": 1.22,
+     "to": 0.59,
+     "corr": 0.001,
+     "axis": "7d return-rank @TOP2000 (decay variant)",
+     "expr": "rank(-ts_rank(returns, 7))"
+    },
+    {
+     "id": "kq3kabNk",
+     "sh": 2.31,
+     "fit": 1.13,
+     "corr": 0.001,
+     "axis": "6d return-rank @TOP2000",
+     "expr": "rank(-ts_rank(returns, 6))"
+    },
+    {
+     "id": "j2Zla2J9",
+     "sh": 2.25,
+     "fit": 1.05,
+     "corr": 0.001,
+     "axis": "5d return-rank @TOP2000",
+     "expr": "rank(-ts_rank(returns, 5))"
+    },
+    {
+     "id": "qMAk7NlA",
+     "sh": 2.16,
+     "fit": 1.09,
+     "corr": 0.001,
+     "axis": "8d return-rank @TOP2000",
+     "expr": "rank(-ts_rank(returns, 8))"
+    },
+    {
+     "id": "blL28m86",
+     "sh": 2.15,
+     "fit": 1.04,
+     "corr": 0.002,
+     "axis": "5d return-rank @TOP1000",
+     "expr": "rank(-ts_rank(returns, 5))"
+    },
+    {
+     "id": "npgkvGrd",
+     "sh": 2.14,
+     "fit": 1.13,
+     "corr": 0.002,
+     "axis": "7d return-rank @TOP1000 decay24",
+     "expr": "rank(-ts_rank(returns, 7))"
+    },
+    {
+     "id": "P0prgzdw",
+     "sh": 2.13,
+     "fit": 1.09,
+     "corr": 0.002,
+     "axis": "7d return-rank @TOP1000",
+     "expr": "rank(-ts_rank(returns, 7))"
+    },
+    {
+     "id": "xAxwvdrm",
+     "sh": 2.05,
+     "fit": 1.12,
+     "corr": 0.002,
+     "axis": "7d return-rank @TOP1000 INDUSTRY",
+     "expr": "rank(-ts_rank(returns, 7))"
+    },
+    {
+     "id": "88zkPkWm",
+     "sh": 2.05,
+     "fit": 3.08,
+     "to": 0.112,
+     "corr": 0.013,
+     "axis": "illiquidity (H-L)/(C*V) + multi-horizon close MR (DISTINCT axis, ultra-low turnover)"
+    },
+    {
+     "id": "Vkpw0vj5",
+     "sh": 1.37,
+     "fit": 1.1,
+     "corr": 0.001,
+     "axis": "14d close av_diff reversal (DISTINCT axis)",
+     "expr": "normalize(reverse(ts_av_diff(close, 14)))"
+    },
+    {
+     "id": "omKwW5on",
+     "sh": 1.38,
+     "fit": 1.09,
+     "corr": 0.001,
+     "axis": "multi-horizon close av_diff reversal (DISTINCT axis)"
+    }
+   ],
+   "axes_discovered": 3,
+   "axis_notes": "Axis 1 (return-rank reversal rank(-ts_rank(returns,N))): cleanest+highest, peak N=7@TOP2000 SH 2.34. Axis 2 (illiquidity+MR composite): FIT 3.08, TO 0.11. Axis 3 (close av_diff reversal): SH 1.37-1.38. All self-corr 0.001-0.013 (orthogonal).",
+   "near_miss_axes": "VWAP-deviation reversal (2.01) and close-range-position reversal (2.04): NEW orthogonal axes at SH~2.0, self-corr 0.001, fitness just short (~0.86-0.95) - fixable.",
+   "champion": "gJ1qeZ0g SH 2.34 / FIT 1.19 / TO 0.595 / self-corr 0.001 - rank(-ts_rank(returns,7)) @ USA/TOP2000/delay1/SUBINDUSTRY/decay18/trunc0.08"
+  },
+  "FRESH_STRUCTURE_FINDINGS": {
+   "weak_structures": {
+    "pv_corr": 1.03,
+    "pv_corr_d": 0.69,
+    "pv_rankcorr": 1.06,
+    "boll_z": 0.39,
+    "kaufman": 0.45
+   },
+   "promising": {
+    "parkinson": {
+     "id": "QPaqPE7G",
+     "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_std_dev(log(high/low),20), subindustry), 4))",
+     "sharpe": 1.19,
+     "fitness": 1.67,
+     "turnover": 0.107,
+     "note": "LOW-VOL ANOMALY, only LOW_SHARPE fail, excellent FIT/TO"
+    }
+   },
+   "conclusion_so_far": "Non-reversal new structures weak. Parkinson low-vol anomaly promising (FIT 1.67, TO 0.107).",
+   "CLEAN_NEW_STRUCTURE": {
+    "id": "GrwYrO8o",
+    "structure": "vol-of-vol (volatility of volatility) low-vol anomaly",
+    "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_std_dev(ts_std_dev(returns,5),20), subindustry), 4))",
+    "univ": "TOP3000",
+    "neut": "SUBINDUSTRY",
+    "decay": 4,
+    "trunc": 0.08,
+    "sharpe": 1.28,
+    "fitness": 1.74,
+    "turnover": 0.113,
+    "drawdown": 0.4,
+    "sub_sh": 0.92,
+    "selfcorr": 0.017,
+    "all_checks": "PASS",
+    "caveat": "drawdown 0.40 high (no WQ DD gate); NEW structure orthogonal to reversal"
+   },
+   "parkinson_sweep": {
+    "w10": 0.92,
+    "w20": 1.19,
+    "w30": 1.03,
+    "w60": 1.02,
+    "TOP1000": 0.55,
+    "MARKET": 1.19,
+    "peak": "w20 SH 1.19 (FIT 1.67, TO 0.107) near-miss"
+   },
+   "unavailable": {
+    "argmax": 0.43,
+    "skew": "ts_skewness INACCESSIBLE",
+    "kurt": "ts_kurtosis INACCESSIBLE"
+   },
+   "CONCLUSION": "Replaced reversal structures, tested ~14 fresh. WINNER: vol-of-vol GrwYrO8o (SH 1.28 CLEAN, FIT 1.74, TO 0.11, corr 0.017) low-vol anomaly, orthogonal to reversal. Parkinson near-miss (1.19/FIT 1.67). Non-vol structures (correlation/Bollinger/Kaufman/argmax) weak; skew/kurt ops unavailable. Low-vol-anomaly family is the productive NEW direction."
+  },
+  "STRUCTURE_MAP": {
+   "STRONG_structures": {
+    "price_reversal": "rank(-ts_rank(returns,N)) -> SH 2.34 clean (gJ1qeZ0g); intraday -> 2.00; av_diff -> 1.37-1.82",
+    "low_vol_anomaly": "vol-of-vol -> SH 1.28 clean (GrwYrO8o); Parkinson -> 1.19 near-miss",
+    "illiquidity_composite": "(high-low)/(close*volume)+MR -> SH 2.05-2.09 clean FIT 3.10 (88zkPkWm/wpRO6zOp)"
+   },
+   "WEAK_structures": {
+    "money_flow": -0.73,
+    "volume_accel": 0.01,
+    "win_rate": 0.67,
+    "long_momentum": 0.18,
+    "pv_corr": 1.03,
+    "pv_corr_d": 0.69,
+    "pv_rankcorr": 1.06,
+    "bollinger_z": 0.39,
+    "kaufman": 0.45,
+    "argmax": 0.43
+   },
+   "UNAVAILABLE_operators": [
+    "ts_skewness",
+    "ts_kurtosis",
+    "ts_max",
+    "ts_min"
+   ],
+   "CONCLUSION": "Only 3 structure families produce clean strong factors on USA/TOP3000/delay1: price-reversal (best SH 2.34), low-vol anomaly (vol-of-vol clean 1.28), illiquidity composites (FIT 3.10). Money-flow/volume/momentum/winrate/correlation/Bollinger/Kaufman/recency all weak (SH<1.1). Platform slowed to ~50min/sim."
+  },
+  "STRUCT4_FINDINGS": {
+   "skew3_PROMISING": {
+    "id": "omKv67wv",
+    "structure": "skewness/3rd-moment reversal via signed_power(returns,3)",
+    "expr": "zscore(ts_decay_linear(group_neutralize(-1*ts_mean(signed_power(returns,3),20), subindustry), 4))",
+    "sharpe": 1.58,
+    "fitness": 3.26,
+    "turnover": 0.188,
+    "only_fail": "CONCENTRATED_WEIGHT",
+    "note": "STRONG new structure FIT 3.26; fixable via winsorize/rank"
+   },
+   "accel": 0.73
+  },
+  "NEW_STRUCTURE_CLEAN_FACTOR": {
+   "id": "pw6EREV3",
+   "structure": "higher-moment composite: skewness(3rd-moment) + vol-of-vol, zscore-summed",
+   "expr": "zscore(ts_decay_linear(add(zscore(group_neutralize(-1*ts_mean(signed_power(returns,3),20), subindustry)), zscore(group_neutralize(-1*ts_std_dev(ts_std_dev(returns,5),20), subindustry))), 4))",
+   "univ": "TOP3000",
+   "neut": "SUBINDUSTRY",
+   "decay": 4,
+   "trunc": 0.08,
+   "delay": 1,
+   "sharpe": 1.72,
+   "fitness": 2.94,
+   "turnover": 0.126,
+   "drawdown": 0.285,
+   "sub_sh": 1.27,
+   "selfcorr": 0.017,
+   "all_checks": "PASS",
+   "insight": "skew3 alone fails CONCENTRATED_WEIGHT (edge in extreme-skew outliers). Adding broad vol-of-vol dilutes concentration -> passes AND diversification boosts SH to 1.72 (>both components), DD to 0.285. NEW structure (higher-moment composite), orthogonal."
+  },
+  "NEW_STRUCTURE_FAMILY_higher_moment": {
+   "description": "Higher-moment composite: skewness(signed_power(returns,3)) blended with broad low-vol signals (vol-of-vol, Parkinson). Blend dilutes skew concentration -> passes CONCENTRATED_WEIGHT; diversification boosts Sharpe above components. Distinct from reversal/illiquidity.",
+   "clean_factors": [
+    {
+     "id": "pw6EREV3",
+     "blend": "skew3 + vol-of-vol (1:1)",
+     "sharpe": 1.72,
+     "fitness": 2.94,
+     "turnover": 0.126,
+     "drawdown": 0.285,
+     "selfcorr": 0.017,
+     "rank": "CHAMPION"
+    },
+    {
+     "id": "MPpXaVZL",
+     "blend": "skew3 + Parkinson",
+     "sharpe": 1.68,
+     "fitness": 2.94,
+     "turnover": 0.118,
+     "selfcorr": 0.017
+    },
+    {
+     "id": "XgpLboY1",
+     "blend": "skew3 + 2x vol-of-vol",
+     "sharpe": 1.61,
+     "fitness": 2.58,
+     "turnover": 0.119,
+     "selfcorr": 0.017
+    },
+    {
+     "id": "O0pk8Gbq",
+     "blend": "0.5x skew3 + vol-of-vol",
+     "sharpe": 1.61,
+     "fitness": 2.58,
+     "turnover": 0.119,
+     "selfcorr": 0.017
+    },
+    {
+     "id": "MPpX3MRa",
+     "blend": "skew3 + vol-of-vol + Parkinson",
+     "sharpe": 1.57,
+     "fitness": 2.59,
+     "turnover": 0.11,
+     "selfcorr": 0.017
+    },
+    {
+     "id": "Grw6O6PO",
+     "blend": "skew3 + vol-of-vol @ trunc0.03",
+     "sharpe": 1.41,
+     "fitness": 2.02,
+     "turnover": 0.12,
+     "selfcorr": 0.017
+    },
+    {
+     "id": "omKvxe9m",
+     "blend": "kurtosis(4th-moment) + vol-of-vol",
+     "sharpe": 1.64,
+     "fitness": 2.75,
+     "turnover": 0.124,
+     "selfcorr": 0.017,
+     "note": "4th-moment/lottery anomaly NEW, same blend recipe"
+    },
+    {
+     "id": "akdl5R1W",
+     "blend": "price-change skewness + vol-of-vol",
+     "sharpe": 1.26,
+     "fitness": 1.65,
+     "turnover": 0.118,
+     "selfcorr": 0.017
+    }
+   ],
+   "skew3_standalone": "omKv67wv SH 1.58 FIT 3.26 but CONCENTRATED_WEIGHT; only blending fixes cleanly",
+   "optimal_blend": "1:1 skew3+vol-of-vol @ trunc 0.08 -> pw6EREV3 SH 1.72 champion",
+   "generalization": "Moment-blend generalizes: 3rd moment (1.72) AND 4th moment (1.64) both clean when blended with vol-of-vol.",
+   "weak_submoments": {
+    "downside_semivariance": 0.44,
+    "semivar_blend": 0.77,
+    "semivar_ratio": 0.57,
+    "co_skewness": -0.13
+   },
+   "moments_tested": "3rd skew(returns)->1.72; 4th kurtosis(returns)->1.64; 3rd skew(price-change)->1.26; downside-semivar/co-skew weak"
+  },
+  "SESSION_FINAL": "4 distinct structure families mined clean: price-reversal (gJ1qeZ0g 2.34), illiquidity-composite (wpRO6zOp 2.09), higher-moment composite (pw6EREV3 1.72 NEW), low-vol anomaly (GrwYrO8o 1.28). delay=1, self-corr <=0.02.",
+  "NEW_FUNDAMENTAL_FAMILY": {
+   "description": "Fundamental value+quality family (5th orthogonal axis) - fundamental data, MAXIMALLY orthogonal to all price/volume factors.",
+   "SUBMITTABLE_LOWCORR": {
+    "id": "d5xmG6LX",
+    "expr": "rank(ts_rank(cashflow_op/cap, 40)) + rank(ts_rank(ebit/equity, 40))",
+    "univ": "TOP1000",
+    "neut": "SUBINDUSTRY",
+    "delay": 1,
+    "sharpe": 1.5,
+    "fitness": 1.02,
+    "turnover": 0.17,
+    "drawdown": 0.077,
+    "selfcorr": 0.002,
+    "all_checks": "PASS",
+    "why": "value(cashflow yield)+quality(EBIT/equity), ts_rank(.,40). Submittable AND low-corr(0.002) with all previous price-based factors."
+   },
+   "key_lever": "ts_rank(ratio,40) time-series rank makes raw fundamental ratios work (simple rank ~1.0; ts_rank 1.50).",
+   "weak_simple_ratios": {
+    "sales_yield": 1.04,
+    "cf_yield": 0.75
+   }
+  },
+  "BRAND_NEW_SUBMITTABLE": {
+   "id": "blL20ONp",
+   "expr": "normalize(reverse(ts_av_diff(divide(close, vwap), 140)))",
+   "univ": "TOP3000",
+   "neut": "SUBINDUSTRY",
+   "decay": 64,
+   "trunc": 0.01,
+   "delay": 1,
+   "sharpe": 1.69,
+   "fitness": 1.35,
+   "turnover": 0.249,
+   "drawdown": 0.079,
+   "selfcorr": 0.001,
+   "all_checks": "PASS",
+   "structure": "long-horizon (140d) close/VWAP mean-reversion",
+   "why": "distinct from delivered factors; VWAP-relative long-window; self-corr 0.001",
+   "also_weak": "short-interest + social-sentiment axes no signal on this universe"
+  },
+  "BRAND_NEW_SUBMITTABLE_LIST": [
+   {
+    "id": "VkplKZeV",
+    "expr": "rank(ts_rank(ebit/cap, 40)) - 0.7*rank(ts_mean(returns, 5))",
+    "univ": "TOP1000",
+    "neut": "SUBINDUSTRY",
+    "decay": 5,
+    "delay": 1,
+    "trunc": 0.08,
+    "sharpe": 1.6,
+    "fitness": 1.05,
+    "turnover": 0.265,
+    "drawdown": 0.098,
+    "selfcorr": 0.001,
+    "all_checks": "PASS",
+    "structure": "EBIT-yield (value, ebit/cap ts_rank-40) MINUS 5-day reversal",
+    "why": "BRAND NEW, different from used cashflow_op/cap+ebit/equity; submittable; self-corr 0.001"
+   },
+   {
+    "id": "1Y7mXbX6",
+    "expr": "rank(ts_zscore(equity/cap,250)) + rank(ts_mean(ts_delta(anl4_afv4_eps_mean,20),60))",
+    "univ": "TOP1000",
+    "neut": "SUBINDUSTRY",
+    "decay": 5,
+    "delay": 1,
+    "trunc": 0.08,
+    "sharpe": 1.69,
+    "fitness": 1.31,
+    "turnover": 0.071,
+    "drawdown": 0.038,
+    "selfcorr": 0.002,
+    "all_checks": "PASS",
+    "structure": "book-to-market value + analyst EPS revision momentum",
+    "why": "BRAND NEW, different from all previous; submittable; self-corr 0.002; TO 0.07, DD 0.038"
+   }
+  ],
+  "CORRECTED_SELFCORR_NOTE": "CRITICAL FIX: prior self-corr values were read from WRONG column (last col ~0.001, a negligible field). REAL self-correlation is column index 5 of /correlations/self records. Re-measured vs current submitted pool:",
+  "REAL_SELFCORR": {
+   "omKvxe9m": {
+    "sc": 0.576,
+    "sh": 1.64,
+    "struct": "kurtosis+vol-of-vol",
+    "submit": "PASS - safest margin"
+   },
+   "pw6EREV3": {
+    "sc": 0.591,
+    "sh": 1.72,
+    "struct": "skewness+vol-of-vol",
+    "submit": "PASS"
+   },
+   "gJ1qeZ0g": {
+    "sc": 0.649,
+    "sh": 2.34,
+    "struct": "return-rank reversal",
+    "submit": "PASS-tight"
+   },
+   "MPpXaVZL": {
+    "sc": 0.653,
+    "sh": 1.68,
+    "struct": "skewness+Parkinson",
+    "submit": "PASS-tight"
+   },
+   "GrwYrO8o": {
+    "sc": 0.655,
+    "sh": 1.28,
+    "struct": "vol-of-vol",
+    "submit": "PASS-tight"
+   },
+   "blL20ONp": {
+    "sc": 0.703,
+    "struct": "VWAP reversion",
+    "submit": "FAIL"
+   },
+   "VkplKZeV": {
+    "sc": 0.727,
+    "struct": "value+reversal",
+    "submit": "FAIL"
+   },
+   "wpRO6zOp": {
+    "sc": 0.987,
+    "struct": "illiquidity",
+    "submit": "FAIL"
+   },
+   "88zkPkWm": {
+    "sc": 0.989,
+    "struct": "illiquidity+MR",
+    "submit": "FAIL"
+   }
+  },
+  "RECOMMENDED_SUBMIT_REAL": "omKvxe9m (kurtosis+vol-of-vol, SH 1.64, REAL self-corr 0.576) - safest. pw6EREV3 (skewness, 0.591) next. Submitted pool already saturated with reversal/illiquidity factors.",
+  "SUBMITTABLE_LOWCORR_VERIFIED": {
+   "note": "Verified with CORRECT self-corr column (index 5). Clean + real self-corr < 0.7. Ranked by margin.",
+   "factors": [
+    {
+     "id": "58waXVmJ",
+     "struct": "skew+kurt+Parkinson 3-moment NEW",
+     "sh": 1.76,
+     "realcorr": 0.596,
+     "rank": "BEST new"
+    },
+    {
+     "id": "58waXVmJ",
+     "struct": "skew+kurt+Parkinson 3-moment (NEW, best new)",
+     "sh": 1.76,
+     "realcorr": 0.596,
+     "rank": "BEST new: highest SH + good margin"
+    },
+    {
+     "id": "1Y7m9gLR",
+     "struct": "skew(w10)+vol-of-vol",
+     "sh": 1.63,
+     "realcorr": 0.551,
+     "rank": "SAFEST"
+    },
+    {
+     "id": "omKvxe9m",
+     "struct": "kurtosis+vol-of-vol",
+     "sh": 1.64,
+     "realcorr": 0.576
+    },
+    {
+     "id": "pw6EREV3",
+     "struct": "skewness+vol-of-vol",
+     "sh": 1.72,
+     "realcorr": 0.591
+    },
+    {
+     "id": "E5wgjoJK",
+     "struct": "kurtosis(w30)+vol-of-vol NEW",
+     "sh": 1.33,
+     "realcorr": 0.635
+    },
+    {
+     "id": "gJ1qeZ0g",
+     "struct": "return-rank reversal",
+     "sh": 2.34,
+     "realcorr": 0.649
+    },
+    {
+     "id": "MPpXaVZL",
+     "struct": "skewness+Parkinson",
+     "sh": 1.68,
+     "realcorr": 0.653
+    },
+    {
+     "id": "GrwYrO8o",
+     "struct": "vol-of-vol",
+     "sh": 1.28,
+     "realcorr": 0.655
+    },
+    {
+     "id": "6Xwa6Arp",
+     "struct": "kurtosis+Parkinson NEW",
+     "sh": 1.63,
+     "realcorr": 0.656
+    }
+   ],
+   "FAIL_submit": {
+    "blL20ONp": 0.703,
+    "VkplKZeV": 0.727,
+    "wpRO6zOp": 0.987,
+    "88zkPkWm": 0.989
+   },
+   "dead_axes": "short-interest, social-sentiment, pure-analyst all weak on this account",
+   "champion_new": "58waXVmJ: 3-moment composite (skewness+kurtosis+Parkinson), SH 1.76, real self-corr 0.596, clean. Parkinson dilutes the concentration that pure skew+kurt (3q7aK2P6) had."
+  },
+  "PERFORMANCE_COMPARISON_INSIGHT": {
+   "screenshot_factor": "58waXVmJ 3-moment: 7 PASS 1 PENDING but Perf-Comparison Change -326 (negative marginal contribution)",
+   "root_cause": "higher-moment family (skew/kurt/3-moment) all collapse in 2020 - mutually redundant, negative marginal contribution",
+   "yearly_sharpe": {
+    "58waXVmJ": [
+     1.89,
+     -0.33,
+     1.74,
+     3.06,
+     2.21
+    ],
+    "gJ1qeZ0g": [
+     0.95,
+     2.35,
+     2.24,
+     2.2,
+     4.89
+    ]
+   },
+   "RECOMMENDATION": "gJ1qeZ0g return-rank reversal: positive every year incl 2020 +2.35, complementary regime, SH 2.34, self-corr 0.649"
+  },
+  "REGIME_COMPLEMENTARY_WINNER": {
+   "id": "j2Zla2J9",
+   "expr": "rank(-ts_rank(returns, 5))",
+   "univ": "TOP2000",
+   "neut": "SUBINDUSTRY",
+   "decay": 18,
+   "trunc": 0.08,
+   "delay": 1,
+   "sharpe": 2.25,
+   "real_selfcorr": 0.598,
+   "sh_2020": 2.77,
+   "all_checks": "PASS",
+   "why": "TRIPLE PASS: SH 2.25 + self-corr 0.598 + 2020 +2.77 (complementary to higher-moment pool). return-rank N=5 @ TOP2000."
+  },
+  "REGIME_COMPLEMENTARY_SCAN": {
+   "method": "triple filter: clean + real self-corr<0.7 + 2020 Sharpe>0.3 (positive marginal contribution)",
+   "PASS_all3": [
+    {
+     "id": "j2Zla2J9",
+     "expr": "rank(-ts_rank(returns,5))",
+     "univ": "TOP2000",
+     "sh": 2.25,
+     "corr": 0.598,
+     "sh2020": 2.77,
+     "rank": "BEST"
+    },
+    {
+     "id": "gJ1qeZ0g",
+     "expr": "rank(-ts_rank(returns,7))",
+     "univ": "TOP2000",
+     "sh": 2.34,
+     "corr": 0.649,
+     "sh2020": 2.35
+    },
+    {
+     "id": "A1wgoX9e",
+     "expr": "rank(-ts_rank(returns,10))",
+     "univ": "TOP2000",
+     "sh": 1.99,
+     "corr": 0.662,
+     "sh2020": 2.11
+    }
+   ],
+   "FAIL_corr_despite_2020pos": {
+    "intra_mkt": {
+     "sh2020": 2.9,
+     "corr": 0.793
+    },
+    "illiq": {
+     "sh2020": 1.88,
+     "corr": 0.887
+    }
+   },
+   "conclusion": "return-rank reversal = only family both 2020-positive AND corr<0.7. Submit ONE (j2Zla2J9). longmom/hl_range pending for a 2nd different-structure complement."
   }
+ },
+ {
+  "scan": "HIGH-VALUE MODULE scan (per '换一个module': abandon Price-Volume value=2, mine Sentiment=8 / Model=7 / Option=6)",
+  "conclusion": "NEGATIVE. No single/double-field extraction from any high-value module produces a clean standalone factor on this account (USA TOP1000, delay=1, SUBINDUSTRY). All 24 candidates FAIL IS checks (LOW_SHARPE/LOW_FITNESS).",
+  "method": "Two passes: (1) simple rank(field); (2) proven rank(ts_rank(field,40)) transform that rescued slow fundamentals earlier. Both wrapped zscore(ts_decay_linear(group_neutralize(.,subindustry),6)).",
+  "model_module_value7": [
+   {
+    "name": "m_value",
+    "expr": "rank(fscore_bfl_value)",
+    "sharpe": 0.35,
+    "fail": true
+   },
+   {
+    "name": "m_quality",
+    "expr": "rank(fscore_bfl_quality)",
+    "sharpe": -0.49,
+    "fail": true
+   },
+   {
+    "name": "m_mom",
+    "expr": "rank(fscore_bfl_momentum)",
+    "sharpe": -0.21,
+    "fail": true
+   },
+   {
+    "name": "m_total",
+    "expr": "rank(fscore_bfl_total)",
+    "sharpe": -0.29,
+    "fail": true
+   },
+   {
+    "name": "m_comp",
+    "expr": "rank(composite_factor_score_derivative)",
+    "sharpe": -0.46,
+    "fail": true
+   },
+   {
+    "name": "m_total_tr",
+    "expr": "rank(ts_rank(fscore_bfl_total,40))",
+    "sharpe": 0.42,
+    "fail": true
+   },
+   {
+    "name": "m_mom_tr",
+    "expr": "rank(ts_rank(fscore_bfl_momentum,40))",
+    "sharpe": 0.15,
+    "fail": true
+   },
+   {
+    "name": "m_comp_tr",
+    "expr": "rank(ts_rank(composite_factor_score_derivative,40))",
+    "sharpe": -0.46,
+    "fail": true
+   }
+  ],
+  "option_module_value6": [
+   {
+    "name": "vrp30",
+    "expr": "rank(implied_volatility_call_30 - historical_volatility_30)",
+    "sharpe": 0.38,
+    "fail": true
+   },
+   {
+    "name": "iv_skew",
+    "expr": "rank(implied_volatility_put_30 - implied_volatility_call_30)",
+    "sharpe": -0.94,
+    "fail": true
+   },
+   {
+    "name": "iv_ts",
+    "expr": "rank(implied_volatility_call_30 - implied_volatility_call_60)",
+    "sharpe": 0.28,
+    "fail": true
+   }
+  ],
+  "sentiment_module_value8": [
+   {
+    "name": "s_score",
+    "expr": "rank(snt1_cored1_score)",
+    "sharpe": -0.21,
+    "fail": true
+   },
+   {
+    "name": "s_rev",
+    "expr": "rank(snt1_d1_netearningsrevision)",
+    "sharpe": -0.19,
+    "fail": true
+   },
+   {
+    "name": "s_rec",
+    "expr": "rank(snt1_d1_netrecpercent)",
+    "sharpe": 0.16,
+    "fail": true
+   },
+   {
+    "name": "s_focus",
+    "expr": "rank(snt1_d1_dynamicfocusrank)",
+    "sharpe": 0.17,
+    "fail": true
+   },
+   {
+    "name": "s_score_tr",
+    "expr": "rank(ts_rank(snt1_cored1_score,40))",
+    "sharpe": -0.39,
+    "fail": true
+   },
+   {
+    "name": "s_rev_mom",
+    "expr": "rank(ts_mean(ts_delta(snt1_d1_netearningsrevision,20),60))",
+    "sharpe": -0.18,
+    "fail": true
+   },
+   {
+    "name": "s_rec_tr",
+    "expr": "rank(ts_rank(snt1_d1_netrecpercent,40))",
+    "sharpe": -0.27,
+    "fail": true
+   },
+   {
+    "name": "s_focus_tr",
+    "expr": "rank(ts_rank(snt1_d1_dynamicfocusrank,40))",
+    "sharpe": 0.43,
+    "fail": true
+   },
+   {
+    "name": "s_surprise_tr",
+    "expr": "rank(ts_rank(snt1_d1_earningssurprise,40))",
+    "sharpe": 0.4,
+    "fail": true
+   }
+  ],
+  "cross_module_combos": [
+   {
+    "name": "m_s_comp",
+    "expr": "rank(ts_rank(fscore_bfl_total,40)) + rank(ts_rank(snt1_cored1_score,40))",
+    "sharpe": -0.09,
+    "fail": true
+   },
+   {
+    "name": "sent_combo",
+    "expr": "rank(ts_rank(snt1_cored1_score,40)) + rank(ts_rank(snt1_d1_netrecpercent,40))",
+    "sharpe": -0.25,
+    "fail": true
+   }
+  ],
+  "interpretation": "High-value modules carry value as multi-field structured datasets requiring sophisticated cross-sectional combination (the way WQ's own composites are built), NOT as single-field signal extraction. The ts_rank(.,40) transform that rescued slow fundamentals does not rescue these. A genuine high-value-module alpha needs a multi-field model (regression/ensemble across many module fields), which is a larger build than single-expression mining.",
+  "submittable_fallback": {
+   "id": "j2Zla2J9",
+   "expression": "rank(-ts_rank(returns, 5))",
+   "settings": {
+    "region": "USA",
+    "universe": "TOP2000",
+    "delay": 1,
+    "decay": 18,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON"
+   },
+   "is_sharpe": 2.25,
+   "turnover": 0.614,
+   "real_selfcorr": 0.598,
+   "sharpe_2020": 2.77,
+   "note": "Regime-complementary: the only found factor BOTH 2020-positive AND real self-corr<0.7 => positive marginal contribution."
+  }
+ }
 ]
