@@ -71,23 +71,33 @@ def blend(*keys: str) -> str:
 
 # Candidates designed to lean on DIFFERENT drivers than A/B (which are
 # pv-corr + short vol-normalized reversal, and the 6-idea liquidity blend).
-# Use B's WINNING 6-idea recipe (its B variant hit SH 1.53 on TOP3000), exposed
-# to TOP1000 with TRUNCATION axis decorrelation (looser truncation -> more
-# concentrated positions -> different PnL than F's 0.08).
-B_RECIPE = ("vwap_pos", "amihud", "gap", "issuance", "longrev", "turnover")
-C["vwap_pos"] = "-rank(ts_mean(divide(close, vwap), 10))"
-C["longrev"]  = "-rank(ts_delta(close, 120))"
+# NEW HORIZON axis: blends that the existing factors don't span.
+# All TOP3000 (the only universe where SH>1.25 is reachable).
+C["vwap_pos"]   = "-rank(ts_mean(divide(close, vwap), 10))"
+C["cppos40"]    = "-rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))"
+C["rng40"]      = "rank(ts_delta(divide(subtract(high, low), close), 40))"
+C["rng60"]      = "rank(ts_delta(divide(subtract(high, low), close), 60))"
+C["vwap40"]     = "-rank(ts_mean(divide(close, vwap), 40))"
+C["vwap_disp"]  = "-rank(ts_std_dev(divide(close, vwap), 40))"
+C["lowvol120"]  = "rank(ts_std_dev(returns, 120))"  # low-vol anomaly: low vol = high return
+C["mom240"]     = "rank(ts_delta(close, 240))"      # very-long momentum
+C["adv_ratio"]  = "rank(divide(volume, ts_mean(volume, 240)))"  # 240d volume ratio
+C["gap60"]      = "rank(ts_mean(divide(open, ts_delay(close, 1)), 60))"
+C["volstd_z"]   = "-rank(ts_zscore(ts_std_dev(returns, 20), 120))"  # vol regime z-score (low vol)
 
 CANDIDATES = [
-    # TOP1000 + B's 6-idea recipe, sweep truncation + neutralization
-    ("brec_t1k_sec_t04",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "SECTOR",      "truncation": 0.04, "decay": 12}),
-    ("brec_t1k_sec_t12",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "SECTOR",      "truncation": 0.12, "decay": 12}),
-    ("brec_t1k_ind_t08",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY",    "truncation": 0.08, "decay": 12}),
-    ("brec_t1k_sub_t08",  blend(*B_RECIPE), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.08, "decay": 12}),
-    # Truncation-only decorrelation on TOP3000 (a known-strong B recipe with t=0.04)
-    ("brec_t3k_sub_t04",  blend(*B_RECIPE), {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "truncation": 0.04, "decay": 16}),
-    ("brec_t3k_mkt_t08",  blend(*B_RECIPE), {**BASE, "universe": "TOP3000", "neutralization": "MARKET",      "truncation": 0.08, "decay": 16}),
+    # INTRADAY/MICROSTRUCTURE-only blend (no reversal, no flow): cppos + rng + vwap
+    ("intraday_only", blend("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp"), {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
+    ("intraday_sec",  blend("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_disp"), {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 10}),
+    # LOW-VOL anomaly + long-horizon (different time scale than A/B/D/E/F)
+    ("lowvol_long",   blend("lowvol120", "mom240", "vwap40", "gap60"),                                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("lowvol_long_s", blend("lowvol120", "mom240", "vwap40", "gap60"),                                {**BASE, "universe": "TOP3000", "neutralization": "SECTOR",      "decay": 12}),
+    # MOMENTUM-style: long mom + low vol + 240d volume ratio (no reversal)
+    ("mom_lowvol",    blend("mom240", "lowvol120", "volstd_z", "adv_ratio"),                          {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    # VWAP-CENTRIC (multiple horizons + dispersion)
+    ("vwap_only",     blend("vwap_pos", "vwap40", "vwap_disp", "gap"),                                {**BASE, "universe": "TOP3000", "neutralization": "SUBINDUSTRY", "decay": 10}),
 ]
+
 
 
 def fetch_pnl(session, aid: str) -> dict:
@@ -145,7 +155,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT10.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT11.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
