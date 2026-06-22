@@ -90,15 +90,15 @@ INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_d
 EREC = ("trret", "amihud", "turnover", "volz", "gap")  # E / mixbal recipe
 
 CANDIDATES = [
-    # 7th factor = NEW axis x UNIVERSE lever. Run the strong intraday+amihud (G)
-    # recipe and the E recipe on TOP1000 -> decorrelated from their TOP3000 twins.
-    ("intra_am_t1k_d8",  blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("intra_am_t1k_d12", blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("intra_amvc_t1k",   blend(*INTRADAY7, "amihud", "vcspread"),{**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 8}),
-    ("intra_am_t1k_sec", blend(*INTRADAY7, "amihud"),            {**BASE, "universe": "TOP1000", "neutralization": "SECTOR",      "decay": 8}),
-    # E recipe on TOP1000 (decorrelate from E via universe)
-    ("erec_t1k_sub",     blend(*EREC),                           {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 10}),
-    ("erec_t1k_ind",     blend(*EREC),                           {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY",    "decay": 10}),
+    # Push TOP1000 near-misses' turnover BELOW the 0.125 fitness floor via decay
+    # (F's trick: TO<0.125 stops turnover from penalizing fitness).
+    ("erec_t1k_d18",   blend(*EREC),                            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}),
+    ("erec_t1k_d24",   blend(*EREC),                            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 24}),
+    ("intra_amvc_t1k_d12", blend(*INTRADAY7, "amihud", "vcspread"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("intra_amvc_t1k_d16", blend(*INTRADAY7, "amihud", "vcspread"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    # Also a pvcorr+intraday on TOP1000 (pvcorr is clean, helped F clear fitness)
+    ("intra_pvc_t1k_d12", blend(*INTRADAY7, "pvcorr", "amihud"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 12}),
+    ("erec_t1k_d18_pvc",  blend("pvcorr", *EREC),               {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}),
 ]
 
 
@@ -158,7 +158,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT15.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT16.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
