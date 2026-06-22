@@ -87,17 +87,21 @@ QUAD = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volum
 WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) "
                "+ -rank(ts_corr(vwap, volume, 5)), 10)")
 
+D1_SUB = {"delay": 1, "neutralization": "SUBINDUSTRY"}
+
 CANDIDATES = [
-    # delay=1 baseline -- standard academic setting, usually easier to break SH
-    (BEST_PV, {"delay": 1}),
-    (BEST_PV, {"delay": 1, "neutralization": "SUBINDUSTRY"}),
-    (WIN_DECAY10, {"delay": 1, "neutralization": "SUBINDUSTRY"}),
-    # Truncation 0.10 (more) vs 0.05 (less)
-    (WIN_DECAY10, {"delay": 1, "neutralization": "SUBINDUSTRY", "truncation": 0.10}),
-    # decay built-in (apart from expression decay)
-    (WIN_DECAY10, {"delay": 1, "neutralization": "SUBINDUSTRY", "decay": 4}),
-    # quad-corr with delay=1 SUB
-    (QUAD, {"delay": 1, "neutralization": "SUBINDUSTRY"}),
+    # Swap PV mean-rev leg for model16 composite -- model-anchored 3-leg structure
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Add a 4th model leg to the proven 3-leg PV combo
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Same as above but with analyst_revision instead of composite
+    ("ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Same with snt1_d1_earningsrevision (sentiment module)
+    ("ts_decay_linear(-rank(snt1_d1_earningsrevision) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Pure model16+model77 combination with decay
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(asset_growth_rate), 5)", D1_SUB),
+    # Standalone strong-signal: heavy smoothing of analyst momentum
+    ("ts_decay_linear(-rank(fscore_momentum), 22)", D1_SUB),
 ]
 
 

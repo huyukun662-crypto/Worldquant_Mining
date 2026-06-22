@@ -65,5 +65,98 @@
     "drawdown": 0.0615
   },
   "economic_story": "Short-horizon VWAP mean reversion combined with price-volume correlation breakdown (informed-flow divergence proxy), regularized by ts_decay_linear=10 which lowers turnover from 0.30 to 0.21 and lifts fitness above the 1.0 bar.",
-  "note_on_delay": "At delay=0 the same expression scored SH=1.48 FIT=1.03 but the LOW_SHARPE check limit is 2.0 (vs 1.25 at delay=1), so D=0 still fails Submit. Per user instruction (\"setting\u53ef\u4ee5\u6539 \u9664\u4e86region\"), delay was opened."
+  "note_on_delay": "At delay=0 the same expression scored SH=1.48 FIT=1.03 but the LOW_SHARPE check limit is 2.0 (vs 1.25 at delay=1), so D=0 still fails Submit. Per user instruction (\"setting\u53ef\u4ee5\u6539 \u9664\u4e86region\"), delay was opened.",
+  "additional_passing_alphas_with_model16": [
+    {
+      "alpha_id": "N1pn9jke",
+      "module": "model16 (Fundamental Scores)",
+      "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+      "is_checks": {
+        "LOW_SHARPE": {
+          "PASS": true,
+          "value": 1.69,
+          "limit": 1.25
+        },
+        "LOW_FITNESS": {
+          "PASS": true,
+          "value": 1.32,
+          "limit": 1.0
+        },
+        "LOW_TURNOVER": {
+          "PASS": true,
+          "value": 0.183
+        },
+        "HIGH_TURNOVER": {
+          "PASS": true,
+          "value": 0.183
+        },
+        "CONCENTRATED_WEIGHT": {
+          "PASS": true
+        },
+        "LOW_SUB_UNIVERSE_SHARPE": {
+          "PASS": true,
+          "value": 1.01,
+          "limit": 0.73
+        },
+        "SELF_CORRELATION": {
+          "PASS": true,
+          "value": 0.5739,
+          "limit": 0.7
+        },
+        "MATCHES_COMPETITION": {
+          "PASS": true
+        }
+      }
+    },
+    {
+      "alpha_id": "omKnOnwk",
+      "module": "model16 (Fundamental Scores)",
+      "expression": "ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+      "is_checks": {
+        "LOW_SHARPE": {
+          "PASS": true,
+          "value": 1.68,
+          "limit": 1.25
+        },
+        "LOW_FITNESS": {
+          "PASS": true,
+          "value": 1.31,
+          "limit": 1.0
+        },
+        "LOW_TURNOVER": {
+          "PASS": true,
+          "value": 0.1827
+        },
+        "HIGH_TURNOVER": {
+          "PASS": true,
+          "value": 0.1827
+        },
+        "CONCENTRATED_WEIGHT": {
+          "PASS": true
+        },
+        "LOW_SUB_UNIVERSE_SHARPE": {
+          "PASS": true,
+          "value": 1.0,
+          "limit": 0.73
+        },
+        "SELF_CORRELATION": {
+          "PASS": true,
+          "value": 0.5755,
+          "limit": 0.7
+        },
+        "MATCHES_COMPETITION": {
+          "PASS": true
+        }
+      }
+    }
+  ],
+  "settings_common": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON",
+    "decay": 0
+  }
 }
