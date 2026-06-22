@@ -90,16 +90,15 @@ INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_d
 EREC = ("trret", "amihud", "turnover", "volz", "gap")  # E / mixbal recipe
 
 CANDIDATES = [
-    # erec_t1k_d18_pvc was SUBMITTABLE (SH 1.54, FIT 1.24) but corr E=0.58 (shares
-    # E's trret signature). DROP trret, keep strong clean pvcorr+amihud, add non-E
-    # diversifiers -> break E-corr below 0.5 while holding SH>1.25 / FIT>1.0.
-    ("pvc_noE_a",  blend("pvcorr", "amihud", "issuance", "gap", "cppos40"),   {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_noE_b",  blend("pvcorr", "amihud", "issuance", "cppos", "rng40"),   {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_noE_c",  blend("pvcorr", "amihud", "gap", "vwap40", "issuance"),    {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_noE_d",  blend("pvcorr", "amihud", "gap", "volz"),                  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    ("pvc_intra",  blend("pvcorr", "amihud", "cppos40", "rng40", "vwap40"),   {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # same idea, TOP3000 (in case TOP1000 strength fades) — E-light recipe + pvcorr
-    ("pvc_noE_t3k",blend("pvcorr", "amihud", "issuance", "gap", "cppos40"),   {**BASE, "universe": "TOP3000", "neutralization": "INDUSTRY",    "decay": 12}),
+    # trret carries the strength but ties to E. Swap trret -> vcspread (a DIFFERENT
+    # strong reversal construction) to keep SH>1.25 / FIT>1.0 while cutting E-corr.
+    ("pvc_vc_a",   blend("pvcorr", "vcspread", "amihud", "turnover", "gap"),  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_vc_b",   blend("pvcorr", "vcspread", "amihud", "volz", "cppos40"),  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_vc_c",   blend("pvcorr", "vcspread", "amihud", "gap", "issuance"),  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_avd",    blend("pvcorr", "avdiff", "amihud", "gap", "turnover"),    {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    # keep trret but decorrelate from E via universe+neut (E is TOP3000/SECTOR)
+    ("erecpvc_t3k_ind", blend("pvcorr", *EREC),                              {**BASE, "universe": "TOP3000", "neutralization": "INDUSTRY", "decay": 14}),
+    ("pvc_vc_t3k_ind",  blend("pvcorr", "vcspread", "amihud", "turnover", "gap"), {**BASE, "universe": "TOP3000", "neutralization": "INDUSTRY", "decay": 14}),
 ]
 
 
@@ -159,7 +158,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT17.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT18.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
