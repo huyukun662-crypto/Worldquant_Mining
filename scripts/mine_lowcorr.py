@@ -90,15 +90,16 @@ INTRADAY7 = ("cppos", "cppos40", "rng40", "rng60", "vwap_pos", "vwap40", "vwap_d
 EREC = ("trret", "amihud", "turnover", "volz", "gap")  # E / mixbal recipe
 
 CANDIDATES = [
-    # Push TOP1000 near-misses' turnover BELOW the 0.125 fitness floor via decay
-    # (F's trick: TO<0.125 stops turnover from penalizing fitness).
-    ("erec_t1k_d18",   blend(*EREC),                            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}),
-    ("erec_t1k_d24",   blend(*EREC),                            {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 24}),
-    ("intra_amvc_t1k_d12", blend(*INTRADAY7, "amihud", "vcspread"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("intra_amvc_t1k_d16", blend(*INTRADAY7, "amihud", "vcspread"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
-    # Also a pvcorr+intraday on TOP1000 (pvcorr is clean, helped F clear fitness)
-    ("intra_pvc_t1k_d12", blend(*INTRADAY7, "pvcorr", "amihud"), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 12}),
-    ("erec_t1k_d18_pvc",  blend("pvcorr", *EREC),               {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 18}),
+    # erec_t1k_d18_pvc was SUBMITTABLE (SH 1.54, FIT 1.24) but corr E=0.58 (shares
+    # E's trret signature). DROP trret, keep strong clean pvcorr+amihud, add non-E
+    # diversifiers -> break E-corr below 0.5 while holding SH>1.25 / FIT>1.0.
+    ("pvc_noE_a",  blend("pvcorr", "amihud", "issuance", "gap", "cppos40"),   {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_noE_b",  blend("pvcorr", "amihud", "issuance", "cppos", "rng40"),   {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_noE_c",  blend("pvcorr", "amihud", "gap", "vwap40", "issuance"),    {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_noE_d",  blend("pvcorr", "amihud", "gap", "volz"),                  {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    ("pvc_intra",  blend("pvcorr", "amihud", "cppos40", "rng40", "vwap40"),   {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 16}),
+    # same idea, TOP3000 (in case TOP1000 strength fades) — E-light recipe + pvcorr
+    ("pvc_noE_t3k",blend("pvcorr", "amihud", "issuance", "gap", "cppos40"),   {**BASE, "universe": "TOP3000", "neutralization": "INDUSTRY",    "decay": 12}),
 ]
 
 
@@ -158,7 +159,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT16.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT17.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
