@@ -36,7 +36,8 @@ _spec.loader.exec_module(mine_d1)
 
 REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6",
               "D_88z6bZEq": "88z6bZEq", "E_d5x78JRv": "d5x78JRv",
-              "F_0m7QR858": "0m7QR858", "G_LLpgPEja": "LLpgPEja"}
+              "F_0m7QR858": "0m7QR858", "G_LLpgPEja": "LLpgPEja",
+              "H_78wa9R3Q": "78wa9R3Q"}
 CORR_CEILING = 0.50          # "low correlation" target
 
 BASE = {"truncation": 0.08}
@@ -91,16 +92,46 @@ EREC = ("trret", "amihud", "turnover", "volz", "gap")  # E / mixbal recipe
 
 PVCEREC = ("pvcorr",) + EREC  # the SH 1.54 winning recipe (pvcorr + E recipe)
 
+# ---------------------------------------------------------------------------
+# BATCH 20: a GENUINELY NEW driver axis. Families A-H are all pure
+# price-volume (reversal / flow / microstructure). To escape the structural
+# wall (every strong P-V reversal+flow blend correlates >=0.5 with E), pull in
+# FUNDAMENTAL value/quality/growth + long-horizon momentum + low-vol anomaly.
+# All fields are delay=1 fundamentals (no IV/option), confirmed present on
+# USA TOP3000 delay=1. These are economically orthogonal to technical signals.
+# ---------------------------------------------------------------------------
+# Value (cheapness): high ratio => cheap => long.  cap = price*sharesout.
+C["val_ey"]   = "rank(divide(operating_income, cap))"          # earnings yield
+C["val_bp"]   = "rank(divide(equity, cap))"                    # book-to-price
+C["val_cfp"]  = "rank(divide(cashflow_op, cap))"               # cashflow yield
+C["val_sp"]   = "rank(divide(sales, cap))"                     # sales-to-price
+# Quality: profitability high => long; leverage high => short.
+C["q_gp"]     = "rank(divide(operating_income, assets))"       # gross profitability (Novy-Marx)
+C["q_roe"]    = "rank(divide(operating_income, equity))"       # return on equity
+C["q_lev"]    = "-rank(divide(debt, equity))"                  # low leverage
+C["q_accr"]   = "rank(divide(subtract(cashflow_op, operating_income), assets))"  # low accruals (cash earnings quality)
+# Growth.
+C["g_sales"]  = "rank(sales_growth)"                           # sales growth
+# Long-horizon momentum (12-1) and low-vol anomaly — technical but a driver
+# the short-reversal families do NOT span.
+C["mom121"]   = "rank(divide(ts_delay(close, 21), ts_delay(close, 252)))"   # 12m-minus-1m momentum
+C["lowvol"]   = "-rank(ts_std_dev(returns, 120))"             # low-volatility anomaly
+
+T3 = "TOP3000"
 CANDIDATES = [
-    # erec_t1k_d18_pvc (TOP1000/SUBIND) = SUBMITTABLE SH1.54/FIT1.24, only E binds
-    # at 0.58. E is SECTOR-neutralized -> change THIS one's neutralization to break
-    # the E correlation while keeping the winning recipe + universe.
-    ("pvcerec_t1k_ind", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "INDUSTRY",    "decay": 18}),
-    ("pvcerec_t1k_mkt", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "MARKET",      "decay": 18}),
-    ("pvcerec_t1k_sub_t04", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.04, "decay": 18}),
-    ("pvcerec_t1k_sub_t15", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "truncation": 0.15, "decay": 18}),
-    ("pvcerec_t1k_sub_d24", blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": 24}),
-    ("pvcerec_t1k_none",    blend(*PVCEREC), {**BASE, "universe": "TOP1000", "neutralization": "NONE",       "decay": 18}),
+    # Fundamental value blends (slow -> low turnover, helps TO<0.25 gate).
+    ("val_pure",   blend("val_cfp", "val_ey", "val_bp", "val_sp"), {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    ("qual_pure",  blend("q_gp", "q_roe", "q_lev", "q_accr"),      {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # Value + Quality combo (classic robust factor), two neutralizations.
+    ("valqual_sub", blend("val_cfp", "val_ey", "q_gp", "q_lev"),   {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    ("valqual_sec", blend("val_cfp", "val_ey", "q_gp", "q_lev"),   {**BASE, "universe": T3, "neutralization": "SECTOR",      "decay": 6}),
+    # Value + Quality + Growth.
+    ("vqg_sub",    blend("val_cfp", "q_gp", "q_lev", "g_sales"),   {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 6}),
+    # Long-horizon momentum + low-vol (technical, new horizon).
+    ("mom_lowvol", blend("mom121", "lowvol"),                       {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 20}),
+    ("lowvol_pure", blend("lowvol",),                               {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 20}),
+    # Fundamental value/quality blended with low-vol (cross-driver hybrid).
+    ("vq_lowvol",  blend("val_cfp", "q_gp", "lowvol"),             {**BASE, "universe": T3, "neutralization": "SUBINDUSTRY", "decay": 10}),
 ]
 
 
@@ -160,7 +191,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT19.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT20.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
