@@ -1250,5 +1250,55 @@
    "verdict": "FULLY SUBMITTABLE: clean IS + self-corr 0.583<0.7 + 2020 POSITIVE (+1.79). Internal decay 12 (vs 6) cut turnover 0.54->0.39, lifted fitness 0.97->1.04 to clear LOW_FITNESS while keeping SH 1.97.",
    "fix_note": "derived from akdN2J12 (SH2.11 but LOW_FITNESS@TO0.54) by raising ts_decay_linear window 6->12."
   }
+ },
+ {
+  "scan": "additional clean recovery: Model-module composite blended with pv/VWAP divergence",
+  "submittable_with_caveat": {
+   "id": "9qwJLr71",
+   "structure": "multi-field composite: Model score (composite_factor_score_derivative) + VWAP mean-reversion + VWAP-volume divergence (2 windows)",
+   "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+   "settings": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 0,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON"
+   },
+   "is_sharpe": 1.69,
+   "turnover": 0.183,
+   "fitness": 1.32,
+   "fails": [],
+   "real_selfcorr": 0.652,
+   "sharpe_2020": 0.83,
+   "verdict": "SUBMITTABLE but self-corr 0.652 is close to the 0.7 cutoff (less margin than pw6n7l6x 0.583 / WjpNW2Qd 0.418). 2020 +0.83 positive. Demonstrates high-value modules (Model) yield signal ONLY when combined with complementary structure, not via single-field extraction."
+  },
+  "ROUND_SUMMARY_three_clean_submittables": [
+   {
+    "id": "pw6n7l6x",
+    "sharpe": 1.97,
+    "selfcorr": 0.583,
+    "y2020": 1.79,
+    "structure": "pv-divergence+VWAP composite (NEW)",
+    "best": "highest clean SH"
+   },
+   {
+    "id": "WjpNW2Qd",
+    "sharpe": 1.31,
+    "selfcorr": 0.418,
+    "y2020": 1.67,
+    "structure": "implied-vol momentum (OPTION module)",
+    "best": "lowest self-corr, satisfies 换module"
+   },
+   {
+    "id": "9qwJLr71",
+    "sharpe": 1.69,
+    "selfcorr": 0.652,
+    "y2020": 0.83,
+    "structure": "Model-score+pv/VWAP composite",
+    "best": "lowest turnover 0.183"
+   }
+  ]
  }
 ]
