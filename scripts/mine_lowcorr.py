@@ -170,9 +170,40 @@ def tilted_d(tkey: str, w: float, decay: int):
     expr = f"rank(add({PVC_BASE}, multiply({w}, {TILT[tkey]})))"
     return (f"pvc_{tkey}_w{int(w*100):03d}_d{decay:02d}", expr,
             {**BASE, "universe": "TOP1000", "neutralization": "SUBINDUSTRY", "decay": decay})
-for w in (0.58, 0.60, 0.62, 0.64):
-    for decay in (12, 14):
-        CANDIDATES.append(tilted_d("val", w, decay))
+
+# BATCH 26: ROBUSTNESS. Family I (pvc_val_w060_d14, N1pnoddo) passes but at the
+# edge: corr_H=0.497 (its base IS H's exact pvcerec recipe, so the value tilt
+# only rotated it away from E, not H). To win MARGIN (corr<0.47 AND SH>1.30) we
+# must rotate the BASE away from H too. Two prongs:
+#  (A) THINNED base: drop trret (the 60d reversal that drives the E/H overlap);
+#      pvcorr+amihud+turnover+volz+gap is still strong but less H-like, then add
+#      value tilt. Lower corr_H at a given weight -> room to keep SH up.
+#  (B) NEUTRALIZATION rotation: H is SUBINDUSTRY; run the full base under INDUSTRY
+#      / SECTOR so the whole vector is structurally decorrelated from H.
+THIN = ("pvcorr", "amihud", "turnover", "volz", "gap")   # pvcerec minus trret
+THIN_BASE = blend(*THIN)
+def thin_val(w: float, decay: int, neut: str = "SUBINDUSTRY"):
+    expr = f"rank(add({THIN_BASE}, multiply({w}, {TILT['val']})))"
+    tag = {"SUBINDUSTRY": "sub", "INDUSTRY": "ind", "SECTOR": "sec"}[neut]
+    return (f"thin_val_w{int(w*100):03d}_d{decay:02d}_{tag}", expr,
+            {**BASE, "universe": "TOP1000", "neutralization": neut, "decay": decay})
+def pvc_val_neut(w: float, decay: int, neut: str):
+    expr = f"rank(add({PVC_BASE}, multiply({w}, {TILT['val']})))"
+    tag = {"INDUSTRY": "ind", "SECTOR": "sec"}[neut]
+    return (f"pvc_val_w{int(w*100):03d}_d{decay:02d}_{tag}", expr,
+            {**BASE, "universe": "TOP1000", "neutralization": neut, "decay": decay})
+
+# Prong A: thinned base + value tilt, SUBINDUSTRY, sweep weight/decay.
+CANDIDATES.append(thin_val(0.30, 12))
+CANDIDATES.append(thin_val(0.45, 12))
+CANDIDATES.append(thin_val(0.45, 14))
+CANDIDATES.append(thin_val(0.60, 12))
+# Prong A+B: thinned base + value tilt under INDUSTRY (double rotation).
+CANDIDATES.append(thin_val(0.45, 12, "INDUSTRY"))
+# Prong B: full base + value tilt under INDUSTRY / SECTOR.
+CANDIDATES.append(pvc_val_neut(0.50, 12, "INDUSTRY"))
+CANDIDATES.append(pvc_val_neut(0.50, 12, "SECTOR"))
+CANDIDATES.append(pvc_val_neut(0.45, 12, "INDUSTRY"))
 
 _UNUSED_BATCH21 = [
 ]
@@ -236,7 +267,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT25.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT26.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
