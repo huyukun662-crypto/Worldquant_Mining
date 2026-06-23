@@ -245,14 +245,33 @@ def b29(tag: str, axis: str, decay: int, universe: str):
     return (f"{axis}_{utag}_d{decay:02d}_pOFF", B29[axis],
             {**BASE, "universe": universe, "neutralization": "INDUSTRY",
              "decay": decay, "pasteurization": "OFF"})
-CANDIDATES.append(b29("v1", "valq",    6, "TOP2000"))
-CANDIDATES.append(b29("v2", "valq",    4, "TOP1000"))
-CANDIDATES.append(b29("r1", "revsent", 4, "TOP2000"))
-CANDIDATES.append(b29("r2", "revsent", 4, "TOP3000"))
-CANDIDATES.append(b29("m1", "momvol",  6, "TOP2000"))
-CANDIDATES.append(b29("m2", "momvol",  6, "TOP1000"))
-CANDIDATES.append(b29("s1", "shq",     4, "TOP2000"))
-CANDIDATES.append(b29("s2", "shq",     4, "TOP3000"))
+# BATCH 30: 9th factor via a DIFFERENT REVERSAL mechanism. Batch 29 proved all
+# non-PV axes (value/quality/analyst/momentum/short) are too weak (SH<0.5) - on
+# this tier SH only comes from price-volume. But A-H's PV content is pvcorr +
+# flow (amihud/turnover/volz) + 60d return reversal + intraday range. UNUSED PV
+# reversal mechanisms that don't touch pvcorr/flow: VWAP mean-reversion (close/vwap)
+# and price-zscore / av_diff reversal. These reliably carry SH (reversal works) yet
+# may stay <0.5 vs the flow-heavy refs. pasteur OFF + INDUSTRY/SUBIND, low decay.
+B30 = {
+    "vwaprev":  blend("vwap_pos", "vwap40", "vwap_disp"),              # VWAP mean-reversion
+    "pricerev": blend("pricez", "avdiff"),                            # price-z + av_diff reversal
+    "combo":    blend("vwap_pos", "vwap40", "pricez", "avdiff"),      # vwap + price reversal
+    "combo5":   blend("vwap_pos", "vwap40", "pricez", "avdiff", "vcspread"),  # + vwap-close spread
+}
+def b30(axis: str, decay: int, universe: str, neut: str = "INDUSTRY"):
+    utag = {"TOP1000": "t1k", "TOP2000": "t2k", "TOP3000": "t3k"}[universe]
+    ntag = {"INDUSTRY": "ind", "SUBINDUSTRY": "sub"}[neut]
+    return (f"{axis}_{utag}_{ntag}_d{decay:02d}_pOFF", B30[axis],
+            {**BASE, "universe": universe, "neutralization": neut,
+             "decay": decay, "pasteurization": "OFF"})
+CANDIDATES.append(b30("vwaprev",  8, "TOP1000", "INDUSTRY"))
+CANDIDATES.append(b30("vwaprev",  8, "TOP1000", "SUBINDUSTRY"))
+CANDIDATES.append(b30("pricerev", 8, "TOP1000", "INDUSTRY"))
+CANDIDATES.append(b30("combo",    8, "TOP1000", "INDUSTRY"))
+CANDIDATES.append(b30("combo",    8, "TOP1000", "SUBINDUSTRY"))
+CANDIDATES.append(b30("combo",    8, "TOP2000", "INDUSTRY"))
+CANDIDATES.append(b30("combo5",   6, "TOP1000", "INDUSTRY"))
+CANDIDATES.append(b30("combo",    6, "TOP1000", "INDUSTRY"))
 
 _UNUSED_BATCH21 = [
 ]
@@ -316,7 +335,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT29.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT30.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
