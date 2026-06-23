@@ -1338,5 +1338,58 @@
    "verdict": "CLEAN submittable: self-corr 0.648<0.7, 2020 +0.51. SECTOR neutralization variant of the Model+pv composite family; lower turnover (0.161) than pw6n7l6x."
   },
   "recipe_finding": "Only composite_factor_score_derivative (Model) lifts the pv/VWAP-divergence base (~SH 1.0) past 1.25; fscore_quality/momentum/ebit/cap/est_eps legs all stay 0.77-1.11. Best settings: TOP3000 + SUBINDUSTRY(9qwJLr71 SH1.69)/SECTOR(qMAgeREV SH1.41); TOP2000/INDUSTRY degrades to 1.11."
+ },
+ {
+  "scan": "comp2 completion + composite-family saturation finding",
+  "k_pvw_near_miss": {
+   "id": "1Y7JVmxQ",
+   "sharpe": 1.62,
+   "turnover": 0.202,
+   "fitness": 1.17,
+   "fails": [],
+   "real_selfcorr": 0.707,
+   "sharpe_2020": 1.16,
+   "note": "IS-CLEAN (SH 1.62) but self-corr 0.707 JUST OVER 0.7 cutoff -> NOT submittable. Down-weighting the module leg (0.4*composite) pushed self-corr UP toward the pure pv-divergence signal."
+  },
+  "k_est_fail": {
+   "id": "pw68JPvo",
+   "sharpe": 0.6,
+   "note": "est_eps leg too weak"
+  },
+  "SATURATION_FINDING": "The composite_factor_score_derivative + pv/VWAP-divergence family is now mined out: clean instances exist only at TOP3000 with SUBINDUSTRY (9qwJLr71 SH1.69 corr0.652) or SECTOR (qMAgeREV SH1.41 corr0.648); all variants share the same DNA so self-corr clusters at 0.65-0.71 (right at the 0.7 cutoff). Other module legs (quality/momentum/ebit/cap/est_eps) cannot lift the pv base past 1.25.",
+  "FINAL_clean_submittables_4": [
+   {
+    "id": "pw6n7l6x",
+    "sharpe": 1.97,
+    "to": 0.386,
+    "selfcorr": 0.583,
+    "y2020": 1.79,
+    "structure": "pv-divergence + VWAP-reversal composite"
+   },
+   {
+    "id": "9qwJLr71",
+    "sharpe": 1.69,
+    "to": 0.183,
+    "selfcorr": 0.652,
+    "y2020": 0.83,
+    "structure": "Model composite + pv/VWAP (SUBINDUSTRY)"
+   },
+   {
+    "id": "qMAgeREV",
+    "sharpe": 1.41,
+    "to": 0.161,
+    "selfcorr": 0.648,
+    "y2020": 0.51,
+    "structure": "Model composite + pv/VWAP (SECTOR)"
+   },
+   {
+    "id": "WjpNW2Qd",
+    "sharpe": 1.31,
+    "to": 0.122,
+    "selfcorr": 0.418,
+    "y2020": 1.67,
+    "structure": "Option implied-vol momentum"
+   }
+  ]
  }
 ]
