@@ -264,14 +264,25 @@ def b30(axis: str, decay: int, universe: str, neut: str = "INDUSTRY"):
     return (f"{axis}_{utag}_{ntag}_d{decay:02d}_pOFF", B30[axis],
             {**BASE, "universe": universe, "neutralization": neut,
              "decay": decay, "pasteurization": "OFF"})
-CANDIDATES.append(b30("vwaprev",  8, "TOP1000", "INDUSTRY"))
-CANDIDATES.append(b30("vwaprev",  8, "TOP1000", "SUBINDUSTRY"))
-CANDIDATES.append(b30("pricerev", 8, "TOP1000", "INDUSTRY"))
-CANDIDATES.append(b30("combo",    8, "TOP1000", "INDUSTRY"))
-CANDIDATES.append(b30("combo",    8, "TOP1000", "SUBINDUSTRY"))
-CANDIDATES.append(b30("combo",    8, "TOP2000", "INDUSTRY"))
-CANDIDATES.append(b30("combo5",   6, "TOP1000", "INDUSTRY"))
-CANDIDATES.append(b30("combo",    6, "TOP1000", "INDUSTRY"))
+# BATCH 31: BRIDGE. VWAP/price reversal is decorrelated from A-H but caps at
+# SH ~0.8 (batch 30). pvcerec carries SH but saturates A-H. Mirror the 8th-factor
+# trick: make the VWAP-reversal blend the MAJORITY base and add a SMALL pvcerec
+# tilt to lift SH past 1.25 while keeping pvcerec content low enough that corr<0.5
+# vs all of A-I. Sweep the pvcerec weight (the SH/corr knob). SUBIND gives the
+# vwap base its best SH (0.80), pasteur OFF lifts both SH and lowers corr.
+VWAP_BASE = blend("vwap_pos", "vwap40", "vwap_disp")   # the SH-0.80 decorrelated base
+def vwap_pvc(w: float, decay: int, neut: str = "SUBINDUSTRY", universe: str = "TOP1000"):
+    expr = f"rank(add({VWAP_BASE}, multiply({w}, {blend(*PVCEREC)})))"
+    ntag = {"INDUSTRY": "ind", "SUBINDUSTRY": "sub"}[neut]
+    return (f"vwap_pvc_w{int(w*100):03d}_d{decay:02d}_{ntag}_pOFF", expr,
+            {**BASE, "universe": universe, "neutralization": neut,
+             "decay": decay, "pasteurization": "OFF"})
+for w in (0.40, 0.55, 0.70, 0.85):
+    CANDIDATES.append(vwap_pvc(w, 8, "SUBINDUSTRY"))
+CANDIDATES.append(vwap_pvc(0.55, 8, "INDUSTRY"))
+CANDIDATES.append(vwap_pvc(0.70, 8, "INDUSTRY"))
+CANDIDATES.append(vwap_pvc(0.70, 6, "SUBINDUSTRY"))
+CANDIDATES.append(vwap_pvc(0.85, 6, "SUBINDUSTRY"))
 
 _UNUSED_BATCH21 = [
 ]
@@ -335,7 +346,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT30.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT31.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
