@@ -1391,5 +1391,39 @@
     "structure": "Option implied-vol momentum"
    }
   ]
+ },
+ {
+  "scan": "Option-module IV batch (WjpNW2Qd recipe, decay 128) + surfaced Fundamental-leverage composite",
+  "option_batch": {
+   "finding": "Only call_60 IV-momentum (WjpNW2Qd) is clean. call_30 (iv_c30) SH 1.22 just under 1.25; call_120 1.07; put_60 0.97; longer delta window (20) 0.98; IV-HV spread 0.26; put-call skew -0.29; TOP3000/SECTOR variant 0.28 (signal lives in TOP1000 liquid-option names). Heavy decay 128 essential: without it turnover ~0.7-0.9 (HIGH_TURNOVER).",
+   "near_miss_iv_c30": {
+    "id": "blLvV26K",
+    "sharpe": 1.22,
+    "to": 0.135,
+    "fit": 1.32,
+    "note": "call_30 IV momentum; 0.03 short of 1.25"
+   }
+  },
+  "NEW_clean_submittable": {
+   "id": "vRLdxjlQ",
+   "structure": "Fundamental leverage+capex composite + price reversal + pv/VWAP divergence (different module legs than the Model-composite family)",
+   "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+   "settings": {
+    "region": "USA",
+    "universe": "TOP3000",
+    "delay": 1,
+    "decay": 0,
+    "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08,
+    "pasteurization": "ON"
+   },
+   "is_sharpe": 1.89,
+   "turnover": 0.17,
+   "fitness": 1.58,
+   "fails": [],
+   "real_selfcorr": 0.67,
+   "sharpe_2020": 2.11,
+   "verdict": "CLEAN submittable: self-corr 0.67<0.7 (close to cutoff), 2020 +2.11. Surfaced in the account during the session; Fundamental-leverage legs make it a distinct composite from the Model-composite family."
+  }
  }
 ]
