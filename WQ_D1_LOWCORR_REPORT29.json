@@ -131,5 +131,39 @@
     "alpha_id": "blLvoPjM",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "momvol_t2k_d06_pOFF",
+    "expression": "rank(add(add(rank(divide(ts_delay(close, 21), ts_delay(close, 252))), rank(ts_delta(close, 240))), -rank(ts_std_dev(returns, 120))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP2000",
+      "neutralization": "INDUSTRY",
+      "decay": 6
+    },
+    "ok": true,
+    "sharpe": -0.22,
+    "turnover": 0.0353,
+    "fitness": -0.13,
+    "drawdown": 0.6584,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "QPaE27V5",
+    "error": "",
+    "corr": {}
   }
 ]
