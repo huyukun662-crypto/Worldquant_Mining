@@ -1,0 +1,15 @@
+{
+  "constraint": "TO <= 0.07 AND DD <= 0.10",
+  "common_settings": {
+    "instrumentType": "EQUITY", "region": "USA", "universe": "TOP3000",
+    "delay": 1, "decay": 0, "neutralization": "SUBINDUSTRY",
+    "truncation": 0.08, "pasteurization": "ON", "unitHandling": "VERIFY",
+    "nanHandling": "OFF", "maxTrade": "OFF", "language": "FASTEXPR",
+    "testPeriod": "P0Y0M", "startDate": "2019-01-01", "endDate": "2023-12-31"
+  },
+  "alphas": [
+    {"alpha_id": "YPpQ2LxW", "sh": 1.59, "fit": 1.46, "to": 0.0597, "dd": 0.0991, "self_corr": 0.6258, "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 55)"},
+    {"alpha_id": "zq9OJbKK", "sh": 1.57, "fit": 1.42, "to": 0.0681, "dd": 0.0931, "self_corr": 0.6344, "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)"},
+    {"alpha_id": "npg3ZzVz", "sh": 1.49, "fit": 1.31, "to": 0.0655, "dd": 0.0997, "self_corr": 0.6293, "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 44)"}
+  ]
+}

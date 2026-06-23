@@ -1,10 +1,10 @@
 [
   {
     "ok": true,
-    "alpha_id": "A1wk659l",
-    "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)",
+    "alpha_id": "O0pob0OR",
+    "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 33)",
     "alpha": {
-      "id": "A1wk659l",
+      "id": "O0pob0OR",
       "type": "REGULAR",
       "author": "YW92315",
       "settings": {
@@ -26,259 +26,13 @@
         "endDate": "2023-12-31"
       },
       "regular": {
-        "code": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)",
+        "code": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 33)",
         "description": null,
         "operatorCount": 15
       },
-      "dateCreated": "2026-06-22T22:03:42-04:00",
+      "dateCreated": "2026-06-22T23:40:51-04:00",
       "dateSubmitted": null,
-      "dateModified": "2026-06-22T22:03:43-04:00",
-      "name": null,
-      "favorite": false,
-      "hidden": false,
-      "color": null,
-      "category": null,
-      "tags": [],
-      "classifications": [],
-      "grade": "GOOD",
-      "stage": "IS",
-      "status": "UNSUBMITTED",
-      "is": {
-        "pnl": 5425294,
-        "bookSize": 20000000,
-        "longCount": 1523,
-        "shortCount": 1515,
-        "turnover": 0.113,
-        "returns": 0.1096,
-        "drawdown": 0.0866,
-        "margin": 0.001941,
-        "sharpe": 1.65,
-        "fitness": 1.55,
-        "startDate": "2019-01-01",
-        "checks": [
-          {
-            "name": "LOW_SHARPE",
-            "result": "PASS",
-            "limit": 1.25,
-            "value": 1.65
-          },
-          {
-            "name": "LOW_FITNESS",
-            "result": "PASS",
-            "limit": 1.0,
-            "value": 1.55
-          },
-          {
-            "name": "LOW_TURNOVER",
-            "result": "PASS",
-            "limit": 0.01,
-            "value": 0.113
-          },
-          {
-            "name": "HIGH_TURNOVER",
-            "result": "PASS",
-            "limit": 0.7,
-            "value": 0.113
-          },
-          {
-            "name": "CONCENTRATED_WEIGHT",
-            "result": "PASS"
-          },
-          {
-            "name": "LOW_SUB_UNIVERSE_SHARPE",
-            "result": "PASS",
-            "limit": 0.71,
-            "value": 0.88
-          },
-          {
-            "name": "SELF_CORRELATION",
-            "result": "PENDING"
-          },
-          {
-            "name": "MATCHES_COMPETITION",
-            "result": "PASS",
-            "competitions": [
-              {
-                "id": "challenge",
-                "name": "Challenge"
-              },
-              {
-                "id": "IQC2026S2",
-                "name": "International Quant Championship 2026 Stage 2"
-              }
-            ]
-          }
-        ]
-      },
-      "os": null,
-      "train": null,
-      "test": null,
-      "prod": null,
-      "competitions": null,
-      "themes": null,
-      "pyramids": null,
-      "pyramidThemes": null,
-      "team": null,
-      "origin": "PLATFORM"
-    }
-  },
-  {
-    "ok": true,
-    "alpha_id": "P0pveb8K",
-    "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-    "alpha": {
-      "id": "P0pveb8K",
-      "type": "REGULAR",
-      "author": "YW92315",
-      "settings": {
-        "instrumentType": "EQUITY",
-        "region": "USA",
-        "universe": "TOP3000",
-        "delay": 1,
-        "decay": 0,
-        "neutralization": "SUBINDUSTRY",
-        "truncation": 0.08,
-        "pasteurization": "ON",
-        "unitHandling": "VERIFY",
-        "nanHandling": "OFF",
-        "maxTrade": "OFF",
-        "maxPosition": "OFF",
-        "language": "FASTEXPR",
-        "visualization": false,
-        "startDate": "2019-01-01",
-        "endDate": "2023-12-31"
-      },
-      "regular": {
-        "code": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-        "description": null,
-        "operatorCount": 18
-      },
-      "dateCreated": "2026-06-22T22:03:59-04:00",
-      "dateSubmitted": null,
-      "dateModified": "2026-06-22T22:04:00-04:00",
-      "name": null,
-      "favorite": false,
-      "hidden": false,
-      "color": null,
-      "category": null,
-      "tags": [],
-      "classifications": [],
-      "grade": "GOOD",
-      "stage": "IS",
-      "status": "UNSUBMITTED",
-      "is": {
-        "pnl": 5854728,
-        "bookSize": 20000000,
-        "longCount": 1499,
-        "shortCount": 1489,
-        "turnover": 0.1695,
-        "returns": 0.1183,
-        "drawdown": 0.0709,
-        "margin": 0.001396,
-        "sharpe": 1.89,
-        "fitness": 1.58,
-        "startDate": "2019-01-01",
-        "checks": [
-          {
-            "name": "LOW_SHARPE",
-            "result": "PASS",
-            "limit": 1.25,
-            "value": 1.89
-          },
-          {
-            "name": "LOW_FITNESS",
-            "result": "PASS",
-            "limit": 1.0,
-            "value": 1.58
-          },
-          {
-            "name": "LOW_TURNOVER",
-            "result": "PASS",
-            "limit": 0.01,
-            "value": 0.1695
-          },
-          {
-            "name": "HIGH_TURNOVER",
-            "result": "PASS",
-            "limit": 0.7,
-            "value": 0.1695
-          },
-          {
-            "name": "CONCENTRATED_WEIGHT",
-            "result": "PASS"
-          },
-          {
-            "name": "LOW_SUB_UNIVERSE_SHARPE",
-            "result": "PASS",
-            "limit": 0.82,
-            "value": 1.04
-          },
-          {
-            "name": "SELF_CORRELATION",
-            "result": "PENDING"
-          },
-          {
-            "name": "MATCHES_COMPETITION",
-            "result": "PASS",
-            "competitions": [
-              {
-                "id": "challenge",
-                "name": "Challenge"
-              },
-              {
-                "id": "IQC2026S2",
-                "name": "International Quant Championship 2026 Stage 2"
-              }
-            ]
-          }
-        ]
-      },
-      "os": null,
-      "train": null,
-      "test": null,
-      "prod": null,
-      "competitions": null,
-      "themes": null,
-      "pyramids": null,
-      "pyramidThemes": null,
-      "team": null,
-      "origin": "PLATFORM"
-    }
-  },
-  {
-    "ok": true,
-    "alpha_id": "vRLdawnQ",
-    "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 10)",
-    "alpha": {
-      "id": "vRLdawnQ",
-      "type": "REGULAR",
-      "author": "YW92315",
-      "settings": {
-        "instrumentType": "EQUITY",
-        "region": "USA",
-        "universe": "TOP3000",
-        "delay": 1,
-        "decay": 0,
-        "neutralization": "SUBINDUSTRY",
-        "truncation": 0.08,
-        "pasteurization": "ON",
-        "unitHandling": "VERIFY",
-        "nanHandling": "OFF",
-        "maxTrade": "OFF",
-        "maxPosition": "OFF",
-        "language": "FASTEXPR",
-        "visualization": false,
-        "startDate": "2019-01-01",
-        "endDate": "2023-12-31"
-      },
-      "regular": {
-        "code": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 10)",
-        "description": null,
-        "operatorCount": 15
-      },
-      "dateCreated": "2026-06-22T22:06:36-04:00",
-      "dateSubmitted": null,
-      "dateModified": "2026-06-22T22:06:36-04:00",
+      "dateModified": "2026-06-22T23:40:51-04:00",
       "name": null,
       "favorite": false,
       "hidden": false,
@@ -290,41 +44,41 @@
       "stage": "IS",
       "status": "UNSUBMITTED",
       "is": {
-        "pnl": 5577510,
+        "pnl": 5100032,
         "bookSize": 20000000,
-        "longCount": 1521,
-        "shortCount": 1518,
-        "turnover": 0.1628,
-        "returns": 0.1127,
-        "drawdown": 0.0779,
-        "margin": 0.001385,
-        "sharpe": 1.76,
-        "fitness": 1.46,
+        "longCount": 1528,
+        "shortCount": 1510,
+        "turnover": 0.0812,
+        "returns": 0.1031,
+        "drawdown": 0.0844,
+        "margin": 0.002538,
+        "sharpe": 1.6,
+        "fitness": 1.45,
         "startDate": "2019-01-01",
         "checks": [
           {
             "name": "LOW_SHARPE",
             "result": "PASS",
             "limit": 1.25,
-            "value": 1.76
+            "value": 1.6
           },
           {
             "name": "LOW_FITNESS",
             "result": "PASS",
             "limit": 1.0,
-            "value": 1.46
+            "value": 1.45
           },
           {
             "name": "LOW_TURNOVER",
             "result": "PASS",
             "limit": 0.01,
-            "value": 0.1628
+            "value": 0.0812
           },
           {
             "name": "HIGH_TURNOVER",
             "result": "PASS",
             "limit": 0.7,
-            "value": 0.1628
+            "value": 0.0812
           },
           {
             "name": "CONCENTRATED_WEIGHT",
@@ -333,253 +87,7 @@
           {
             "name": "LOW_SUB_UNIVERSE_SHARPE",
             "result": "PASS",
-            "limit": 0.76,
-            "value": 0.85
-          },
-          {
-            "name": "SELF_CORRELATION",
-            "result": "PENDING"
-          },
-          {
-            "name": "MATCHES_COMPETITION",
-            "result": "PASS",
-            "competitions": [
-              {
-                "id": "challenge",
-                "name": "Challenge"
-              },
-              {
-                "id": "IQC2026S2",
-                "name": "International Quant Championship 2026 Stage 2"
-              }
-            ]
-          }
-        ]
-      },
-      "os": null,
-      "train": null,
-      "test": null,
-      "prod": null,
-      "competitions": null,
-      "themes": null,
-      "pyramids": null,
-      "pyramidThemes": null,
-      "team": null,
-      "origin": "PLATFORM"
-    }
-  },
-  {
-    "ok": true,
-    "alpha_id": "6XwzgV0L",
-    "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-    "alpha": {
-      "id": "6XwzgV0L",
-      "type": "REGULAR",
-      "author": "YW92315",
-      "settings": {
-        "instrumentType": "EQUITY",
-        "region": "USA",
-        "universe": "TOP3000",
-        "delay": 1,
-        "decay": 0,
-        "neutralization": "SUBINDUSTRY",
-        "truncation": 0.08,
-        "pasteurization": "ON",
-        "unitHandling": "VERIFY",
-        "nanHandling": "OFF",
-        "maxTrade": "OFF",
-        "maxPosition": "OFF",
-        "language": "FASTEXPR",
-        "visualization": false,
-        "startDate": "2019-01-01",
-        "endDate": "2023-12-31"
-      },
-      "regular": {
-        "code": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-        "description": null,
-        "operatorCount": 15
-      },
-      "dateCreated": "2026-06-22T22:07:49-04:00",
-      "dateSubmitted": null,
-      "dateModified": "2026-06-22T22:07:49-04:00",
-      "name": null,
-      "favorite": false,
-      "hidden": false,
-      "color": null,
-      "category": null,
-      "tags": [],
-      "classifications": [],
-      "grade": "GOOD",
-      "stage": "IS",
-      "status": "UNSUBMITTED",
-      "is": {
-        "pnl": 6021290,
-        "bookSize": 20000000,
-        "longCount": 1522,
-        "shortCount": 1516,
-        "turnover": 0.1723,
-        "returns": 0.1217,
-        "drawdown": 0.0654,
-        "margin": 0.001412,
-        "sharpe": 1.88,
-        "fitness": 1.58,
-        "startDate": "2019-01-01",
-        "checks": [
-          {
-            "name": "LOW_SHARPE",
-            "result": "PASS",
-            "limit": 1.25,
-            "value": 1.88
-          },
-          {
-            "name": "LOW_FITNESS",
-            "result": "PASS",
-            "limit": 1.0,
-            "value": 1.58
-          },
-          {
-            "name": "LOW_TURNOVER",
-            "result": "PASS",
-            "limit": 0.01,
-            "value": 0.1723
-          },
-          {
-            "name": "HIGH_TURNOVER",
-            "result": "PASS",
-            "limit": 0.7,
-            "value": 0.1723
-          },
-          {
-            "name": "CONCENTRATED_WEIGHT",
-            "result": "PASS"
-          },
-          {
-            "name": "LOW_SUB_UNIVERSE_SHARPE",
-            "result": "PASS",
-            "limit": 0.81,
-            "value": 0.94
-          },
-          {
-            "name": "SELF_CORRELATION",
-            "result": "PENDING"
-          },
-          {
-            "name": "MATCHES_COMPETITION",
-            "result": "PASS",
-            "competitions": [
-              {
-                "id": "challenge",
-                "name": "Challenge"
-              },
-              {
-                "id": "IQC2026S2",
-                "name": "International Quant Championship 2026 Stage 2"
-              }
-            ]
-          }
-        ]
-      },
-      "os": null,
-      "train": null,
-      "test": null,
-      "prod": null,
-      "competitions": null,
-      "themes": null,
-      "pyramids": null,
-      "pyramidThemes": null,
-      "team": null,
-      "origin": "PLATFORM"
-    }
-  },
-  {
-    "ok": true,
-    "alpha_id": "rKoAQE88",
-    "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_mean(returns, 5)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-    "alpha": {
-      "id": "rKoAQE88",
-      "type": "REGULAR",
-      "author": "YW92315",
-      "settings": {
-        "instrumentType": "EQUITY",
-        "region": "USA",
-        "universe": "TOP3000",
-        "delay": 1,
-        "decay": 0,
-        "neutralization": "SUBINDUSTRY",
-        "truncation": 0.08,
-        "pasteurization": "ON",
-        "unitHandling": "VERIFY",
-        "nanHandling": "OFF",
-        "maxTrade": "OFF",
-        "maxPosition": "OFF",
-        "language": "FASTEXPR",
-        "visualization": false,
-        "startDate": "2019-01-01",
-        "endDate": "2023-12-31"
-      },
-      "regular": {
-        "code": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_mean(returns, 5)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-        "description": null,
-        "operatorCount": 15
-      },
-      "dateCreated": "2026-06-22T22:10:20-04:00",
-      "dateSubmitted": null,
-      "dateModified": "2026-06-22T22:10:21-04:00",
-      "name": null,
-      "favorite": false,
-      "hidden": false,
-      "color": null,
-      "category": null,
-      "tags": [],
-      "classifications": [],
-      "grade": "AVERAGE",
-      "stage": "IS",
-      "status": "UNSUBMITTED",
-      "is": {
-        "pnl": 5833733,
-        "bookSize": 20000000,
-        "longCount": 1529,
-        "shortCount": 1509,
-        "turnover": 0.1889,
-        "returns": 0.1179,
-        "drawdown": 0.1252,
-        "margin": 0.001249,
-        "sharpe": 1.63,
-        "fitness": 1.29,
-        "startDate": "2019-01-01",
-        "checks": [
-          {
-            "name": "LOW_SHARPE",
-            "result": "PASS",
-            "limit": 1.25,
-            "value": 1.63
-          },
-          {
-            "name": "LOW_FITNESS",
-            "result": "PASS",
-            "limit": 1.0,
-            "value": 1.29
-          },
-          {
-            "name": "LOW_TURNOVER",
-            "result": "PASS",
-            "limit": 0.01,
-            "value": 0.1889
-          },
-          {
-            "name": "HIGH_TURNOVER",
-            "result": "PASS",
-            "limit": 0.7,
-            "value": 0.1889
-          },
-          {
-            "name": "CONCENTRATED_WEIGHT",
-            "result": "PASS"
-          },
-          {
-            "name": "LOW_SUB_UNIVERSE_SHARPE",
-            "result": "PASS",
-            "limit": 0.71,
+            "limit": 0.69,
             "value": 0.83
           },
           {
@@ -616,10 +124,10 @@
   },
   {
     "ok": true,
-    "alpha_id": "YPpQX2xW",
-    "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+    "alpha_id": "YPpQ2LxW",
+    "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 55)",
     "alpha": {
-      "id": "YPpQX2xW",
+      "id": "YPpQ2LxW",
       "type": "REGULAR",
       "author": "YW92315",
       "settings": {
@@ -641,13 +149,13 @@
         "endDate": "2023-12-31"
       },
       "regular": {
-        "code": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+        "code": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 55)",
         "description": null,
-        "operatorCount": 21
+        "operatorCount": 15
       },
-      "dateCreated": "2026-06-22T22:11:39-04:00",
+      "dateCreated": "2026-06-22T23:41:22-04:00",
       "dateSubmitted": null,
-      "dateModified": "2026-06-22T22:11:40-04:00",
+      "dateModified": "2026-06-22T23:41:23-04:00",
       "name": null,
       "favorite": false,
       "hidden": false,
@@ -655,45 +163,45 @@
       "category": null,
       "tags": [],
       "classifications": [],
-      "grade": "GOOD",
+      "grade": "AVERAGE",
       "stage": "IS",
       "status": "UNSUBMITTED",
       "is": {
-        "pnl": 6196527,
+        "pnl": 5186400,
         "bookSize": 20000000,
-        "longCount": 1466,
-        "shortCount": 1572,
-        "turnover": 0.1316,
-        "returns": 0.1252,
-        "drawdown": 0.1187,
-        "margin": 0.001903,
-        "sharpe": 1.68,
-        "fitness": 1.64,
+        "longCount": 1529,
+        "shortCount": 1509,
+        "turnover": 0.0597,
+        "returns": 0.1048,
+        "drawdown": 0.0991,
+        "margin": 0.003512,
+        "sharpe": 1.59,
+        "fitness": 1.46,
         "startDate": "2019-01-01",
         "checks": [
           {
             "name": "LOW_SHARPE",
             "result": "PASS",
             "limit": 1.25,
-            "value": 1.68
+            "value": 1.59
           },
           {
             "name": "LOW_FITNESS",
             "result": "PASS",
             "limit": 1.0,
-            "value": 1.64
+            "value": 1.46
           },
           {
             "name": "LOW_TURNOVER",
             "result": "PASS",
             "limit": 0.01,
-            "value": 0.1316
+            "value": 0.0597
           },
           {
             "name": "HIGH_TURNOVER",
             "result": "PASS",
             "limit": 0.7,
-            "value": 0.1316
+            "value": 0.0597
           },
           {
             "name": "CONCENTRATED_WEIGHT",
@@ -702,8 +210,500 @@
           {
             "name": "LOW_SUB_UNIVERSE_SHARPE",
             "result": "PASS",
-            "limit": 0.73,
+            "limit": 0.69,
+            "value": 0.92
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    }
+  },
+  {
+    "ok": true,
+    "alpha_id": "QPaE2raK",
+    "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 66)",
+    "alpha": {
+      "id": "QPaE2raK",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 66)",
+        "description": null,
+        "operatorCount": 15
+      },
+      "dateCreated": "2026-06-22T23:44:25-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-06-22T23:44:25-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [],
+      "grade": "AVERAGE",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 5425364,
+        "bookSize": 20000000,
+        "longCount": 1529,
+        "shortCount": 1509,
+        "turnover": 0.0602,
+        "returns": 0.1096,
+        "drawdown": 0.1273,
+        "margin": 0.003641,
+        "sharpe": 1.54,
+        "fitness": 1.44,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.54
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.44
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0602
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0602
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.67,
+            "value": 0.96
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    }
+  },
+  {
+    "ok": true,
+    "alpha_id": "npg3ZzVz",
+    "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 44)",
+    "alpha": {
+      "id": "npg3ZzVz",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 44)",
+        "description": null,
+        "operatorCount": 15
+      },
+      "dateCreated": "2026-06-22T23:45:22-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-06-22T23:45:23-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [],
+      "grade": "AVERAGE",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 4811640,
+        "bookSize": 20000000,
+        "longCount": 1529,
+        "shortCount": 1510,
+        "turnover": 0.0655,
+        "returns": 0.0972,
+        "drawdown": 0.0997,
+        "margin": 0.002972,
+        "sharpe": 1.49,
+        "fitness": 1.31,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.49
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.31
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0655
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0655
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.65,
+            "value": 0.84
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    }
+  },
+  {
+    "ok": true,
+    "alpha_id": "Xgp12K2z",
+    "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)",
+    "alpha": {
+      "id": "Xgp12K2z",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)",
+        "description": null,
+        "operatorCount": 15
+      },
+      "dateCreated": "2026-06-22T23:47:09-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-06-22T23:47:10-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [],
+      "grade": "AVERAGE",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 4619226,
+        "bookSize": 20000000,
+        "longCount": 1514,
+        "shortCount": 1556,
+        "turnover": 0.0734,
+        "returns": 0.0934,
+        "drawdown": 0.1555,
+        "margin": 0.002544,
+        "sharpe": 1.32,
+        "fitness": 1.14,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "PASS",
+            "limit": 1.25,
+            "value": 1.32
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "PASS",
+            "limit": 1.0,
+            "value": 1.14
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0734
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0734
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.57,
             "value": 0.93
+          },
+          {
+            "name": "SELF_CORRELATION",
+            "result": "PENDING"
+          },
+          {
+            "name": "MATCHES_COMPETITION",
+            "result": "PASS",
+            "competitions": [
+              {
+                "id": "challenge",
+                "name": "Challenge"
+              },
+              {
+                "id": "IQC2026S2",
+                "name": "International Quant Championship 2026 Stage 2"
+              }
+            ]
+          }
+        ]
+      },
+      "os": null,
+      "train": null,
+      "test": null,
+      "prod": null,
+      "competitions": null,
+      "themes": null,
+      "pyramids": null,
+      "pyramidThemes": null,
+      "team": null,
+      "origin": "PLATFORM"
+    }
+  },
+  {
+    "ok": true,
+    "alpha_id": "O0pob75p",
+    "expression": "ts_decay_linear(-rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)",
+    "alpha": {
+      "id": "O0pob75p",
+      "type": "REGULAR",
+      "author": "YW92315",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 0,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "startDate": "2019-01-01",
+        "endDate": "2023-12-31"
+      },
+      "regular": {
+        "code": "ts_decay_linear(-rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)",
+        "description": null,
+        "operatorCount": 15
+      },
+      "dateCreated": "2026-06-22T23:48:54-04:00",
+      "dateSubmitted": null,
+      "dateModified": "2026-06-22T23:48:55-04:00",
+      "name": null,
+      "favorite": false,
+      "hidden": false,
+      "color": null,
+      "category": null,
+      "tags": [],
+      "classifications": [],
+      "grade": "INFERIOR",
+      "stage": "IS",
+      "status": "UNSUBMITTED",
+      "is": {
+        "pnl": 3397485,
+        "bookSize": 20000000,
+        "longCount": 1504,
+        "shortCount": 1485,
+        "turnover": 0.0788,
+        "returns": 0.0687,
+        "drawdown": 0.0922,
+        "margin": 0.001742,
+        "sharpe": 1.16,
+        "fitness": 0.86,
+        "startDate": "2019-01-01",
+        "checks": [
+          {
+            "name": "LOW_SHARPE",
+            "result": "FAIL",
+            "limit": 1.25,
+            "value": 1.16
+          },
+          {
+            "name": "LOW_FITNESS",
+            "result": "FAIL",
+            "limit": 1.0,
+            "value": 0.86
+          },
+          {
+            "name": "LOW_TURNOVER",
+            "result": "PASS",
+            "limit": 0.01,
+            "value": 0.0788
+          },
+          {
+            "name": "HIGH_TURNOVER",
+            "result": "PASS",
+            "limit": 0.7,
+            "value": 0.0788
+          },
+          {
+            "name": "CONCENTRATED_WEIGHT",
+            "result": "PASS"
+          },
+          {
+            "name": "LOW_SUB_UNIVERSE_SHARPE",
+            "result": "PASS",
+            "limit": 0.5,
+            "value": 0.9
           },
           {
             "name": "SELF_CORRELATION",

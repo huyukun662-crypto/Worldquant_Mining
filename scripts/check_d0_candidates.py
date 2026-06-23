@@ -90,18 +90,18 @@ WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap
 D1_SUB = {"delay": 1, "neutralization": "SUBINDUSTRY"}
 
 CANDIDATES = [
-    # Book leverage + ts_av_diff(close,10), heavier decay=22 (low TO, ~higher FIT?)
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)", D1_SUB),
-    # Combine TWO model legs (book_leverage + capex) + PV
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # group_rank book_leverage by industry (industry-relative leverage)
-    ("ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Replace 5-d corr with 10-d corr to differentiate from previous winners
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 10)", D1_SUB),
-    # Use returns as the PV leg instead of price-based
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_mean(returns, 5)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Triple-model: book_lev + composite + analyst_rev + PV
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Tighten zq9OJbKK winner (decay=44) -- try decay=55 mid-point
+    ("ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 55)", D1_SUB),
+    # Group_rank + decay=33 (lower TO)
+    ("ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 33)", D1_SUB),
+    # Replace 5-day corr with 10-day to potentially reduce DD
+    ("ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 44)", D1_SUB),
+    # Single-model book_leverage variant decay=66
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 66)", D1_SUB),
+    # composite leg + heavy decay=44
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)", D1_SUB),
+    # capex_to_total_assets standalone with heavy decay=44 -- pure investment factor
+    ("ts_decay_linear(-rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 44)", D1_SUB),
 ]
 
 
