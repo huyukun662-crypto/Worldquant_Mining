@@ -157,5 +157,38 @@
     "alpha_id": "RRpdWkZe",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "thin_val_w045_d12_ind",
+    "expression": "rank(add(rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), multiply(0.45, rank(add(rank(divide(cashflow_op, cap)), rank(divide(operating_income, cap)))))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "INDUSTRY",
+      "decay": 12
+    },
+    "ok": true,
+    "sharpe": 0.97,
+    "turnover": 0.1307,
+    "fitness": 0.74,
+    "drawdown": 0.1199,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "E5wkJG3r",
+    "error": "",
+    "corr": {}
   }
 ]
