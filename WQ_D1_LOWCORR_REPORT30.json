@@ -131,5 +131,38 @@
     "alpha_id": "xAxRR0rp",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "combo_t1k_sub_d08_pOFF",
+    "expression": "rank(add(add(add(-rank(ts_mean(divide(close, vwap), 10)), -rank(ts_mean(divide(close, vwap), 40))), -rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60)))), -rank(ts_av_diff(close, 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 8
+    },
+    "ok": true,
+    "sharpe": 0.7,
+    "turnover": 0.1261,
+    "fitness": 0.54,
+    "drawdown": 0.1497,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "j2Z11l8Z",
+    "error": "",
+    "corr": {}
   }
 ]
