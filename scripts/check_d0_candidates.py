@@ -90,18 +90,20 @@ WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap
 D1_SUB = {"delay": 1, "neutralization": "SUBINDUSTRY"}
 
 CANDIDATES = [
-    # Swap PV mean-rev leg for model16 composite -- model-anchored 3-leg structure
-    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Add a 4th model leg to the proven 3-leg PV combo
-    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Same as above but with analyst_revision instead of composite
-    ("ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Same with snt1_d1_earningsrevision (sentiment module)
-    ("ts_decay_linear(-rank(snt1_d1_earningsrevision) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Pure model16+model77 combination with decay
-    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(asset_growth_rate), 5)", D1_SUB),
-    # Standalone strong-signal: heavy smoothing of analyst momentum
-    ("ts_decay_linear(-rank(fscore_momentum), 22)", D1_SUB),
+    # Different model16 leg: fscore_quality (quality anomaly) -- new field
+    ("ts_decay_linear(-rank(fscore_quality) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Different model16 leg: fscore_value
+    ("ts_decay_linear(-rank(fscore_value) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # earnings_certainty_rank_derivative leg (earnings quality)
+    ("ts_decay_linear(-rank(earnings_certainty_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # cashflow_efficiency leg (cashflow-based quality)
+    ("ts_decay_linear(-rank(cashflow_efficiency_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Try INDUSTRY neutralization (coarser) variant of best
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+     {"delay": 1, "neutralization": "INDUSTRY"}),
+    # Try MARKET neutralization (most coarse)
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+     {"delay": 1, "neutralization": "MARKET"}),
 ]
 
 
