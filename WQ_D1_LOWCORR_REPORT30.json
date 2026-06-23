@@ -1,0 +1,35 @@
+[
+  {
+    "name": "vwaprev_t1k_ind_d08_pOFF",
+    "expression": "rank(add(add(-rank(ts_mean(divide(close, vwap), 10)), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_std_dev(divide(close, vwap), 40))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "INDUSTRY",
+      "decay": 8
+    },
+    "ok": true,
+    "sharpe": 0.69,
+    "turnover": 0.1381,
+    "fitness": 0.48,
+    "drawdown": 0.208,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "e7OLn3nl",
+    "error": "",
+    "corr": {}
+  }
+]
