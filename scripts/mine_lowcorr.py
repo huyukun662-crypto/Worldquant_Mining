@@ -215,17 +215,19 @@ def pvc_val_full(w: float, decay: int, neut: str, universe: str = "TOP1000",
           "decay": decay, "truncation": truncation, "pasteurization": pasteur}
     return (name, expr, st)
 
-# Prong 1: INDUSTRY w050, drop decay to lift SH past 1.30 (corr_H pinned ~0.49).
-CANDIDATES.append(pvc_val_full(0.50, 8,  "INDUSTRY"))
-CANDIDATES.append(pvc_val_full(0.50, 6,  "INDUSTRY"))
-CANDIDATES.append(pvc_val_full(0.52, 8,  "INDUSTRY"))   # slightly more weight -> corr_H ~0.47
-# Prong 2: UNIVERSE rotation to TOP2000 (decorrelate from TOP1000 A-H).
-CANDIDATES.append(pvc_val_full(0.50, 10, "INDUSTRY",    universe="TOP2000"))
-CANDIDATES.append(pvc_val_full(0.50, 10, "SUBINDUSTRY", universe="TOP2000"))
-CANDIDATES.append(pvc_val_full(0.45, 10, "INDUSTRY",    universe="TOP2000"))
-# Prong 3: truncation / pasteurization tweaks on the INDUSTRY w050 d08 winner.
-CANDIDATES.append(pvc_val_full(0.50, 8,  "INDUSTRY", truncation=0.04))
-CANDIDATES.append(pvc_val_full(0.50, 8,  "INDUSTRY", pasteur="OFF"))
+# BATCH 28: TOP2000 INDUSTRY broke the fitness wall (w050_d10: SH 1.52, FIT 1.29,
+# fully submittable) but corr_D jumped to 0.582 (binding). With ~0.25 of SH
+# headroom we can crank the value tilt to rotate away from D and H simultaneously.
+# corr is weight-driven, so sweep w in {0.65, 0.75, 0.85, 1.0} at TOP2000 INDUSTRY
+# d10; the high-SH base means even heavy tilt should keep SH>1.30 / FIT>1.0.
+for w in (0.65, 0.75, 0.85, 1.00):
+    CANDIDATES.append(pvc_val_full(w, 10, "INDUSTRY", universe="TOP2000"))
+# A couple at decay 8 (a touch more SH) in case fitness has room at high weight.
+CANDIDATES.append(pvc_val_full(0.75, 8, "INDUSTRY", universe="TOP2000"))
+CANDIDATES.append(pvc_val_full(0.85, 8, "INDUSTRY", universe="TOP2000"))
+# And TOP3000 at high weight (even further universe rotation from TOP1000 A-H).
+CANDIDATES.append(pvc_val_full(0.75, 10, "INDUSTRY", universe="TOP3000"))
+CANDIDATES.append(pvc_val_full(0.85, 10, "INDUSTRY", universe="TOP3000"))
 
 _UNUSED_BATCH21 = [
 ]
@@ -289,7 +291,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT27.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT28.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
