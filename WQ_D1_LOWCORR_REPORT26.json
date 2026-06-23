@@ -190,5 +190,46 @@
     "alpha_id": "E5wkJG3r",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "pvc_val_w050_d12_ind",
+    "expression": "rank(add(rank(add(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_rank(returns, 60))), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), multiply(0.5, rank(add(rank(divide(cashflow_op, cap)), rank(divide(operating_income, cap)))))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "INDUSTRY",
+      "decay": 12
+    },
+    "ok": true,
+    "sharpe": 1.23,
+    "turnover": 0.1523,
+    "fitness": 1.0,
+    "drawdown": 0.1127,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE"
+    ],
+    "alpha_id": "0m7zvNx8",
+    "error": "",
+    "corr": {
+      "A_58w3aOKM": 0.245,
+      "B_58w9r6E6": 0.235,
+      "D_88z6bZEq": 0.393,
+      "E_d5x78JRv": 0.103,
+      "F_0m7QR858": 0.294,
+      "G_LLpgPEja": 0.29,
+      "H_78wa9R3Q": 0.492
+    },
+    "max_abs_corr": 0.492
   }
 ]
