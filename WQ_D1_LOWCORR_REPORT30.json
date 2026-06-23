@@ -31,5 +31,38 @@
     "alpha_id": "e7OLn3nl",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "vwaprev_t1k_sub_d08_pOFF",
+    "expression": "rank(add(add(-rank(ts_mean(divide(close, vwap), 10)), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_std_dev(divide(close, vwap), 40))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 8
+    },
+    "ok": true,
+    "sharpe": 0.8,
+    "turnover": 0.1427,
+    "fitness": 0.56,
+    "drawdown": 0.168,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "vRLd518G",
+    "error": "",
+    "corr": {}
   }
 ]
