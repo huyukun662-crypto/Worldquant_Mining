@@ -1425,5 +1425,45 @@
    "sharpe_2020": 2.11,
    "verdict": "CLEAN submittable: self-corr 0.67<0.7 (close to cutoff), 2020 +2.11. Surfaced in the account during the session; Fundamental-leverage legs make it a distinct composite from the Model-composite family."
   }
+ },
+ {
+  "scan": "PARALLEL-process clean factors surfaced (same composite family, variant settings)",
+  "note": "These two appeared in the account AFTER all my batches ended (23:16/23:22, my procs dead post container-restart) -- a parallel session/process is mining the same recipe family. Recorded as valid account factors; both are siblings of vRLdxjlQ / 9qwJLr71.",
+  "factors": [
+   {
+    "id": "KPbk8Ldk",
+    "sharpe": 1.88,
+    "to": 0.172,
+    "fit": 1.58,
+    "selfcorr": 0.656,
+    "y2020": 1.41,
+    "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+    "settings": {
+     "region": "USA",
+     "universe": "TOP3000",
+     "delay": 1,
+     "neutralization": "SUBINDUSTRY",
+     "truncation": 0.08
+    },
+    "note": "sibling of vRLdxjlQ; group_rank leverage leg, no capex"
+   },
+   {
+    "id": "omKVzr0E",
+    "sharpe": 1.32,
+    "to": 0.18,
+    "fit": 1.19,
+    "selfcorr": 0.626,
+    "y2020": 0.78,
+    "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
+    "settings": {
+     "region": "USA",
+     "universe": "TOP3000",
+     "delay": 1,
+     "neutralization": "MARKET",
+     "truncation": 0.08
+    },
+    "note": "sibling of 9qwJLr71; MARKET neutralization"
+   }
+  ]
  }
 ]
