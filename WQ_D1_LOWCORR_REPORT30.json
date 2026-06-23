@@ -64,5 +64,39 @@
     "alpha_id": "vRLd518G",
     "error": "",
     "corr": {}
+  },
+  {
+    "name": "pricerev_t1k_ind_d08_pOFF",
+    "expression": "rank(add(-rank(divide(subtract(close, ts_mean(close, 60)), ts_std_dev(close, 60))), -rank(ts_av_diff(close, 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "OFF",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "INDUSTRY",
+      "decay": 8
+    },
+    "ok": true,
+    "sharpe": 0.6,
+    "turnover": 0.1027,
+    "fitness": 0.48,
+    "drawdown": 0.1868,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "58wMLdp6",
+    "error": "",
+    "corr": {}
   }
 ]
