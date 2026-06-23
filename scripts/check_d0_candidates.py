@@ -90,18 +90,18 @@ WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap
 D1_SUB = {"delay": 1, "neutralization": "SUBINDUSTRY"}
 
 CANDIDATES = [
-    # Push close misses with decay=22
-    ("ts_decay_linear(-rank(change_in_eps_surprise) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)", D1_SUB),
-    # Alt PV: replace ts_av_diff(vwap,10) with ts_av_diff(close,10) -- close-anchored
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Add asset_growth as 5th leg (Cooper-Gulen-Schill)
-    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(asset_growth_rate) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # NEW DNA: ts_av_diff on returns-decorrelated signal -- group_rank by industry of model leg
-    ("ts_decay_linear(-group_rank(composite_factor_score_derivative, industry) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # delta-based PV instead of av_diff (different DNA)
-    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_delta(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # New mod field: book-to-market style using model77 fields
-    ("ts_decay_linear(-rank(consensus_analyst_rating) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)", D1_SUB),
+    # Book leverage + ts_av_diff(close,10), heavier decay=22 (low TO, ~higher FIT?)
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)", D1_SUB),
+    # Combine TWO model legs (book_leverage + capex) + PV
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # group_rank book_leverage by industry (industry-relative leverage)
+    ("ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Replace 5-d corr with 10-d corr to differentiate from previous winners
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 10)", D1_SUB),
+    # Use returns as the PV leg instead of price-based
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_mean(returns, 5)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Triple-model: book_lev + composite + analyst_rev + PV
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
 ]
 
 

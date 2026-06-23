@@ -1,25 +1,31 @@
 {
   "common_settings": {
     "instrumentType": "EQUITY", "region": "USA", "universe": "TOP3000",
-    "delay": 1, "decay": 0, "neutralization": "see per-alpha override",
-    "truncation": 0.08, "pasteurization": "ON", "unitHandling": "VERIFY",
-    "nanHandling": "OFF", "maxTrade": "OFF", "language": "FASTEXPR",
-    "testPeriod": "P0Y0M", "startDate": "2019-01-01", "endDate": "2023-12-31"
+    "delay": 1, "decay": 0, "truncation": 0.08, "pasteurization": "ON",
+    "unitHandling": "VERIFY", "nanHandling": "OFF", "maxTrade": "OFF",
+    "language": "FASTEXPR", "testPeriod": "P0Y0M",
+    "startDate": "2019-01-01", "endDate": "2023-12-31"
   },
-  "note": "13 alphas, all pass 8 is.checks (incl SELF_CORRELATION) verified via /alphas/{id}/check",
+  "note": "19 alphas, all PASS 8 is.checks (verified via /alphas/{id}/check). Neutralization per-alpha. Sorted by Sharpe desc.",
   "alphas": [
-    {"alpha_id": "MPpkwoOM", "sh": 1.84, "fit": 1.50, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "omKVOZpl", "sh": 1.79, "fit": 1.44, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "O0poekz7", "sh": 1.69, "fit": 1.33, "to": 0.182, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-group_rank(composite_factor_score_derivative, industry) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "N1pn9jke", "sh": 1.69, "fit": 1.32, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "omKnOnwk", "sh": 1.68, "fit": 1.31, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "j2Z1mvne", "sh": 1.67, "fit": 1.31, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(earnings_certainty_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "VkpOJJmV", "sh": 1.67, "fit": 1.30, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(cashflow_efficiency_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "d5xdqZ7J", "sh": 1.66, "fit": 1.31, "to": 0.175, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_delta(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "mL8Z9ARp", "sh": 1.57, "fit": 1.28, "to": 0.181, "neut": "INDUSTRY",    "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "A1wkd3rg", "sh": 1.51, "fit": 1.06, "to": 0.189, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(capex_to_total_assets) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "GrwM2KnO", "sh": 1.48, "fit": 1.01, "to": 0.208, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
-    {"alpha_id": "2r7Jkk1Z", "sh": 1.44, "fit": 1.27, "to": 0.113, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)"},
-    {"alpha_id": "0m7zv8kq", "sh": 1.32, "fit": 1.19, "to": 0.180, "neut": "MARKET",      "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"}
+    {"alpha_id": "P0pveb8K", "sh": 1.89, "fit": 1.58, "to": 0.170, "neut": "SUBINDUSTRY", "self_corr": 0.5943, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(capex_to_total_assets) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "6XwzgV0L", "sh": 1.88, "fit": 1.58, "to": 0.172, "neut": "SUBINDUSTRY", "self_corr": 0.6016, "expression": "ts_decay_linear(-group_rank(book_leverage_ratio_3, industry) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "MPpkwoOM", "sh": 1.84, "fit": 1.50, "to": 0.183, "neut": "SUBINDUSTRY", "self_corr": 0.6022, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "omKVOZpl", "sh": 1.79, "fit": 1.44, "to": 0.183, "neut": "SUBINDUSTRY", "self_corr": 0.6020, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "vRLdawnQ", "sh": 1.76, "fit": 1.46, "to": 0.163, "neut": "SUBINDUSTRY", "self_corr": 0.6054, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 10)), 10)"},
+    {"alpha_id": "O0poekz7", "sh": 1.69, "fit": 1.33, "to": 0.182, "neut": "SUBINDUSTRY", "self_corr": 0.5760, "expression": "ts_decay_linear(-group_rank(composite_factor_score_derivative, industry) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "N1pn9jke", "sh": 1.69, "fit": 1.32, "to": 0.183, "neut": "SUBINDUSTRY", "self_corr": 0.5739, "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "YPpQX2xW", "sh": 1.68, "fit": 1.64, "to": 0.132, "neut": "SUBINDUSTRY", "self_corr": 0.6532, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(composite_factor_score_derivative) + -rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "omKnOnwk", "sh": 1.68, "fit": 1.31, "to": 0.183, "neut": "SUBINDUSTRY", "self_corr": 0.5755, "expression": "ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "j2Z1mvne", "sh": 1.67, "fit": 1.31, "to": 0.183, "neut": "SUBINDUSTRY", "self_corr": 0.5769, "expression": "ts_decay_linear(-rank(earnings_certainty_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "VkpOJJmV", "sh": 1.67, "fit": 1.30, "to": 0.183, "neut": "SUBINDUSTRY", "self_corr": 0.5754, "expression": "ts_decay_linear(-rank(cashflow_efficiency_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "d5xdqZ7J", "sh": 1.66, "fit": 1.31, "to": 0.175, "neut": "SUBINDUSTRY", "self_corr": 0.6122, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_delta(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "A1wk659l", "sh": 1.65, "fit": 1.55, "to": 0.113, "neut": "SUBINDUSTRY", "self_corr": 0.6460, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)"},
+    {"alpha_id": "rKoAQE88", "sh": 1.63, "fit": 1.29, "to": 0.189, "neut": "SUBINDUSTRY", "self_corr": 0.6547, "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_mean(returns, 5)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "mL8Z9ARp", "sh": 1.57, "fit": 1.28, "to": 0.181, "neut": "INDUSTRY",    "self_corr": 0.5869, "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "A1wkd3rg", "sh": 1.51, "fit": 1.06, "to": 0.189, "neut": "SUBINDUSTRY", "self_corr": 0.5830, "expression": "ts_decay_linear(-rank(capex_to_total_assets) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "GrwM2KnO", "sh": 1.48, "fit": 1.01, "to": 0.208, "neut": "SUBINDUSTRY", "self_corr": 0.5908, "expression": "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "2r7Jkk1Z", "sh": 1.44, "fit": 1.27, "to": 0.113, "neut": "SUBINDUSTRY", "self_corr": 0.6058, "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)"},
+    {"alpha_id": "0m7zv8kq", "sh": 1.32, "fit": 1.19, "to": 0.180, "neut": "MARKET",      "self_corr": 0.5701, "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"}
   ]
 }
