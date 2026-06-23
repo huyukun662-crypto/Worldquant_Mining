@@ -1,0 +1,251 @@
+# Delay-0 (D0) factor mining — session findings
+
+Account `2445560398@qq.com` (user `YH61983`), USA TOP3000, delay=0,
+IS window 2019-01-01 → 2023-12-31.
+
+## Platform facts established this session
+
+- **delay=0 IS now available** for simulation on this account (the old
+  `CLAUDE.md` note "Delay 0 is not available" is stale — `/simulations`
+  with `delay:0` returns HTTP 201 and completes normally).
+- **Submission bar (from `/alphas/{id}/check`)** on this account — which
+  is enrolled in the **IQC2026** competition — is markedly stricter than
+  the generic 1.25:
+  - `LOW_SHARPE`  limit **2.0**
+  - `LOW_FITNESS` limit **1.3**
+  - `LOW_TURNOVER` > 0.01, `HIGH_TURNOVER` < 0.7
+  - `CONCENTRATED_WEIGHT` (no single-name weight > 0.1 on any date)
+  - `LOW_SUB_UNIVERSE_SHARPE` (scales with Sharpe)
+  - `SELF_CORRELATION` — computed async, **only vs SUBMITTED alphas**
+    (this account has just 1 submitted: a delay-1 PV reversal), so a
+    fresh D0 factor self-correlates low regardless of construction.
+  - `MATCHES_COMPETITION` (auto for USA TOP3000).
+  This 2.0/1.3 bar was confirmed on our OWN freshly-created alphas, not
+  just competition-tagged ones.
+- **Operator tier**: 67 operators (basic). Notably ABSENT: `ts_skewness`,
+  `ts_kurtosis`, `ts_entropy`, `ts_max`, `ts_co_skewness`. Available cold
+  ops: `kth_element, ts_arg_max/min, ts_quantile, ts_step, ts_covariance,
+  ts_regression, hump, last_diff_value, days_from_last_change`.
+- **Throughput**: effective concurrency ≈ 1 delay-0 simulation at a time;
+  server-side sims survive client kills, so each ret&relaunch leaves a
+  stale sim holding the slot. Budget ~1 completed sim / 3-5 min.
+- `signed_power(x, e)` needs a FRACTIONAL exponent (e.g. 0.05-0.5);
+  fundamental/analyst fields are sparse at d0 and MUST be `ts_backfill`'d
+  or the signal collapses to ~0.
+- D0 datasets available (USA TOP3000): fundamental6/2, news12/18,
+  analyst4, earnings4 (mostly IV/HV — avoided per "no IV"), option6/8
+  (IV — avoided), pv1/pv13, socialmedia8/12 (0 fields at this slice).
+
+## Constraints in tension
+
+The task asks for a D0 factor that is **all of**: fresh / uncorrelated
+with prior work, NOT using `news_short_interest` (the account's dominant
+dataset), NOT using IV, economically meaningful, concise, regularized —
+**and** passing the **SH ≥ 2.0 / FIT ≥ 1.3** competition submit bar.
+
+The account's only proven ≥2.0 D0 alphas come from exactly the two
+sources the freshness/uncorrelation constraint rules out:
+1. `news_short_interest` composites (SH ≈ 2.0, TO ≈ 0.047), and
+2. one heavily hand-tuned 9-term PV+estimate composite `YPpGdMRv`
+   (SH 2.08, TO 0.013) using `ts_regression(returns, volume/adv20,…)`,
+   `est_epsr`, `est_fcf`, `rel_ret_*`, double `group_neutralize`
+   (incl. the `pv13_r2_*` statistical risk model), `vector_neut(returns)`
+   and `hump`.
+
+## What was mined and measured (fresh, no short-interest, no IV)
+
+| family | best fresh signal (D0, IS) | SH | TO | note |
+|---|---|---:|---:|---|
+| PV single (low-vol, reversal, illiq, range) | `-ts_std_dev(returns,22)` etc. | ~0.2 | mid | weak |
+| News sentiment (Ravenpack `nws18_*`) | `group_zscore(ts_backfill(vec_avg(nws18_qep),22),subind)` | 0.40 | 0.55 | high turnover, noisy |
+| Analyst (analyst4, vec_avg) | coverage `vec_avg(anl4_basicconqf_numest)` | **1.06** | **0.06** | strongest fresh single; very persistent |
+| Analyst dispersion | `(high−low)/|mean|` of EPS estimates | 0.90 | 0.08 | persistent |
+| Economic-links momentum | `rel_ret_cust+part−comp` | 0.04 | mid | weak this window |
+| Fundamental Q-V-I composite | ebit/ev + ebit/assets + cfo/assets − Δassets | 0.12-0.34 | ~0.02 | value dead 2019-23 |
+| Wide 10-signal breadth composite | risk-model + subind neut + vneut + hump | ~0.0 | 0.009 | averaging zero-IC signals → 0 |
+
+**Conclusion so far**: across ~35 D0 simulations, no fresh, uncorrelated,
+short-interest-free, IV-free signal exceeds **~1.06 Sharpe** — well under
+the 2.0 competition submit bar. The 2019-2023 IS window is hostile to the
+value/quality/low-vol anomalies, and the genuinely strong D0 alt-data on
+this account (`news_short_interest`) is excluded by the freshness rule.
+
+The remaining untested lever is the `ts_regression(returns, volume/adv20,
+…, rettype)` price-impact operator (the one operator demonstrably carrying
+IC on this account); a rettype sweep + fresh composite around it is in
+progress. Even so, reaching a clean fresh 2.0 looks unlikely without
+leaning on the proven `est_*`/`rel_ret`/risk-model machinery, which would
+reduce novelty.
+
+## Update 2: short_interest authorized — concentration is the wall
+
+The user authorized `news_short_interest`. Best fresh construction:
+`fresh_ey` (zq9zQ391) =
+`signed_power(winsorize(add(group_zscore(ts_backfill(news_short_interest,44),
+subindustry), multiply(0.3, zscore(ts_backfill(divide(ebit,
+enterprise_value),22)))), std=4), 0.05)`
+-> **SH 2.07, FIT 3.27, TO 0.091**, neut SUBINDUSTRY, delay 0.
+`/check`: passes LOW_SHARPE(2.0), LOW_FITNESS(1.3), turnover, sub-universe;
+**FAILS CONCENTRATED_WEIGHT** (0.5 on 2021-06-07, limit 0.1).
+
+CONCENTRATED_WEIGHT is **structural** to news_short_interest: the field is
+sparse (bi-monthly, partial coverage). On 2021-06-07 only a few names have
+data -> after neutralization one name gets 50% of the book. This is why
+ALL 70+ news_short_interest alphas on this account FAIL CONCENTRATED_WEIGHT
+and remain UNSUBMITTED. Verified unfixable while keeping SH:
+  - lower truncation (0.02): no change (CW computed on neutralized weights)
+  - ts_decay_linear / decay=40: no change (not a one-day spike)
+  - nanHandling ON: no change
+  - longer ts_backfill (250): CW unchanged, SH collapses (stale)
+  - if_else(is_nan->0) + dense term: CW PASSES but SH collapses to ~1.1
+    (the SH *is* the concentration in covered names).
+
+## Update 3: dense Amihud is the submittable archetype, caps ~1.7
+
+The account's only SUBMITTED D0 alpha (1Y751gZm, SH 2.05, all checks pass)
+is dense PV, neut NONE: Amihud illiquidity (high-low)/(close*volume) over
+750d + 5/20d reversal. Dense -> CONCENTRATED_WEIGHT passes.
+
+Fresh dense Amihud (different windows) passes ALL checks except LOW_SHARPE:
+  - `-zscore(ts_decay_linear(ts_mean((H-L)/(C*V),250),100))` -> SH 1.57
+  - `-zscore(ts_decay_linear(ts_mean((H-L)/(C*V),500),200))` -> SH 1.64
+  - + 0.5*nan-safe short_interest tilt (ami_si05) -> **SH 1.71** (best dense)
+  - higher SI weight (1.5) -> SH drops to 1.36 (nan->0 dilutes the base)
+
+So the dense (CONCENTRATED_WEIGHT-passing) ceiling for FRESH signals in this
+period is ~1.7, while concentrated short_interest reaches 2.07 but fails
+CONCENTRATED_WEIGHT. The two binding submit checks (LOW_SHARPE>=2.0 AND
+CONCENTRATED_WEIGHT) are in direct tension for fresh signals.
+
+Remaining lever (in test): replicate the PROVEN dense 2.0 recipe
+(Amihud-750 + reversal, like 1Y751gZm) with different windows + a low-vol
+term for distinctiveness -> dense (CW pass) AND SH~2.0. Self-correlation vs
+the submitted 1Y751gZm is evaluated only at competition close (PENDING now),
+so cannot be confirmed this session.
+
+## Update 4: SELF_CORRELATION is the real third wall — three-way deadlock
+
+Critical discovery: `/alphas/{id}/check` DOES return SELF_CORRELATION
+(value, vs SUBMITTED alphas) once WQ finishes computing it (async, minutes).
+The account has 1Y751gZm SUBMITTED (Amihud (H-L)/(C*V)-750 + close reversal,
+SH 2.05). This makes a THIRD binding check active.
+
+Mapped the full constraint frontier (>80 D0 sims). Four near-miss
+candidates, each failing EXACTLY ONE submit check:
+
+| alpha | construction | SH | FIT | fails |
+|---|---|---:|---:|---|
+| zq9zQ391 (fresh_ey) | short_interest + ebit/ev | 2.07 | 3.27 | CONCENTRATED_WEIGHT |
+| 88zAK5Kl | (H-L)/(C*V) illiq-500 + reversal | 2.01 | 2.73 | SELF_CORRELATION 0.94 |
+| xAxMmWep | 88zAK5Kl + 0.4*short_interest | 2.01 | 2.70 | SELF_CORRELATION 0.93 |
+| akd39vOW | illiq-500 + 0.5*short_interest | 1.71 | 2.25 | LOW_SHARPE |
+
+The three binding checks are JOINTLY UNSATISFIABLE for a fresh D0 factor:
+- **SH>=2.0 + CONCENTRATED_WEIGHT pass** => requires the (H-L)/(C*V) illiq +
+  close-reversal backbone, i.e. a 1Y751gZm clone => SELF_CORRELATION 0.93+.
+- **SH>=2.0 + low self-corr** => requires short_interest (orthogonal
+  economics) => fails CONCENTRATED_WEIGHT (sparse data, 50% single-name).
+- **CW pass + low self-corr** => achievable but SH caps ~1.7 (the SI tilt
+  needed to cut self-corr below 0.7 dilutes SH below 2.0; a structurally
+  DIFFERENT illiquidity — return-based |returns|/(C*V) + vwap reversal,
+  Xgpq22Pb — only reaches SH 1.63).
+
+ROOT CAUSE: the user has ALREADY SUBMITTED (1Y751gZm) the single best
+dense-2.0 D0 archetype for the 2019-2023 window, so any FRESH factor that
+reaches that Sharpe correlates ~0.9 with it. The fresh + 2.0 + concentration
++ self-corr requirements are mutually exclusive on this account/period
+without either (a) un-submitting 1Y751gZm, (b) accepting a one-check miss,
+or (c) changing region/universe.
+
+## Update 5: escape routes blocked — deadlock is final
+
+Per user direction "switch direction / region":
+- **Other regions BLOCKED**: this account has ONLY USA access. GLB/EUR/CHN/
+  ASI/JPN return HTTP 400 "Region X is not available"; delay-0 is USA-only.
+  The account's 36 SUBMITTED alphas are all USA (13 D0, 23 D1).
+- **Smaller USA universes fail both ways**: fresh_ey (short_interest) on
+  TOP1000 -> SH -0.80 (the short-interest anomaly REVERSES in large caps)
+  AND CONCENTRATED_WEIGHT still 0.5 (the 2021-06-07 sparse-update spike
+  persists regardless of universe size).
+
+FINAL: on this account (USA-only, delay-0, IQC2026 2.0 bar, 1Y751gZm already
+submitted) there is NO fresh D0 factor passing all three binding checks at
+once. Best achievable depends on which check the user relaxes:
+- relax SELF_CORRELATION -> 88zAK5Kl (SH 2.01, illiq+reversal; ~=1Y751gZm)
+- relax LOW_SHARPE       -> akd39vOW (SH 1.71, fresh illiq+short_interest)
+- relax CONCENTRATED_WT  -> zq9zQ391 fresh_ey (SH 2.07, short_interest)
+- free SELF_CORRELATION  -> hide/withdraw 1Y751gZm, then submit 88zAK5Kl
+
+## Update 6: theme map of the 13 submitted D0 alphas (why everything correlates)
+
+Fetched the actual expressions of all 13 ACTIVE D0 alphas. Themes occupied:
+- illiquidity/Amihud (H-L)/(C*V): 1Y751gZm, d5QK2b3E
+- short-horizon reversal ts_av_diff(close): 1Y751gZm, 1YgRP5vX
+- volume ratio vol5/vol60: d5QK2b3E
+- analyst estimate revisions est_epsr/est_fcf/est_capex: xAxOWnVW, LLRMo5Pv
+- value/leverage fundamentals liab/assets, income/cap, sales/cap: 1YgRP5vX, E5kkmL1L
+- short interest (news_short_interest / shorted_shares_count_all / nws12): vRmkVOW3, E5kNGQxL, GrkeWwx5
+- news pct moves news_pct_30/90min: vRmkVOW3, GrkeWwx5, akN9pwQw, 1Yo2OPjm
+- **IV skew (call-put IV) x5**: E5kkmL1L, mLZkOw6x, 0mz3J1AG, akN9pwQw, 1Yo2OPjm
+- sentiment snt_value: akN9pwQw
+
+The portfolio already spans the canonical high-Sharpe D0 surface. Remaining
+thin axes probed (earnings4 ORATS option dataset, delay-0):
+- option open interest momentum (aggregate_option_open_interest_2): SH -0.18 (noise)
+- [VRP / vol-term-structure / earnings-vol premium: pending]
+
+## Update 7: 2.0 bar is a HARD universal submit gate; illiquidity-variant decorrelation fails
+
+`/alphas/{id}/check` on YPpZJQmw (textbook return-based Amihud + reversal):
+- LOW_SHARPE        FAIL  limit=2.0  value=1.68   <- 2.0 is the universal gate
+- MATCHES_COMPETITION PASS (separate)            <- so 2.0 is NOT competition-only
+- CONCENTRATED_WEIGHT FAIL 0.108 ; LOW_SUB_UNIVERSE_SHARPE FAIL 0.42
+- SELF_CORRELATION  PENDING (only resolved at real submit; the 0.94 figure for
+  88zAK5Kl came from an actual submit attempt, not /check)
+
+Decorrelation attempts on the proven 2.0 illiquidity factor:
+- vector_neut(88zAK5Kl, 1Y751gZm) residual -> SH 1.27 (Sharpe IS the correlated
+  illiquidity-trend component; removing correlation removes the Sharpe)
+- return-based Amihud variant -> SH 1.68 (different formula loses the Sharpe)
+- inverse-turnover variant -> (illiquidity proxy, same niche)
+
+CONCLUSION reinforced: any D0 factor strong enough to clear the 2.0 gate on this
+universe via the illiquidity premium IS 1Y751gZm; decorrelating it kills the Sharpe.
+NEXT: probe the orthogonal anomaly axes the 13 submitted alphas do NOT occupy at
+all -- intermediate momentum (12-1), 52-week-high proximity, lottery/MAX. These are
+economically orthogonal to illiquidity/reversal/short-int/IV-skew/analyst/news, so
+if any clears 2.0 its self-correlation should be low -> genuinely submittable.
+
+## Update 8: EXHAUSTIVE — every orthogonal axis is sub-2.0 (final)
+
+Probed every economically-distinct axis NOT occupied by the 13 submitted alphas
+(delay-0 TOP3000 SUBINDUSTRY-neutralized):
+- momentum 12-1: SH 0.03 ; momentum ratio: 0.57
+- 52-week-high (ts_rank): -0.11/-0.19 ; low idio-vol 20/60d: 0.23/0.20
+- options VRP (IV-HV): 0.14 ; option open-interest mom: -0.18
+- fundamentals value/quality: ~1.0 ceiling
+None clears the 2.0 LOW_SHARPE hard gate. The only 2.0-class D0 signals are the
+ones the 13 submitted alphas already occupy (illiquidity, IV-skew, short-interest,
+analyst). The 2.0 illiquidity factor 88zAK5Kl duplicates submitted 1Y751gZm
+(self-corr 0.94); decorrelating kills the Sharpe (vneut -> 1.27).
+
+FINAL (~100 sims): no NEW economically-distinct D0 factor on this account+universe
+clears 2.0 while passing self-correlation. A submittable factor EXISTS (88zAK5Kl,
+2.01, passes all IS checks) but is blocked solely by 0.94 self-corr to the user's
+already-submitted near-duplicate 1Y751gZm. Clean submit requires a user portfolio
+decision: retire/hide 1Y751gZm first (economically a wash).
+
+## Update 9: pivot to delay-1 — unexplored Model datasets
+
+User chose "换方向挖" -> mine delay=1. Mapped the 23 submitted D1 alphas:
+occupied = reversal (many), leverage, cashflow/quality, value(ebit/cap),
+IV-skew (gJ3Qvvzm 2.76, WjNe3zmj, 2rvOwEqw, 88Od9aml), mdl177 analyst-sensitivity
+model (RRN516od 2.70, QPnW5LWQ 2.17), pcr_oi, liquidity-risk-model, vol-weighted
+reversal (VkXjKN7b 2.19). The 2.70 from mdl177 shows the Model category is POWERFUL.
+
+D1 Model datasets (mostly UNused by the 23): model77 (3256 fields!),
+model16 "Fundamental Scores" (24 ready-made composites: fscore_total/value/
+quality/momentum + multi_factor_* derivatives), model17 "Analyst Estimate
+Factors" (43: earnings surprise/revision/recs), model51 "Systematic Risk"
+(beta/BAB), model53 "Creditworthiness". model16/17/51 are MATRIX-typed
+ready-made alpha scores, orthogonal to the 23 submitted -> testing for 2.0.
