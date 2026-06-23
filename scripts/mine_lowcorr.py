@@ -215,19 +215,20 @@ def pvc_val_full(w: float, decay: int, neut: str, universe: str = "TOP1000",
           "decay": decay, "truncation": truncation, "pasteurization": pasteur}
     return (name, expr, st)
 
-# BATCH 28: TOP2000 INDUSTRY broke the fitness wall (w050_d10: SH 1.52, FIT 1.29,
-# fully submittable) but corr_D jumped to 0.582 (binding). With ~0.25 of SH
-# headroom we can crank the value tilt to rotate away from D and H simultaneously.
-# corr is weight-driven, so sweep w in {0.65, 0.75, 0.85, 1.0} at TOP2000 INDUSTRY
-# d10; the high-SH base means even heavy tilt should keep SH>1.30 / FIT>1.0.
-for w in (0.65, 0.75, 0.85, 1.00):
-    CANDIDATES.append(pvc_val_full(w, 10, "INDUSTRY", universe="TOP2000"))
-# A couple at decay 8 (a touch more SH) in case fitness has room at high weight.
-CANDIDATES.append(pvc_val_full(0.75, 8, "INDUSTRY", universe="TOP2000"))
-CANDIDATES.append(pvc_val_full(0.85, 8, "INDUSTRY", universe="TOP2000"))
-# And TOP3000 at high weight (even further universe rotation from TOP1000 A-H).
-CANDIDATES.append(pvc_val_full(0.75, 10, "INDUSTRY", universe="TOP3000"))
-CANDIDATES.append(pvc_val_full(0.85, 10, "INDUSTRY", universe="TOP3000"))
+# BATCH 28: D = blend(amihud, issuance, turnover, volz) on TOP3000. Our pvcerec
+# base SHARES 3/4 of D's flow recipe (amihud, turnover, volz), so corr_D is
+# weight-insensitive (value tilt rotates away from H's reversal+E, not from flow)
+# and TOP2000/3000 INFLATE corr_D (D lives in the big universe). Conclusion:
+# TOP1000 is the right universe for this base (corr_D ~0.39, only corr_H binds).
+# On TOP1000 INDUSTRY, batch 27 showed w052_d08 -> corr_H 0.48 (already <0.5!) but
+# FIT 0.97. Fix: raise decay to recover fitness (lower turnover) while keeping the
+# w052+ weight that pushes corr_H <0.47. Sweep weight x decay on TOP1000 INDUSTRY.
+for w in (0.52, 0.55, 0.58):
+    for decay in (12, 14):
+        CANDIDATES.append(pvc_val_full(w, decay, "INDUSTRY", universe="TOP1000"))
+# Two confirmations: w055 at decay 10 (more SH) and w052 d14 already covered above.
+CANDIDATES.append(pvc_val_full(0.55, 10, "INDUSTRY", universe="TOP1000"))
+CANDIDATES.append(pvc_val_full(0.60, 12, "INDUSTRY", universe="TOP1000"))
 
 _UNUSED_BATCH21 = [
 ]
