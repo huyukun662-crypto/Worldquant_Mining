@@ -193,17 +193,39 @@ def pvc_val_neut(w: float, decay: int, neut: str):
     return (f"pvc_val_w{int(w*100):03d}_d{decay:02d}_{tag}", expr,
             {**BASE, "universe": "TOP1000", "neutralization": neut, "decay": decay})
 
-# Prong A: thinned base + value tilt, SUBINDUSTRY, sweep weight/decay.
-CANDIDATES.append(thin_val(0.30, 12))
-CANDIDATES.append(thin_val(0.45, 12))
-CANDIDATES.append(thin_val(0.45, 14))
-CANDIDATES.append(thin_val(0.60, 12))
-# Prong A+B: thinned base + value tilt under INDUSTRY (double rotation).
-CANDIDATES.append(thin_val(0.45, 12, "INDUSTRY"))
-# Prong B: full base + value tilt under INDUSTRY / SECTOR.
-CANDIDATES.append(pvc_val_neut(0.50, 12, "INDUSTRY"))
-CANDIDATES.append(pvc_val_neut(0.50, 12, "SECTOR"))
-CANDIDATES.append(pvc_val_neut(0.45, 12, "INDUSTRY"))
+# BATCH 27: exploit the now-open setting space (everything except region=USA).
+# Batch 26 found the winning ROTATION: full pvcerec base + value tilt under
+# INDUSTRY neut decorrelates from H (SUBINDUSTRY). The weight curve at INDUSTRY:
+#   w045 -> corr_H 0.537 / SH 1.29   (corr too high)
+#   w050 -> corr_H 0.492 / SH 1.23   (SH just short)
+# corr_H is weight-driven; decay is a ~corr-neutral SH lever (batch 24). So pin
+# w050 INDUSTRY (corr_H~0.49) and drop decay to lift SH>1.30. Plus two more
+# orthogonalizers now permitted: UNIVERSE rotation (A-H live on TOP1000; TOP2000
+# is structurally decorrelated) and truncation/pasteurization tweaks.
+def pvc_val_full(w: float, decay: int, neut: str, universe: str = "TOP1000",
+                 truncation: float = 0.08, pasteur: str = "ON"):
+    expr = f"rank(add({PVC_BASE}, multiply({w}, {TILT['val']})))"
+    ntag = {"SUBINDUSTRY": "sub", "INDUSTRY": "ind", "SECTOR": "sec"}[neut]
+    utag = {"TOP1000": "t1k", "TOP2000": "t2k", "TOP3000": "t3k", "TOP500": "t05"}[universe]
+    extra = (f"_{utag}" if universe != "TOP1000" else "") + \
+            (f"_t{int(truncation*100):02d}" if truncation != 0.08 else "") + \
+            ("_pOFF" if pasteur != "ON" else "")
+    name = f"pvc_val_w{int(w*100):03d}_d{decay:02d}_{ntag}{extra}"
+    st = {**BASE, "universe": universe, "neutralization": neut,
+          "decay": decay, "truncation": truncation, "pasteurization": pasteur}
+    return (name, expr, st)
+
+# Prong 1: INDUSTRY w050, drop decay to lift SH past 1.30 (corr_H pinned ~0.49).
+CANDIDATES.append(pvc_val_full(0.50, 8,  "INDUSTRY"))
+CANDIDATES.append(pvc_val_full(0.50, 6,  "INDUSTRY"))
+CANDIDATES.append(pvc_val_full(0.52, 8,  "INDUSTRY"))   # slightly more weight -> corr_H ~0.47
+# Prong 2: UNIVERSE rotation to TOP2000 (decorrelate from TOP1000 A-H).
+CANDIDATES.append(pvc_val_full(0.50, 10, "INDUSTRY",    universe="TOP2000"))
+CANDIDATES.append(pvc_val_full(0.50, 10, "SUBINDUSTRY", universe="TOP2000"))
+CANDIDATES.append(pvc_val_full(0.45, 10, "INDUSTRY",    universe="TOP2000"))
+# Prong 3: truncation / pasteurization tweaks on the INDUSTRY w050 d08 winner.
+CANDIDATES.append(pvc_val_full(0.50, 8,  "INDUSTRY", truncation=0.04))
+CANDIDATES.append(pvc_val_full(0.50, 8,  "INDUSTRY", pasteur="OFF"))
 
 _UNUSED_BATCH21 = [
 ]
@@ -267,7 +289,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT26.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT27.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
