@@ -40,5 +40,47 @@
       "H_78wa9R3Q": 0.75
     },
     "max_abs_corr": 0.75
+  },
+  {
+    "name": "thin_val_w045_d12_sub",
+    "expression": "rank(add(rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), multiply(0.45, rank(add(rank(divide(cashflow_op, cap)), rank(divide(operating_income, cap)))))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 12
+    },
+    "ok": true,
+    "sharpe": 1.1,
+    "turnover": 0.1381,
+    "fitness": 0.79,
+    "drawdown": 0.0976,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "N1pAvEpE",
+    "error": "",
+    "corr": {
+      "A_58w3aOKM": 0.124,
+      "B_58w9r6E6": 0.187,
+      "D_88z6bZEq": 0.464,
+      "E_d5x78JRv": 0.142,
+      "F_0m7QR858": 0.345,
+      "G_LLpgPEja": 0.248,
+      "H_78wa9R3Q": 0.617
+    },
+    "max_abs_corr": 0.617
   }
 ]
