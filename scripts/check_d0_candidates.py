@@ -90,20 +90,18 @@ WIN_DECAY10 = ("ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap
 D1_SUB = {"delay": 1, "neutralization": "SUBINDUSTRY"}
 
 CANDIDATES = [
-    # Different model16 leg: fscore_quality (quality anomaly) -- new field
-    ("ts_decay_linear(-rank(fscore_quality) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Different model16 leg: fscore_value
-    ("ts_decay_linear(-rank(fscore_value) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # earnings_certainty_rank_derivative leg (earnings quality)
-    ("ts_decay_linear(-rank(earnings_certainty_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # cashflow_efficiency leg (cashflow-based quality)
-    ("ts_decay_linear(-rank(cashflow_efficiency_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
-    # Try INDUSTRY neutralization (coarser) variant of best
-    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-     {"delay": 1, "neutralization": "INDUSTRY"}),
-    # Try MARKET neutralization (most coarse)
-    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-     {"delay": 1, "neutralization": "MARKET"}),
+    # model77: book_leverage_ratio (capital structure)
+    ("ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # model77: consensus_analyst_rating
+    ("ts_decay_linear(-rank(consensus_analyst_rating) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # fundamental: ROE
+    ("ts_decay_linear(-rank(return_equity) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # fundamental: gross profitability
+    ("ts_decay_linear(-rank(divide(fnd6_gp, assets)) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)", D1_SUB),
+    # Two-leg PURE model (no PV at all) -- alt structure
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(earnings_certainty_rank_derivative), 22)", D1_SUB),
+    # Heavy decay variant (decay=22) of best
+    ("ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)", D1_SUB),
 ]
 
 
