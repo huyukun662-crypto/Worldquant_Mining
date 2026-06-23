@@ -102,8 +102,23 @@ These remain available if you want a 2-factor portfolio (Option IV + PV
 reversal) — their self-correlation against each other should be near 0
 by construction.
 
+## Additional survivor from modules 7-8
+
+| # | alpha_id | expression | univ | trunc | dec | SH | FIT | TO | self-corr |
+|---|---|---|---|---|---|---|---|---|---|
+| 4 | **omKVeRYl** | `zscore(ts_backfill(ts_delta(implied_volatility_call_30, 10), 250)) + zscore(ts_backfill(ts_delta(implied_volatility_call_60, 10), 250))` | TOP1000 | 0.01 | 128 | 1.30 | 1.51 | 0.124 | 0.171 |
+
+Multi-expiry IV momentum (30d + 60d call IV) — economically more robust
+than a single expiry. Same SH/FIT/TO as the module-6 winner, marginally
+lower self-correlation.
+
+Module-7/8 also confirmed:
+- **delay=1 is the sweet spot** (delay=0 gave SH=1.20 vs 1.31 on the same expression; PV-reversal SH dropped from 2.07 to 0.79).
+- Put-IV-60 (SH=0.97) and IV call 30 (SH=1.22) are close but don't pass alone.
+- IV-skew, news sentiment, equity changes — all too weak after backfill.
+
 ## Files
 
-- `MINE_MOD6_RESULTS.json` — module-6 raw results
+- `MINE_MOD{6,8}_RESULTS.json` — module raw results
 - `MINE_ROUND2.json` — module-1 raw results
-- `scripts/mine_module{1..6}.py` — staged miners (each module learns from the previous)
+- `scripts/mine_module{1..8}.py` — staged miners (each module learns from the previous)
