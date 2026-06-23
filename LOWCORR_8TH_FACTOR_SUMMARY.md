@@ -77,3 +77,40 @@ on this base.
 
 Higher value weight → lower corr; lower decay → higher SH but higher
 turnover. `2r7JR8KJ` is the best balance.
+
+---
+
+# 9th factor — NOT achievable with available building blocks
+
+After adding the 8th (`2r7JR8KJ`) to the reference set, three batches
+(29-31) searched for a 9th submittable (SH>1.25) alpha decorrelated from
+A-I. **All produced 0 winners.** The search is conclusive:
+
+| batch | approach | result |
+|-------|----------|--------|
+| 29 | pure orthogonal axes (value+quality, analyst-rev+sentiment, momentum+lowvol, short-crowd+quality), pasteur OFF + INDUSTRY + broad universe | **SH 0.02–0.48** — too weak; on this tier SH does not come from non-PV signals |
+| 30 | UNUSED PV reversal (VWAP mean-reversion, price-z/av_diff reversal) | **SH caps ~0.80** — below 1.25; reversal mechanisms don't stack |
+| 31 | VWAP-reversal base + small pvcerec bridge (sweep pvcerec weight 0.40–0.85, INDUSTRY/SUBIND, decay 6/8) | SH clears 1.25 but **corr_G locked at 0.62–0.67** at every weight/neut/decay |
+
+### Why the wall is structural
+
+The submittable-alpha space on this account tier (USA, delay=1) is
+spanned by exactly two price-volume axes, and A-I already saturate both:
+
+- **pvcorr / 60d-reversal / liquidity-flow** (amihud, turnover, volz,
+  issuance, gap) → families A, D, E, F, H, and the 8th I.
+- **intraday position / range / VWAP mean-reversion** → family G.
+
+Every signal that carries SH>1.25 lives on one of these two axes, so it
+correlates >0.5 with the family that owns that axis. The VWAP bridge
+(batch 31) fails precisely because VWAP mean-reversion **is** G's axis —
+`corr_G` stays ~0.64 no matter how much pvcerec is mixed in or how the
+book is neutralized. The genuinely orthogonal axes (value, quality,
+analyst, momentum, low-vol, short-interest) carry SH<0.5 and cannot be
+lifted over 1.25 even with pasteurization OFF on a broad universe.
+
+**Conclusion: 8 low-correlation factors (A-H plus the new I `2r7JR8KJ`)
+exhaust the reachable submittable-alpha space on this tier.** A 9th would
+require either a higher account tier (more universes/fields, e.g. the
+7,831-field surface behind the paywall, options/IV data) or relaxing the
+corr<0.5 constraint.
