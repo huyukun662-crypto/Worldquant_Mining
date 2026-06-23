@@ -1,162 +1,25 @@
 {
-  "alpha_id": "GrwM2KnO",
-  "duplicate_alpha_id": "WjpaZxZd",
-  "expression": "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-  "settings": {
-    "instrumentType": "EQUITY",
-    "region": "USA",
-    "universe": "TOP3000",
-    "delay": 1,
-    "decay": 0,
-    "neutralization": "SUBINDUSTRY",
-    "truncation": 0.08,
-    "pasteurization": "ON",
-    "unitHandling": "VERIFY",
-    "nanHandling": "OFF",
-    "maxTrade": "OFF"
+  "common_settings": {
+    "instrumentType": "EQUITY", "region": "USA", "universe": "TOP3000",
+    "delay": 1, "decay": 0, "neutralization": "see per-alpha override",
+    "truncation": 0.08, "pasteurization": "ON", "unitHandling": "VERIFY",
+    "nanHandling": "OFF", "maxTrade": "OFF", "language": "FASTEXPR",
+    "testPeriod": "P0Y0M", "startDate": "2019-01-01", "endDate": "2023-12-31"
   },
-  "is_checks": {
-    "LOW_SHARPE": {
-      "result": "PASS",
-      "value": 1.48,
-      "limit": 1.25
-    },
-    "LOW_FITNESS": {
-      "result": "PASS",
-      "value": 1.01,
-      "limit": 1.0
-    },
-    "LOW_TURNOVER": {
-      "result": "PASS",
-      "value": 0.208,
-      "limit": 0.01
-    },
-    "HIGH_TURNOVER": {
-      "result": "PASS",
-      "value": 0.208,
-      "limit": 0.7
-    },
-    "CONCENTRATED_WEIGHT": {
-      "result": "PASS"
-    },
-    "LOW_SUB_UNIVERSE_SHARPE": {
-      "result": "PASS",
-      "value": 0.8,
-      "limit": 0.64
-    },
-    "SELF_CORRELATION": {
-      "result": "PASS",
-      "value": 0.5908,
-      "limit": 0.7
-    },
-    "MATCHES_COMPETITION": {
-      "result": "PASS",
-      "competitions": [
-        "Challenge",
-        "IQC2026S2"
-      ]
-    }
-  },
-  "is_metrics": {
-    "sharpe": 1.48,
-    "fitness": 1.01,
-    "turnover": 0.208,
-    "returns": 0.0961,
-    "drawdown": 0.0615
-  },
-  "economic_story": "Short-horizon VWAP mean reversion combined with price-volume correlation breakdown (informed-flow divergence proxy), regularized by ts_decay_linear=10 which lowers turnover from 0.30 to 0.21 and lifts fitness above the 1.0 bar.",
-  "note_on_delay": "At delay=0 the same expression scored SH=1.48 FIT=1.03 but the LOW_SHARPE check limit is 2.0 (vs 1.25 at delay=1), so D=0 still fails Submit. Per user instruction (\"setting\u53ef\u4ee5\u6539 \u9664\u4e86region\"), delay was opened.",
-  "additional_passing_alphas_with_model16": [
-    {
-      "alpha_id": "N1pn9jke",
-      "module": "model16 (Fundamental Scores)",
-      "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-      "is_checks": {
-        "LOW_SHARPE": {
-          "PASS": true,
-          "value": 1.69,
-          "limit": 1.25
-        },
-        "LOW_FITNESS": {
-          "PASS": true,
-          "value": 1.32,
-          "limit": 1.0
-        },
-        "LOW_TURNOVER": {
-          "PASS": true,
-          "value": 0.183
-        },
-        "HIGH_TURNOVER": {
-          "PASS": true,
-          "value": 0.183
-        },
-        "CONCENTRATED_WEIGHT": {
-          "PASS": true
-        },
-        "LOW_SUB_UNIVERSE_SHARPE": {
-          "PASS": true,
-          "value": 1.01,
-          "limit": 0.73
-        },
-        "SELF_CORRELATION": {
-          "PASS": true,
-          "value": 0.5739,
-          "limit": 0.7
-        },
-        "MATCHES_COMPETITION": {
-          "PASS": true
-        }
-      }
-    },
-    {
-      "alpha_id": "omKnOnwk",
-      "module": "model16 (Fundamental Scores)",
-      "expression": "ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)",
-      "is_checks": {
-        "LOW_SHARPE": {
-          "PASS": true,
-          "value": 1.68,
-          "limit": 1.25
-        },
-        "LOW_FITNESS": {
-          "PASS": true,
-          "value": 1.31,
-          "limit": 1.0
-        },
-        "LOW_TURNOVER": {
-          "PASS": true,
-          "value": 0.1827
-        },
-        "HIGH_TURNOVER": {
-          "PASS": true,
-          "value": 0.1827
-        },
-        "CONCENTRATED_WEIGHT": {
-          "PASS": true
-        },
-        "LOW_SUB_UNIVERSE_SHARPE": {
-          "PASS": true,
-          "value": 1.0,
-          "limit": 0.73
-        },
-        "SELF_CORRELATION": {
-          "PASS": true,
-          "value": 0.5755,
-          "limit": 0.7
-        },
-        "MATCHES_COMPETITION": {
-          "PASS": true
-        }
-      }
-    }
-  ],
-  "settings_common": {
-    "region": "USA",
-    "universe": "TOP3000",
-    "delay": 1,
-    "neutralization": "SUBINDUSTRY",
-    "truncation": 0.08,
-    "pasteurization": "ON",
-    "decay": 0
-  }
+  "note": "13 alphas, all pass 8 is.checks (incl SELF_CORRELATION) verified via /alphas/{id}/check",
+  "alphas": [
+    {"alpha_id": "MPpkwoOM", "sh": 1.84, "fit": 1.50, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(close, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "omKVOZpl", "sh": 1.79, "fit": 1.44, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "O0poekz7", "sh": 1.69, "fit": 1.33, "to": 0.182, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-group_rank(composite_factor_score_derivative, industry) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "N1pn9jke", "sh": 1.69, "fit": 1.32, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "omKnOnwk", "sh": 1.68, "fit": 1.31, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(analyst_revision_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "j2Z1mvne", "sh": 1.67, "fit": 1.31, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(earnings_certainty_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "VkpOJJmV", "sh": 1.67, "fit": 1.30, "to": 0.183, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(cashflow_efficiency_rank_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "d5xdqZ7J", "sh": 1.66, "fit": 1.31, "to": 0.175, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(book_leverage_ratio_3) + -rank(ts_delta(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "mL8Z9ARp", "sh": 1.57, "fit": 1.28, "to": 0.181, "neut": "INDUSTRY",    "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "A1wkd3rg", "sh": 1.51, "fit": 1.06, "to": 0.189, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(capex_to_total_assets) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "GrwM2KnO", "sh": 1.48, "fit": 1.01, "to": 0.208, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"},
+    {"alpha_id": "2r7Jkk1Z", "sh": 1.44, "fit": 1.27, "to": 0.113, "neut": "SUBINDUSTRY", "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 22)"},
+    {"alpha_id": "0m7zv8kq", "sh": 1.32, "fit": 1.19, "to": 0.180, "neut": "MARKET",      "expression": "ts_decay_linear(-rank(composite_factor_score_derivative) + -rank(ts_av_diff(vwap, 10)) + -rank(ts_corr(vwap, volume, 22)) + -rank(ts_corr(vwap, volume, 5)), 10)"}
+  ]
 }
