@@ -37,7 +37,8 @@ _spec.loader.exec_module(mine_d1)
 REFERENCES = {"A_58w3aOKM": "58w3aOKM", "B_58w9r6E6": "58w9r6E6",
               "D_88z6bZEq": "88z6bZEq", "E_d5x78JRv": "d5x78JRv",
               "F_0m7QR858": "0m7QR858", "G_LLpgPEja": "LLpgPEja",
-              "H_78wa9R3Q": "78wa9R3Q"}
+              "H_78wa9R3Q": "78wa9R3Q",
+              "I_2r7JR8KJ": "2r7JR8KJ"}   # 8th: pvc_val_w055_d10 INDUSTRY pasteur-OFF
 CORR_CEILING = 0.50          # "low correlation" target
 
 BASE = {"truncation": 0.08}
@@ -227,16 +228,31 @@ def pvc_val_full(w: float, decay: int, neut: str, universe: str = "TOP1000",
 #  (1) pasteur OFF + HIGHER decay to cut the 0.238 turnover and harden the margin;
 #  (2) pasteur ON + high decay (the SAFE/default setting) to find a robust winner
 #      that doesn't rely on pasteur OFF.
-# Arm 1: pasteur OFF, w050, decay sweep (lower turnover than d08's 0.238).
-CANDIDATES.append(pvc_val_full(0.50, 10, "INDUSTRY", universe="TOP1000", pasteur="OFF"))
-CANDIDATES.append(pvc_val_full(0.50, 12, "INDUSTRY", universe="TOP1000", pasteur="OFF"))
-CANDIDATES.append(pvc_val_full(0.55, 10, "INDUSTRY", universe="TOP1000", pasteur="OFF"))
-CANDIDATES.append(pvc_val_full(0.45, 10, "INDUSTRY", universe="TOP1000", pasteur="OFF"))
-# Arm 2: pasteur ON, high decay to recover fitness at the corr_H<0.47 weight.
-CANDIDATES.append(pvc_val_full(0.55, 14, "INDUSTRY", universe="TOP1000"))
-CANDIDATES.append(pvc_val_full(0.55, 16, "INDUSTRY", universe="TOP1000"))
-CANDIDATES.append(pvc_val_full(0.58, 14, "INDUSTRY", universe="TOP1000"))
-CANDIDATES.append(pvc_val_full(0.60, 14, "INDUSTRY", universe="TOP1000"))
+# BATCH 29: 9th factor = a GENUINELY NEW driver axis. A-H and the 8th (2r7JR8KJ)
+# are ALL price-volume reversal/flow + a value tilt, so any pvcerec variant stays
+# correlated. To clear corr<0.5 vs all 8, use bases that share NONE of pvcerec's
+# flow/reversal components. Standalone these were weak (batch 20-21, SH<1.25), but
+# the open-setting levers that lifted the 8th (pasteur OFF + INDUSTRY + low decay +
+# broad universe) may now push them over 1.25. Four orthogonal axes, 2 settings each.
+B29 = {
+    "valq":    blend("val_cfp", "val_ey", "val_bp", "q_gp", "q_roe"),       # value + quality
+    "revsent": blend("rev_fy1", "rev_mag", "rev_rankd", "ptp_up", "snt_soc"),  # analyst rev + sentiment
+    "momvol":  blend("mom121", "mom240", "lowvol"),                          # momentum + low-vol
+    "shq":     blend("si_short", "dtc_short", "q_gp", "q_accr"),             # short-crowd + quality
+}
+def b29(tag: str, axis: str, decay: int, universe: str):
+    utag = {"TOP1000": "t1k", "TOP2000": "t2k", "TOP3000": "t3k"}[universe]
+    return (f"{axis}_{utag}_d{decay:02d}_pOFF", B29[axis],
+            {**BASE, "universe": universe, "neutralization": "INDUSTRY",
+             "decay": decay, "pasteurization": "OFF"})
+CANDIDATES.append(b29("v1", "valq",    6, "TOP2000"))
+CANDIDATES.append(b29("v2", "valq",    4, "TOP1000"))
+CANDIDATES.append(b29("r1", "revsent", 4, "TOP2000"))
+CANDIDATES.append(b29("r2", "revsent", 4, "TOP3000"))
+CANDIDATES.append(b29("m1", "momvol",  6, "TOP2000"))
+CANDIDATES.append(b29("m2", "momvol",  6, "TOP1000"))
+CANDIDATES.append(b29("s1", "shq",     4, "TOP2000"))
+CANDIDATES.append(b29("s2", "shq",     4, "TOP3000"))
 
 _UNUSED_BATCH21 = [
 ]
@@ -300,7 +316,7 @@ def main():
         else:
             log.info(f"   [{r.error[:80]}]")
         results.append(rec)
-        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT28.json", "w"), indent=2)
+        json.dump(results, open(REPO / "WQ_D1_LOWCORR_REPORT29.json", "w"), indent=2)
         time.sleep(2)
 
     winners = [r for r in results if r.get("submittable") and r["sharpe"] > 1.25
