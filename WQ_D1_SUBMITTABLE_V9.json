@@ -1,0 +1,56 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "I \u2014 pvcorr + reversal/flow base with a fundamental VALUE tilt (low-corr <0.5 vs ALL of A-H)",
+  "structure": "H's strong price-volume recipe (pvcorr + 60d reversal + Amihud + turnover + vol-z + overnight gap) blended with a 0.6-weighted fundamental VALUE tilt (cashflow yield cashflow_op/cap + earnings yield operating_income/cap). The orthogonal value tilt rotates the factor away from E (corr 0.027) AND away from its own price-volume base H (corr 0.497), landing under 0.5 vs every other family. First factor in the basket to mix a non-technical (fundamental) driver into a price-volume base. Found at the razor-thin feasibility knee: corr_H and SH cross their thresholds at nearly the same tilt weight; only w0.60/decay14 lands inside (SH 1.26 > 1.25 AND max corr 0.497 < 0.50).",
+  "fields_used": [
+    "close",
+    "volume",
+    "returns",
+    "sharesout",
+    "open",
+    "cashflow_op",
+    "cap",
+    "operating_income"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "alpha_id": "N1pnoddo",
+  "expression": "rank(add(rank(add(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_rank(returns, 60))), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), multiply(0.6, rank(add(rank(divide(cashflow_op, cap)), rank(divide(operating_income, cap)))))))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "pasteurization": "ON",
+    "visualization": false,
+    "maxTrade": "OFF",
+    "testPeriod": "P0Y0M",
+    "delay": 1,
+    "truncation": 0.08,
+    "universe": "TOP1000",
+    "neutralization": "SUBINDUSTRY",
+    "decay": 14
+  },
+  "is": {
+    "sharpe": 1.26,
+    "turnover": 0.14,
+    "fitness": 1.03,
+    "drawdown": 0.1066,
+    "returns": 0.0939
+  },
+  "all_checks_pass": true,
+  "self_correlation": "PENDING (evaluated at Submit)",
+  "submittable": true,
+  "daily_pnl_correlation": {
+    "A_58w3aOKM": 0.179,
+    "B_58w9r6E6": 0.133,
+    "D_88z6bZEq": 0.439,
+    "E_d5x78JRv": 0.027,
+    "F_0m7QR858": 0.24,
+    "G_LLpgPEja": 0.299,
+    "H_78wa9R3Q": 0.497
+  },
+  "max_abs_corr": 0.497,
+  "note": "Strictly low-corr (<0.5) vs ALL of A-H. Adds a fundamental value driver to the price-volume basket. Thin margins (SH 1.26, maxcorr 0.497) \u2014 the feasibility window for an 8th low-corr factor on this tier is a single point."
+}

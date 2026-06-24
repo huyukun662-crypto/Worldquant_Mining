@@ -1,0 +1,130 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "v3 diversification blend (6 uncorrelated structural ideas)",
+  "structure": "STRUCTURALLY DIFFERENT from the first winner (which was price-volume correlation + short reversal). This blends: VWAP positioning (close/vwap), Amihud illiquidity (|ret|/(close*volume)), overnight-gap reversal (open/delay(close,1)), net share issuance (delta sharesout,120), long-horizon reversal (delta close,120), and share turnover (volume/sharesout). Each component is sign-corrected then equal-weight rank-blended; diversification lifts Sharpe and crushes drawdown.",
+  "fields_used": [
+    "close",
+    "open",
+    "vwap",
+    "volume",
+    "returns",
+    "sharesout"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "winners": [
+    {
+      "rank": 1,
+      "alpha_id": "58w9r6E6",
+      "expression": "rank(add(add(add(add(add(-rank(rank(ts_mean(divide(close, vwap), 10))), -rank(rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)))), rank(rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), -rank(rank(ts_delta(sharesout, 120)))), -rank(rank(ts_delta(close, 120)))), rank(rank(ts_mean(divide(volume, sharesout), 60)))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "neutralization": "SUBINDUSTRY",
+        "decay": 16
+      },
+      "is": {
+        "sharpe": 1.53,
+        "turnover": 0.0728,
+        "fitness": 1.23,
+        "drawdown": 0.0687,
+        "returns": 0.0814
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING (evaluated at Submit)",
+      "submittable": true
+    },
+    {
+      "rank": 2,
+      "alpha_id": "akdlRR66",
+      "expression": "rank(add(add(add(add(add(-rank(rank(ts_mean(divide(close, vwap), 10))), -rank(rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)))), rank(rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), -rank(rank(ts_delta(sharesout, 120)))), -rank(rank(ts_delta(close, 120)))), rank(rank(ts_mean(divide(volume, sharesout), 60)))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "neutralization": "SUBINDUSTRY",
+        "decay": 0
+      },
+      "is": {
+        "sharpe": 2.12,
+        "turnover": 0.2423,
+        "fitness": 1.49,
+        "drawdown": 0.0722,
+        "returns": 0.1195
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING (evaluated at Submit)",
+      "submittable": true
+    },
+    {
+      "rank": 3,
+      "alpha_id": "3q7xGOMQ",
+      "expression": "rank(add(add(add(add(add(-rank(rank(ts_mean(divide(close, vwap), 10))), -rank(rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)))), rank(rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), -rank(rank(ts_delta(sharesout, 120)))), -rank(rank(ts_delta(close, 120)))), rank(rank(ts_mean(divide(volume, sharesout), 60)))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "neutralization": "INDUSTRY",
+        "decay": 4
+      },
+      "is": {
+        "sharpe": 1.63,
+        "turnover": 0.132,
+        "fitness": 1.46,
+        "drawdown": 0.099,
+        "returns": 0.0
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING (evaluated at Submit)",
+      "submittable": true
+    },
+    {
+      "rank": 4,
+      "alpha_id": "A1wbeGbg",
+      "expression": "rank(add(add(add(add(add(-rank(rank(ts_mean(divide(close, vwap), 10))), -rank(rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)))), rank(rank(ts_mean(divide(open, ts_delay(close, 1)), 20)))), -rank(rank(ts_delta(sharesout, 120)))), -rank(rank(ts_delta(close, 120)))), rank(rank(ts_mean(divide(volume, sharesout), 60)))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "neutralization": "INDUSTRY",
+        "decay": 8
+      },
+      "is": {
+        "sharpe": 1.47,
+        "turnover": 0.0987,
+        "fitness": 1.28,
+        "drawdown": 0.0981,
+        "returns": 0.0947
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING (evaluated at Submit)",
+      "submittable": true
+    }
+  ],
+  "recommended": "58w9r6E6 \u2014 lowest turnover (0.073) + lowest drawdown (0.069) with SH 1.53"
+}

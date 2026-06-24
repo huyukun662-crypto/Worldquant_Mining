@@ -1,0 +1,91 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "F \u2014 pv-corr + flow on TOP1000/SECTOR (universe-axis decorrelation)",
+  "structure": "Blend of price-volume divergence (-ts_corr(close,volume,20)) + Amihud illiquidity + abnormal-volume z-score + share turnover, run on the TOP1000 universe with SECTOR neutralization and decay 20. The smaller universe (different stock set) is the decorrelation lever vs the TOP3000 families A/B/D/E; high decay clears the fitness floor at low turnover.",
+  "fields_used": [
+    "close",
+    "volume",
+    "returns",
+    "sharesout"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "winners": [
+    {
+      "rank": 1,
+      "alpha_id": "0m7QR858",
+      "expression": "rank(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(volume, sharesout), 60))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "language": "FASTEXPR",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "pasteurization": "ON",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M",
+        "delay": 1,
+        "truncation": 0.08,
+        "universe": "TOP1000",
+        "neutralization": "SECTOR",
+        "decay": 20
+      },
+      "is": {
+        "sharpe": 1.4,
+        "turnover": 0.0979,
+        "fitness": 1.14,
+        "drawdown": 0.0527,
+        "returns": 0.0832
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING",
+      "daily_pnl_correlation": {
+        "A_58w3aOKM": 0.368,
+        "B_58w9r6E6": 0.186,
+        "D_88z6bZEq": 0.245,
+        "E_d5x78JRv": 0.204
+      },
+      "max_abs_corr": 0.368,
+      "submittable": true
+    },
+    {
+      "rank": 2,
+      "alpha_id": "3q769gEX",
+      "expression": "rank(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(volume, sharesout), 60))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "language": "FASTEXPR",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "pasteurization": "ON",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M",
+        "delay": 1,
+        "truncation": 0.08,
+        "universe": "TOP1000",
+        "neutralization": "SECTOR",
+        "decay": 14
+      },
+      "is": {
+        "sharpe": 1.33,
+        "turnover": 0.122,
+        "fitness": 1.06,
+        "drawdown": 0.063
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING",
+      "daily_pnl_correlation": {
+        "A_58w3aOKM": 0.397,
+        "B_58w9r6E6": 0.178,
+        "D_88z6bZEq": 0.246,
+        "E_d5x78JRv": 0.215
+      },
+      "max_abs_corr": 0.397,
+      "submittable": true
+    }
+  ],
+  "note": "max|corr| 0.368 vs ALL of A,B,D,E. Universe (TOP1000) is a clean decorrelation axis once decay lifts fitness over 1.0."
+}

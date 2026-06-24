@@ -1,0 +1,201 @@
+[
+  {
+    "name": "pvc_noE_a",
+    "expression": "rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.45,
+    "turnover": 0.0769,
+    "fitness": 0.25,
+    "drawdown": 0.2013,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "qMAPZeNj",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "pvc_noE_b",
+    "expression": "rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), -rank(ts_delta(sharesout, 120))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20))), rank(ts_delta(divide(subtract(high, low), close), 40))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.35,
+    "turnover": 0.0987,
+    "fitness": 0.18,
+    "drawdown": 0.2617,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "E5wgAl8m",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "pvc_noE_c",
+    "expression": "rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_delta(sharesout, 120))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.42,
+    "turnover": 0.0767,
+    "fitness": 0.23,
+    "drawdown": 0.2197,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "P0pwEKmE",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "pvc_noE_d",
+    "expression": "rank(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))), rank(ts_zscore(volume, 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.61,
+    "turnover": 0.1163,
+    "fitness": 0.41,
+    "drawdown": 0.1302,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "j2Z9LEzZ",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "pvc_intra",
+    "expression": "rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))), rank(ts_delta(divide(subtract(high, low), close), 40))), -rank(ts_mean(divide(close, vwap), 40))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SUBINDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.76,
+    "turnover": 0.0983,
+    "fitness": 0.48,
+    "drawdown": 0.12,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "RRp2XdXz",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "pvc_noE_t3k",
+    "expression": "rank(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP3000",
+      "neutralization": "INDUSTRY",
+      "decay": 12
+    },
+    "ok": true,
+    "sharpe": 1.04,
+    "turnover": 0.0803,
+    "fitness": 0.84,
+    "drawdown": 0.1466,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "KPbXegoj",
+    "error": "",
+    "corr": {}
+  }
+]

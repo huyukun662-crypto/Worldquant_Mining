@@ -1,0 +1,201 @@
+[
+  {
+    "name": "pvflow_t500_d20",
+    "expression": "rank(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(volume, sharesout), 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP500",
+      "neutralization": "SECTOR",
+      "decay": 20
+    },
+    "ok": true,
+    "sharpe": 1.01,
+    "turnover": 0.1032,
+    "fitness": 0.76,
+    "drawdown": 0.1004,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "omK9kNjn",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "pvflow_t500_d24",
+    "expression": "rank(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(volume, sharesout), 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP500",
+      "neutralization": "SECTOR",
+      "decay": 24
+    },
+    "ok": true,
+    "sharpe": 1.01,
+    "turnover": 0.0927,
+    "fitness": 0.76,
+    "drawdown": 0.097,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "P0pXb6AJ",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "flow_t1k_sec_d14",
+    "expression": "rank(add(add(add(-rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60)), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SECTOR",
+      "decay": 14
+    },
+    "ok": true,
+    "sharpe": 0.77,
+    "turnover": 0.0942,
+    "fitness": 0.52,
+    "drawdown": 0.1439,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "E5wrMpo1",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "widemix_t500_d18",
+    "expression": "rank(add(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP500",
+      "neutralization": "SECTOR",
+      "decay": 18
+    },
+    "ok": true,
+    "sharpe": 0.46,
+    "turnover": 0.0923,
+    "fitness": 0.27,
+    "drawdown": 0.1443,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "omK9XGOm",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "amicro_t1k_d10",
+    "expression": "rank(divide(-ts_delta(close, 10), ts_std_dev(returns, 10)))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "SECTOR",
+      "decay": 10
+    },
+    "ok": true,
+    "sharpe": 0.53,
+    "turnover": 0.1886,
+    "fitness": 0.31,
+    "drawdown": 0.2534,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS",
+      "LOW_SUB_UNIVERSE_SHARPE"
+    ],
+    "alpha_id": "1Y7nRANQ",
+    "error": "",
+    "corr": {}
+  },
+  {
+    "name": "widemix_t1k_ind",
+    "expression": "rank(add(add(add(add(add(rank(-ts_corr(close, volume, 20)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), -rank(ts_delta(sharesout, 120))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))))",
+    "settings": {
+      "instrumentType": "EQUITY",
+      "region": "USA",
+      "language": "FASTEXPR",
+      "unitHandling": "VERIFY",
+      "nanHandling": "OFF",
+      "pasteurization": "ON",
+      "visualization": false,
+      "maxTrade": "OFF",
+      "testPeriod": "P0Y0M",
+      "delay": 1,
+      "truncation": 0.08,
+      "universe": "TOP1000",
+      "neutralization": "INDUSTRY",
+      "decay": 16
+    },
+    "ok": true,
+    "sharpe": 0.77,
+    "turnover": 0.0988,
+    "fitness": 0.52,
+    "drawdown": 0.1112,
+    "submittable": false,
+    "failed_checks": [
+      "LOW_SHARPE",
+      "LOW_FITNESS"
+    ],
+    "alpha_id": "2r7no0ax",
+    "error": "",
+    "corr": {}
+  }
+]

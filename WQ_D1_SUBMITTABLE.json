@@ -1,0 +1,86 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "spec": {
+    "delay": 1,
+    "no_IV_fields": true,
+    "submittable": true,
+    "objective": "low turnover & low max drawdown"
+  },
+  "notes": "Fields used: close, volume, returns only (PV; no implied-volatility/option fields). Signal = price-volume divergence (-ts_corr(close,volume,20)) blended with vol-normalized short reversal (-ts_delta(close,10)/ts_std_dev(returns,10)); decay applied to bring turnover under 0.25. All metrics are WQ Brain /simulations IS values.",
+  "winners": [
+    {
+      "rank": 1,
+      "alpha_id": "58w3aOKM",
+      "expression": "rank(winsorize(add(rank(-ts_corr(close, volume, 20)), rank(divide(-ts_delta(close, 10), ts_std_dev(returns, 10)))), std=4))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "decay": 8
+      },
+      "is": {
+        "sharpe": 1.53,
+        "turnover": 0.1856,
+        "fitness": 1.08,
+        "returns": 0.0926,
+        "drawdown": 0.0423,
+        "margin": 0.000997
+      },
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "MATCHES_COMPETITION": "PASS",
+        "SELF_CORRELATION": "PENDING (evaluated at Submit time)"
+      },
+      "submittable": true
+    },
+    {
+      "rank": 2,
+      "alpha_id": "9qwbaWAd",
+      "expression": "rank(winsorize(add(rank(-ts_corr(close, volume, 20)), rank(divide(-ts_delta(close, 10), ts_std_dev(returns, 10)))), std=4))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "language": "FASTEXPR",
+        "decay": 16
+      },
+      "is": {
+        "sharpe": 1.32,
+        "turnover": 0.1399,
+        "fitness": 1.0,
+        "returns": 0.0801,
+        "drawdown": 0.0447,
+        "margin": 0.001145
+      },
+      "checks": {
+        "LOW_SHARPE": "PASS",
+        "LOW_FITNESS": "PASS",
+        "LOW_TURNOVER": "PASS",
+        "HIGH_TURNOVER": "PASS",
+        "CONCENTRATED_WEIGHT": "PASS",
+        "LOW_SUB_UNIVERSE_SHARPE": "PASS",
+        "MATCHES_COMPETITION": "PASS",
+        "SELF_CORRELATION": "PENDING (evaluated at Submit time)"
+      },
+      "submittable": true
+    }
+  ]
+}

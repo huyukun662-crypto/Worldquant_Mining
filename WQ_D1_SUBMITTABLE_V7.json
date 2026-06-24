@@ -1,0 +1,138 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "G \u2014 intraday/microstructure + amihud (new low-correlation axis)",
+  "structure": "Equal-weight rank blend of 7 intraday/microstructure components (close position 20/40d, high-low range trend 40/60d, vwap positioning 10/40d, vwap dispersion 40d) + Amihud illiquidity. Intraday-dominant (7/8 weight) keeps correlation with the flow-driven factor D near zero (0.00); amihud lifts Sharpe over 1.25.",
+  "fields_used": [
+    "close",
+    "open",
+    "high",
+    "low",
+    "vwap",
+    "volume",
+    "returns"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "winners": [
+    {
+      "rank": 1,
+      "alpha_id": "LLpgPEja",
+      "tag": "intra_am_vc",
+      "expression": "rank(add(add(add(add(add(add(add(add(-rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20)), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))), rank(ts_delta(divide(subtract(high, low), close), 40))), rank(ts_delta(divide(subtract(high, low), close), 60))), -rank(ts_mean(divide(close, vwap), 10))), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_std_dev(divide(close, vwap), 40))), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_delta(subtract(vwap, close), 20))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "language": "FASTEXPR",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "pasteurization": "ON",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M",
+        "delay": 1,
+        "truncation": 0.08,
+        "universe": "TOP3000",
+        "neutralization": "SUBINDUSTRY",
+        "decay": 10
+      },
+      "is": {
+        "sharpe": 1.36,
+        "turnover": 0.1472,
+        "fitness": 1.04,
+        "drawdown": 0.1126,
+        "returns": 0.0864
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING",
+      "daily_pnl_correlation": {
+        "A_58w3aOKM": 0.47,
+        "B_58w9r6E6": 0.372,
+        "D_88z6bZEq": 0.345,
+        "E_d5x78JRv": 0.011,
+        "F_0m7QR858": 0.299
+      },
+      "max_abs_corr": 0.47,
+      "submittable": true
+    },
+    {
+      "rank": 2,
+      "alpha_id": "leVQez1A",
+      "tag": "intra_amih_d8",
+      "expression": "rank(add(add(add(add(add(add(add(-rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20)), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))), rank(ts_delta(divide(subtract(high, low), close), 40))), rank(ts_delta(divide(subtract(high, low), close), 60))), -rank(ts_mean(divide(close, vwap), 10))), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_std_dev(divide(close, vwap), 40))), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "language": "FASTEXPR",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "pasteurization": "ON",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M",
+        "delay": 1,
+        "truncation": 0.08,
+        "universe": "TOP3000",
+        "neutralization": "SUBINDUSTRY",
+        "decay": 8
+      },
+      "is": {
+        "sharpe": 1.34,
+        "turnover": 0.1478,
+        "fitness": 1.02,
+        "drawdown": 0.1151,
+        "returns": 0.0853
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING",
+      "daily_pnl_correlation": {
+        "A_58w3aOKM": 0.465,
+        "B_58w9r6E6": 0.369,
+        "D_88z6bZEq": 0.339,
+        "E_d5x78JRv": 0.01,
+        "F_0m7QR858": 0.302
+      },
+      "max_abs_corr": 0.465,
+      "submittable": true
+    },
+    {
+      "rank": 3,
+      "alpha_id": "3q7aq9wX",
+      "tag": "intra_amih_d10",
+      "expression": "rank(add(add(add(add(add(add(add(-rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 20)), -rank(ts_mean(divide(subtract(close, low), subtract(high, low)), 40))), rank(ts_delta(divide(subtract(high, low), close), 40))), rank(ts_delta(divide(subtract(high, low), close), 60))), -rank(ts_mean(divide(close, vwap), 10))), -rank(ts_mean(divide(close, vwap), 40))), -rank(ts_std_dev(divide(close, vwap), 40))), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))))",
+      "settings": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "language": "FASTEXPR",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "pasteurization": "ON",
+        "visualization": false,
+        "maxTrade": "OFF",
+        "testPeriod": "P0Y0M",
+        "delay": 1,
+        "truncation": 0.08,
+        "universe": "TOP3000",
+        "neutralization": "SUBINDUSTRY",
+        "decay": 10
+      },
+      "is": {
+        "sharpe": 1.28,
+        "turnover": 0.1293,
+        "fitness": 1.01,
+        "drawdown": 0.118
+      },
+      "all_checks_pass": true,
+      "self_correlation": "PENDING",
+      "daily_pnl_correlation": {
+        "A_58w3aOKM": 0.455,
+        "B_58w9r6E6": 0.372,
+        "D_88z6bZEq": 0.346,
+        "E_d5x78JRv": -0.0,
+        "F_0m7QR858": 0.297
+      },
+      "max_abs_corr": 0.455,
+      "submittable": true
+    }
+  ],
+  "note": "Strictly orthogonal to E (corr ~0.00 across variants). Lev (decay 8) delivers highest Sharpe; LL (decay 10 + vcspread boost) ties on corr-floor."
+}

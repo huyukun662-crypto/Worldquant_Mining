@@ -1,0 +1,48 @@
+{
+  "account": "Shu476891497@gmail.com (XS45327)",
+  "family": "E \u2014 balanced reversal+flow on SECTOR neutralization (low-correlation)",
+  "structure": "Equal-weight rank blend of 60d rank-reversal (trret) + Amihud illiquidity + share turnover + abnormal-volume z-score + overnight-gap reversal. Sits OFF the reversal/flow plane; SECTOR neutralization (vs A/B/D's SUBINDUSTRY) was the decisive lever that broke the correlation with B from 0.53 down to 0.45.",
+  "fields_used": [
+    "returns",
+    "close",
+    "volume",
+    "sharesout",
+    "open"
+  ],
+  "no_IV_fields": true,
+  "delay": 1,
+  "alpha_id": "d5x78JRv",
+  "expression": "rank(add(add(add(add(-rank(ts_rank(returns, 60)), -rank(ts_mean(divide(abs(returns), multiply(close, volume)), 60))), rank(ts_mean(divide(volume, sharesout), 60))), rank(ts_zscore(volume, 60))), rank(ts_mean(divide(open, ts_delay(close, 1)), 20))))",
+  "settings": {
+    "instrumentType": "EQUITY",
+    "region": "USA",
+    "language": "FASTEXPR",
+    "unitHandling": "VERIFY",
+    "nanHandling": "OFF",
+    "pasteurization": "ON",
+    "visualization": false,
+    "maxTrade": "OFF",
+    "testPeriod": "P0Y0M",
+    "delay": 1,
+    "universe": "TOP3000",
+    "truncation": 0.08,
+    "neutralization": "SECTOR",
+    "decay": 10
+  },
+  "is": {
+    "sharpe": 1.33,
+    "turnover": 0.1494,
+    "fitness": 1.12,
+    "drawdown": 0.1162,
+    "returns": 0.1053
+  },
+  "all_checks_pass": true,
+  "self_correlation": "PENDING (evaluated at Submit)",
+  "submittable": true,
+  "daily_pnl_correlation": {
+    "vs_A_58w3aOKM": 0.023,
+    "vs_B_58w9r6E6": 0.447,
+    "vs_D_88z6bZEq": 0.441
+  },
+  "note": "max|corr| = 0.447 < 0.50 vs ALL of A, B and D. Near-zero with A."
+}
