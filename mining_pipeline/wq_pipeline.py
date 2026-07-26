@@ -32,9 +32,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any
 
-import optuna
-
-from .expressions import generate, integer_positions, parameterize
+from .expressions import expression_features, generate, integer_positions, parameterize
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
@@ -47,8 +45,7 @@ VENDOR = REPO / "vendor" / "worldquant-miner"
 # Setting search space - per user note: "delay decay truncation universe
 # 中性化等是可以调的". Expressions themselves stay free to mutate (no
 # template reuse).
-SETTING_SPACE = {
-    "universe":       ["TOP3000", "TOP1000", "TOP500", "TOP200"],
+BASE_SETTING_SPACE = {
     "delay":          [1],  # this account has no delay-0 access
     "decay":          [0, 4, 8, 16, 32, 64],
     "truncation":     [0.01, 0.05, 0.08, 0.10],
@@ -56,9 +53,23 @@ SETTING_SPACE = {
     "pasteurization": ["ON", "OFF"],
 }
 
+REGION_SPACES = {
+    "USA": {
+        "universe": ["TOP3000", "TOP1000", "TOP500", "TOP200"],
+        "neutralization": ["NONE", "MARKET", "INDUSTRY", "SUBINDUSTRY", "SECTOR"],
+    },
+    # A-share universe exposed by WorldQuant Brain.  Keep the choices here
+    # deliberately conservative: COUNTRY/STATISTICAL are not offered for CHN.
+    "CHN": {
+        "universe": ["TOP2000U"],
+        "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR",
+                           "REVERSION_AND_MOMENTUM", "CROWDING", "FAST",
+                           "SLOW", "MARKET", "SLOW_AND_FAST"],
+    },
+}
+
 FIXED_SETTINGS = {
     "instrumentType": "EQUITY",
-    "region":         "USA",
     "language":       "FASTEXPR",
     "unitHandling":   "VERIFY",
     "nanHandling":    "OFF",
@@ -70,6 +81,16 @@ FIXED_SETTINGS = {
 # User filter: WQ Brain's official thresholds
 SHARPE_FLOOR = 1.25
 TURNOVER_CEILING = 0.25
+
+
+def setting_space(region: str) -> dict[str, list]:
+    """Return an independent simulation search space for ``region``."""
+    region = region.upper()
+    if region not in REGION_SPACES:
+        raise ValueError(f"unsupported region {region!r}; choose from {sorted(REGION_SPACES)}")
+    space = {key: list(values) for key, values in BASE_SETTING_SPACE.items()}
+    space.update({key: list(values) for key, values in REGION_SPACES[region].items()})
+    return space
 
 
 def _load(p: Path, name: str):
@@ -171,10 +192,17 @@ def submit(session, expression: str, settings: dict,
                     settings=full_settings, error="poll-timeout")
 
 
-def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
+def search_one(session, expression: str, n_trials: int, seed: int,
+               region: str = "USA") -> list[WQResult]:
     """Run optuna trials over (expression-windows, sim-settings) for one
     base expression. Returns ALL trial results (not just the best)."""
+    try:
+        import optuna
+    except ImportError as exc:
+        raise RuntimeError("WQ search requires optuna; install it with `pip install optuna`") from exc
+
     positions = integer_positions(expression)
+    search_space = setting_space(region)
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     sampler = optuna.samplers.TPESampler(seed=seed)
     study = optuna.create_study(direction="maximize", sampler=sampler)
@@ -182,7 +210,8 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
 
     def objective(trial: optuna.trial.Trial) -> float:
         # Setting choices
-        settings = {k: trial.suggest_categorical(k, v) for k, v in SETTING_SPACE.items()}
+        settings = {k: trial.suggest_categorical(k, v) for k, v in search_space.items()}
+        settings["region"] = region.upper()
         # Expression windows
         windows = {p: trial.suggest_int(f"w{p}", 3, 60) for p in positions}
         final = parameterize(expression, windows) if windows else expression
@@ -212,17 +241,41 @@ def main():
     ap.add_argument("--seed", type=int, default=37)
     ap.add_argument("--max-depth", type=int, default=3)
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
+    ap.add_argument("--region", choices=sorted(REGION_SPACES), default="USA",
+                    help="Brain equity region; use CHN for mainland A-shares")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Generate candidates and settings without credentials or submissions")
     args = ap.parse_args()
+
+    log.info(f"generating {args.n_exprs} expressions for {args.region} "
+             "(no Alpha101 / classical reuse)")
+    exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
+    for e in exprs: log.info(f"   {e}")
+
+    if args.dry_run:
+        space = setting_space(args.region)
+        candidates = [{
+            "expression": expression,
+            "features": expression_features(expression),
+            "status": "UNEVALUATED",
+        } for expression in exprs]
+        with open(args.out, "w") as f:
+            json.dump({
+                "method": "fresh random operator-field composition with structural gates",
+                "region": args.region,
+                "universe": space["universe"][0],
+                "search_space": space,
+                "candidate_count": len(candidates),
+                "candidates": candidates,
+            }, f, indent=2, ensure_ascii=False)
+        log.info(f"dry run: wrote {len(candidates)} unevaluated candidates to {args.out}")
+        return 0
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
     if not cm.authenticate(auto_load=True, auto_prompt=False):
         log.error("authentication failed"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
-
-    log.info(f"generating {args.n_exprs} expressions (no Alpha101 / classical reuse)")
-    exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
-    for e in exprs: log.info(f"   {e}")
 
     total_trials = args.n_exprs * args.trials
     log.info(f"will run {total_trials} simulations on WQ Brain "
@@ -231,7 +284,8 @@ def main():
     all_results: list[WQResult] = []
     for i, expr in enumerate(exprs, 1):
         log.info(f"=== [{i}/{len(exprs)}] expression: {expr}")
-        res_list = search_one(cm.session, expr, args.trials, args.seed + i)
+        res_list = search_one(cm.session, expr, args.trials, args.seed + i,
+                              region=args.region)
         all_results.extend(res_list)
         # Save partial after each expression so a crash mid-run preserves data
         with open(args.out, "w") as f:
