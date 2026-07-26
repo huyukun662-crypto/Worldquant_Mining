@@ -124,7 +124,10 @@ def main():
         report = json.load(sys.stdin)
     else:
         report = json.load(open(src))
-    factors = report["factors"] if "factors" in report else report
+    if isinstance(report, dict):
+        factors = report.get("factors") or report.get("candidates") or []
+    else:
+        factors = report
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))

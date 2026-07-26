@@ -21,8 +21,9 @@ search stage replaces those with optimized values.
 from __future__ import annotations
 
 import hashlib
+import ast
 import random
-from typing import List, Tuple
+from typing import List
 
 # Building blocks - only WQ Brain pv fields actually exposed on this account
 # (verified via constants/data_fields_union_USA.json). `dollar_volume` is
@@ -41,6 +42,44 @@ ARITH_OPS = ("add", "subtract", "multiply", "divide")
 ELEMWISE_UNARY = ("log", "abs", "reverse", "sign", "s_log_1p")
 
 WINDOWS_DEFAULT = (3, 5, 10, 20, 40, 60)
+
+
+def expression_features(expression: str) -> dict:
+    """Extract lightweight structural features used before paid simulations.
+
+    This is deliberately not a performance score.  It only rejects structurally
+    weak random draws such as ``scale(open)`` or ``divide(cap, cap)``.
+    """
+    tree = ast.parse(expression, mode="eval")
+    fields = sorted({node.id for node in ast.walk(tree)
+                     if isinstance(node, ast.Name) and node.id in FIELDS})
+    operators = [node.func.id for node in ast.walk(tree)
+                 if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)]
+    calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)]
+    self_comparisons = any(
+        isinstance(node.func, ast.Name)
+        and node.func.id in {"divide", "subtract"}
+        and len(node.args) == 2
+        and ast.dump(node.args[0]) == ast.dump(node.args[1])
+        for node in calls
+    )
+    ts_operators = sorted({op for op in operators if op.startswith("ts_")})
+    return {
+        "fields": fields,
+        "operators": sorted(set(operators)),
+        "ts_operators": ts_operators,
+        "has_window": bool(integer_positions(expression)),
+        "self_comparison": self_comparisons,
+    }
+
+
+def is_mineable(expression: str) -> bool:
+    """Apply cheap structural gates before local or Brain evaluation."""
+    features = expression_features(expression)
+    return (len(features["fields"]) >= 2
+            and bool(features["ts_operators"])
+            and features["has_window"]
+            and not features["self_comparison"])
 
 
 def _leaf(rng: random.Random) -> str:
@@ -100,7 +139,7 @@ def generate(n: int, seed: int = 42, max_depth: int = 3) -> List[str]:
     while len(out) < n:
         e = generate_one(rng, max_depth=max_depth)
         h = hashlib.md5(e.encode()).hexdigest()
-        if h in seen:
+        if h in seen or not is_mineable(e):
             continue
         seen.add(h)
         out.append(e)
