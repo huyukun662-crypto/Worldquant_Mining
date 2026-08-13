@@ -32,9 +32,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any
 
-import optuna
-
-from .expressions import generate, integer_positions, parameterize
+from .expressions import expression_features, generate, integer_positions, parameterize
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s")
@@ -47,8 +45,7 @@ VENDOR = REPO / "vendor" / "worldquant-miner"
 # Setting search space - per user note: "delay decay truncation universe
 # 中性化等是可以调的". Expressions themselves stay free to mutate (no
 # template reuse).
-SETTING_SPACE = {
-    "universe":       ["TOP3000", "TOP1000", "TOP500", "TOP200"],
+BASE_SETTING_SPACE = {
     "delay":          [1],  # this account has no delay-0 access
     "decay":          [0, 4, 8, 16, 32, 64],
     "truncation":     [0.01, 0.05, 0.08, 0.10],
@@ -56,9 +53,39 @@ SETTING_SPACE = {
     "pasteurization": ["ON", "OFF"],
 }
 
+A_SHARE_UNIVERSES = (
+    "ALL_A",
+    "SSE_COMPOSITE",
+    "SSE50",
+    "CSI_A500",
+    "CSI300",
+    "CSI500",
+    "CSI800",
+    "CSI1000",
+    "CSI2000",
+    "SZSE_COMPONENT",
+    "SZSE100",
+    "CHINEXT",
+    "STAR50",
+)
+
+UNIVERSE_ALIASES = {
+    "上证指数": "SSE_COMPOSITE",
+    "上证综指": "SSE_COMPOSITE",
+    "深证成指": "SZSE_COMPONENT",
+}
+
+REGION_SPACES = {
+    "CHN": {
+        "universe": list(A_SHARE_UNIVERSES),
+        "neutralization": ["INDUSTRY", "SUBINDUSTRY", "SECTOR",
+                           "REVERSION_AND_MOMENTUM", "CROWDING", "FAST",
+                           "SLOW", "MARKET", "SLOW_AND_FAST"],
+    },
+}
+
 FIXED_SETTINGS = {
     "instrumentType": "EQUITY",
-    "region":         "USA",
     "language":       "FASTEXPR",
     "unitHandling":   "VERIFY",
     "nanHandling":    "OFF",
@@ -70,6 +97,27 @@ FIXED_SETTINGS = {
 # User filter: WQ Brain's official thresholds
 SHARPE_FLOOR = 1.25
 TURNOVER_CEILING = 0.25
+
+
+def setting_space(region: str = "CHN", universe: str | None = None,
+                  delay: int | None = None,
+                  neutralizations: list[str] | None = None,
+                  decay: int | None = None) -> dict[str, list]:
+    """Return an independent search space, honoring user scope overrides."""
+    region = region.upper()
+    if region not in REGION_SPACES:
+        raise ValueError(f"unsupported region {region!r}; choose from {sorted(REGION_SPACES)}")
+    space = {key: list(values) for key, values in BASE_SETTING_SPACE.items()}
+    space.update({key: list(values) for key, values in REGION_SPACES[region].items()})
+    if universe is not None:
+        space["universe"] = [UNIVERSE_ALIASES.get(universe, universe)]
+    if delay is not None:
+        space["delay"] = [delay]
+    if neutralizations:
+        space["neutralization"] = list(neutralizations)
+    if decay is not None:
+        space["decay"] = [decay]
+    return space
 
 
 def _load(p: Path, name: str):
@@ -171,10 +219,23 @@ def submit(session, expression: str, settings: dict,
                     settings=full_settings, error="poll-timeout")
 
 
-def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQResult]:
+def search_one(session, expression: str, n_trials: int, seed: int,
+               region: str = "CHN", universe: str | None = None,
+               delay: int | None = None,
+               neutralizations: list[str] | None = None,
+               decay: int | None = None) -> list[WQResult]:
     """Run optuna trials over (expression-windows, sim-settings) for one
     base expression. Returns ALL trial results (not just the best)."""
+    try:
+        import optuna
+    except ImportError as exc:
+        raise RuntimeError("WQ search requires optuna; install it with `pip install optuna`") from exc
+
     positions = integer_positions(expression)
+    search_space = setting_space(
+        region, universe=universe, delay=delay,
+        neutralizations=neutralizations, decay=decay,
+    )
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     sampler = optuna.samplers.TPESampler(seed=seed)
     study = optuna.create_study(direction="maximize", sampler=sampler)
@@ -182,7 +243,8 @@ def search_one(session, expression: str, n_trials: int, seed: int) -> list[WQRes
 
     def objective(trial: optuna.trial.Trial) -> float:
         # Setting choices
-        settings = {k: trial.suggest_categorical(k, v) for k, v in SETTING_SPACE.items()}
+        settings = {k: trial.suggest_categorical(k, v) for k, v in search_space.items()}
+        settings["region"] = region.upper()
         # Expression windows
         windows = {p: trial.suggest_int(f"w{p}", 3, 60) for p in positions}
         final = parameterize(expression, windows) if windows else expression
@@ -212,17 +274,57 @@ def main():
     ap.add_argument("--seed", type=int, default=37)
     ap.add_argument("--max-depth", type=int, default=3)
     ap.add_argument("--out", type=str, default="WQ_MINING_REPORT.json")
+    ap.add_argument("--region", choices=("CHN",), default="CHN",
+                    help="Fixed to CHN: this workflow mines mainland A-shares only")
+    ap.add_argument("--universe",
+                    choices=A_SHARE_UNIVERSES + tuple(UNIVERSE_ALIASES),
+                    default="ALL_A",
+                    help="A-share scope: all A-shares or a major CSI index")
+    ap.add_argument("--delay", type=int, choices=(0, 1),
+                    help="Signal delay selected by the user (defaults to account-safe delay 1)")
+    ap.add_argument("--neutralization", action="append", dest="neutralizations",
+                    help="Neutralization to use; repeat to search several choices")
+    ap.add_argument("--decay", type=int,
+                    help="Fix decay to this non-negative value (otherwise search defaults)")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Generate candidates and settings without credentials or submissions")
     args = ap.parse_args()
+    if args.decay is not None and args.decay < 0:
+        ap.error("--decay must be non-negative")
+    args.universe = UNIVERSE_ALIASES.get(args.universe, args.universe)
+
+    log.info(f"generating {args.n_exprs} expressions for {args.region} "
+             "(no Alpha101 / classical reuse)")
+    exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
+    for e in exprs: log.info(f"   {e}")
+
+    if args.dry_run:
+        space = setting_space(
+            args.region, universe=args.universe, delay=args.delay,
+            neutralizations=args.neutralizations, decay=args.decay,
+        )
+        candidates = [{
+            "expression": expression,
+            "features": expression_features(expression),
+            "status": "UNEVALUATED",
+        } for expression in exprs]
+        with open(args.out, "w") as f:
+            json.dump({
+                "method": "fresh random operator-field composition with structural gates",
+                "region": args.region,
+                "universe": space["universe"][0],
+                "search_space": space,
+                "candidate_count": len(candidates),
+                "candidates": candidates,
+            }, f, indent=2, ensure_ascii=False)
+        log.info(f"dry run: wrote {len(candidates)} unevaluated candidates to {args.out}")
+        return 0
 
     cm_mod = _load(VENDOR / "core" / "credential_manager.py", "cm")
     cm = cm_mod.CredentialManager(base_path=str(REPO))
     if not cm.authenticate(auto_load=True, auto_prompt=False):
         log.error("authentication failed"); return 2
     log.info(f"authenticated as {cm.credentials.username}")
-
-    log.info(f"generating {args.n_exprs} expressions (no Alpha101 / classical reuse)")
-    exprs = generate(args.n_exprs, seed=args.seed, max_depth=args.max_depth)
-    for e in exprs: log.info(f"   {e}")
 
     total_trials = args.n_exprs * args.trials
     log.info(f"will run {total_trials} simulations on WQ Brain "
@@ -231,7 +333,11 @@ def main():
     all_results: list[WQResult] = []
     for i, expr in enumerate(exprs, 1):
         log.info(f"=== [{i}/{len(exprs)}] expression: {expr}")
-        res_list = search_one(cm.session, expr, args.trials, args.seed + i)
+        res_list = search_one(cm.session, expr, args.trials, args.seed + i,
+                              region=args.region, universe=args.universe,
+                              delay=args.delay,
+                              neutralizations=args.neutralizations,
+                              decay=args.decay)
         all_results.extend(res_list)
         # Save partial after each expression so a crash mid-run preserves data
         with open(args.out, "w") as f:

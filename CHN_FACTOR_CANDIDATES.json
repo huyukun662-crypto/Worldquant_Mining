@@ -1,0 +1,521 @@
+{
+  "method": "fresh random operator-field composition with structural gates",
+  "region": "CHN",
+  "universe": "ALL_A",
+  "search_space": {
+    "delay": [
+      1
+    ],
+    "decay": [
+      0,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "truncation": [
+      0.01,
+      0.05,
+      0.08,
+      0.1
+    ],
+    "neutralization": [
+      "INDUSTRY",
+      "SUBINDUSTRY",
+      "SECTOR",
+      "REVERSION_AND_MOMENTUM",
+      "CROWDING",
+      "FAST",
+      "SLOW",
+      "MARKET",
+      "SLOW_AND_FAST"
+    ],
+    "pasteurization": [
+      "ON",
+      "OFF"
+    ],
+    "universe": [
+      "ALL_A"
+    ]
+  },
+  "candidate_count": 20,
+  "candidates": [
+    {
+      "expression": "rank(ts_returns(subtract(add(cap, vwap), ts_delta(returns, 40)), 3))",
+      "features": {
+        "fields": [
+          "cap",
+          "returns",
+          "vwap"
+        ],
+        "operators": [
+          "add",
+          "rank",
+          "subtract",
+          "ts_delta",
+          "ts_returns"
+        ],
+        "ts_operators": [
+          "ts_delta",
+          "ts_returns"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "normalize(ts_returns(ts_delta(ts_corr(volume, low, 20), 5), 40))",
+      "features": {
+        "fields": [
+          "low",
+          "volume"
+        ],
+        "operators": [
+          "normalize",
+          "ts_corr",
+          "ts_delta",
+          "ts_returns"
+        ],
+        "ts_operators": [
+          "ts_corr",
+          "ts_delta",
+          "ts_returns"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(multiply(multiply(ts_mean(returns, 5), open), divide(ts_delta(cap, 20), adv20)))",
+      "features": {
+        "fields": [
+          "adv20",
+          "cap",
+          "open",
+          "returns"
+        ],
+        "operators": [
+          "divide",
+          "multiply",
+          "rank",
+          "ts_delta",
+          "ts_mean"
+        ],
+        "ts_operators": [
+          "ts_delta",
+          "ts_mean"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "normalize(multiply(subtract(ts_std_dev(open, 10), ts_corr(low, sharesout, 60)), ts_rank(ts_mean(returns, 20), 5)))",
+      "features": {
+        "fields": [
+          "low",
+          "open",
+          "returns",
+          "sharesout"
+        ],
+        "operators": [
+          "multiply",
+          "normalize",
+          "subtract",
+          "ts_corr",
+          "ts_mean",
+          "ts_rank",
+          "ts_std_dev"
+        ],
+        "ts_operators": [
+          "ts_corr",
+          "ts_mean",
+          "ts_rank",
+          "ts_std_dev"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "scale(subtract(ts_decay_linear(ts_zscore(close, 3), 40), ts_rank(multiply(vwap, open), 5)))",
+      "features": {
+        "fields": [
+          "close",
+          "open",
+          "vwap"
+        ],
+        "operators": [
+          "multiply",
+          "scale",
+          "subtract",
+          "ts_decay_linear",
+          "ts_rank",
+          "ts_zscore"
+        ],
+        "ts_operators": [
+          "ts_decay_linear",
+          "ts_rank",
+          "ts_zscore"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "zscore(subtract(add(ts_decay_linear(sharesout, 5), ts_rank(open, 5)), ts_returns(log(volume), 3)))",
+      "features": {
+        "fields": [
+          "open",
+          "sharesout",
+          "volume"
+        ],
+        "operators": [
+          "add",
+          "log",
+          "subtract",
+          "ts_decay_linear",
+          "ts_rank",
+          "ts_returns",
+          "zscore"
+        ],
+        "ts_operators": [
+          "ts_decay_linear",
+          "ts_rank",
+          "ts_returns"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(ts_mean(sign(divide(cap, adv20)), 40))",
+      "features": {
+        "fields": [
+          "adv20",
+          "cap"
+        ],
+        "operators": [
+          "divide",
+          "rank",
+          "sign",
+          "ts_mean"
+        ],
+        "ts_operators": [
+          "ts_mean"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "scale(multiply(ts_returns(ts_rank(high, 5), 60), ts_std_dev(ts_decay_linear(open, 60), 60)))",
+      "features": {
+        "fields": [
+          "high",
+          "open"
+        ],
+        "operators": [
+          "multiply",
+          "scale",
+          "ts_decay_linear",
+          "ts_rank",
+          "ts_returns",
+          "ts_std_dev"
+        ],
+        "ts_operators": [
+          "ts_decay_linear",
+          "ts_rank",
+          "ts_returns",
+          "ts_std_dev"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(ts_mean(ts_zscore(ts_corr(open, close, 20), 5), 20))",
+      "features": {
+        "fields": [
+          "close",
+          "open"
+        ],
+        "operators": [
+          "rank",
+          "ts_corr",
+          "ts_mean",
+          "ts_zscore"
+        ],
+        "ts_operators": [
+          "ts_corr",
+          "ts_mean",
+          "ts_zscore"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "zscore(multiply(multiply(ts_delta(cap, 40), ts_zscore(high, 5)), add(ts_corr(vwap, open, 3), ts_zscore(volume, 10))))",
+      "features": {
+        "fields": [
+          "cap",
+          "high",
+          "open",
+          "volume",
+          "vwap"
+        ],
+        "operators": [
+          "add",
+          "multiply",
+          "ts_corr",
+          "ts_delta",
+          "ts_zscore",
+          "zscore"
+        ],
+        "ts_operators": [
+          "ts_corr",
+          "ts_delta",
+          "ts_zscore"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(add(add(ts_mean(adv20, 5), ts_std_dev(close, 3)), ts_rank(add(volume, low), 20)))",
+      "features": {
+        "fields": [
+          "adv20",
+          "close",
+          "low",
+          "volume"
+        ],
+        "operators": [
+          "add",
+          "rank",
+          "ts_mean",
+          "ts_rank",
+          "ts_std_dev"
+        ],
+        "ts_operators": [
+          "ts_mean",
+          "ts_rank",
+          "ts_std_dev"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "normalize(ts_mean(ts_decay_linear(subtract(open, low), 3), 60))",
+      "features": {
+        "fields": [
+          "low",
+          "open"
+        ],
+        "operators": [
+          "normalize",
+          "subtract",
+          "ts_decay_linear",
+          "ts_mean"
+        ],
+        "ts_operators": [
+          "ts_decay_linear",
+          "ts_mean"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(ts_corr(open, returns, 3))",
+      "features": {
+        "fields": [
+          "open",
+          "returns"
+        ],
+        "operators": [
+          "rank",
+          "ts_corr"
+        ],
+        "ts_operators": [
+          "ts_corr"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "scale(ts_corr(high, volume, 20))",
+      "features": {
+        "fields": [
+          "high",
+          "volume"
+        ],
+        "operators": [
+          "scale",
+          "ts_corr"
+        ],
+        "ts_operators": [
+          "ts_corr"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "scale(ts_delta(ts_corr(cap, open, 20), 3))",
+      "features": {
+        "fields": [
+          "cap",
+          "open"
+        ],
+        "operators": [
+          "scale",
+          "ts_corr",
+          "ts_delta"
+        ],
+        "ts_operators": [
+          "ts_corr",
+          "ts_delta"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "zscore(s_log_1p(divide(ts_corr(cap, open, 3), ts_corr(returns, adv20, 5))))",
+      "features": {
+        "fields": [
+          "adv20",
+          "cap",
+          "open",
+          "returns"
+        ],
+        "operators": [
+          "divide",
+          "s_log_1p",
+          "ts_corr",
+          "zscore"
+        ],
+        "ts_operators": [
+          "ts_corr"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "scale(divide(ts_returns(subtract(volume, close), 60), ts_delta(ts_returns(high, 10), 60)))",
+      "features": {
+        "fields": [
+          "close",
+          "high",
+          "volume"
+        ],
+        "operators": [
+          "divide",
+          "scale",
+          "subtract",
+          "ts_delta",
+          "ts_returns"
+        ],
+        "ts_operators": [
+          "ts_delta",
+          "ts_returns"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(ts_std_dev(subtract(ts_returns(sharesout, 60), high), 20))",
+      "features": {
+        "fields": [
+          "high",
+          "sharesout"
+        ],
+        "operators": [
+          "rank",
+          "subtract",
+          "ts_returns",
+          "ts_std_dev"
+        ],
+        "ts_operators": [
+          "ts_returns",
+          "ts_std_dev"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "normalize(multiply(ts_decay_linear(ts_delta(adv20, 20), 40), ts_delta(low, 20)))",
+      "features": {
+        "fields": [
+          "adv20",
+          "low"
+        ],
+        "operators": [
+          "multiply",
+          "normalize",
+          "ts_decay_linear",
+          "ts_delta"
+        ],
+        "ts_operators": [
+          "ts_decay_linear",
+          "ts_delta"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    },
+    {
+      "expression": "rank(subtract(ts_returns(ts_zscore(returns, 60), 20), subtract(multiply(cap, sharesout), ts_rank(sharesout, 20))))",
+      "features": {
+        "fields": [
+          "cap",
+          "returns",
+          "sharesout"
+        ],
+        "operators": [
+          "multiply",
+          "rank",
+          "subtract",
+          "ts_rank",
+          "ts_returns",
+          "ts_zscore"
+        ],
+        "ts_operators": [
+          "ts_rank",
+          "ts_returns",
+          "ts_zscore"
+        ],
+        "has_window": true,
+        "self_comparison": false
+      },
+      "status": "UNEVALUATED"
+    }
+  ]
+}
